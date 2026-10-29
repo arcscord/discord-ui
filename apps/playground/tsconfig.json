@@ -14,6 +14,9 @@
     "paths": {
       "@arcscord/discord-ui": [
         "../../packages/discord-ui/src/index.ts"
+      ],
+      "@arcscord/discord-ui/highlight": [
+        "../../packages/discord-ui/src/highlight.tsx"
       ]
     }
   },

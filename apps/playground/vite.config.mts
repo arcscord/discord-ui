@@ -11,6 +11,10 @@ export default defineConfig(({ command }) => ({
     ? {
         alias: [
           {
+            find: "@arcscord/discord-ui/highlight",
+            replacement: fileURLToPath(new URL("../../packages/discord-ui/src/highlight.tsx", import.meta.url)),
+          },
+          {
             find: "@arcscord/discord-ui/styles.css",
             replacement: fileURLToPath(new URL("../../packages/discord-ui/src/styles/styles.css", import.meta.url)),
           },

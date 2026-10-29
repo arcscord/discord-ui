@@ -1,15 +1,19 @@
 import { DiscordUI, Message } from "@arcscord/discord-ui";
+import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useState } from "react";
-import { basicMessage } from "../../../fixtures/messages";
+import { basicMessage, demoEntities, scenarios } from "../../../fixtures/messages";
 
 export function App() {
+  const [scenario, setScenario] = useState<keyof typeof scenarios>("basic");
+  const [revision, setRevision] = useState(0);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [width, setWidth] = useState(760);
   const [content, setContent] = useState(basicMessage.body.content);
   const [copyStatus, setCopyStatus] = useState("");
+  const selected = scenarios[scenario].message;
   const message = {
-    ...basicMessage,
-    body: { ...basicMessage.body, content },
+    ...selected,
+    body: { ...selected.body, content },
   };
 
   async function copyData(): Promise<void> {
@@ -37,6 +41,19 @@ export function App() {
         <div className="workbench">
           <aside className="controls" aria-label="Réglages du message">
             <h2>Message</h2>
+            <label htmlFor="scenario">Scénario</label>
+            <select
+              id="scenario"
+              value={scenario}
+              onChange={(event) => {
+                const next = event.target.value as keyof typeof scenarios;
+                setScenario(next);
+                setContent(scenarios[next].message.body.content);
+                setCopyStatus("");
+              }}
+            >
+              {Object.entries(scenarios).map(([id, entry]) => <option key={id} value={id}>{entry.label}</option>)}
+            </select>
             <label htmlFor="theme">Thème</label>
             <select id="theme" value={theme} onChange={event => setTheme(event.target.value as "dark" | "light")}>
               <option value="dark">Sombre</option>
@@ -56,7 +73,8 @@ export function App() {
             <button
               type="button"
               onClick={() => {
-                setContent(basicMessage.body.content);
+                setContent(selected.body.content);
+                setRevision(value => value + 1);
                 setCopyStatus("");
               }}
             >
@@ -74,7 +92,26 @@ export function App() {
                 · fr-FR · UTC
               </span>
             </div>
-            <div className="preview-stage"><div className="preview-width" style={{ width, maxWidth: "100%" }}><DiscordUI theme={theme} locale="fr-FR" timeZone="UTC"><Message message={message} /></DiscordUI></div></div>
+            <div className="preview-stage">
+              <div className="preview-width" style={{ width, maxWidth: "100%" }}>
+                <DiscordUI
+                  theme={theme}
+                  locale="fr-FR"
+                  timeZone="UTC"
+                  entities={demoEntities}
+                  renderCode={renderHighlightedCode}
+                  labels={{
+                    spoiler: "Spoiler",
+                    showSpoiler: "Afficher le spoiler",
+                    hideSpoiler: "Masquer le spoiler",
+                    mediaUnavailable: "Média indisponible",
+                    invalidTimestamp: "Date invalide",
+                  }}
+                >
+                  <Message key={`${scenario}-${revision}`} message={message} />
+                </DiscordUI>
+              </div>
+            </div>
             <div className="data-heading">
               <h2>Données</h2>
               <button type="button" onClick={copyData}>Copier le JSON</button>
@@ -86,7 +123,7 @@ export function App() {
       </main>
       <footer className="site-footer">
         React · TypeScript · CSS autonome
-        <span>Bibliothèque en développement</span>
+        <a href="/THIRD_PARTY_NOTICES.txt">Crédits et licences</a>
       </footer>
     </div>
   );

@@ -5,7 +5,7 @@ AutoThreads and the Arcscord documentation. Package: `@arcscord/discord-ui`.
 
 ## Status
 
-Repository foundation only, version `0.0.0`, not published. The package currently
+Version `0.0.0`, not published. The package currently
 exports composable message primitives, serializable types and scoped light/dark styles.
 A Vite playground consumes the library. The payload adapter is planned.
 No AutoThreads or Arcscord runtime dependency is included.
@@ -24,11 +24,12 @@ pnpm check
 
 The Node requirement applies to repository tooling, not browser applications.
 The package targets ES2022 and declares React 19 as a peer. React 18 compatibility
-is not currently claimed. Tests currently cover the data contract and package
-installation; React rendering compatibility will be checked with the first renderer.
+is not currently claimed. Tests cover SSR, content rendering, package installation
+and desktop/mobile interactions. Next.js and Docusaurus integration builds are still pending.
 
 | Command | Purpose |
 | --- | --- |
+| `pnpm dev` | Start the playground with live package updates |
 | `pnpm build` | Build all workspace packages |
 | `pnpm build:lib` | Build the distributable library |
 | `pnpm lint` | Check formatting and lint without editing |
@@ -36,9 +37,10 @@ installation; React rendering compatibility will be checked with the first rende
 | `pnpm typecheck` | Check library, tests, config and CLI types |
 | `pnpm test` | Run tests once |
 | `pnpm test:watch` | Watch tests locally |
+| `pnpm test:browser` | Build and run desktop/mobile browser checks |
 | `pnpm pack:check` | Verify the built tarball in an isolated consumer |
 | `pnpm check` | Lint, types, tests, build and tarball verification |
-| `pnpm clean` | Remove library output and coverage |
+| `pnpm clean` | Remove library/playground output and coverage |
 
 Run `pnpm build:lib` before `pnpm pack:check`, or use `pnpm check`. The tarball check
 installs pinned consumer dependencies in a temporary directory and needs registry
@@ -51,6 +53,8 @@ desktop and mobile interaction checks. CI runs these checks too.
 ## Package layout
 
 - `packages/discord-ui`: publishable ESM library, declarations and CSS.
+- `apps/playground`: private Vite application using the package.
+- `fixtures`: synthetic scenes shared by the playground and tests.
 - `scripts`: small TypeScript CLIs for cleanup and distribution checks.
 - `.github/workflows/ci.yml`: same checks as local development.
 
@@ -69,11 +73,29 @@ const message: MessageView = {
 };
 ```
 
-The renderer uses `@arcscord/discord-ui/styles.css`. Styles are scoped to `.arcscord-discord-ui` and `dui-` classes; they include no reset
-or remote fonts. Consumers do not need Tailwind.
+The renderer uses `@arcscord/discord-ui/styles.css`. Styles are scoped to
+`.arcscord-discord-ui` and `dui-` classes; they include no reset or remote fonts.
+Consumers do not need Tailwind.
+
+## Content and scope
+
+The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
+image galleries, embeds and unavailable-media states. The renderer has no payload
+adapter, Components V2 controls, reactions, threads or channel view yet.
+
+Mentions and custom emoji resources are supplied through `DiscordUI.entities`.
+Use `allowRemoteMedia={false}` to block remote avatars, emoji and message/embed
+images. Relative timestamps use the message timestamp, or `referenceTime` when
+explicitly supplied. Standalone Markdown defaults to a fixed epoch without a clock.
+
+Code highlighting is opt-in: import `renderHighlightedCode` from
+`@arcscord/discord-ui/highlight` and pass it as `DiscordUI.renderCode`. The main
+entry does not import lowlight or the six grammars. Unknown languages stay escaped
+plain text. Supported grammars: JavaScript, TypeScript, JSON, CSS, Bash and Python.
 
 ## License and provenance
 
-MIT, copyright 2026 Arcoz0308. No renderer code, styles, tests or assets from the
-AutoThreads upstream fork are included. Record provenance and include required
-notices if third-party fragments are adapted in future work.
+MIT, copyright 2026 Arcoz0308. Markdown AST rendering and optional highlighting
+adapt AutoThreads logic. See `packages/discord-ui/THIRD_PARTY_NOTICES` for provenance
+and full dependency/upstream notices. Styles and synthetic SVG fixtures are new.
+The notices are included in the package and available from the playground footer.

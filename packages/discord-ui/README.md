@@ -28,4 +28,43 @@ fallback on invalid URLs or load failure. There are no Discord API calls.
 The React entry is a client boundary compatible with server prerendering; import
 models with `import type`. CSS is precompiled, with no Tailwind setup or global reset.
 
+## Rich content
+
+Use `body: { kind: "markdown", content: "**Hello**" }` for Discord Markdown.
+`text` remains literal. Optional `message.media` and `message.embeds` render images
+and embeds. Items and embed fields have stable string IDs. Public primitives also
+include `Markdown`, `Mention`, `Emoji`, `Spoiler`, `Media`, `MediaGallery` and `Embed`.
+
+`DiscordUI` accepts `entities`, `referenceTime`, `allowRemoteMedia`, `labels` and
+`renderCode`. Entity names and custom emoji URLs come from the caller. Media accepts
+HTTP(S), safe root-relative paths, HTTP(S)-origin blob URLs and base64 raster images.
+Setting `allowRemoteMedia={false}` blocks HTTP(S) image resources, including avatars
+and emoji. Links remain separately limited to HTTP(S). No HTML is injected.
+
+Spoilers support keyboard reveal/hide and leave hidden media unmounted. Failed
+images and emojis have fallbacks. Gallery images preserve natural proportions.
+Relative timestamps use the message timestamp unless an explicit reference clock
+is supplied. Standalone `Markdown` uses a fixed epoch when no clock is supplied.
+UI labels can be overridden separately from date locale.
+
+Syntax highlighting is optional:
+
+```tsx
+import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
+
+<DiscordUI renderCode={renderHighlightedCode}>{/* messages */}</DiscordUI>;
+```
+
+The optional entry includes JavaScript, TypeScript, JSON, CSS, Bash and Python.
+Unknown languages remain escaped plain text. The main renderer does not load these
+grammars. Consumers that omit this entry can omit highlighting entirely.
+
+Current scope: messages, basic Markdown lists, image media and embeds. Nested lists,
+exact Discord gallery parity, video/audio, payload adapters, Components V2, reactions
+and threads are not implemented. Next.js/Docusaurus integration builds remain pending.
+
+Markdown/highlighting logic is adapted from AutoThreads; see `THIRD_PARTY_NOTICES`
+for the upstream BF-GO MIT notice and dependency licenses. The styles and example
+assets are newly authored.
+
 MIT © 2026 Arcoz0308.

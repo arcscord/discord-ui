@@ -19,6 +19,9 @@ try {
     "dist/index.mjs",
     "dist/index.d.mts",
     "dist/styles.css",
+    "dist/highlight.mjs",
+    "dist/highlight.d.mts",
+    "THIRD_PARTY_NOTICES",
     "LICENSE",
     "README.md",
   ]) {
@@ -41,6 +44,8 @@ import { readFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Message } from "@arcscord/discord-ui";
+import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
+assert(renderToStaticMarkup(renderHighlightedCode("const n = 1", "ts")).includes("hljs-keyword"));
 const html = renderToStaticMarkup(createElement(Message, { message: {
   id: "smoke", author: { id: "author", displayName: "Packed author" },
   timestamp: "2026-10-29T18:00:00Z", body: { kind: "text", content: "Packed message" },

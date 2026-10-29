@@ -9,9 +9,9 @@ export type MessageFrameProps = {
 };
 
 export function MessageFrame({ avatar, header, footer, children }: MessageFrameProps) {
-  const { theme } = useDisplayOptions();
+  const { theme, scoped } = useDisplayOptions();
   return (
-    <article className="arcscord-discord-ui dui-message" data-theme={theme}>
+    <article className={`${scoped ? "" : "arcscord-discord-ui "}dui-message`} data-theme={theme}>
       <div className="dui-message-avatar">{avatar}</div>
       <div className="dui-message-main">
         {header}

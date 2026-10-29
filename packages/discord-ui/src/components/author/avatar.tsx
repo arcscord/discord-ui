@@ -1,6 +1,7 @@
 import type { MessageAuthor } from "../../model/message";
 import { useState } from "react";
 import { mediaUrl } from "../../utils/urls";
+import { useDisplayOptions } from "../display-context";
 
 function AvatarImage({ author, source }: { author: MessageAuthor; source: string | undefined }) {
   const [failed, setFailed] = useState(false);
@@ -14,6 +15,7 @@ function AvatarImage({ author, source }: { author: MessageAuthor; source: string
 }
 
 export function Avatar({ author }: { author: MessageAuthor }) {
-  const source = mediaUrl(author.avatarUrl);
+  const { allowRemoteMedia } = useDisplayOptions();
+  const source = mediaUrl(author.avatarUrl, allowRemoteMedia);
   return <AvatarImage key={source} author={author} source={source} />;
 }
