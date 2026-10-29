@@ -1,14 +1,35 @@
-/* Initial scoped tokens. Component styles will be added with the renderer. */
+/* All tokens and selectors belong to Discord UI; no global reset or font request. */
 .arcscord-discord-ui {
   --discord-ui-background: #313338;
   --discord-ui-text: #dbdee1;
   --discord-ui-muted: #949ba4;
   --discord-ui-accent: #5865f2;
+  --discord-ui-surface: #2b2d31;
+  --discord-ui-border: #1e1f22;
+  color: var(--discord-ui-text);
+  font-family: "gg sans", "Noto Sans", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  text-align: left;
+  color-scheme: dark;
 }
-
 .arcscord-discord-ui[data-theme="light"] {
   --discord-ui-background: #fff;
   --discord-ui-text: #313338;
   --discord-ui-muted: #5c5e66;
   --discord-ui-accent: #4752c4;
+  --discord-ui-surface: #f2f3f5;
+  --discord-ui-border: #d8d9dc;
+  color-scheme: light;
 }
+.dui-message { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 18px 20px; background: var(--discord-ui-background); }
+.dui-message-main { min-width: 0; }
+.dui-message-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 0 0 3px; }
+.dui-avatar { display: inline-flex; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; align-items: center; justify-content: center; background: #5865f2; color: white; font-size: 13px; font-weight: 600; }
+.dui-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.dui-author { display: inline-flex; align-items: center; gap: 5px; }
+.dui-author-name { font-weight: 600; }
+.dui-bot-badge { border-radius: 3px; padding: 0 4px; font-size: 10px; line-height: 16px; background: #5865f2; color: #fff; font-weight: 600; }
+.dui-timestamp { font-size: 12px; color: var(--discord-ui-muted, #949ba4); }
+.dui-message-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 480px) { .dui-message { padding: 14px 12px; gap: 10px; } }

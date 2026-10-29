@@ -1,1 +1,12 @@
+export { Author } from "./components/author/author";
+export { Avatar } from "./components/author/avatar";
+export { DiscordUI } from "./components/discord-ui";
+export type { DiscordUIProps } from "./components/discord-ui";
+export type { DisplayOptions } from "./components/display-context";
+export { Message } from "./components/message/message";
+export { MessageContent } from "./components/message/message-content";
+export { MessageFrame } from "./components/message/message-frame";
+export type { MessageFrameProps } from "./components/message/message-frame";
+export { MessageHeader } from "./components/message/message-header";
+export { MessageTimestamp } from "./components/message/message-timestamp";
 export type { MessageAuthor, MessageView, TextMessageBody } from "./model/message";

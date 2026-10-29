@@ -26,18 +26,27 @@ try {
   }
   assert(!entries.some(entry => entry.startsWith("package/src/")), "Sources should not be required by consumers.");
   const typescript = JSON.parse(await readFile(join(root, "node_modules/typescript/package.json"), "utf8")) as { version: string };
+  const reactTypes = JSON.parse(await readFile(join(root, "node_modules/@types/react/package.json"), "utf8")) as { version: string };
   const react = JSON.parse(await readFile(join(root, "node_modules/react/package.json"), "utf8")) as { version: string };
   await writeFile(join(temporary, "package.json"), JSON.stringify({
     private: true,
     type: "module",
-    dependencies: { "@arcscord/discord-ui": `file:${archive}`, "react": react.version },
-    devDependencies: { typescript: typescript.version },
+    dependencies: { "@arcscord/discord-ui": `file:${archive}`, "react": react.version, "react-dom": react.version },
+    devDependencies: { "typescript": typescript.version, "@types/react": reactTypes.version },
   }));
   await writeFile(join(temporary, "pnpm-workspace.yaml"), "packages: []\n");
   await writeFile(join(temporary, "smoke.mjs"), `
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-await import("@arcscord/discord-ui");
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Message } from "@arcscord/discord-ui";
+const html = renderToStaticMarkup(createElement(Message, { message: {
+  id: "smoke", author: { id: "author", displayName: "Packed author" },
+  timestamp: "2026-10-29T18:00:00Z", body: { kind: "text", content: "Packed message" },
+}}));
+assert(html.includes("Packed author"));
+assert(html.includes("Packed message"));
 const css = await readFile(new URL(import.meta.resolve("@arcscord/discord-ui/styles.css")), "utf8");
 assert(css.includes(".arcscord-discord-ui"));
 assert(css.includes('[data-theme="light"]'));

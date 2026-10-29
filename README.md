@@ -6,8 +6,8 @@ AutoThreads and the Arcscord documentation. Package: `@arcscord/discord-ui`.
 ## Status
 
 Repository foundation only, version `0.0.0`, not published. The package currently
-exports serializable message types and scoped CSS tokens. There is no React
-renderer, payload adapter or playground yet. These will be added in subsequent iterations.
+exports composable message primitives, serializable types and scoped light/dark styles.
+The payload adapter and playground will be added in subsequent iterations.
 No AutoThreads or Arcscord runtime dependency is included.
 
 ## Development
@@ -66,9 +66,8 @@ const message: MessageView = {
 };
 ```
 
-The future renderer will use `@arcscord/discord-ui/styles.css`. This file currently
-contains only theme tokens scoped to `.arcscord-discord-ui`; it includes no reset,
-remote fonts or component styles. Consumers do not need Tailwind.
+The renderer uses `@arcscord/discord-ui/styles.css`. Styles are scoped to `.arcscord-discord-ui` and `dui-` classes; they include no reset
+or remote fonts. Consumers do not need Tailwind.
 
 ## License and provenance
 

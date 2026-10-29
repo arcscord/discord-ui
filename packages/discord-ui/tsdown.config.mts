@@ -2,6 +2,7 @@ import { copyFile } from "node:fs/promises";
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
+  banner: { js: "\"use client\";" },
   entry: ["src/index.ts"],
   format: "esm",
   platform: "browser",

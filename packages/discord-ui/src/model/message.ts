@@ -4,6 +4,8 @@ export type MessageAuthor = {
   displayName: string;
   avatarUrl?: string;
   bot?: boolean;
+  verified?: boolean;
+  color?: string;
 };
 
 /** Plain text is the first supported body; richer variants will extend this union. */

@@ -1,27 +1,31 @@
 # @arcscord/discord-ui
 
-Foundation for an independent React library displaying Discord messages.
-Version `0.0.0` is not published. The renderer and playground are planned.
+Composable React 19 primitives for Discord messages. Version `0.0.0`, unpublished.
 
-Currently available:
+```tsx
+import { DiscordUI, Message } from "@arcscord/discord-ui";
+import "@arcscord/discord-ui/styles.css";
 
-- `MessageView`, `MessageAuthor` and `TextMessageBody` TypeScript types.
-- `@arcscord/discord-ui/styles.css`, scoped light/dark theme tokens.
-- Compiled ESM and declarations, with React 19 declared as an external peer.
-
-```ts
-import type { MessageView } from "@arcscord/discord-ui";
-
-const message: MessageView = {
-  id: "example",
-  author: { id: "author", displayName: "Example" },
-  timestamp: "2026-10-29T18:00:00Z",
-  body: { kind: "text", content: "Hello" },
-};
+<DiscordUI theme="dark" locale="en-US" timeZone="UTC">
+  <Message message={{
+    id: "example",
+    author: { id: "author", displayName: "Example", bot: true },
+    timestamp: "2026-10-29T18:00:00Z",
+    body: { kind: "text", content: "Hello" },
+  }}
+  />
+</DiscordUI>;
 ```
 
-The timestamp is supplied by the caller. The types describe display data, not a
-Discord payload validator. No Discord API calls or runtime framework dependencies
-are included. CSS contains tokens only; there is no component to render yet.
+Compose `MessageFrame` using explicit `avatar`, `header`, `footer` and `children`
+props. Public primitives: `Avatar`, `Author`, `MessageHeader`, `MessageTimestamp`,
+`MessageContent`. They share the same implementation as `Message`.
+
+`DiscordUI` controls theme, locale and timezone. Defaults are dark, en-US and UTC.
+Dates require an explicit timezone and are deterministic during SSR. Avatars use a
+fallback on invalid URLs or load failure. There are no Discord API calls.
+
+The React entry is a client boundary compatible with server prerendering; import
+models with `import type`. CSS is precompiled, with no Tailwind setup or global reset.
 
 MIT © 2026 Arcoz0308.
