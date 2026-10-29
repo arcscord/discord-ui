@@ -1,20 +1,23 @@
+import type { MessageView } from "@arcscord/discord-ui";
 import { DiscordUI, Message } from "@arcscord/discord-ui";
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useState } from "react";
-import { basicMessage, demoEntities, scenarios } from "../../../fixtures/messages";
+import { basicMessage, demoEntities, editableContent, scenarios } from "../../../fixtures/messages";
 
 export function App() {
   const [scenario, setScenario] = useState<keyof typeof scenarios>("basic");
   const [revision, setRevision] = useState(0);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [width, setWidth] = useState(760);
-  const [content, setContent] = useState(basicMessage.body.content);
+  const [content, setContent] = useState(() => editableContent(basicMessage));
   const [copyStatus, setCopyStatus] = useState("");
   const selected = scenarios[scenario].message;
-  const message = {
-    ...selected,
-    body: { ...selected.body, content },
-  };
+  const message: MessageView = selected.body.kind === "components-v2"
+    ? selected
+    : {
+        ...selected,
+        body: { ...selected.body, content },
+      };
 
   async function copyData(): Promise<void> {
     try {
@@ -48,7 +51,7 @@ export function App() {
               onChange={(event) => {
                 const next = event.target.value as keyof typeof scenarios;
                 setScenario(next);
-                setContent(scenarios[next].message.body.content);
+                setContent(editableContent(scenarios[next].message));
                 setCopyStatus("");
               }}
             >
@@ -68,12 +71,19 @@ export function App() {
               </span>
             </label>
             <input id="width" type="range" min="320" max="960" step="20" value={width} onChange={event => setWidth(Number(event.target.value))} />
-            <label htmlFor="content">Contenu</label>
-            <textarea id="content" value={content} rows={8} onChange={event => setContent(event.target.value)} />
+            {selected.body.kind === "components-v2"
+              ? <p className="scenario-note">Ce scénario assemble les primitives V2. Sa structure complète est visible dans les données JSON.</p>
+              : (
+                  <>
+                    <label htmlFor="content">Contenu</label>
+                    <textarea id="content" value={content} rows={8} onChange={event => setContent(event.target.value)} />
+                  </>
+                )}
+
             <button
               type="button"
               onClick={() => {
-                setContent(selected.body.content);
+                setContent(editableContent(selected));
                 setRevision(value => value + 1);
                 setCopyStatus("");
               }}

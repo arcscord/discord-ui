@@ -1,5 +1,7 @@
 export { Author } from "./components/author/author";
 export { Avatar } from "./components/author/avatar";
+export { MessageComponents } from "./components/components-v2/message-components";
+export { ActionRow, Container, LinkButton, Section, Separator, TextDisplay, Thumbnail } from "./components/components-v2/primitives";
 export { Emoji } from "./components/content/emoji";
 export { Markdown } from "./components/content/markdown";
 export type { MarkdownProps } from "./components/content/markdown";
@@ -18,5 +20,6 @@ export { MessageFrame } from "./components/message/message-frame";
 export type { MessageFrameProps } from "./components/message/message-frame";
 export { MessageHeader } from "./components/message/message-header";
 export { MessageTimestamp } from "./components/message/message-timestamp";
+export type { ActionRowView, ComponentsV2Body, ContainerChild, ContainerView, GalleryView, LinkButtonView, MessageComponent, SectionView, SeparatorView, TextDisplayView, ThumbnailView } from "./model/components";
 export type { EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities } from "./model/content";
 export type { MessageAuthor, MessageView, TextMessageBody } from "./model/message";

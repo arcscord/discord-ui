@@ -59,12 +59,23 @@ The optional entry includes JavaScript, TypeScript, JSON, CSS, Bash and Python.
 Unknown languages remain escaped plain text. The main renderer does not load these
 grammars. Consumers that omit this entry can omit highlighting entirely.
 
-Current scope: messages, basic Markdown lists, image media and embeds. Nested lists,
-exact Discord gallery parity, video/audio, payload adapters, Components V2, reactions
-and threads are not implemented. Next.js/Docusaurus integration builds remain pending.
+Components V2 use `body: { kind: "components-v2", components: [...] }` with a typed,
+serializable view model. Supported primitives: `Container`, `Section`, `TextDisplay`,
+`Thumbnail`, `MediaGallery`, `Separator`, `ActionRow` and `LinkButton`.
+`MessageComponents` renders this model independently. A V2 body cannot include
+classic embeds or message-level media. This is a display model, not a Discord API
+payload adapter or validator. Disabled/unsafe link buttons never render an href.
+
+Styles are adapted from the AutoThreads renderer, preserving the original cascade
+and its local corrections. They are mapped to this package's classes and tokens and
+inlined into the distributed stylesheet; no source CSS imports remain. Text spoilers
+keep their natural dimensions under a mask. Hidden media remains unmounted.
+
+Current scope: messages, basic Markdown lists, image media, embeds and the V2 subset
+above. Nested lists, exact Discord gallery parity, video/audio, payload adapters,
+custom-id button interactions, reactions and threads are not implemented. Next.js/Docusaurus integration builds remain pending.
 
 Markdown/highlighting logic is adapted from AutoThreads; see `THIRD_PARTY_NOTICES`
-for the upstream BF-GO MIT notice and dependency licenses. The styles and example
-assets are newly authored.
+for the upstream BF-GO MIT notice and dependency licenses. Styles and the external-link icon also adapt the renderer. Example assets are new.
 
 MIT © 2026 Arcoz0308.

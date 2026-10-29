@@ -1,5 +1,6 @@
 import type { MessageView } from "../../model/message";
 import { Avatar } from "../author/avatar";
+import { MessageComponents } from "../components-v2/message-components";
 import { Markdown } from "../content/markdown";
 import { useDisplayOptions } from "../display-context";
 import { Embed } from "../embed/embed";
@@ -13,9 +14,11 @@ export function Message({ message }: { message: MessageView }) {
   const referenceTime = reference ?? message.timestamp;
   return (
     <MessageFrame avatar={<Avatar author={message.author} />} header={<MessageHeader author={message.author} timestamp={message.timestamp} />}>
-      {message.body.kind === "markdown"
-        ? <Markdown content={message.body.content} referenceTime={referenceTime} />
-        : <MessageContent content={message.body.content} />}
+      {message.body.kind === "components-v2"
+        ? <MessageComponents components={message.body.components} referenceTime={referenceTime} />
+        : message.body.kind === "markdown"
+          ? <Markdown content={message.body.content} referenceTime={referenceTime} />
+          : <MessageContent content={message.body.content} />}
       {message.media?.length
         ? <MediaGallery items={message.media} />
         : null}

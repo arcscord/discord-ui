@@ -1,3 +1,4 @@
+import type { ComponentsV2Body } from "./components";
 import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
 
 /** Display metadata supplied by the application, without Discord API calls. */
@@ -22,7 +23,7 @@ export type MessageView = {
   author: MessageAuthor;
   /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */
   timestamp: string;
-  body: TextMessageBody | MarkdownMessageBody;
-  media?: MediaView[];
-  embeds?: EmbedView[];
-};
+} & (
+  | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; embeds?: EmbedView[] }
+  | { body: ComponentsV2Body; media?: never; embeds?: never }
+);

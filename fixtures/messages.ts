@@ -97,11 +97,112 @@ export const unavailableMessage: MessageView = {
   ],
 };
 
+export const componentsV2Message: MessageView = {
+  id: "message-components-v2",
+  author: basicMessage.author,
+  timestamp: basicMessage.timestamp,
+  body: {
+    kind: "components-v2",
+    components: [
+      {
+        id: "v2-card",
+        kind: "container",
+        accentColor: "#5865f2",
+        components: [
+          { id: "v2-title", kind: "text-display", content: "# Components V2" },
+          {
+            id: "v2-header",
+            kind: "section",
+            components: [
+              { id: "v2-intro", kind: "text-display", content: "Un conteneur, une section, une galerie et des liens.\nLes styles sont repris du renderer **AutoThreads**." },
+            ],
+            accessory: {
+              id: "v2-thumbnail",
+              kind: "thumbnail",
+              media: { id: "v2-icon", url: "/emoji.svg", alt: "Symbole du projet" },
+            },
+          },
+          { id: "v2-divider-1", kind: "separator" },
+          {
+            id: "v2-gallery",
+            kind: "media-gallery",
+            items: [
+              {
+                id: "v2-landscape",
+                url: "/landscape.svg",
+                alt: "Montagnes dans une galerie V2",
+                width: 600,
+                height: 320,
+              },
+              {
+                id: "v2-hidden",
+                url: "/landscape.svg",
+                alt: "Image V2 sous spoiler",
+                width: 600,
+                height: 320,
+                spoiler: true,
+              },
+            ],
+          },
+          { id: "v2-divider-2", kind: "separator" },
+          {
+            id: "v2-link-section",
+            kind: "section",
+            components: [
+              { id: "v2-link-copy", kind: "text-display", content: "### Aller plus loin\nUn bouton peut aussi servir d’accessoire de section." },
+            ],
+            accessory: {
+              id: "v2-section-link",
+              kind: "link-button",
+              label: "Documentation",
+              url: "https://arcscord.dev",
+            },
+          },
+          {
+            id: "v2-actions",
+            kind: "action-row",
+            buttons: [
+              {
+                id: "v2-source",
+                kind: "link-button",
+                label: "Code source",
+                url: "https://github.com/arcscord/discord-ui",
+                emoji: { name: "arc", image: "/emoji.svg" },
+              },
+              {
+                id: "v2-disabled",
+                kind: "link-button",
+                label: "Bientôt disponible",
+                url: "https://arcscord.dev",
+                disabled: true,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "v2-plain-card",
+        kind: "container",
+        components: [
+          { id: "v2-plain-copy", kind: "text-display", content: "Un conteneur **sans couleur d’accent** garde son contour discret." },
+        ],
+      },
+    ],
+  },
+};
+
+export function editableContent(message: MessageView): string {
+  return message.body.kind === "components-v2"
+    ? ""
+    : message.body.content;
+}
+
 export const scenarios = {
   basic: { label: "Message simple", message: basicMessage },
   markdown: { label: "Markdown et mentions", message: markdownMessage },
   media: { label: "Médias et spoilers", message: mediaMessage },
   embed: { label: "Embed complet", message: embedMessage },
+  components: { label: "Components V2", message: componentsV2Message },
   unavailable: { label: "Média indisponible", message: unavailableMessage },
 };
 

@@ -11,5 +11,5 @@ it("keeps a text message serializable without losing author or timezone metadata
 
   expect(JSON.parse(JSON.stringify(message))).toEqual(message);
   expectTypeOf(message).toExtend<MessageView>();
-  expectTypeOf<MessageView["body"]["kind"]>().toEqualTypeOf<"text" | "markdown">();
+  expectTypeOf<MessageView["body"]["kind"]>().toEqualTypeOf<"text" | "markdown" | "components-v2">();
 });

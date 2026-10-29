@@ -81,7 +81,8 @@ Consumers do not need Tailwind.
 
 The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
 image galleries, embeds and unavailable-media states. The renderer has no payload
-adapter, Components V2 controls, reactions, threads or channel view yet.
+adapter, reactions, threads or channel view yet. A Components V2 scene demonstrates
+containers, sections, thumbnails, galleries, separators and link buttons.
 
 Mentions and custom emoji resources are supplied through `DiscordUI.entities`.
 Use `allowRemoteMedia={false}` to block remote avatars, emoji and message/embed
@@ -97,5 +98,6 @@ plain text. Supported grammars: JavaScript, TypeScript, JSON, CSS, Bash and Pyth
 
 MIT, copyright 2026 Arcoz0308. Markdown AST rendering and optional highlighting
 adapt AutoThreads logic. See `packages/discord-ui/THIRD_PARTY_NOTICES` for provenance
-and full dependency/upstream notices. Styles and synthetic SVG fixtures are new.
+and full dependency/upstream notices. The renderer styles are adapted from AutoThreads and shipped as standalone CSS.
+Synthetic SVG fixtures are new.
 The notices are included in the package and available from the playground footer.

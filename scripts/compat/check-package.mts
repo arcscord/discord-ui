@@ -55,6 +55,8 @@ assert(html.includes("Packed message"));
 const css = await readFile(new URL(import.meta.resolve("@arcscord/discord-ui/styles.css")), "utf8");
 assert(css.includes(".arcscord-discord-ui"));
 assert(css.includes('[data-theme="light"]'));
+assert(css.includes(".dui-container"));
+assert(!css.includes("@import"), "Published CSS must not reference source stylesheets.");
 `);
   await writeFile(join(temporary, "types.mts"), `
 import type { MessageView } from "@arcscord/discord-ui";
@@ -66,6 +68,9 @@ const message: MessageView = {
 message.id = 123;
 // @ts-expect-error Unsupported body kinds must not silently pass.
 message.body = { kind: "unknown", content: "Hello" };
+// @ts-expect-error V2 messages cannot mix in classic embeds.
+const invalidV2: MessageView = { id: "v2", author: message.author, timestamp: message.timestamp, body: { kind: "components-v2", components: [] }, embeds: [] };
+void invalidV2;
 void message;
 `);
   await pnpm(["install", "--ignore-scripts"], temporary);
