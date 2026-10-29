@@ -1,8 +1,10 @@
-import type { MessageView, ThemeName } from "@arcscord/discord-ui";
+import type { ThemeName } from "@arcscord/discord-ui";
 import { DiscordUI, Message, themes } from "@arcscord/discord-ui";
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useState } from "react";
 import { basicMessage, demoEntities, editableContent, scenarios } from "../../../fixtures/messages";
+import { JsonEditor } from "./json-editor";
+import { createMessageEditor, parseMessageJson, serializeMessage } from "./message-json";
 
 const themeLabels: Record<ThemeName, string> = { light: "Clair", ash: "Ash", dark: "Sombre" };
 
@@ -11,19 +13,33 @@ export function App() {
   const [revision, setRevision] = useState(0);
   const [theme, setTheme] = useState<ThemeName>("dark");
   const [width, setWidth] = useState(760);
-  const [content, setContent] = useState(() => editableContent(basicMessage));
+  const [editor, setEditor] = useState(() => createMessageEditor(basicMessage));
   const [copyStatus, setCopyStatus] = useState("");
   const selected = scenarios[scenario].message;
-  const message: MessageView = selected.body.kind === "components-v2"
-    ? selected
-    : {
-        ...selected,
-        body: { ...selected.body, content },
-      };
+  const message = editor.message;
+  const content = editableContent(message);
+
+  function changeJson(draft: string): void {
+    const result = parseMessageJson(draft);
+    setEditor(previous => result.ok
+      ? { message: result.message, draft, error: null }
+      : { ...previous, draft, error: result.error });
+    setCopyStatus("");
+  }
+
+  function changeContent(content: string): void {
+    if (message.body.kind === "components-v2")
+      return;
+    setEditor(createMessageEditor({
+      ...message,
+      body: { ...message.body, content },
+    }));
+    setCopyStatus("");
+  }
 
   async function copyData(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(message, null, 2));
+      await navigator.clipboard.writeText(editor.draft);
       setCopyStatus("Données copiées");
     }
     catch { setCopyStatus("Copie indisponible : sélectionnez les données ci-dessous."); }
@@ -53,7 +69,8 @@ export function App() {
               onChange={(event) => {
                 const next = event.target.value as keyof typeof scenarios;
                 setScenario(next);
-                setContent(editableContent(scenarios[next].message));
+                setEditor(createMessageEditor(scenarios[next].message));
+                setRevision(value => value + 1);
                 setCopyStatus("");
               }}
             >
@@ -72,19 +89,19 @@ export function App() {
               </span>
             </label>
             <input id="width" type="range" min="320" max="960" step="20" value={width} onChange={event => setWidth(Number(event.target.value))} />
-            {selected.body.kind === "components-v2"
-              ? <p className="scenario-note">Ce scénario assemble les primitives V2. Sa structure complète est visible dans les données JSON.</p>
+            {message.body.kind === "components-v2"
+              ? <p className="scenario-note">Modifiez les composants V2 dans l’éditeur JSON.</p>
               : (
                   <>
                     <label htmlFor="content">Contenu</label>
-                    <textarea id="content" value={content} rows={8} onChange={event => setContent(event.target.value)} />
+                    <textarea id="content" value={content} rows={8} disabled={Boolean(editor.error)} onChange={event => changeContent(event.target.value)} />
                   </>
                 )}
 
             <button
               type="button"
               onClick={() => {
-                setContent(editableContent(selected));
+                setEditor(createMessageEditor(selected));
                 setRevision(value => value + 1);
                 setCopyStatus("");
               }}
@@ -121,12 +138,17 @@ export function App() {
                 </DiscordUI>
               </div>
             </div>
-            <div className="data-heading">
-              <h2>Données</h2>
-              <button type="button" onClick={copyData}>Copier le JSON</button>
-            </div>
-            <p role="status" className="copy-status">{copyStatus}</p>
-            <pre className="data-output"><code>{JSON.stringify(message, null, 2)}</code></pre>
+            <JsonEditor
+              draft={editor.draft}
+              error={editor.error}
+              copyStatus={copyStatus}
+              onChange={changeJson}
+              onCopy={copyData}
+              onFormat={() => setEditor(previous => ({
+                ...previous,
+                draft: serializeMessage(previous.message),
+              }))}
+            />
           </section>
         </div>
       </main>

@@ -88,6 +88,11 @@ and the preset palette table.
 
 ## Content and scope
 
+The playground includes a live JSON editor for the message view model, with syntax
+and shape diagnostics, last-valid-preview retention, formatting and copy. It stays
+synchronized with the content editor. Reset restores the selected fixture; switching
+scenarios loads that fixture. These checks are for display, not Discord publication.
+
 The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
 image galleries, embeds and unavailable-media states. The renderer has no payload
 adapter, reactions, threads or channel view yet. A Components V2 scene demonstrates
