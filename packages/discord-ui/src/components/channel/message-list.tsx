@@ -2,9 +2,9 @@ import type { MessageView } from "../../model/message";
 import { useDisplayOptions } from "../display-context";
 import { Message } from "../message/message";
 
-export type MessageListProps = { messages: readonly MessageView[]; showDateSeparators?: boolean };
+export type MessageListProps = { messages: readonly MessageView[]; showDateSeparators?: boolean; showThreadPreviews?: boolean | undefined; onThreadOpen?: ((id: string) => void) | undefined; activeThreadId?: string | undefined; availableThreadIds?: readonly string[] | undefined };
 
-export function MessageList({ messages, showDateSeparators = true }: MessageListProps) {
+export function MessageList({ messages, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps) {
   const { locale, timeZone, labels } = useDisplayOptions();
   const keyFormat = new Intl.DateTimeFormat("en-CA", {
     year: "numeric",
@@ -34,7 +34,14 @@ export function MessageList({ messages, showDateSeparators = true }: MessageList
             {showDate
               ? <div className="dui-date-separator"><time dateTime={dateKey}>{labelFormat.format(date)}</time></div>
               : null}
-            <Message message={message} />
+            <Message
+              message={message}
+              showThreadPreview={showThreadPreviews}
+              onThreadOpen={message.thread && (!availableThreadIds || availableThreadIds.includes(message.thread.id))
+                ? onThreadOpen
+                : undefined}
+              activeThreadId={activeThreadId}
+            />
           </li>
         );
       })}

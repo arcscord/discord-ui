@@ -1,4 +1,4 @@
-export function formatDiscordTimestamp(seconds: string, format: string, options: { locale: string; timeZone: string; referenceTime: string }): { dateTime: string; label: string } | undefined {
+export function formatDiscordTimestamp(seconds: string, format: string, options: { locale: string; timeZone: string; referenceTime: string; relativeStyle?: "long" | "short" | "narrow" }): { dateTime: string; label: string } | undefined {
   const value = Number(seconds);
   const date = new Date(value * 1000);
   if (!Number.isFinite(value) || !Number.isFinite(date.valueOf()))
@@ -20,7 +20,7 @@ export function formatDiscordTimestamp(seconds: string, format: string, options:
       ["second", 1],
     ];
     const [unit, duration] = units.find(([, duration]) => Math.abs(difference) >= duration) ?? ["second", 1];
-    label = new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(Math.round(difference / duration), unit);
+    label = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: options.relativeStyle ?? "long" }).format(Math.round(difference / duration), unit);
   }
   else {
     const formats: Record<string, Intl.DateTimeFormatOptions> = {

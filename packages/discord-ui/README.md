@@ -144,7 +144,7 @@ keep their natural dimensions under a mask. Hidden media remains unmounted.
 
 Current scope: messages, basic Markdown lists, image media, embeds and the V2 subset
 above. Nested lists, exact Discord gallery parity, video/audio, payload adapters,
-custom-id button interactions, reactions and threads are not implemented. Next.js/Docusaurus integration builds remain pending.
+custom-id button interactions and reactions are not implemented. Next.js/Docusaurus integration builds remain pending.
 
 Markdown/highlighting logic is adapted from AutoThreads; see `THIRD_PARTY_NOTICES`
 for the upstream BF-GO MIT notice and dependency licenses. Styles and the external-link icon also adapt the renderer. Example assets are new.
@@ -194,3 +194,36 @@ at rest and the container outline color on focus, without an additional outline.
 The playground's channel scenario includes multiple authors, an image and local
 simulated sending. Its JSON editor accepts the whole channel model, including
 message arrays, while preserving the last valid preview on errors.
+
+
+## Threads
+
+A message can carry an optional `thread: ThreadSummaryView` with `id`, `name`,
+`messageCount` and an optional `lastMessage` containing author, plain-text content
+and timestamp. `ThreadPreview` renders this card directly; `Message` adds it and
+its decorative avatar connector automatically. The card uses `containerSurface`
+and `containerOutline` and truncates the last-message text on a single line.
+
+Supply `onThreadOpen(id)` to `Message` or `MessageList` to make a summary interactive.
+Without a handler the summary is a read-only card. Relative time uses `referenceTime`
+from `DiscordUI`; without an explicit clock it defaults to the last-message timestamp
+for deterministic rendering.
+
+To open threads within `ChannelView`, add a `threads: ThreadView[]` array to the
+channel. Each entry contains `id`, `name`, `parentMessageId` and its reply `messages`.
+The parent remains in `channel.messages`, where its summary references the same
+thread ID. `messageCount` counts replies, not the starter. A summary without loaded
+thread contents remains read-only. `ThreadMessageView` excludes nested thread summaries.
+
+`ChannelView` displays one thread at a time beside the channel. Below 640px of
+available width, the panel replaces the main channel until closed. It shows the
+starter and replies, opens at the bottom, and reuses the channel header and composer.
+The close button and Escape return focus to the opener. Editing JSON does not steal
+focus when a thread is removed. The optional `onThreadSend(threadId, content)` callback
+reports submissions; the consumer owns reply data, summary counters and last-message
+metadata. The playground updates all of these for its local simulation.
+
+`ThreadPanel` can also be composed directly with `thread`, optional `parentMessage`,
+`onClose` and `onSend` inside `DiscordUI`. It does not open nested thread panels.
+No Discord API calls are made. UI labels and singular/plural count text are overridable
+through `DiscordUI.labels`.

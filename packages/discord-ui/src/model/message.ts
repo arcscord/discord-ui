@@ -1,5 +1,6 @@
 import type { ComponentsV2Body } from "./components";
 import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
+import type { ThreadSummaryView } from "./thread";
 
 /** Display metadata supplied by the application, without Discord API calls. */
 export type MessageAuthor = {
@@ -18,12 +19,16 @@ export type TextMessageBody = {
 };
 
 /** Serializable display data. This is not a Discord send-payload validator. */
-export type MessageView = {
+export type MessageMetadata = {
   id: string;
   author: MessageAuthor;
   /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */
   timestamp: string;
-} & (
+};
+
+export type MessageContentView = (
   | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; embeds?: EmbedView[] }
   | { body: ComponentsV2Body; media?: never; embeds?: never }
 );
+
+export type MessageView = MessageMetadata & MessageContentView & { thread?: ThreadSummaryView };

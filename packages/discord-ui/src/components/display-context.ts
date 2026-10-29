@@ -4,7 +4,7 @@ import type { DiscordTheme, ThemeInput, ThemeOverrides } from "../themes";
 import { createContext, use } from "react";
 import { themes } from "../themes";
 
-export type UILabels = { messages: string; emptyChannel: string; messagePlaceholder: string; sendMessage: string; spoiler: string; showSpoiler: string; hideSpoiler: string; mediaUnavailable: string; invalidTimestamp: string };
+export type UILabels = { thread: string; openThread: string; closeThread: string; threadMessageSingular: string; threadMessagePlural: string; threadNoRecentMessages: string; messages: string; emptyChannel: string; messagePlaceholder: string; sendMessage: string; spoiler: string; showSpoiler: string; hideSpoiler: string; mediaUnavailable: string; invalidTimestamp: string };
 export type DisplayOptions = {
   theme: ThemeInput;
   tokens?: ThemeOverrides;
@@ -29,6 +29,12 @@ export const defaults: DisplayContextValue = {
   entities: {},
   allowRemoteMedia: true,
   labels: {
+    thread: "Thread",
+    openThread: "Open thread",
+    closeThread: "Close thread",
+    threadMessageSingular: "{count} message",
+    threadMessagePlural: "{count} messages",
+    threadNoRecentMessages: "No recent messages in this thread.",
     messages: "Messages",
     emptyChannel: "No messages yet.",
     messagePlaceholder: "Message #{channel}",

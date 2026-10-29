@@ -5,15 +5,30 @@ import { Markdown } from "../content/markdown";
 import { useDisplayOptions } from "../display-context";
 import { Embed } from "../embed/embed";
 import { MediaGallery } from "../media/media-gallery";
+import { ThreadPreview } from "../thread/thread-preview";
 import { MessageContent } from "./message-content";
 import { MessageFrame } from "./message-frame";
 import { MessageHeader } from "./message-header";
 
-export function Message({ message }: { message: MessageView }) {
+export type MessageProps = {
+  message: MessageView;
+  onThreadOpen?: ((id: string) => void) | undefined;
+  activeThreadId?: string | undefined;
+  showThreadPreview?: boolean | undefined;
+};
+
+export function Message({ message, onThreadOpen, activeThreadId, showThreadPreview = true }: MessageProps) {
   const { referenceTime: reference } = useDisplayOptions();
   const referenceTime = reference ?? message.timestamp;
   return (
-    <MessageFrame avatar={<Avatar author={message.author} />} header={<MessageHeader author={message.author} timestamp={message.timestamp} />}>
+    <MessageFrame
+      avatar={<Avatar author={message.author} />}
+      header={<MessageHeader author={message.author} timestamp={message.timestamp} />}
+      hasThread={showThreadPreview && Boolean(message.thread)}
+      footer={showThreadPreview && message.thread
+        ? <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
+        : undefined}
+    >
       {message.body.kind === "components-v2"
         ? <MessageComponents components={message.body.components} referenceTime={referenceTime} />
         : message.body.kind === "markdown"
