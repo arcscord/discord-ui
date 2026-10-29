@@ -7,7 +7,7 @@ export function MediaGallery({ items }: { items: readonly MediaView[] }) {
       ? "single"
       : "multiple"}`}
     >
-      {items.map(media => <Media key={media.id} media={media} />)}
+      {items.map(media => <div key={media.id} className="dui-media-gallery-item"><Media media={media} /></div>)}
     </div>
   );
 }

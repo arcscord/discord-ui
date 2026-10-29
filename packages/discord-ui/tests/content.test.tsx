@@ -27,9 +27,11 @@ it("renders Discord entities, formatting, lists and fenced code without injected
   expect(html).not.toContain("<img src=x");
 });
 
-it("does not expose spoilers before reveal or activate unsafe links", () => {
+it("keeps text spoilers inert under their mask and does not activate unsafe links", () => {
   const html = renderToStaticMarkup(<Markdown content="||private text|| [unsafe](javascript:alert(1))" />);
-  expect(html).not.toContain("private text");
+  expect(html).toContain("aria-hidden=\"true\"");
+  expect(html).toContain("inert");
+  expect(html).toContain("dui-revealable-text");
   expect(html).toContain("aria-expanded=\"false\"");
   expect(html).not.toContain("href=\"javascript:");
 });
@@ -119,4 +121,11 @@ it("rejects executable and protocol-relative URLs while allowing local fixture i
   expect(mediaUrl("/landscape.svg")).toBe("/landscape.svg");
   expect(mediaUrl("https://example.com/a.png", false)).toBeUndefined();
   expect(linkUrl("https://arcscord.dev")).toBe("https://arcscord.dev");
+});
+
+it("removes a structural line break after fenced code but preserves explicit empty lines", () => {
+  const compact = renderToStaticMarkup(<Markdown content={"```ts\nconst a = 1;\n```\nAfter"} />);
+  expect(compact).toContain("</pre>After");
+  const blank = renderToStaticMarkup(<Markdown content={"```ts\nconst a = 1;\n```\n\nAfter"} />);
+  expect(blank).toContain("</pre><br/>After");
 });

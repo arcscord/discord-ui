@@ -21,6 +21,6 @@ export function Media({ media }: { media: MediaView }) {
   const source = mediaUrl(media.url, allowRemoteMedia);
   const image = <MediaImage key={source} media={media} source={source} />;
   return media.spoiler
-    ? <div className="dui-media-spoiler"><Spoiler key={media.id} inline={false}>{image}</Spoiler></div>
+    ? <div className="dui-media-spoiler"><Spoiler key={media.id} inline={false} placeholder={<div className="dui-media-placeholder" style={{ aspectRatio: `${media.width || 16} / ${media.height || 9}`, minHeight: 0 }} />}>{image}</Spoiler></div>
     : image;
 }

@@ -7,8 +7,14 @@ packages/discord-preview at ecab95f24196c30ae4e0a21879c0c90de380b184.
 That renderer includes work derived from BF-GO/discord-message-kit 1.0.0,
 upstream revision 8bcc6c8ec5502186fea38fd680e0262c09c72747.
 The AST renderer was reorganized for explicit props, a new display context and
-composable primitives. No upstream slot implementation or stylesheet is copied.
-New styles and synthetic SVG fixtures were authored for this project.
+composable primitives. No upstream slot implementation is copied.
+
+Styles in src/styles/autothreads.css are adapted from AutoThreads src/upstream/style.css
+and src/style.css at the same revision. Supported selectors and variables are mapped
+to the new primitives, with upstream rules followed by AutoThreads corrections.
+The standalone build inlines these rules into styles.css. Components V2 primitive
+markup and the external-link SVG also adapt that renderer. Synthetic SVG fixtures
+were authored for this project.
 
 AutoThreads adaptations: Copyright (c) 2026 Arcoz0308, MIT (see LICENSE).
 BF-GO upstream notice:

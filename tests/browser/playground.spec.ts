@@ -29,7 +29,7 @@ test("renders rich content and keyboard accessible spoilers", async ({ page }) =
   await expect(page.locator("article")).toContainText("Le contenu du spoiler est révélé.");
   await expect(page.getByRole("button", { name: "Masquer le spoiler" })).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page.locator("article")).not.toContainText("Le contenu du spoiler est révélé.");
+  await expect(page.locator(".dui-revealable-text > .dui-spoiler-content")).toBeHidden();
   await page.getByLabel("Scénario", { exact: true }).selectOption("media");
   await expect(page.getByAltText("Paysage synthétique de montagnes")).toBeVisible();
   await expect(page.getByAltText("Paysage masqué")).toHaveCount(0);
@@ -64,4 +64,19 @@ test("inherits custom theme tokens from its display scope", async ({ page }) => 
     (element as HTMLElement).style.setProperty("--discord-ui-background", "rgb(20, 40, 60)");
   });
   await expect(page.locator("article")).toHaveCSS("background-color", "rgb(20, 40, 60)");
+});
+
+test("keeps text spoilers at their natural width and code block spacing compact", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Scénario", { exact: true }).selectOption("markdown");
+  const mask = page.locator(".dui-revealable-text");
+  const before = await mask.boundingBox();
+  await page.getByRole("button", { name: "Afficher le spoiler" }).click();
+  const after = await mask.boundingBox();
+  expect(before?.width).toBeGreaterThan(150);
+  expect(Math.abs((before?.width ?? 0) - (after?.width ?? 0))).toBeLessThan(1);
+  const pre = await page.locator("article pre").boundingBox();
+  const timestamp = await page.locator(".dui-inline-timestamp").boundingBox();
+  expect((timestamp?.y ?? 0) - (pre!.y + pre!.height)).toBeLessThan(16);
+  await expect(page.locator("article pre .hljs-keyword")).toHaveCSS("color", "rgb(244, 112, 103)");
 });

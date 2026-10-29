@@ -83,7 +83,33 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
   }
 
   function inline(value: string, key: string): ReactNode {
-    return parse(value, "extended").map((node, index) => render(node as Node, `${key}-${index}`));
+    const nodes = parse(value, "extended") as Node[];
+    const normalized: Node[] = [];
+    const isBreak = (node: Node | undefined) => node?.type === "br" || node?.type === "newline";
+    const isBlock = (node: Node | undefined) => [
+      "codeBlock",
+      "heading",
+      "blockQuote",
+      "subtext",
+    ].includes(node?.type ?? "");
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index];
+      if (!node)
+        continue;
+      if (!isBreak(node)) {
+        normalized.push(node);
+        continue;
+      }
+      let end = index + 1;
+      while (isBreak(nodes[end])) end++;
+      // Block margins already represent one source newline; retain intentional blank lines.
+      const structural = isBlock(nodes[index - 1]) || isBlock(nodes[end])
+        ? 1
+        : 0;
+      for (let count = index + structural; count < end; count++) normalized.push(nodes[count]!);
+      index = end - 1;
+    }
+    return normalized.map((node, index) => render(node, `${key}-${index}`));
   }
 
   // Recognize simple list blocks without touching fenced code or multiline spoilers/quotes.
