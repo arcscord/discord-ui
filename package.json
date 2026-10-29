@@ -1,0 +1,47 @@
+{
+  "name": "@arcscord/discord-ui-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=26.0.0 <27",
+    "pnpm": ">=12 <13"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "build:lib": "pnpm --filter @arcscord/discord-ui build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc -p scripts/tsconfig.json && pnpm -r --if-present run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm pack:check",
+    "pack:check": "node scripts/compat/check-package.mts",
+    "clean": "node scripts/workspace/clean.mts",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "10.0.0",
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@eslint-react/eslint-plugin": "5.28.8",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "eslint": "10.13.0",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "react": "19.3.1",
+    "tsdown": "0.23.4",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*": "eslint --fix --no-warn-ignored"
+  }
+}

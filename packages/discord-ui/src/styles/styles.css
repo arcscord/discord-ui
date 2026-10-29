@@ -1,0 +1,14 @@
+/* Initial scoped tokens. Component styles will be added with the renderer. */
+.arcscord-discord-ui {
+  --discord-ui-background: #313338;
+  --discord-ui-text: #dbdee1;
+  --discord-ui-muted: #949ba4;
+  --discord-ui-accent: #5865f2;
+}
+
+.arcscord-discord-ui[data-theme="light"] {
+  --discord-ui-background: #fff;
+  --discord-ui-text: #313338;
+  --discord-ui-muted: #5c5e66;
+  --discord-ui-accent: #4752c4;
+}
