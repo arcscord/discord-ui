@@ -1,8 +1,8 @@
 @import "./autothreads.css";
+@import "./themes.css";
 
 /* Layout adaptations for the new primitives. Visual values come from AutoThreads. */
-.arcscord-discord-ui { --discord-ui-link: #60b6f7; text-align: left; color-scheme: dark; }
-.arcscord-discord-ui[data-theme="light"] { --discord-ui-link: #0b88c3; color-scheme: light; }
+.arcscord-discord-ui { text-align: left; }
 .dui-message { background: var(--discord-ui-background); }
 .dui-message-main { min-width: 0; }
 .dui-message-header { flex-wrap: wrap; }

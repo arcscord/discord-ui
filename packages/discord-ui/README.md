@@ -28,6 +28,62 @@ fallback on invalid URLs or load failure. There are no Discord API calls.
 The React entry is a client boundary compatible with server prerendering; import
 models with `import type`. CSS is precompiled, with no Tailwind setup or global reset.
 
+
+## Themes
+
+The presets are `light`, `ash` and `dark`. Preset colors have a single source in
+`src/styles/themes.css`; `src/themes.ts` defines the typed token mapping and preset
+registry. Layout and components do not branch on individual theme names.
+
+```tsx
+<DiscordUI theme="ash" tokens={{ codeBackground: "#303348" }}>
+  <Message message={message} />
+</DiscordUI>;
+```
+
+Create a reusable theme by extending a preset or another custom theme:
+
+```tsx
+import { defineTheme } from "@arcscord/discord-ui/themes";
+
+const brand = defineTheme({
+  name: "brand",
+  extends: "ash",
+  tokens: {
+    background: "#242630",
+    focusBackground: "#303340",
+    codeBackground: "#1c1e28",
+    spoilerBackground: "#747784",
+    quoteBorder: "#606577",
+    accent: "#8da4ff",
+  },
+});
+
+<DiscordUI theme={brand}>{/* messages */}</DiscordUI>;
+```
+
+`tokens` on a scope override the theme object's tokens. Extending a custom theme
+inherits its overrides without mutating the parent. A custom name retains its base
+palette and light/dark color scheme. The `/themes` entry contains pure helpers and
+can be imported in server configuration without a React client boundary.
+
+For CSS customization, give `DiscordUI` a `className` and override variables such as
+`--discord-ui-background`, `--discord-ui-code-background`, `--discord-ui-spoiler-hidden`
+and `--discord-ui-quote-border` on that class. `ThemeTokens` and
+`themeTokenProperties` expose the full typed list, including surfaces, text, buttons
+and highlighting. Each scope owns its palette; an inner scope can use another theme.
+
+| Token | Light | Ash | Dark |
+| --- | --- | --- | --- |
+| `background` | `#FBFBFB` | `#323339` | `#1A1A1E` |
+| `focusBackground` | `#EEEEEF` | `#3E3F46` | `#29292E` |
+| `codeBackground` | `#E8E8EF` | `#343748` | `#1F202F` |
+| `spoilerBackground` | `#8E9097` | `#7D7E86` | `#666770` |
+| `quoteBorder` | `#C5C6CA` | `#595A63` | `#474850` |
+
+Code backgrounds apply to inline and fenced code. The focus surface applies on
+message hover and keyboard focus within the message.
+
 ## Rich content
 
 Use `body: { kind: "markdown", content: "**Hello**" }` for Discord Markdown.

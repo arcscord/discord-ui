@@ -1,0 +1,81 @@
+/* Preset palette source. Layout rules use tokens rather than theme names. */
+.arcscord-discord-ui {
+  color-scheme: dark;
+  --discord-ui-background: #1A1A1E;
+  --discord-ui-row-hover: #29292E;
+  --discord-ui-code-background: #1F202F;
+  --discord-ui-spoiler-hidden: #666770;
+  --discord-ui-quote-border: #474850;
+  --discord-ui-text: #dbdee1;
+  --discord-ui-muted: #949ba4;
+  --discord-ui-strong: #f2f3f5;
+  --discord-ui-link: #60b6f7;
+  --discord-ui-accent: #5865f2;
+  --discord-ui-warning: #f0b232;
+  --discord-ui-border: #343541;
+  --discord-ui-surface: #232329;
+  --discord-ui-embed-border: #34353c;
+  --discord-ui-embed-accent: #474850;
+  --discord-ui-container-surface: #232329;
+  --discord-ui-container-outline: #ffffff1f;
+  --discord-ui-secondary-bg: #9a9aa41f;
+  --discord-ui-secondary-hover: #9a9aa429;
+  --discord-ui-secondary-active: #9a9aa433;
+  --discord-ui-secondary-border: #9a9aa40a;
+  --discord-ui-spoiler-hover: color-mix(in srgb, var(--discord-ui-spoiler-hidden), white 12%);
+  --discord-ui-spoiler-revealed: #ffffff14;
+  --discord-ui-mention-color: var(--discord-ui-accent);
+  --discord-ui-mention-fill: #5865f229;
+  --discord-ui-mention-fill-hover: #5865f252;
+  --discord-ui-divider: #ffffff14;
+  --discord-ui-code-keyword: #f47067;
+  --discord-ui-code-string: #a5d6ff;
+  --discord-ui-code-number: #79c0ff;
+  --discord-ui-code-title: #d2a8ff;
+  --discord-ui-code-comment: #8b949e;
+}
+
+.arcscord-discord-ui:where([data-base-theme="ash"], :not([data-base-theme])[data-theme="ash"]) {
+  --discord-ui-background: #323339;
+  --discord-ui-row-hover: #3E3F46;
+  --discord-ui-code-background: #343748;
+  --discord-ui-spoiler-hidden: #7D7E86;
+  --discord-ui-quote-border: #595A63;
+  --discord-ui-border: #454650;
+  --discord-ui-surface: #2b2d33;
+  --discord-ui-embed-accent: #595A63;
+  --discord-ui-container-surface: #383940;
+}
+
+.arcscord-discord-ui:where([data-base-theme="light"], :not([data-base-theme])[data-theme="light"]) {
+  color-scheme: light;
+  --discord-ui-background: #FBFBFB;
+  --discord-ui-row-hover: #EEEEEF;
+  --discord-ui-code-background: #E8E8EF;
+  --discord-ui-spoiler-hidden: #8E9097;
+  --discord-ui-quote-border: #C5C6CA;
+  --discord-ui-text: #31353b;
+  --discord-ui-muted: #707885;
+  --discord-ui-strong: #1f2329;
+  --discord-ui-link: #0b88c3;
+  --discord-ui-surface: #f2f3f5;
+  --discord-ui-border: #d9dde3;
+  --discord-ui-embed-border: #8690a04d;
+  --discord-ui-embed-accent: #c8cdd5;
+  --discord-ui-container-surface: #f2f3f5;
+  --discord-ui-container-outline: #d7d9dd;
+  --discord-ui-secondary-bg: #4e505814;
+  --discord-ui-secondary-hover: #4e505820;
+  --discord-ui-secondary-active: #4e50582c;
+  --discord-ui-secondary-border: #4e505815;
+  --discord-ui-spoiler-revealed: #00000014;
+  --discord-ui-divider: #00000014;
+  --discord-ui-code-keyword: #cf222e;
+  --discord-ui-code-string: #0a3069;
+  --discord-ui-code-number: #0550ae;
+  --discord-ui-code-title: #8250df;
+  --discord-ui-code-comment: #57606a;
+}
+
+.arcscord-discord-ui[data-color-scheme="light"] { color-scheme: light; }
+.arcscord-discord-ui[data-color-scheme="dark"] { color-scheme: dark; }

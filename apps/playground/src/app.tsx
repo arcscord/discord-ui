@@ -1,13 +1,15 @@
-import type { MessageView } from "@arcscord/discord-ui";
-import { DiscordUI, Message } from "@arcscord/discord-ui";
+import type { MessageView, ThemeName } from "@arcscord/discord-ui";
+import { DiscordUI, Message, themes } from "@arcscord/discord-ui";
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useState } from "react";
 import { basicMessage, demoEntities, editableContent, scenarios } from "../../../fixtures/messages";
 
+const themeLabels: Record<ThemeName, string> = { light: "Clair", ash: "Ash", dark: "Sombre" };
+
 export function App() {
   const [scenario, setScenario] = useState<keyof typeof scenarios>("basic");
   const [revision, setRevision] = useState(0);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<ThemeName>("dark");
   const [width, setWidth] = useState(760);
   const [content, setContent] = useState(() => editableContent(basicMessage));
   const [copyStatus, setCopyStatus] = useState("");
@@ -58,9 +60,8 @@ export function App() {
               {Object.entries(scenarios).map(([id, entry]) => <option key={id} value={id}>{entry.label}</option>)}
             </select>
             <label htmlFor="theme">Thème</label>
-            <select id="theme" value={theme} onChange={event => setTheme(event.target.value as "dark" | "light")}>
-              <option value="dark">Sombre</option>
-              <option value="light">Clair</option>
+            <select id="theme" value={theme} onChange={event => setTheme(event.target.value as ThemeName)}>
+              {Object.keys(themes).map(name => <option key={name} value={name}>{themeLabels[name as ThemeName]}</option>)}
             </select>
             <label htmlFor="width">
               Largeur
@@ -95,9 +96,7 @@ export function App() {
             <div className="panel-heading">
               <h2>Aperçu</h2>
               <span>
-                {theme === "dark"
-                  ? "Sombre"
-                  : "Clair"}
+                {themeLabels[theme]}
                 {" "}
                 · fr-FR · UTC
               </span>

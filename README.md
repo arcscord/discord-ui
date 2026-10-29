@@ -77,6 +77,15 @@ The renderer uses `@arcscord/discord-ui/styles.css`. Styles are scoped to
 `.arcscord-discord-ui` and `dui-` classes; they include no reset or remote fonts.
 Consumers do not need Tailwind.
 
+## Themes
+
+Built-in themes: **light**, **ash**, **dark**. Choose one with `DiscordUI.theme`.
+Override individual values with `tokens`, or use `defineTheme` from
+`@arcscord/discord-ui/themes` to create a reusable theme extending a preset.
+Colors live in `packages/discord-ui/src/styles/themes.css`; components use CSS tokens.
+See the [package theme guide](./packages/discord-ui/README.md#themes) for examples
+and the preset palette table.
+
 ## Content and scope
 
 The playground includes plain text, Discord Markdown and entities, keyboard spoilers,

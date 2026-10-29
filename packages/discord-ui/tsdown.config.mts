@@ -2,8 +2,12 @@ import { readFile, writeFile } from "node:fs/promises";
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  banner: { js: "\"use client\";" },
-  entry: ["src/index.ts", "src/highlight.tsx"],
+  banner: ({ fileName }) => ({
+    js: fileName === "themes.mjs"
+      ? ""
+      : "\"use client\";",
+  }),
+  entry: ["src/index.ts", "src/highlight.tsx", "src/themes.ts"],
   format: "esm",
   platform: "browser",
   target: "es2022",
@@ -16,8 +20,9 @@ export default defineConfig({
     "build:done": async () => {
       const styles = await readFile("src/styles/styles.css", "utf8");
       const imported = await readFile("src/styles/autothreads.css", "utf8");
+      const themes = await readFile("src/styles/themes.css", "utf8");
       // Ship one standalone stylesheet, with no unresolved source imports.
-      await writeFile("dist/styles.css", styles.replace("@import \"./autothreads.css\";", imported));
+      await writeFile("dist/styles.css", styles.replace("@import \"./autothreads.css\";", imported).replace("@import \"./themes.css\";", themes));
     },
   },
 });

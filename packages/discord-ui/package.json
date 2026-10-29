@@ -20,6 +20,10 @@
     "./highlight": {
       "types": "./dist/highlight.d.mts",
       "import": "./dist/highlight.mjs"
+    },
+    "./themes": {
+      "types": "./dist/themes.d.mts",
+      "import": "./dist/themes.mjs"
     }
   },
   "types": "./dist/index.d.mts",

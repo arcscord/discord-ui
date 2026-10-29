@@ -19,6 +19,8 @@ try {
     "dist/index.mjs",
     "dist/index.d.mts",
     "dist/styles.css",
+    "dist/themes.mjs",
+    "dist/themes.d.mts",
     "dist/highlight.mjs",
     "dist/highlight.d.mts",
     "THIRD_PARTY_NOTICES",
@@ -43,7 +45,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Message } from "@arcscord/discord-ui";
+import { Message, DiscordUI } from "@arcscord/discord-ui";
+import { defineTheme } from "@arcscord/discord-ui/themes";
+const custom = defineTheme({ name: "custom-light", extends: "light", tokens: { codeBackground: "#123456" } });
+const themed = renderToStaticMarkup(createElement(DiscordUI, { theme: custom }, "Custom"));
+assert(themed.includes('data-base-theme="light"'));
+assert(themed.includes("--discord-ui-code-background:#123456"));
+const themeModule = await readFile(new URL(import.meta.resolve("@arcscord/discord-ui/themes")), "utf8");
+assert(!themeModule.includes('"use client"'), "Theme helpers should be usable in server configuration.");
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 assert(renderToStaticMarkup(renderHighlightedCode("const n = 1", "ts")).includes("hljs-keyword"));
 const html = renderToStaticMarkup(createElement(Message, { message: {
@@ -55,6 +64,7 @@ assert(html.includes("Packed message"));
 const css = await readFile(new URL(import.meta.resolve("@arcscord/discord-ui/styles.css")), "utf8");
 assert(css.includes(".arcscord-discord-ui"));
 assert(css.includes('[data-theme="light"]'));
+assert(css.includes('[data-theme="ash"]'));
 assert(css.includes(".dui-container"));
 assert(!css.includes("@import"), "Published CSS must not reference source stylesheets.");
 `);

@@ -41,7 +41,7 @@ test("renders rich content and keyboard accessible spoilers", async ({ page }) =
   await expect(page.locator("article").getByText("Construire une interface Discord", { exact: true })).toBeVisible();
   await expect(page.getByAltText("Montagnes dans un embed")).toBeVisible();
   await page.getByLabel("Thème", { exact: true }).selectOption("light");
-  await expect(page.locator("article")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(page.locator("article")).toHaveCSS("background-color", "rgb(251, 251, 251)");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });

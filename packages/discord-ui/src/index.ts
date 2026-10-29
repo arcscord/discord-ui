@@ -23,3 +23,5 @@ export { MessageTimestamp } from "./components/message/message-timestamp";
 export type { ActionRowView, ComponentsV2Body, ContainerChild, ContainerView, GalleryView, LinkButtonView, MessageComponent, SectionView, SeparatorView, TextDisplayView, ThumbnailView } from "./model/components";
 export type { EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities } from "./model/content";
 export type { MessageAuthor, MessageView, TextMessageBody } from "./model/message";
+export { defineTheme, themes, themeTokenProperties } from "./themes";
+export type { DiscordTheme, ThemeInput, ThemeName, ThemeOverrides, ThemeTokens } from "./themes";

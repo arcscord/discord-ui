@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 import type { MessageEntities } from "../model/content";
+import type { DiscordTheme, ThemeInput, ThemeOverrides } from "../themes";
 import { createContext, use } from "react";
+import { themes } from "../themes";
 
 export type UILabels = { spoiler: string; showSpoiler: string; hideSpoiler: string; mediaUnavailable: string; invalidTimestamp: string };
 export type DisplayOptions = {
-  theme: "dark" | "light";
+  theme: ThemeInput;
+  tokens?: ThemeOverrides;
   locale: string;
   timeZone: string;
   referenceTime?: string;
@@ -14,10 +17,11 @@ export type DisplayOptions = {
   labels: UILabels;
 };
 
-type DisplayContextValue = DisplayOptions & { scoped: boolean };
+type DisplayContextValue = DisplayOptions & { scoped: boolean; resolvedTheme: DiscordTheme };
 
 export const defaults: DisplayContextValue = {
   scoped: false,
+  resolvedTheme: themes.dark,
   theme: "dark",
   locale: "en-US",
   timeZone: "UTC",
