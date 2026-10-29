@@ -77,3 +77,28 @@
   background: var(--discord-ui-link-button-disabled-background);
   opacity: 1;
 }
+
+/* Channel layout: history scrolls independently of the header and composer. */
+.dui-channel { display: flex; flex-direction: column; min-width: 0; min-height: 280px; background: var(--discord-ui-background); color: var(--discord-ui-text); overflow: hidden; }
+.dui-channel-header { display: flex; align-items: center; flex: 0 0 auto; gap: 10px; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--discord-ui-channel-header-divider); }
+.dui-channel-symbol { color: var(--discord-ui-muted); font-size: 26px; line-height: 1; }
+.dui-channel-name { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--discord-ui-strong); font: inherit; font-weight: 600; }
+.dui-channel-topic { min-width: 0; margin: 0; padding-left: 12px; border-left: 1px solid var(--discord-ui-channel-header-divider); color: var(--discord-ui-muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dui-channel-actions { display: flex; gap: 12px; align-items: center; margin-left: auto; flex: 0 0 auto; }
+.dui-channel-history { min-height: 0; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; padding-bottom: 12px; }
+.dui-channel-history:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: -2px; }
+.dui-message-list { list-style: none; margin: 0; padding: 0; }
+.dui-message-list-item { margin: 0; padding: 0; }
+.dui-date-separator { display: flex; align-items: center; gap: 8px; margin: 16px 16px 8px; color: var(--discord-ui-muted); font-size: 12px; font-weight: 600; }
+.dui-date-separator::before, .dui-date-separator::after { content: ""; flex: 1; height: 1px; background: var(--discord-ui-divider); }
+.dui-channel-empty { margin: 24px 16px; color: var(--discord-ui-muted); }
+.dui-channel-composer { display: flex; align-items: flex-end; flex: 0 0 auto; gap: 8px; margin: 0 16px 16px; padding: 10px 12px; border: 1px solid var(--discord-ui-channel-header-divider); border-radius: 8px; background: var(--discord-ui-channel-input-background); }
+.dui-channel-input { flex: 1; min-width: 0; min-height: 24px; max-height: 120px; field-sizing: content; margin: 0; padding: 3px 0; resize: none; border: 0; border-radius: 0; background: transparent; color: var(--discord-ui-text); font: inherit; line-height: 24px; box-shadow: none; }
+.dui-channel-input::placeholder { color: var(--discord-ui-muted); opacity: 1; }
+.dui-channel-input:focus-visible { outline: none; }
+.dui-channel-composer:focus-within { border-color: var(--discord-ui-container-outline); }
+.dui-channel-send { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--discord-ui-text); cursor: pointer; }
+.dui-channel-send:hover { background: var(--discord-ui-secondary-hover); }
+.dui-channel-send:disabled { color: var(--discord-ui-muted); cursor: not-allowed; opacity: .5; }
+.dui-composer-leading, .dui-composer-trailing { display: flex; align-items: center; min-height: 32px; gap: 8px; }
+@container (max-width: 480px) { .dui-channel-header { padding-inline: 10px; } .dui-channel-composer { margin: 0 10px 10px; padding: 8px 10px; } .dui-channel-topic { display: none; } }

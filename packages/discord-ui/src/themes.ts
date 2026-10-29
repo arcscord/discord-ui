@@ -2,6 +2,8 @@ import type { CSSProperties } from "react";
 
 /** Typed public tokens mapped to the CSS variables consumed by every primitive. */
 export const themeTokenProperties = {
+  channelHeaderDivider: "--discord-ui-channel-header-divider",
+  channelInputBackground: "--discord-ui-channel-input-background",
   background: "--discord-ui-background",
   focusBackground: "--discord-ui-row-hover",
   codeBackground: "--discord-ui-code-background",

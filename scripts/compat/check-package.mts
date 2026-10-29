@@ -45,7 +45,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Message, DiscordUI } from "@arcscord/discord-ui";
+import { Message, DiscordUI, ChannelView } from "@arcscord/discord-ui";
 import { defineTheme } from "@arcscord/discord-ui/themes";
 const custom = defineTheme({ name: "custom-light", extends: "light", tokens: { codeBackground: "#123456" } });
 const themed = renderToStaticMarkup(createElement(DiscordUI, { theme: custom }, "Custom"));
@@ -61,11 +61,14 @@ const html = renderToStaticMarkup(createElement(Message, { message: {
 }}));
 assert(html.includes("Packed author"));
 assert(html.includes("Packed message"));
+const channelHtml = renderToStaticMarkup(createElement(ChannelView, { channel: { id: "packed", name: "packed-channel", messages: [] } }));
+assert(channelHtml.includes("Message #packed-channel"));
 const css = await readFile(new URL(import.meta.resolve("@arcscord/discord-ui/styles.css")), "utf8");
 assert(css.includes(".arcscord-discord-ui"));
 assert(css.includes('[data-theme="light"]'));
 assert(css.includes('[data-theme="ash"]'));
 assert(css.includes(".dui-container"));
+assert(css.includes("--discord-ui-channel-input-background"));
 assert(!css.includes("@import"), "Published CSS must not reference source stylesheets.");
 `);
   await writeFile(join(temporary, "types.mts"), `

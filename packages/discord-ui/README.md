@@ -150,3 +150,47 @@ Markdown/highlighting logic is adapted from AutoThreads; see `THIRD_PARTY_NOTICE
 for the upstream BF-GO MIT notice and dependency licenses. Styles and the external-link icon also adapt the renderer. Example assets are new.
 
 MIT © 2026 Arcoz0308.
+
+
+## Channel view
+
+`ChannelView` composes `ChannelHeader`, `MessageList` and `ChannelComposer`. Its
+serializable `ChannelViewModel` contains `id`, `name`, optional `topic` and an
+ordered `messages` array using the existing `MessageView` contract.
+
+```tsx
+<DiscordUI theme="ash" locale="fr-FR" timeZone="Europe/Zurich">
+  <ChannelView channel={{ id: "example", name: "exemple", messages }} />
+</DiscordUI>;
+```
+
+The header and composer remain outside the scrollable history. Default height is
+560px; use `height` to adjust it. The channel opens at the bottom by default and
+follows the latest message, including subsequent media layout changes. Scrolling
+up stops following media resizes. Set `autoScroll={false}` to manage scrolling
+externally. Date separators respect the supplied locale and timezone and can be
+hidden with `showDateSeparators={false}`.
+
+Pass `onSend(content)` to receive composer submissions; the consumer owns and
+updates `channel.messages`. Enter submits, Shift+Enter inserts a newline, and IME
+composition does not submit. Without `onSend`, the prepared text area remains
+editable and no send action is shown. The library does not publish messages.
+
+Use `header` and `composer` slots to replace these regions, or `composer={false}`
+to hide input. `ChannelHeader.actions` and `ChannelComposer.leading`/`trailing`
+accept real application controls. `ChannelComposer` is controlled through `value`
+and `onValueChange`; `ChannelView` manages its default composer's draft locally.
+
+`channelHeaderDivider` and `channelInputBackground` theme tokens customize the
+header border and composer surface. The header border is 1 CSS pixel, corresponding
+to 2 physical pixels at Retina scale 2. The composer uses the header border color
+at rest and the container outline color on focus, without an additional outline.
+
+| Token | Light | Ash | Dark |
+| --- | --- | --- | --- |
+| `channelHeaderDivider` | `#DFDFE1` | `#3E3F45` | `#29292E` |
+| `channelInputBackground` | `#FFFFFF` | `#383A41` | `#222327` |
+
+The playground's channel scenario includes multiple authors, an image and local
+simulated sending. Its JSON editor accepts the whole channel model, including
+message arrays, while preserving the last valid preview on errors.

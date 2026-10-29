@@ -1,6 +1,8 @@
 /* Preset palette source. Layout rules use tokens rather than theme names. */
 .arcscord-discord-ui {
   color-scheme: dark;
+  --discord-ui-channel-header-divider: #29292E;
+  --discord-ui-channel-input-background: #222327;
   --discord-ui-background: #1A1A1E;
   --discord-ui-row-hover: #29292E;
   --discord-ui-code-background: #1F202F;
@@ -42,6 +44,8 @@
 .arcscord-discord-ui:where([data-base-theme="ash"], :not([data-base-theme])[data-theme="ash"]) {
   --discord-ui-link-button-background: #3E3F46;
   --discord-ui-link-button-disabled-background: #383940;
+  --discord-ui-channel-header-divider: #3E3F45;
+  --discord-ui-channel-input-background: #383A41;
   --discord-ui-background: #323339;
   --discord-ui-row-hover: #3E3F46;
   --discord-ui-code-background: #343748;
@@ -56,6 +60,8 @@
   color-scheme: light;
   --discord-ui-link-button-background: #EEEEEF;
   --discord-ui-link-button-disabled-background: #F4F4F5;
+  --discord-ui-channel-header-divider: #DFDFE1;
+  --discord-ui-channel-input-background: #FFF;
   --discord-ui-background: #FBFBFB;
   --discord-ui-row-hover: #EEEEEF;
   --discord-ui-code-background: #E8E8EF;
