@@ -18,6 +18,10 @@
   --discord-ui-embed-accent: #474850;
   --discord-ui-container-surface: #232329;
   --discord-ui-container-outline: #ffffff1f;
+  --discord-ui-link-button-background: #29292E;
+  --discord-ui-link-button-disabled-background: #2F2F34;
+  --discord-ui-link-button-text: var(--discord-ui-strong);
+  --discord-ui-link-button-disabled-text: var(--discord-ui-muted);
   --discord-ui-secondary-bg: #9a9aa41f;
   --discord-ui-secondary-hover: #9a9aa429;
   --discord-ui-secondary-active: #9a9aa433;
@@ -36,6 +40,8 @@
 }
 
 .arcscord-discord-ui:where([data-base-theme="ash"], :not([data-base-theme])[data-theme="ash"]) {
+  --discord-ui-link-button-background: #3E3F46;
+  --discord-ui-link-button-disabled-background: #383940;
   --discord-ui-background: #323339;
   --discord-ui-row-hover: #3E3F46;
   --discord-ui-code-background: #343748;
@@ -49,6 +55,8 @@
 
 .arcscord-discord-ui:where([data-base-theme="light"], :not([data-base-theme])[data-theme="light"]) {
   color-scheme: light;
+  --discord-ui-link-button-background: #EEEEEF;
+  --discord-ui-link-button-disabled-background: #F4F4F5;
   --discord-ui-background: #FBFBFB;
   --discord-ui-row-hover: #EEEEEF;
   --discord-ui-code-background: #E8E8EF;

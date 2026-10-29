@@ -56,3 +56,30 @@ test("supports scoped CSS overrides without changing component styles", async ({
   await expect(page.locator(".dui-code-block")).toHaveCSS("background-color", "rgb(18, 52, 86)");
   await expect(page.locator(".dui-blockquote")).toHaveCSS("border-left-color", "rgb(101, 67, 33)");
 });
+
+const linkButtonPalettes = {
+  light: { enabled: "#EEEEEF", disabled: "#F4F4F5" },
+  ash: { enabled: "#3E3F46", disabled: "#383940" },
+  dark: { enabled: "#29292E", disabled: "#2F2F34" },
+};
+
+for (const [theme, colors] of Object.entries(linkButtonPalettes)) {
+  test(`renders solid enabled and disabled link buttons for ${theme}`, async ({ page }) => {
+    await page.goto("/");
+    await page.getByLabel("Scénario", { exact: true }).selectOption("components");
+    await page.getByLabel("Thème", { exact: true }).selectOption(theme);
+    const enabled = page.getByRole("link", { name: "Code source", exact: true });
+    const disabled = page.getByRole("link", { name: "Bientôt disponible", exact: true });
+    await expect(enabled).toHaveCSS("background-color", rgb(colors.enabled));
+    await enabled.hover();
+    await expect(enabled).toHaveCSS("background-color", rgb(colors.enabled));
+    await expect(disabled).toHaveCSS("background-color", rgb(colors.disabled));
+    await expect(disabled).toHaveCSS("opacity", "1");
+    await disabled.hover();
+    await expect(disabled).toHaveCSS("background-color", rgb(colors.disabled));
+    await expect(disabled).toHaveAttribute("aria-disabled", "true");
+    expect(await disabled.getAttribute("href")).toBeNull();
+    if (theme === "light")
+      await expect(enabled).toHaveCSS("color", "rgb(31, 35, 41)");
+  });
+}

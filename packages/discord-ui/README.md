@@ -81,6 +81,16 @@ and highlighting. Each scope owns its palette; an inner scope can use another th
 | `spoilerBackground` | `#8E9097` | `#7D7E86` | `#666770` |
 | `quoteBorder` | `#C5C6CA` | `#595A63` | `#474850` |
 
+Link-button surfaces use separate customizable tokens:
+
+| Token | Light | Ash | Dark |
+| --- | --- | --- | --- |
+| `linkButtonBackground` | `#EEEEEF` | `#3E3F46` | `#29292E` |
+| `linkButtonDisabledBackground` | `#F4F4F5` | `#383940` | `#2F2F34` |
+
+`linkButtonText` and `linkButtonDisabledText` control foreground colors. Disabled
+buttons retain an opaque background and never navigate.
+
 Code backgrounds apply to inline and fenced code. The focus surface applies on
 message hover and keyboard focus within the message.
 

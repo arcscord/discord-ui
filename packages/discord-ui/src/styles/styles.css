@@ -63,3 +63,17 @@
   .dui-embed-thumbnail img { width: 52px; height: 52px; }
   .dui-embed-field-inline { flex-basis: 100%; }
 }
+
+/* Solid link-button surfaces: never fade the whole disabled button. */
+.dui-button-link,
+.dui-message a.dui-button-link,
+.dui-message a.dui-button-link:hover,
+.dui-message a.dui-button-link:active {
+  color: var(--discord-ui-link-button-text);
+  background: var(--discord-ui-link-button-background);
+}
+.dui-component-button.dui-button-link[aria-disabled="true"] {
+  color: var(--discord-ui-link-button-disabled-text);
+  background: var(--discord-ui-link-button-disabled-background);
+  opacity: 1;
+}
