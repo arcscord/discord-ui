@@ -76,10 +76,15 @@ and highlighting. Each scope owns its palette; an inner scope can use another th
 | Token | Light | Ash | Dark |
 | --- | --- | --- | --- |
 | `background` | `#FBFBFB` | `#323339` | `#1A1A1E` |
+| `surface` (embeds/containers) | `#FFFFFF` | `#393A41` | `#242429` |
 | `focusBackground` | `#EEEEEF` | `#3E3F46` | `#29292E` |
 | `codeBackground` | `#E8E8EF` | `#343748` | `#1F202F` |
 | `spoilerBackground` | `#8E9097` | `#7D7E86` | `#666770` |
 | `quoteBorder` | `#C5C6CA` | `#595A63` | `#474850` |
+
+`containerSurface` inherits `surface` by default, so changing the shared surface
+updates both embeds and V2 containers. Override `containerSurface` only to give
+containers a distinct background.
 
 Link-button surfaces use separate customizable tokens:
 

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const palettes = {
   light: {
+    surface: "#FFFFFF",
     background: "#FBFBFB",
     focus: "#EEEEEF",
     code: "#E8E8EF",
@@ -9,6 +10,7 @@ const palettes = {
     quote: "#C5C6CA",
   },
   ash: {
+    surface: "#393A41",
     background: "#323339",
     focus: "#3E3F46",
     code: "#343748",
@@ -16,6 +18,7 @@ const palettes = {
     quote: "#595A63",
   },
   dark: {
+    surface: "#242429",
     background: "#1A1A1E",
     focus: "#29292E",
     code: "#1F202F",
@@ -45,6 +48,11 @@ for (const [name, colors] of Object.entries(palettes)) {
     await page.getByRole("button", { name: "Afficher le spoiler" }).focus();
     await expect(message).toHaveCSS("background-color", rgb(colors.focus));
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+    await page.getByLabel("Scénario", { exact: true }).selectOption("embed");
+    await expect(page.locator(".dui-embed")).toHaveCSS("background-color", rgb(colors.surface));
+    await page.getByLabel("Scénario", { exact: true }).selectOption("components");
+    await expect(page.locator(".dui-container").first()).toHaveCSS("background-color", rgb(colors.surface));
+    await expect(page.locator(".dui-container").last()).toHaveCSS("background-color", rgb(colors.surface));
   });
 }
 

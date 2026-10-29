@@ -13,10 +13,10 @@
   --discord-ui-accent: #5865f2;
   --discord-ui-warning: #f0b232;
   --discord-ui-border: #343541;
-  --discord-ui-surface: #232329;
+  --discord-ui-surface: #242429;
   --discord-ui-embed-border: #34353c;
   --discord-ui-embed-accent: #474850;
-  --discord-ui-container-surface: #232329;
+  --discord-ui-container-surface: var(--discord-ui-surface);
   --discord-ui-container-outline: #ffffff1f;
   --discord-ui-link-button-background: #29292E;
   --discord-ui-link-button-disabled-background: #2F2F34;
@@ -48,9 +48,8 @@
   --discord-ui-spoiler-hidden: #7D7E86;
   --discord-ui-quote-border: #595A63;
   --discord-ui-border: #454650;
-  --discord-ui-surface: #2b2d33;
+  --discord-ui-surface: #393A41;
   --discord-ui-embed-accent: #595A63;
-  --discord-ui-container-surface: #383940;
 }
 
 .arcscord-discord-ui:where([data-base-theme="light"], :not([data-base-theme])[data-theme="light"]) {
@@ -66,11 +65,10 @@
   --discord-ui-muted: #707885;
   --discord-ui-strong: #1f2329;
   --discord-ui-link: #0b88c3;
-  --discord-ui-surface: #f2f3f5;
+  --discord-ui-surface: #FFF;
   --discord-ui-border: #d9dde3;
   --discord-ui-embed-border: #8690a04d;
   --discord-ui-embed-accent: #c8cdd5;
-  --discord-ui-container-surface: #f2f3f5;
   --discord-ui-container-outline: #d7d9dd;
   --discord-ui-secondary-bg: #4e505814;
   --discord-ui-secondary-hover: #4e505820;
