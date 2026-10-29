@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { demoChannel } from "../../../fixtures/channel";
 import { basicMessage, scenarios } from "../../../fixtures/messages";
-import { parseMessageJson, serializeMessage } from "../src/message-json";
+import { parseChannelJson, parseMessageJson, serializeChannel, serializeMessage } from "../src/message-json";
 
 describe("playground JSON model checks", () => {
   it.each(Object.values(scenarios))("accepts the $label fixture", ({ message }) => {
@@ -65,4 +66,17 @@ describe("playground JSON model checks", () => {
     if (!result.ok)
       expect(result.error).toContain("identifiant dupliqué");
   });
+});
+
+it("accepts a channel and validates every nested message with an indexed property path", () => {
+  expect(parseChannelJson(serializeChannel(demoChannel))).toEqual({ ok: true, channel: demoChannel });
+  const invalid = parseChannelJson(JSON.stringify({
+    ...demoChannel,
+    messages: [
+      { ...basicMessage, author: null },
+    ],
+  }));
+  expect(invalid.ok).toBe(false);
+  if (!invalid.ok)
+    expect(invalid.error).toContain("$.messages[0].author");
 });

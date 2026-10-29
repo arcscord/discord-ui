@@ -1,4 +1,4 @@
-import type { MessageView } from "@arcscord/discord-ui";
+import type { ChannelViewModel, MessageView } from "@arcscord/discord-ui";
 
 // Display-model checks for the playground, not Discord publication validation.
 type ObjectValue = Record<string, unknown>;
@@ -136,52 +136,76 @@ function embed(value: unknown, path: string): void {
     optional(field, "inline", location, boolean);
   }));
 }
-function validateMessage(value: unknown): asserts value is MessageView {
-  const message = identified(value, "$");
-  const author = identified(message.author, "$.author");
-  string(author.displayName, "$.author.displayName");
-  for (const key of ["avatarUrl", "color"]) optional(author, key, "$.author", string);
-  for (const key of ["bot", "verified"]) optional(author, key, "$.author", boolean);
-  string(message.timestamp, "$.timestamp");
-  const body = object(message.body, "$.body");
+function validateMessage(value: unknown, path = "$"): asserts value is MessageView {
+  const message = identified(value, path);
+  const author = identified(message.author, `${path}.author`);
+  string(author.displayName, `${path}.author.displayName`);
+  for (const key of ["avatarUrl", "color"]) optional(author, key, `${path}.author`, string);
+  for (const key of ["bot", "verified"]) optional(author, key, `${path}.author`, boolean);
+  string(message.timestamp, `${path}.timestamp`);
+  const body = object(message.body, `${path}.body`);
   if (body.kind === "components-v2") {
     if ("embeds" in message || "media" in message)
-      throw new Error("$ : un message V2 ne peut pas mélanger embeds ou médias classiques.");
-    list(body.components, "$.body.components", component);
+      throw new Error(`${path} : un message V2 ne peut pas mélanger embeds ou médias classiques.`);
+    list(body.components, `${path}.body.components`, component);
   }
   else if (body.kind === "text" || body.kind === "markdown") {
-    string(body.content, "$.body.content");
-    optional(message, "media", "$", (value, path) => list(value, path, media));
-    optional(message, "embeds", "$", (value, path) => list(value, path, embed));
+    string(body.content, `${path}.body.content`);
+    optional(message, "media", path, (value, path) => list(value, path, media));
+    optional(message, "embeds", path, (value, path) => list(value, path, embed));
   }
   else {
-    throw new Error("$.body.kind : « text », « markdown » ou « components-v2 » attendu.");
+    throw new Error(`${path}.body.kind : « text », « markdown » ou « components-v2 » attendu.`);
+  }
+}
+
+function validateChannel(value: unknown): asserts value is ChannelViewModel {
+  const channel = identified(value, "$");
+  string(channel.name, "$.name");
+  optional(channel, "topic", "$", string);
+  list(channel.messages, "$.messages", validateMessage);
+}
+
+function parseDocument<T>(draft: string, validate: (value: unknown) => asserts value is T): { ok: true; value: T } | { ok: false; error: string } {
+  try {
+    const value: unknown = JSON.parse(draft);
+    validate(value);
+    return { ok: true, value };
+  }
+  catch (error) {
+    return {
+      ok: false,
+      error: error instanceof SyntaxError
+        ? `JSON invalide : ${error.message}`
+        : error instanceof Error
+          ? error.message
+          : "Structure invalide.",
+    };
   }
 }
 
 export type ParsedMessage = { ok: true; message: MessageView } | { ok: false; error: string };
 export function parseMessageJson(draft: string): ParsedMessage {
-  let value: unknown;
-  try {
-    value = JSON.parse(draft);
-  }
-  catch (error) {
-    return { ok: false, error: `JSON invalide : ${error instanceof Error
-      ? error.message
-      : "syntaxe incorrecte"}` };
-  }
-  try {
-    validateMessage(value);
-    return { ok: true, message: value };
-  }
-  catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error
-        ? error.message
-        : "Structure de message invalide.",
-    };
-  }
+  const result = parseDocument(draft, validateMessage);
+  return result.ok
+    ? { ok: true, message: result.value }
+    : result;
+}
+export function parseChannelJson(draft: string): { ok: true; channel: ChannelViewModel } | { ok: false; error: string } {
+  const result = parseDocument(draft, validateChannel);
+  return result.ok
+    ? { ok: true, channel: result.value }
+    : result;
+}
+export function serializeChannel(channel: ChannelViewModel): string {
+  return JSON.stringify(channel, null, 2);
+}
+export function createChannelEditor(channel: ChannelViewModel): { channel: ChannelViewModel; draft: string; error: string | null } {
+  return {
+    channel,
+    draft: serializeChannel(channel),
+    error: null,
+  };
 }
 export function serializeMessage(message: MessageView): string {
   return JSON.stringify(message, null, 2);

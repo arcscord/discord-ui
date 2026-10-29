@@ -88,14 +88,17 @@ and the preset palette table.
 
 ## Content and scope
 
-The playground includes a live JSON editor for the message view model, with syntax
+The playground includes a channel scene with multiple messages, date separators,
+a fixed header/composer and local simulated sending. It opens at the bottom.
+
+The playground includes a live JSON editor for message and channel view models, with syntax
 and shape diagnostics, last-valid-preview retention, formatting and copy. It stays
 synchronized with the content editor. Reset restores the selected fixture; switching
 scenarios loads that fixture. These checks are for display, not Discord publication.
 
 The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
 image galleries, embeds and unavailable-media states. The renderer has no payload
-adapter, reactions, threads or channel view yet. A Components V2 scene demonstrates
+adapter, reactions or threads yet. A Components V2 scene demonstrates
 containers, sections, thumbnails, galleries, separators and link buttons.
 
 Mentions and custom emoji resources are supplied through `DiscordUI.entities`.

@@ -1,4 +1,5 @@
 export type JsonEditorProps = {
+  documentType?: "message" | "channel";
   draft: string;
   error: string | null;
   copyStatus: string;
@@ -7,7 +8,7 @@ export type JsonEditorProps = {
   onCopy: () => Promise<void>;
 };
 
-export function JsonEditor({ draft, error, copyStatus, onChange, onFormat, onCopy }: JsonEditorProps) {
+export function JsonEditor({ documentType = "message", draft, error, copyStatus, onChange, onFormat, onCopy }: JsonEditorProps) {
   return (
     <section className="json-editor" aria-label="Éditeur JSON">
       <div className="data-heading">
@@ -17,7 +18,14 @@ export function JsonEditor({ draft, error, copyStatus, onChange, onFormat, onCop
           <button type="button" onClick={onCopy}>Copier le JSON</button>
         </div>
       </div>
-      <p id="json-help" className="json-help">Modifiez le modèle du message : l’aperçu suit les modifications valides.</p>
+      <p id="json-help" className="json-help">
+        Modifiez le modèle
+        {documentType === "channel"
+          ? "du salon"
+          : "du message"}
+        {" "}
+        : l’aperçu suit les modifications valides.
+      </p>
       <p role="status" className="copy-status">{copyStatus}</p>
       {error
         ? (
@@ -28,7 +36,20 @@ export function JsonEditor({ draft, error, copyStatus, onChange, onFormat, onCop
             </p>
           )
         : null}
-      <textarea id="message-json" aria-label="JSON du message" aria-invalid={Boolean(error)} aria-describedby={error ? "json-help json-error" : "json-help"} className="data-editor" value={draft} onChange={event => onChange(event.target.value)} rows={16} spellCheck={false} wrap="off" />
+      <textarea
+        id="message-json"
+        aria-label={documentType === "channel"
+          ? "JSON du salon"
+          : "JSON du message"}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? "json-help json-error" : "json-help"}
+        className="data-editor"
+        value={draft}
+        onChange={event => onChange(event.target.value)}
+        rows={16}
+        spellCheck={false}
+        wrap="off"
+      />
     </section>
   );
 }
