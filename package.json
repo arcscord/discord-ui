@@ -18,7 +18,9 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm pack:check",
     "pack:check": "node scripts/compat/check-package.mts",
     "clean": "node scripts/workspace/clean.mts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev": "pnpm --filter @arcscord/discord-ui-playground dev",
+    "test:browser": "pnpm build && playwright test"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",

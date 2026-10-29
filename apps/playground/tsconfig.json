@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "react-jsx",
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "paths": {
+      "@arcscord/discord-ui": [
+        "../../packages/discord-ui/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "vite.config.mts",
+    "../../fixtures"
+  ]
+}

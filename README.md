@@ -7,7 +7,7 @@ AutoThreads and the Arcscord documentation. Package: `@arcscord/discord-ui`.
 
 Repository foundation only, version `0.0.0`, not published. The package currently
 exports composable message primitives, serializable types and scoped light/dark styles.
-The payload adapter and playground will be added in subsequent iterations.
+A Vite playground consumes the library. The payload adapter is planned.
 No AutoThreads or Arcscord runtime dependency is included.
 
 ## Development
@@ -43,7 +43,10 @@ installation; React rendering compatibility will be checked with the first rende
 Run `pnpm build:lib` before `pnpm pack:check`, or use `pnpm check`. The tarball check
 installs pinned consumer dependencies in a temporary directory and needs registry
 access. It removes the temporary directory when done. No package is published.
-`pnpm dev` will be introduced with the playground, rather than pointing to a missing app.
+`pnpm dev` starts the playground at http://127.0.0.1:5173. Development uses package
+sources with HMR; production builds use the compiled workspace package.
+Run `pnpm exec playwright install chromium` once, then `pnpm test:browser` for
+desktop and mobile interaction checks. CI runs these checks too.
 
 ## Package layout
 
