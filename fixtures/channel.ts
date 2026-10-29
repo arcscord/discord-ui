@@ -26,6 +26,22 @@ export const demoChannel: ChannelViewModel = {
     },
     {
       id: "channel-3",
+      thread: {
+        id: "thread-landscape",
+        name: "paysage",
+        messageCount: 1,
+        lastMessage: {
+          author: {
+            id: "auto-threads",
+            displayName: "Auto Threads",
+            bot: true,
+            verified: true,
+            avatarUrl: "/emoji.svg",
+          },
+          content: "This thread was created automatically with Auto Threads.",
+          timestamp: "2026-10-29T18:03:00Z",
+        },
+      },
       author: { id: "chris", displayName: "Chris" },
       timestamp: "2026-10-29T18:01:00Z",
       body: { kind: "markdown", content: "Voici une image de démonstration :" },
@@ -44,6 +60,27 @@ export const demoChannel: ChannelViewModel = {
       author: { id: "alice", displayName: "Alice", color: "#b387df" },
       timestamp: "2026-10-29T18:02:00Z",
       body: { kind: "markdown", content: "Le JSON permet d’ajouter ou de modifier les messages. Essayez aussi la saisie en bas !" },
+    },
+  ],
+  threads: [
+    {
+      id: "thread-landscape",
+      name: "paysage",
+      parentMessageId: "channel-3",
+      messages: [
+        {
+          id: "thread-reply-1",
+          author: {
+            id: "auto-threads",
+            displayName: "Auto Threads",
+            bot: true,
+            verified: true,
+            avatarUrl: "/emoji.svg",
+          },
+          timestamp: "2026-10-29T18:03:00Z",
+          body: { kind: "text", content: "This thread was created automatically with Auto Threads." },
+        },
+      ],
     },
   ],
 };

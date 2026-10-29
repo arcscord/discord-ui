@@ -59,8 +59,8 @@ desktop and mobile interaction checks. CI runs these checks too.
 - `.github/workflows/ci.yml`: same checks as local development.
 
 The initial model separates display metadata from Discord send payloads. It has no
-implicit clock, network calls or application-specific configuration. Future reactions,
-replies and threads will extend this model alongside the rendering components.
+implicit clock, network calls or application-specific configuration. Messages, channels
+and threads share serializable display models and composable rendering components.
 
 ```ts
 import type { MessageView } from "@arcscord/discord-ui";
@@ -88,6 +88,10 @@ and the preset palette table.
 
 ## Content and scope
 
+The playground includes thread summaries and an interactive thread panel with local
+replies. Thread cards share the container surface/border; thread data remains editable
+in the channel JSON.
+
 The playground includes a channel scene with multiple messages, date separators,
 a fixed header/composer and local simulated sending. It opens at the bottom.
 
@@ -97,8 +101,7 @@ synchronized with the content editor. Reset restores the selected fixture; switc
 scenarios loads that fixture. These checks are for display, not Discord publication.
 
 The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
-image galleries, embeds and unavailable-media states. The renderer has no payload
-adapter, reactions or threads yet. A Components V2 scene demonstrates
+image galleries, embeds and unavailable-media states. The renderer has no payload adapter or reactions yet. A Components V2 scene demonstrates
 containers, sections, thumbnails, galleries, separators and link buttons.
 
 Mentions and custom emoji resources are supplied through `DiscordUI.entities`.

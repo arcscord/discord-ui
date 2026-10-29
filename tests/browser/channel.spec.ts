@@ -36,6 +36,7 @@ test("edits channel JSON, retains the last valid channel and resets the demo", a
   const channel = JSON.parse(await editor.inputValue());
   channel.name = "salon-json";
   channel.messages = [];
+  channel.threads = [];
   await editor.fill(JSON.stringify(channel));
   await expect(page.locator(".dui-channel-name")).toHaveText("salon-json");
   await expect(page.getByRole("textbox", { name: "Message #salon-json", exact: true })).toBeVisible();

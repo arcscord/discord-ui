@@ -80,3 +80,18 @@ it("accepts a channel and validates every nested message with an indexed propert
   if (!invalid.ok)
     expect(invalid.error).toContain("$.messages[0].author");
 });
+
+it("rejects nested threads and orphan thread records", () => {
+  const nested = JSON.parse(serializeChannel(demoChannel));
+  nested.threads[0].messages[0].thread = nested.messages[2].thread;
+  const nestedResult = parseChannelJson(JSON.stringify(nested));
+  expect(nestedResult.ok).toBe(false);
+  if (!nestedResult.ok)
+    expect(nestedResult.error).toContain("ne peuvent pas contenir un autre fil");
+  const orphan = JSON.parse(serializeChannel(demoChannel));
+  orphan.threads[0].parentMessageId = "missing";
+  const orphanResult = parseChannelJson(JSON.stringify(orphan));
+  expect(orphanResult.ok).toBe(false);
+  if (!orphanResult.ok)
+    expect(orphanResult.error).toContain("parentMessageId");
+});

@@ -15,6 +15,7 @@ export function App() {
   const [scenario, setScenario] = useState<ScenarioName>("basic");
   const [revision, setRevision] = useState(0);
   const [theme, setTheme] = useState<ThemeName>("dark");
+  const [referenceTime, setReferenceTime] = useState("2026-10-29T18:30:00Z");
   const [width, setWidth] = useState(760);
   const [editor, setEditor] = useState(() => createMessageEditor(basicMessage));
   const [channelEditor, setChannelEditor] = useState(() => createChannelEditor(demoChannel));
@@ -52,6 +53,7 @@ export function App() {
   }
 
   function sendDemoMessage(content: string): void {
+    setReferenceTime(new Date().toISOString());
     setChannelEditor(previous => createChannelEditor({
       ...previous.channel,
       messages: [
@@ -64,6 +66,46 @@ export function App() {
         },
       ],
     }));
+    setCopyStatus("");
+  }
+
+  function sendDemoThreadMessage(threadId: string, content: string): void {
+    const timestamp = new Date().toISOString();
+    setReferenceTime(timestamp);
+    const author = { id: "you", displayName: "Vous" };
+    setChannelEditor((previous) => {
+      const target = previous.channel.threads?.find(thread => thread.id === threadId);
+      if (!target)
+        return previous;
+      return createChannelEditor({
+        ...previous.channel,
+        threads: previous.channel.threads?.map(thread => thread.id === threadId
+          ? {
+              ...thread,
+              messages: [
+                ...thread.messages,
+                {
+                  id: crypto.randomUUID(),
+                  author,
+                  timestamp,
+                  body: { kind: "markdown", content },
+                },
+              ],
+            }
+          : thread) ?? [],
+        messages: previous.channel.messages.map(message => message.thread?.id === threadId
+          ? {
+              ...message,
+              thread: {
+                ...message.thread,
+                name: target.name,
+                messageCount: message.thread.messageCount + 1,
+                lastMessage: { author, content, timestamp },
+              },
+            }
+          : message),
+      });
+    });
     setCopyStatus("");
   }
 
@@ -174,11 +216,20 @@ export function App() {
               <div className="preview-width" style={{ width, maxWidth: "100%" }}>
                 <DiscordUI
                   theme={theme}
+                  {...(isChannel
+                    ? { referenceTime }
+                    : {})}
                   locale="fr-FR"
                   timeZone="UTC"
                   entities={demoEntities}
                   renderCode={renderHighlightedCode}
                   labels={{
+                    thread: "Fil",
+                    openThread: "Ouvrir le fil",
+                    closeThread: "Fermer le fil",
+                    threadMessageSingular: "{count} Message",
+                    threadMessagePlural: "{count} Messages",
+                    threadNoRecentMessages: "Aucun message récent dans ce fil.",
                     messages: "Messages",
                     emptyChannel: "Aucun message dans ce salon.",
                     messagePlaceholder: "Message #{channel}",
@@ -191,7 +242,7 @@ export function App() {
                   }}
                 >
                   {isChannel
-                    ? <ChannelView key={`channel-${revision}`} channel={channelEditor.channel} height={620} onSend={sendDemoMessage} composerDisabled={Boolean(channelEditor.error)} />
+                    ? <ChannelView key={`channel-${revision}`} channel={channelEditor.channel} height={620} onSend={sendDemoMessage} onThreadSend={sendDemoThreadMessage} composerDisabled={Boolean(channelEditor.error)} />
                     : <Message key={`${scenario}-${revision}`} message={message} />}
 
                 </DiscordUI>

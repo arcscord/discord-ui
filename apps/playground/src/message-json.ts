@@ -136,12 +136,31 @@ function embed(value: unknown, path: string): void {
     optional(field, "inline", location, boolean);
   }));
 }
-function validateMessage(value: unknown, path = "$"): asserts value is MessageView {
+function validateAuthor(value: unknown, path: string): void {
+  const author = identified(value, path);
+  string(author.displayName, `${path}.displayName`);
+  for (const key of ["avatarUrl", "color"]) optional(author, key, path, string);
+  for (const key of ["bot", "verified"]) optional(author, key, path, boolean);
+}
+function validateThreadSummary(value: unknown, path: string): void {
+  const thread = identified(value, path);
+  string(thread.name, `${path}.name`);
+  if (typeof thread.messageCount !== "number" || !Number.isSafeInteger(thread.messageCount) || thread.messageCount < 0)
+    throw new Error(`${path}.messageCount : entier positif ou nul attendu.`);
+  optional(thread, "lastMessage", path, (value, location) => {
+    const last = object(value, location);
+    validateAuthor(last.author, `${location}.author`);
+    string(last.content, `${location}.content`);
+    string(last.timestamp, `${location}.timestamp`);
+  });
+}
+
+function validateMessage(value: unknown, path = "$", allowThread = true): asserts value is MessageView {
   const message = identified(value, path);
-  const author = identified(message.author, `${path}.author`);
-  string(author.displayName, `${path}.author.displayName`);
-  for (const key of ["avatarUrl", "color"]) optional(author, key, `${path}.author`, string);
-  for (const key of ["bot", "verified"]) optional(author, key, `${path}.author`, boolean);
+  validateAuthor(message.author, `${path}.author`);
+  if (!allowThread && "thread" in message)
+    throw new Error(`${path}.thread : les réponses d’un fil ne peuvent pas contenir un autre fil.`);
+  optional(message, "thread", path, validateThreadSummary);
   string(message.timestamp, `${path}.timestamp`);
   const body = object(message.body, `${path}.body`);
   if (body.kind === "components-v2") {
@@ -164,6 +183,17 @@ function validateChannel(value: unknown): asserts value is ChannelViewModel {
   string(channel.name, "$.name");
   optional(channel, "topic", "$", string);
   list(channel.messages, "$.messages", validateMessage);
+  optional(channel, "threads", "$", (value, path) => list(value, path, (value, path) => {
+    const thread = identified(value, path);
+    string(thread.name, `${path}.name`);
+    string(thread.parentMessageId, `${path}.parentMessageId`);
+    list(thread.messages, `${path}.messages`, (value, path) => validateMessage(value, path, false));
+    const parent = (channel.messages as MessageView[]).find(message => message.id === thread.parentMessageId);
+    if ((thread.messages as MessageView[]).some(message => message.id === thread.parentMessageId))
+      throw new Error(`${path}.messages : le message parent ne doit pas être répété dans les réponses.`);
+    if (!parent || parent.thread?.id !== thread.id)
+      throw new Error(`${path}.parentMessageId : le parent doit référencer ce fil.`);
+  }));
 }
 
 function parseDocument<T>(draft: string, validate: (value: unknown) => asserts value is T): { ok: true; value: T } | { ok: false; error: string } {
