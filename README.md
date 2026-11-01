@@ -8,6 +8,8 @@ AutoThreads and the Arcscord documentation. Package: `@arcscord/discord-ui`.
 Version `0.0.0`, not published. The package currently
 exports composable message primitives, serializable types and scoped light/dark styles.
 A Vite playground consumes the library. The payload adapter is planned.
+A dedicated Docusaurus site in `apps/website` contains the landing, interactive
+examples and initial documentation. See [website development](./apps/website/README.md).
 No AutoThreads or Arcscord runtime dependency is included.
 
 ## Development
@@ -30,6 +32,8 @@ and desktop/mobile interactions. Next.js and Docusaurus integration builds are s
 | Command | Purpose |
 | --- | --- |
 | `pnpm dev` | Start the playground with live package updates |
+| `pnpm dev:website` | Build the library and start the Docusaurus website |
+| `pnpm build:website` | Build the library and production website |
 | `pnpm build` | Build all workspace packages |
 | `pnpm build:lib` | Build the distributable library |
 | `pnpm lint` | Check formatting and lint without editing |
@@ -40,7 +44,7 @@ and desktop/mobile interactions. Next.js and Docusaurus integration builds are s
 | `pnpm test:browser` | Build and run desktop/mobile browser checks |
 | `pnpm pack:check` | Verify the built tarball in an isolated consumer |
 | `pnpm check` | Lint, types, tests, build and tarball verification |
-| `pnpm clean` | Remove library/playground output and coverage |
+| `pnpm clean` | Remove library, playground, website output and coverage |
 
 Run `pnpm build:lib` before `pnpm pack:check`, or use `pnpm check`. The tarball check
 installs pinned consumer dependencies in a temporary directory and needs registry

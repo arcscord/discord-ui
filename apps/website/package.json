@@ -1,0 +1,29 @@
+{
+  "name": "@arcscord/discord-ui-website",
+  "private": true,
+  "scripts": {
+    "dev": "docusaurus start --host 127.0.0.1",
+    "build": "docusaurus build",
+    "preview": "docusaurus serve --host 127.0.0.1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@arcscord/discord-ui": "workspace:*",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-content-docs": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-classic": "3.10.2",
+    "@docusaurus/theme-live-codeblock": "3.10.2",
+    "@mdx-js/react": "3.1.1",
+    "prism-react-renderer": "2.4.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-live": "4.1.8",
+    "sucrase": "3.35.1"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2"
+  }
+}

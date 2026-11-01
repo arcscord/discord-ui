@@ -1,0 +1,25 @@
+---
+title: Introduction
+hide_table_of_contents: true
+pagination_next: null
+pagination_prev: null
+---
+
+import { DiscordUI, Message } from '@arcscord/discord-ui';
+
+# Discord interfaces, composed with React
+
+Arcscord Discord UI renders dynamic Discord message examples without screenshots.
+Use messages, Markdown, embeds, Components V2, channels and threads in your React interfaces.
+
+<DiscordUI theme="dark" locale="en-US" timeZone="UTC">
+  <Message message={{ id: 'intro', author: { id: 'bot', displayName: 'Welcome Bot', bot: true }, timestamp: '2026-11-01T10:24:00Z', body: { kind: 'markdown', content: '**Hello from React.** Try this spoiler: ||You found it!||' } }} />
+</DiscordUI>
+
+The library renders data supplied by your application. Channel messages and thread replies in
+the demos stay in the browser; they do not call Discord.
+
+This website and the package are in development. Explore the [component catalogue](/components)
+or [edit the examples in React](/playground?example=message). The complete guides are planned for the next stage.
+
+[Read the installation status](./installation.md) or [explore the live examples](/#components).

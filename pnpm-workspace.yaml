@@ -9,5 +9,9 @@ packages:
   - packages/*
   - apps/*
 
+# Babel uses the same semver APIs in v7; keep no-downgrade protection enabled.
+overrides:
+  semver@^6.3.1: 7.8.5
+
 allowBuilds:
   esbuild: true

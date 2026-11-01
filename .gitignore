@@ -4,6 +4,8 @@ coverage/
 *.tsbuildinfo
 *.tgz
 .local/
+**/.docusaurus/
+apps/website/build/
 .DS_Store
 .env
 .env.*

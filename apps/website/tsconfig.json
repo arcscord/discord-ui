@@ -1,0 +1,14 @@
+{
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["node", "@docusaurus/theme-live-codeblock"],
+    "paths": { "@site/*": ["./*"], "@theme/*": ["./node_modules/@docusaurus/theme-classic/lib/theme/*"] }
+  },
+  "include": ["docusaurus.config.ts", "sidebars.ts", "src"]
+}

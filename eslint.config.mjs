@@ -5,7 +5,13 @@ export default antfu({
   typescript: true,
   react: true,
   stylistic: { quotes: "double", semi: true },
-  ignores: ["**/dist/**", "coverage/**", ".local/**"],
+  ignores: [
+    "**/dist/**",
+    "**/.docusaurus/**",
+    "apps/website/build/**",
+    "coverage/**",
+    ".local/**",
+  ],
 }, {
   rules: {
     "ts/consistent-type-definitions": ["error", "type"],
