@@ -3,11 +3,19 @@ import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
 import type { ReactionView } from "./reaction";
 import type { ThreadSummaryView } from "./thread";
 
+/** Colors use six-digit hex values; omitted values are generated from the author. */
+export type AvatarFallback = {
+  background?: string;
+  letter?: string;
+  color?: string;
+};
+
 /** Display metadata supplied by the application, without Discord API calls. */
 export type MessageAuthor = {
   id: string;
   displayName: string;
   avatarUrl?: string;
+  avatarFallback?: AvatarFallback;
   bot?: boolean;
   verified?: boolean;
   color?: string;

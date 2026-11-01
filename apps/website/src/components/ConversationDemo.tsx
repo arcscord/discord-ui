@@ -6,7 +6,12 @@ import { initialChannel } from "../data/examples";
 function localMessage(content: string): ThreadMessageView {
   return {
     id: crypto.randomUUID(),
-    author: { id: "you", displayName: "You" },
+    author: {
+      id: "you",
+      displayName: "You",
+      color: "#e4a44b",
+      avatarFallback: { background: "#98601d", letter: "Y" },
+    },
     timestamp: new Date().toISOString(),
     body: { kind: "text", content },
   };

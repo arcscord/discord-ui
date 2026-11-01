@@ -6,6 +6,7 @@ export const basicMessage: MessageView = {
     id: "author-arcscord",
     displayName: "Arcscord",
     bot: true,
+    avatarUrl: "/bot-avatar.png",
     verified: true,
     color: "#8ea1e1",
   },

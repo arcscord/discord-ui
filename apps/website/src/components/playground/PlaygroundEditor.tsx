@@ -63,7 +63,9 @@ export default function PlaygroundEditor() {
                       ? "Support channel"
                       : item.id === "reactions"
                         ? "Reactions — complete message"
-                        : item.title}
+                        : item.id === "avatar"
+                          ? "Avatar generator"
+                          : item.title}
                   </option>
                 ))}
               </optgroup>

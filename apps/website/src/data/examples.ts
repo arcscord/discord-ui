@@ -16,7 +16,13 @@ export const welcome: MessageView = {
       me: true,
     },
   ],
-  author: { id: "welcome-bot", displayName: "Welcome Bot", bot: true },
+  author: {
+    id: "welcome-bot",
+    displayName: "Welcome Bot",
+    bot: true,
+    avatarUrl: "/examples/bot-avatar.png",
+    color: "#a7a9ff",
+  },
   timestamp,
   body: { kind: "markdown", content: "## Welcome to the community, <@123456789012345678>!\nYour next great conversation starts here.\n\n> ||This is a spoiler — click to reveal.||" },
 };
@@ -40,7 +46,13 @@ export const release: MessageView = {
       count: 2,
     },
   ],
-  author: { id: "release-bot", displayName: "Release Bot", bot: true },
+  author: {
+    id: "release-bot",
+    displayName: "Release Bot",
+    bot: true,
+    avatarUrl: "/examples/bot-avatar.png",
+    color: "#a7a9ff",
+  },
   timestamp,
   body: { kind: "markdown", content: "A little update. A lot of possibilities." },
   embeds: [
@@ -58,7 +70,13 @@ export const release: MessageView = {
 };
 export const ticket: MessageView = {
   id: "ticket",
-  author: { id: "support-bot", displayName: "Support Bot", bot: true },
+  author: {
+    id: "support-bot",
+    displayName: "Support Bot",
+    bot: true,
+    avatarUrl: "/examples/bot-avatar.png",
+    color: "#a7a9ff",
+  },
   timestamp,
   body: {
     kind: "components-v2",
@@ -89,7 +107,13 @@ export const ticket: MessageView = {
 };
 export const markdown: MessageView = {
   id: "markdown",
-  author: { id: "support-bot", displayName: "Support Bot", bot: true },
+  author: {
+    id: "support-bot",
+    displayName: "Support Bot",
+    bot: true,
+    avatarUrl: "/examples/bot-avatar.png",
+    color: "#a7a9ff",
+  },
   timestamp,
   body: { kind: "markdown", content: "**Welcome to the server, <@123456789012345678>!**\n\nWe're excited to have you here.\nHere's a quick tip: ||you can find the full guide in the server guide channel.||\n\nTo get started, try running:\n```bash\n/help\n```" },
 };
@@ -126,7 +150,12 @@ export const initialChannel: ChannelViewModel = {
   messages: [
     {
       id: "question",
-      author: { id: "alex", displayName: "Alex" },
+      author: {
+        id: "alex",
+        displayName: "Alex",
+        color: "#57bfa0",
+        avatarFallback: { background: "#337c96", letter: "A" },
+      },
       timestamp: "2026-11-01T09:12:00Z",
       body: { kind: "text", content: "I'm having trouble getting the bot to respond. Any ideas?" },
     },
@@ -145,7 +174,12 @@ export const initialChannel: ChannelViewModel = {
     },
     {
       id: "starter",
-      author: { id: "alex", displayName: "Alex" },
+      author: {
+        id: "alex",
+        displayName: "Alex",
+        color: "#57bfa0",
+        avatarFallback: { background: "#337c96", letter: "A" },
+      },
       timestamp: "2026-11-01T09:18:00Z",
       body: { kind: "text", content: "That looks good, thanks! One more question — how do I configure welcome messages?" },
       thread: {
@@ -153,7 +187,12 @@ export const initialChannel: ChannelViewModel = {
         name: "Setup help",
         messageCount: 3,
         lastMessage: {
-          author: { id: "alex", displayName: "Alex" },
+          author: {
+            id: "alex",
+            displayName: "Alex",
+            color: "#57bfa0",
+            avatarFallback: { background: "#337c96", letter: "A" },
+          },
           content: "Ah, that was it! It's working now. Thanks!",
           timestamp: "2026-11-01T09:28:00Z",
         },
@@ -168,7 +207,12 @@ export const initialChannel: ChannelViewModel = {
       messages: [
         {
           id: "reply-1",
-          author: { id: "alex", displayName: "Alex" },
+          author: {
+            id: "alex",
+            displayName: "Alex",
+            color: "#57bfa0",
+            avatarFallback: { background: "#337c96", letter: "A" },
+          },
           timestamp: "2026-11-01T09:19:00Z",
           body: { kind: "markdown", content: "Here is my current configuration. Is anything missing?\n```json\n{\n  \"welcomeChannel\": \"123456789012345678\",\n  \"message\": \"Welcome!\"\n}\n```" },
         },
@@ -187,7 +231,12 @@ export const initialChannel: ChannelViewModel = {
         },
         {
           id: "reply-3",
-          author: { id: "alex", displayName: "Alex" },
+          author: {
+            id: "alex",
+            displayName: "Alex",
+            color: "#57bfa0",
+            avatarFallback: { background: "#337c96", letter: "A" },
+          },
           timestamp: "2026-11-01T09:28:00Z",
           body: { kind: "text", content: "Ah, that was it! It's working now. Thanks!" },
         },

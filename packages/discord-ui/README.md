@@ -248,3 +248,14 @@ customizable with `labels.reactions`.
 
 Fenced and inline code wrap long lines, including highlighted tokens, without
 internal scrollbars. Source whitespace and line breaks are preserved.
+
+
+## Generated avatars
+
+`Avatar` generates a single-letter avatar when no usable image is available.
+Its default background is selected deterministically from the author ID. Set
+`author.avatarFallback: { background: "#337c96", letter: "A", color: "#ffffff" }`
+to customize it. Colors accept six-digit hex values. The first grapheme of the
+letter (or display name) is used, including Unicode emoji. Image failures and
+blocked remote images use the same fallback. `avatarUrl` takes priority.
+The website's Avatar playground example includes live letter and color controls.

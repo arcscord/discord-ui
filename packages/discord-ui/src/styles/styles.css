@@ -6,7 +6,8 @@
 .dui-message { background: var(--discord-ui-background); }
 .dui-message-main { min-width: 0; }
 .dui-message-header { flex-wrap: wrap; }
-.dui-avatar { display: inline-flex; height: 40px; border-radius: 50%; overflow: hidden; align-items: center; justify-content: center; background: var(--discord-ui-accent); color: white; font-size: 13px; font-weight: 600; padding-top: 0; }
+.dui-avatar { display: inline-flex; height: 40px; border-radius: 50%; overflow: hidden; align-items: center; justify-content: center; background: var(--discord-ui-accent); color: white; font-size: 20px; font-weight: 600; padding-top: 0; }
+.dui-avatar > span { font-size: inherit; line-height: 1; }
 .dui-author-name { font-weight: 600; }
 .dui-timestamp { color: var(--discord-ui-muted); font-size: 12px; }
 .dui-message-text { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -58,7 +59,7 @@
 .dui-component-button[aria-disabled="true"] { cursor: not-allowed; }
 .dui-component-button:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 2px; }
 @container (max-width: 480px) {
-  .dui-avatar { height: 32px; }
+  .dui-avatar { height: 32px; font-size: 16px; }
   .dui-embed { padding: 10px; gap: 8px; }
   .dui-embed-thumbnail { width: 52px; }
   .dui-embed-thumbnail img { width: 52px; height: 52px; }

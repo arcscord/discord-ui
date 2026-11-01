@@ -38,7 +38,14 @@ export function ComponentSample({ id, theme }: { id: string; theme: ThemeName })
     );
     case "discord-ui": case "message": return <Message message={welcome} />;
     case "message-frame": return <MessageFrame avatar={<Avatar author={welcome.author} />} header={<MessageHeader author={welcome.author} timestamp={welcome.timestamp} />} footer={<small>Composed with React primitives.</small>}><MessageContent content="Every part has its place." /></MessageFrame>;
-    case "avatar": return <Avatar author={welcome.author} />;
+    case "avatar": return (
+      <Avatar author={{
+        id: "alex",
+        displayName: "Alex",
+        avatarFallback: { background: "#337c96", letter: "A" },
+      }}
+      />
+    );
     case "author": return <Author author={welcome.author} />;
     case "message-header": return <MessageHeader author={welcome.author} timestamp={welcome.timestamp} />;
     case "message-timestamp": return <MessageTimestamp timestamp={welcome.timestamp} />;

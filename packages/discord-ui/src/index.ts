@@ -38,7 +38,7 @@ export type { ThreadPreviewProps } from "./components/thread/thread-preview";
 export type { ChannelViewModel } from "./model/channel";
 export type { ActionRowView, ComponentsV2Body, ContainerChild, ContainerView, GalleryView, LinkButtonView, MessageComponent, SectionView, SeparatorView, TextDisplayView, ThumbnailView } from "./model/components";
 export type { EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities } from "./model/content";
-export type { MessageAuthor, MessageView, TextMessageBody } from "./model/message";
+export type { AvatarFallback, MessageAuthor, MessageView, TextMessageBody } from "./model/message";
 export type { ReactionToggleHandler, ReactionView } from "./model/reaction";
 export type { ThreadMessageView, ThreadSummaryView, ThreadView } from "./model/thread";
 export { defineTheme, themes, themeTokenProperties } from "./themes";

@@ -140,6 +140,10 @@ function validateAuthor(value: unknown, path: string): void {
   const author = identified(value, path);
   string(author.displayName, `${path}.displayName`);
   for (const key of ["avatarUrl", "color"]) optional(author, key, path, string);
+  optional(author, "avatarFallback", path, (value, location) => {
+    const fallback = object(value, location);
+    for (const key of ["background", "letter", "color"]) optional(fallback, key, location, string);
+  });
   for (const key of ["bot", "verified"]) optional(author, key, path, boolean);
 }
 function validateThreadSummary(value: unknown, path: string): void {

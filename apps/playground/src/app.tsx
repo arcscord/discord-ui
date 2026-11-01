@@ -60,7 +60,12 @@ export function App() {
         ...previous.channel.messages,
         {
           id: crypto.randomUUID(),
-          author: { id: "you", displayName: "Vous" },
+          author: {
+            id: "you",
+            displayName: "Vous",
+            color: "#e4a44b",
+            avatarFallback: { background: "#98601d", letter: "V" },
+          },
           timestamp: new Date().toISOString(),
           body: { kind: "markdown", content },
         },
@@ -72,7 +77,12 @@ export function App() {
   function sendDemoThreadMessage(threadId: string, content: string): void {
     const timestamp = new Date().toISOString();
     setReferenceTime(timestamp);
-    const author = { id: "you", displayName: "Vous" };
+    const author = {
+      id: "you",
+      displayName: "Vous",
+      color: "#e4a44b",
+      avatarFallback: { background: "#98601d", letter: "V" },
+    };
     setChannelEditor((previous) => {
       const target = previous.channel.threads?.find(thread => thread.id === threadId);
       if (!target)

@@ -27,7 +27,7 @@ export const channelCode = `function SupportChannel() {
   function send(content) {
     const message = {
       id: crypto.randomUUID(),
-      author: { id: "you", displayName: "You" },
+      author: { id: "you", displayName: "You", color: "#e4a44b", avatarFallback: { background: "#98601d", letter: "Y" } },
       timestamp: new Date().toISOString(),
       body: { kind: "text", content },
     };
@@ -40,7 +40,7 @@ export const channelCode = `function SupportChannel() {
   function reply(threadId, content) {
     const message = {
       id: crypto.randomUUID(),
-      author: { id: "you", displayName: "You" },
+      author: { id: "you", displayName: "You", color: "#e4a44b", avatarFallback: { background: "#98601d", letter: "Y" } },
       timestamp: new Date().toISOString(),
       body: { kind: "text", content },
     };
@@ -123,8 +123,20 @@ export const componentExamples: ComponentExample[] = [
     id: "avatar",
     title: "Avatar",
     family: "Messages",
-    description: "Display a supplied avatar, with initials when an image is unavailable.",
-    code: "() => <Avatar author={welcome.author} />",
+    description: "Generate an avatar with a letter and background color, or display your own image.",
+    code: `function AvatarGenerator() {
+  const [letter, setLetter] = useState("A");
+  const [background, setBackground] = useState("#337c96");
+  const [color, setColor] = useState("#ffffff");
+  const author = { id: "custom-avatar", displayName: "Alex", avatarFallback: { letter, background, color } };
+  return <div style={{ display: "grid", gap: 16 }}>
+    <label>Letter <input aria-label="Avatar letter" value={letter} onChange={event => setLetter(event.target.value)} /></label>
+    <label>Background <input aria-label="Avatar background" type="color" value={background} onChange={event => setBackground(event.target.value)} /></label>
+    <label>Text color <input aria-label="Avatar text color" type="color" value={color} onChange={event => setColor(event.target.value)} /></label>
+    <Avatar author={author} />
+    <Message message={{ id: "avatar-preview", author, timestamp: "2026-11-01T10:24:00Z", body: { kind: "text", content: "Your generated avatar, inside a message." } }} />
+  </div>;
+}`,
   },
   {
     id: "author",
@@ -335,7 +347,7 @@ export const componentExamples: ComponentExample[] = [
         ...current,
         messages: [...current.messages, {
           id: crypto.randomUUID(),
-          author: { id: "you", displayName: "You" },
+          author: { id: "you", displayName: "You", color: "#e4a44b", avatarFallback: { background: "#98601d", letter: "Y" } },
           timestamp: new Date().toISOString(),
           body: { kind: "text", content },
         }],
