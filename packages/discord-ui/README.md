@@ -309,3 +309,51 @@ and `selectMuted` control their opaque surfaces and placeholder text.
 `Button` supports primary, secondary, success, danger and premium styles.
 `File` renders a file name, optional display size, safe HTTP(S) link and spoiler.
 The playground's **Composants interactifs** scenario demonstrates every variant.
+
+## Replies, edits and classic attachments
+
+Messages and thread replies accept a non-recursive `reply` snapshot. Supply the
+original ID, author and plain-text preview, or `{ messageId, unavailable: true }`
+when the original cannot be displayed. The host resolves the original and supplies
+a preview appropriate for display (including any spoiler redaction). The preview
+does not fetch a message or navigate to it. `ReplyPreview` is also exported for
+composition, and `MessageFrame` accepts a `reply` slot.
+
+```tsx
+const message: MessageView = {
+  id: "reply",
+  author: { id: "bob", displayName: "Bob" },
+  timestamp: "2026-10-29T18:00:00Z",
+  reply: {
+    messageId: "original",
+    author: { id: "alice", displayName: "Alice" },
+    content: "Can you share the guide?",
+  },
+  editedTimestamp: "2026-10-29T18:04:00Z",
+  body: { kind: "markdown", content: "Here is the **guide**." },
+  attachments: [
+    {
+      id: "guide",
+      kind: "file",
+      name: "guide.pdf",
+      url: "https://example.com/guide.pdf",
+      size: "24 KB",
+    }
+  ],
+};
+```
+
+`editedTimestamp` shows an edited marker with a tooltip formatted using the scope's
+locale and timezone. Use `edited: true` when the edit date is unknown. These fields
+are optional and do not change the original timestamp. An invalid edit date keeps
+the marker with the invalid-timestamp tooltip.
+
+Text and Markdown messages accept `attachments: FileView[]` alongside images,
+embeds and action rows. Files reuse `File`, including safe HTTP(S) links and
+keyboard-accessible spoilers. File names and sizes are supplied by the caller;
+no file metadata is fetched. V2 messages use file components in `body.components`
+instead of classic attachments.
+
+Override `labels.reply`, `labels.replyUnavailable`, `labels.edited` and
+`labels.downloadFile` (`{name}` placeholder) to localize these elements. Edit
+markers are in the message header. Reply previews truncate to one line.

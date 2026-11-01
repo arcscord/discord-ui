@@ -4,6 +4,7 @@ import type { MediaView } from "../../model/content";
 import { linkUrl } from "../../utils/urls";
 import { Markdown } from "../content/markdown";
 import { Spoiler } from "../content/spoiler";
+import { useDisplayOptions } from "../display-context";
 import { Media } from "../media/media";
 
 export function Container({ children, accentColor, spoiler = false }: { children: ReactNode; accentColor?: string | undefined; spoiler?: boolean | undefined }) {
@@ -87,6 +88,7 @@ export function Button({ label, style = "primary", disabled = false, emoji, onCl
 }
 
 export function File({ file }: { file: FileView }) {
+  const { labels } = useDisplayOptions();
   const href = linkUrl(file.url);
   const content = (
     <div className="dui-file">
@@ -100,7 +102,7 @@ export function File({ file }: { file: FileView }) {
           : null}
       </div>
       {href
-        ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Download ${file.name}`}>↓</a>
+        ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={labels.downloadFile.replace("{name}", file.name)}>↓</a>
         : null}
     </div>
   );

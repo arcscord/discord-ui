@@ -74,6 +74,21 @@ export const demoChannel: ChannelViewModel = {
     },
     {
       id: "channel-4",
+      reply: {
+        messageId: "channel-3",
+        author: { id: "chris", displayName: "Chris", color: "#57bfa0" },
+        content: "Voici une image de démonstration :",
+      },
+      editedTimestamp: "2026-10-29T18:04:00Z",
+      attachments: [
+        {
+          id: "guide",
+          kind: "file",
+          name: "guide.pdf",
+          url: "https://example.com/guide.pdf",
+          size: "24 KB",
+        },
+      ],
       author: { id: "ines", displayName: "Inès", color: "#b387df" },
       timestamp: "2026-10-29T18:02:00Z",
       body: { kind: "markdown", content: "Le JSON permet d’ajouter ou de modifier les messages. Essayez aussi la saisie en bas !" },

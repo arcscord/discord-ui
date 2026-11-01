@@ -238,3 +238,52 @@ it("uses fictional first names and generic app names in the demos", () => {
     }
   }
 });
+
+it("validates reply snapshots, edit metadata and classic attachments", () => {
+  const message = {
+    ...basicMessage,
+    reply: { messageId: "original", author: basicMessage.author, content: "Hello" },
+    edited: true,
+    editedTimestamp: "2026-10-29T18:04:00Z",
+    attachments: [
+      {
+        id: "file",
+        kind: "file",
+        name: "guide.pdf",
+        url: "https://example.com/guide.pdf",
+      },
+    ],
+  };
+  expect(parseMessageJson(JSON.stringify(message))).toEqual({ ok: true, message });
+  expect(parseMessageJson(JSON.stringify({
+    ...message,
+    reply: { messageId: "deleted", unavailable: true },
+  })).ok).toBe(true);
+  for (const invalid of [
+    {
+      ...message,
+      reply: { messageId: "original" },
+    },
+    {
+      ...message,
+      reply: { messageId: "original", unavailable: true, content: "stale" },
+    },
+    { ...message, edited: "yes" },
+    { ...message, editedTimestamp: 42 },
+    {
+      ...message,
+      attachments: [
+        {
+          id: "file",
+          kind: "file",
+          name: "guide.pdf",
+          url: 42,
+        },
+      ],
+    },
+    {
+      ...message,
+      body: { kind: "components-v2", components: [] },
+    },
+  ]) expect(parseMessageJson(JSON.stringify(invalid)).ok).toBe(false);
+});

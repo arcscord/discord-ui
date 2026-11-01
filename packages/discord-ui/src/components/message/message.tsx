@@ -3,6 +3,7 @@ import type { MessageView } from "../../model/message";
 import type { ReactionToggleHandler } from "../../model/reaction";
 import { Avatar } from "../author/avatar";
 import { MessageComponents } from "../components-v2/message-components";
+import { File } from "../components-v2/primitives";
 import { Markdown } from "../content/markdown";
 import { useDisplayOptions } from "../display-context";
 import { Embed } from "../embed/embed";
@@ -12,6 +13,7 @@ import { MessageContent } from "./message-content";
 import { MessageFrame } from "./message-frame";
 import { MessageHeader } from "./message-header";
 import { Reactions } from "./reactions";
+import { ReplyPreview } from "./reply-preview";
 
 export type MessageProps = ComponentHandlers & {
   onReactionToggle?: ReactionToggleHandler | undefined;
@@ -26,8 +28,11 @@ export function Message({ message, onReactionToggle, onThreadOpen, activeThreadI
   const referenceTime = reference ?? message.timestamp;
   return (
     <MessageFrame
+      reply={message.reply
+        ? <ReplyPreview reply={message.reply} />
+        : undefined}
       avatar={<Avatar author={message.author} />}
-      header={<MessageHeader author={message.author} timestamp={message.timestamp} />}
+      header={<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} editedTimestamp={message.editedTimestamp} />}
       hasThread={showThreadPreview && Boolean(message.thread)}
       footer={showThreadPreview && message.thread
         ? <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
@@ -41,6 +46,7 @@ export function Message({ message, onReactionToggle, onThreadOpen, activeThreadI
       {message.media?.length
         ? <MediaGallery items={message.media} />
         : null}
+      {message.attachments?.map(file => <File key={file.id} file={file} />)}
       {message.embeds?.map(embed => <Embed key={embed.id} embed={embed} referenceTime={referenceTime} />)}
       {message.components?.length
         ? <MessageComponents components={message.components} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} />

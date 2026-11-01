@@ -183,6 +183,17 @@ export const componentExamples: ComponentExample[] = [
     code: "() => <Author author={welcome.author} />",
   },
   {
+    id: "reply-preview",
+    title: "ReplyPreview",
+    family: "Messages",
+    description: "Show the original author and a plain-text reply preview, or an unavailable original.",
+    code: `() => <div style={{ display: "grid", gap: 12 }}>
+      <ReplyPreview reply={{ messageId: welcome.id, author: welcome.author, content: "Can you share the guide?" }} />
+      <ReplyPreview reply={{ messageId: "deleted", unavailable: true }} />
+      <Message message={{ ...welcome, reply: { messageId: "original", author: welcome.author, content: "Can you share the guide?" }, editedTimestamp: "2026-11-01T10:30:00Z", attachments: [{ id: "guide", kind: "file", name: "guide.pdf", url: "https://example.com/guide.pdf", size: "24 KB" }] }} />
+    </div>`,
+  },
+  {
     id: "message-header",
     title: "MessageHeader",
     family: "Messages",

@@ -4,13 +4,14 @@ import { useDisplayOptions } from "../display-context";
 
 export type MessageFrameProps = {
   hasThread?: boolean;
+  reply?: ReactNode;
   avatar?: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
   children: ReactNode;
 };
 
-export function MessageFrame({ avatar, header, footer, children, hasThread = false }: MessageFrameProps) {
+export function MessageFrame({ avatar, reply, header, footer, children, hasThread = false }: MessageFrameProps) {
   const { resolvedTheme, scoped } = useDisplayOptions();
   return (
     <article
@@ -23,6 +24,9 @@ export function MessageFrame({ avatar, header, footer, children, hasThread = fal
         ? undefined
         : themeStyle(resolvedTheme.tokens)}
     >
+      {reply
+        ? <div className="dui-message-reply">{reply}</div>
+        : null}
       <div className="dui-message-avatar">{avatar}</div>
       <div className="dui-message-main">
         {header}

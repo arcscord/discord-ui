@@ -359,9 +359,24 @@ function validateMessage(value: unknown, path = "$", allowThread = true): assert
     optional(reaction, "me", location, boolean);
   }));
   string(message.timestamp, `${path}.timestamp`);
+  optional(message, "edited", path, boolean);
+  optional(message, "editedTimestamp", path, string);
+  optional(message, "reply", path, (value, location) => {
+    const reply = object(value, location);
+    string(reply.messageId, `${location}.messageId`);
+    optional(reply, "unavailable", location, boolean);
+    if (reply.unavailable === true) {
+      if ("author" in reply || "content" in reply)
+        throw new Error(`${location} : un original indisponible ne contient ni auteur ni contenu.`);
+    }
+    else {
+      validateAuthor(reply.author, `${location}.author`);
+      string(reply.content, `${location}.content`);
+    }
+  });
   const body = object(message.body, `${path}.body`);
   if (body.kind === "components-v2") {
-    if ("embeds" in message || "media" in message || "components" in message)
+    if ("embeds" in message || "media" in message || "components" in message || "attachments" in message)
       throw new Error(`${path} : un message V2 ne peut pas mélanger embeds ou médias classiques.`);
     list(body.components, `${path}.body.components`, component);
   }
@@ -370,6 +385,11 @@ function validateMessage(value: unknown, path = "$", allowThread = true): assert
     optional(message, "components", path, (value, location) => list(value, location, (value, location) => {
       if (object(value, location).kind !== "action-row")
         throw new Error(`${location} : ligne d’actions attendue.`);
+      component(value, location);
+    }));
+    optional(message, "attachments", path, (value, location) => list(value, location, (value, location) => {
+      if (object(value, location).kind !== "file")
+        throw new Error(`${location}.kind : « file » attendu.`);
       component(value, location);
     }));
     optional(message, "media", path, (value, path) => list(value, path, media));

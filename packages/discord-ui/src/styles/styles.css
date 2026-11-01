@@ -210,3 +210,14 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-file-icon { font-size: 32px; color: var(--discord-ui-muted); }
 .dui-file-details { flex: 1; min-width: 0; }
 .dui-file-details small { display: block; color: var(--discord-ui-muted); }
+
+.dui-message-reply { grid-column: 1 / -1; min-width: 0; padding-bottom: 4px; }
+.dui-reply-preview { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--discord-ui-muted); font-size: 13px; }
+.dui-reply-connector { flex: 0 0 32px; height: 12px; margin-left: 20px; border-top: 2px solid var(--discord-ui-quote-border); border-left: 2px solid var(--discord-ui-quote-border); border-top-left-radius: 6px; align-self: flex-end; }
+.dui-reply-preview .dui-avatar { flex: 0 0 16px; width: 16px; height: 16px; padding: 0; }
+.dui-reply-preview .dui-avatar img, .dui-reply-preview .dui-avatar > span { width: 16px; height: 16px; font-size: 10px; }
+.dui-reply-preview .dui-author { flex-shrink: 0; max-width: 35%; overflow: hidden; }
+.dui-reply-content { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dui-message-edited { color: var(--discord-ui-muted); font-size: 11px; }
+.dui-message-edited .dui-timestamp { font-size: inherit; }
+.dui-file-details a, .dui-file-details > span { overflow-wrap: anywhere; }

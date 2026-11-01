@@ -1,4 +1,4 @@
-import type { ActionRowView, ComponentsV2Body } from "./components";
+import type { ActionRowView, ComponentsV2Body, FileView } from "./components";
 import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
 import type { ReactionView } from "./reaction";
 import type { ThreadSummaryView } from "./thread";
@@ -27,6 +27,12 @@ export type TextMessageBody = {
   content: string;
 };
 
+/** A resolved, plain-text reply snapshot, or an unavailable original message. */
+export type ReplyView = { messageId: string } & (
+  | { unavailable: true; author?: never; content?: never }
+  | { unavailable?: false; author: MessageAuthor; content: string }
+);
+
 /** Serializable display data. This is not a Discord send-payload validator. */
 export type MessageMetadata = {
   id: string;
@@ -34,11 +40,15 @@ export type MessageMetadata = {
   /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */
   timestamp: string;
   reactions?: ReactionView[];
+  reply?: ReplyView;
+  /** Shows the edited marker even when the edit date is unknown. */
+  edited?: boolean;
+  editedTimestamp?: string;
 };
 
 export type MessageContentView = (
-  | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; embeds?: EmbedView[]; components?: ActionRowView[] }
-  | { body: ComponentsV2Body; media?: never; embeds?: never; components?: never }
+  | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; attachments?: FileView[]; embeds?: EmbedView[]; components?: ActionRowView[] }
+  | { body: ComponentsV2Body; media?: never; attachments?: never; embeds?: never; components?: never }
 );
 
 export type MessageView = MessageMetadata & MessageContentView & { thread?: ThreadSummaryView };
