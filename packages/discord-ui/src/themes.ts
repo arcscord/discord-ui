@@ -2,6 +2,10 @@ import type { CSSProperties } from "react";
 
 /** Typed public tokens mapped to the CSS variables consumed by every primitive. */
 export const themeTokenProperties = {
+  selectChipBackground: "--discord-ui-select-chip-background",
+  selectBackground: "--discord-ui-select-background",
+  selectMenuBackground: "--discord-ui-select-menu-background",
+  selectMuted: "--discord-ui-select-muted",
   channelHeaderDivider: "--discord-ui-channel-header-divider",
   channelInputBackground: "--discord-ui-channel-input-background",
   background: "--discord-ui-background",

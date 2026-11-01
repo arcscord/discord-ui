@@ -1,3 +1,4 @@
+import type { ComponentHandlers } from "../../model/components";
 import type { MessageView } from "../../model/message";
 import type { ReactionToggleHandler } from "../../model/reaction";
 import type { ThreadView } from "../../model/thread";
@@ -8,7 +9,7 @@ import { MessageList } from "../channel/message-list";
 import { useMessageScroll } from "../channel/use-message-scroll";
 import { useDisplayOptions } from "../display-context";
 
-export type ThreadPanelProps = {
+export type ThreadPanelProps = ComponentHandlers & {
   thread: ThreadView;
   onReactionToggle?: ReactionToggleHandler | undefined;
   parentMessage?: MessageView | undefined;
@@ -18,7 +19,7 @@ export type ThreadPanelProps = {
   autoScroll?: boolean | undefined;
 };
 
-export function ThreadPanel({ thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
+export function ThreadPanel({ onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
   const { labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -51,7 +52,7 @@ export function ThreadPanel({ thread, onReactionToggle, parentMessage, onClose, 
           : undefined}
       />
       <div className="dui-channel-history" role="log" aria-label={`${labels.thread} : ${thread.name}`} aria-live="polite" tabIndex={0} ref={historyRef} onScroll={event => updateFollowState(event.currentTarget)}>
-        <MessageList onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
+        <MessageList onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
       </div>
       <ChannelComposer channelName={thread.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />
     </aside>

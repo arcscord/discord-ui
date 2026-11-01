@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { ChannelViewModel } from "../../model/channel";
+import type { ComponentHandlers } from "../../model/components";
 import type { ReactionToggleHandler } from "../../model/reaction";
 import { useEffect, useRef, useState } from "react";
 import { DiscordUI } from "../discord-ui";
@@ -10,7 +11,7 @@ import { ChannelHeader } from "./channel-header";
 import { MessageList } from "./message-list";
 import { useMessageScroll } from "./use-message-scroll";
 
-export type ChannelViewProps = {
+export type ChannelViewProps = ComponentHandlers & {
   channel: ChannelViewModel;
   onReactionToggle?: ReactionToggleHandler | undefined;
   height?: CSSProperties["height"];
@@ -23,7 +24,7 @@ export type ChannelViewProps = {
   showDateSeparators?: boolean;
 };
 
-export function ChannelView({ channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
+export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
   const { scoped, labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const { historyRef, updateFollowState } = useMessageScroll(channel.id, channel.messages.at(-1)?.id, autoScroll);
@@ -71,7 +72,7 @@ export function ChannelView({ channel, onReactionToggle, height = 560, header, c
             tabIndex={0}
             onScroll={event => updateFollowState(event.currentTarget)}
           >
-            <MessageList onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
+            <MessageList onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
           </div>
           {composer === false
             ? null
@@ -80,6 +81,9 @@ export function ChannelView({ channel, onReactionToggle, height = 560, header, c
         {open
           ? (
               <ThreadPanel
+                onButtonClick={onButtonClick}
+                onSelectChange={onSelectChange}
+                onPremiumClick={onPremiumClick}
                 key={open.id}
                 thread={open}
                 onReactionToggle={onReactionToggle}

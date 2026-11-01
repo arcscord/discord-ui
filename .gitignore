@@ -10,3 +10,7 @@ apps/website/build/
 .env
 .env.*
 !.env.example
+
+# Deterministic demo avatars are generated from fixtures/avatars.json.
+apps/playground/public/generated/
+apps/website/static/generated/

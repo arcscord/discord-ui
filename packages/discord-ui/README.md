@@ -259,3 +259,53 @@ to customize it. Colors accept six-digit hex values. The first grapheme of the
 letter (or display name) is used, including Unicode emoji. Image failures and
 blocked remote images use the same fallback. `avatarUrl` takes priority.
 The website's Avatar playground example includes live letter and color controls.
+
+## Interactive message components
+
+`Message` and `MessageComponents` accept `onButtonClick(id)`,
+`onSelectChange(id, values)` and `onPremiumClick(skuId)` callbacks. These are local
+UI events; the host handles its own actions or purchase flow.
+
+Action rows accept either `buttons` (existing link buttons, action buttons or
+premium buttons) or a single `select`. Sections also accept action buttons as
+accessories. Classic text/Markdown messages can include `components: ActionRowView[]`
+alongside their embeds and media. V2 messages keep these rows in `body.components`.
+
+```tsx
+const row: ActionRowView = {
+  id: "choices",
+  kind: "action-row",
+  select: {
+    id: "test-values",
+    kind: "string-select",
+    placeholder: "Choose test values",
+    minValues: 0,
+    maxValues: 2,
+    options: [
+      { value: "alpha", label: "Alpha", description: "First typed value" },
+      { value: "beta", label: "Beta", description: "Second typed value" },
+    ],
+  },
+};
+```
+
+Select kinds: `string-select`, `user-select`, `role-select`, `mentionable-select`,
+`channel-select`. String menus alone accept `options` with `value`, `label`,
+`description`, `emoji` and `default`. Entity menus accept resolved `entities`
+and typed `defaultValues: [{ id, type }]`; no Discord resources are fetched.
+User entities reuse `UserView` (author identity, avatar and app fields), roles
+reuse `RoleView` (`id`, `name`, `color`), and channels reuse `ChannelEntityView`.
+Mentionable menus accept users and roles only. Channel menus alone accept
+`channelTypes`, using Discord's numeric channel type IDs. Entity rows have no
+custom description or emoji. Usernames, presence and app badges belong to users;
+role colors belong to roles; channel type, rules and lock icons belong to channels.
+Entity menus provide search and removable selection chips. String menus keep
+Discord's label/description layout, with an optional emoji spanning both lines. `SelectMenu` can also be used directly with controlled
+`values` and `onChange`, or local state initialized from option defaults. Menus
+support arrow keys, Home/End, first-letter navigation, Enter/Space, Escape, and
+outside-click dismissal. Theme tokens `selectBackground`, `selectMenuBackground`
+and `selectMuted` control their opaque surfaces and placeholder text.
+
+`Button` supports primary, secondary, success, danger and premium styles.
+`File` renders a file name, optional display size, safe HTTP(S) link and spoiler.
+The playground's **Composants interactifs** scenario demonstrates every variant.

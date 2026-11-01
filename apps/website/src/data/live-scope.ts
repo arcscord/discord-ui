@@ -11,7 +11,7 @@ export const demoMedia = {
 };
 export const previewEntities = {
   users: {
-    "123456789012345678": { name: "Alex" },
+    "123456789012345678": { name: "Inès" },
   },
 };
 

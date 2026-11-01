@@ -125,3 +125,11 @@ adapt AutoThreads logic. See `packages/discord-ui/THIRD_PARTY_NOTICES` for prove
 and full dependency/upstream notices. The renderer styles are adapted from AutoThreads and shipped as standalone CSS.
 Synthetic SVG fixtures are new.
 The notices are included in the package and available from the playground footer.
+
+### Generated demo avatars
+
+`fixtures/avatars.json` stores fixed avatar letters and colors. Both playgrounds
+run `scripts/workspace/generate-avatars.mts` before `dev` and `build`, generating
+SVG files under their ignored `public/generated/avatars` or
+`static/generated/avatars` directories. Use `pnpm generate:avatars` to regenerate
+both sets manually. Only the definitions and generator belong in Git.

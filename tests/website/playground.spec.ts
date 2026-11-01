@@ -77,7 +77,7 @@ test("copy exports the edited JSX, dependencies and selected theme", async ({ pa
   });
   await page.goto("/playground?example=message");
   const editor = page.getByRole("textbox", { name: "React JSX editor" });
-  await editor.fill((await editor.inputValue()).replace("Welcome Bot", "Copied edit"));
+  await editor.fill((await editor.inputValue()).replace("Arcscord", "Copied edit"));
   await page.getByRole("button", { name: "Ash", exact: true }).click();
   await page.getByRole("button", { name: "Copy code", exact: true }).click();
   await expect(page.getByText("Copied the code shown in the editor.")).toBeVisible();

@@ -18,9 +18,9 @@ export const welcome: MessageView = {
   ],
   author: {
     id: "welcome-bot",
-    displayName: "Welcome Bot",
+    displayName: "Arcscord",
     bot: true,
-    avatarUrl: "/examples/bot-avatar.png",
+    avatarUrl: "/generated/avatars/arcscord.svg",
     color: "#a7a9ff",
   },
   timestamp,
@@ -48,9 +48,9 @@ export const release: MessageView = {
   ],
   author: {
     id: "release-bot",
-    displayName: "Release Bot",
+    displayName: "Music Bot",
     bot: true,
-    avatarUrl: "/examples/bot-avatar.png",
+    avatarUrl: "/generated/avatars/music-bot.svg",
     color: "#a7a9ff",
   },
   timestamp,
@@ -74,7 +74,7 @@ export const ticket: MessageView = {
     id: "support-bot",
     displayName: "Support Bot",
     bot: true,
-    avatarUrl: "/examples/bot-avatar.png",
+    avatarUrl: "/generated/avatars/support-bot.svg",
     color: "#a7a9ff",
   },
   timestamp,
@@ -111,7 +111,7 @@ export const markdown: MessageView = {
     id: "support-bot",
     displayName: "Support Bot",
     bot: true,
-    avatarUrl: "/examples/bot-avatar.png",
+    avatarUrl: "/generated/avatars/support-bot.svg",
     color: "#a7a9ff",
   },
   timestamp,
@@ -141,7 +141,7 @@ export function messageSource(message: MessageView, theme: ThemeName): string {
   }
 `
     : "";
-  return `${interactive ? "import { useState } from \"react\";\n" : ""}import type { MessageView } from "@arcscord/discord-ui";\nimport { DiscordUI, Message } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst message: MessageView = ${JSON.stringify(message, null, 2)};\n\nexport function Example() {\n${state}  return (\n    <DiscordUI theme="${theme}" locale="en-US" timeZone="UTC"\n      entities={{ users: { "123456789012345678": { name: "Alex" } } }}>\n      <Message message={${interactive ? "current" : "message"}}${interactive ? " onReactionToggle={toggleReaction}" : ""} />\n    </DiscordUI>\n  );\n}`;
+  return `${interactive ? "import { useState } from \"react\";\n" : ""}import type { MessageView } from "@arcscord/discord-ui";\nimport { DiscordUI, Message } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst message: MessageView = ${JSON.stringify(message, null, 2)};\n\nexport function Example() {\n${state}  return (\n    <DiscordUI theme="${theme}" locale="en-US" timeZone="UTC"\n      entities={{ users: { "123456789012345678": { name: "Inès" } } }}>\n      <Message message={${interactive ? "current" : "message"}}${interactive ? " onReactionToggle={toggleReaction}" : ""} />\n    </DiscordUI>\n  );\n}`;
 }
 export const initialChannel: ChannelViewModel = {
   id: "support",
@@ -151,8 +151,8 @@ export const initialChannel: ChannelViewModel = {
     {
       id: "question",
       author: {
-        id: "alex",
-        displayName: "Alex",
+        id: "ines",
+        displayName: "Inès",
         color: "#57bfa0",
         avatarFallback: { background: "#337c96", letter: "A" },
       },
@@ -175,8 +175,8 @@ export const initialChannel: ChannelViewModel = {
     {
       id: "starter",
       author: {
-        id: "alex",
-        displayName: "Alex",
+        id: "ines",
+        displayName: "Inès",
         color: "#57bfa0",
         avatarFallback: { background: "#337c96", letter: "A" },
       },
@@ -188,8 +188,8 @@ export const initialChannel: ChannelViewModel = {
         messageCount: 3,
         lastMessage: {
           author: {
-            id: "alex",
-            displayName: "Alex",
+            id: "ines",
+            displayName: "Inès",
             color: "#57bfa0",
             avatarFallback: { background: "#337c96", letter: "A" },
           },
@@ -208,8 +208,8 @@ export const initialChannel: ChannelViewModel = {
         {
           id: "reply-1",
           author: {
-            id: "alex",
-            displayName: "Alex",
+            id: "ines",
+            displayName: "Inès",
             color: "#57bfa0",
             avatarFallback: { background: "#337c96", letter: "A" },
           },
@@ -232,8 +232,8 @@ export const initialChannel: ChannelViewModel = {
         {
           id: "reply-3",
           author: {
-            id: "alex",
-            displayName: "Alex",
+            id: "ines",
+            displayName: "Inès",
             color: "#57bfa0",
             avatarFallback: { background: "#337c96", letter: "A" },
           },

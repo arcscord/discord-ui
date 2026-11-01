@@ -1,4 +1,4 @@
-import type { ComponentsV2Body } from "./components";
+import type { ActionRowView, ComponentsV2Body } from "./components";
 import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
 import type { ReactionView } from "./reaction";
 import type { ThreadSummaryView } from "./thread";
@@ -37,8 +37,8 @@ export type MessageMetadata = {
 };
 
 export type MessageContentView = (
-  | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; embeds?: EmbedView[] }
-  | { body: ComponentsV2Body; media?: never; embeds?: never }
+  | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; embeds?: EmbedView[]; components?: ActionRowView[] }
+  | { body: ComponentsV2Body; media?: never; embeds?: never; components?: never }
 );
 
 export type MessageView = MessageMetadata & MessageContentView & { thread?: ThreadSummaryView };

@@ -1,3 +1,4 @@
+import type { ComponentHandlers } from "../../model/components";
 import type { MessageView } from "../../model/message";
 import type { ReactionToggleHandler } from "../../model/reaction";
 import { Avatar } from "../author/avatar";
@@ -12,7 +13,7 @@ import { MessageFrame } from "./message-frame";
 import { MessageHeader } from "./message-header";
 import { Reactions } from "./reactions";
 
-export type MessageProps = {
+export type MessageProps = ComponentHandlers & {
   onReactionToggle?: ReactionToggleHandler | undefined;
   message: MessageView;
   onThreadOpen?: ((id: string) => void) | undefined;
@@ -20,7 +21,7 @@ export type MessageProps = {
   showThreadPreview?: boolean | undefined;
 };
 
-export function Message({ message, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true }: MessageProps) {
+export function Message({ message, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick }: MessageProps) {
   const { referenceTime: reference } = useDisplayOptions();
   const referenceTime = reference ?? message.timestamp;
   return (
@@ -33,7 +34,7 @@ export function Message({ message, onReactionToggle, onThreadOpen, activeThreadI
         : undefined}
     >
       {message.body.kind === "components-v2"
-        ? <MessageComponents components={message.body.components} referenceTime={referenceTime} />
+        ? <MessageComponents components={message.body.components} referenceTime={referenceTime} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} />
         : message.body.kind === "markdown"
           ? <Markdown content={message.body.content} referenceTime={referenceTime} />
           : <MessageContent content={message.body.content} />}
@@ -41,6 +42,9 @@ export function Message({ message, onReactionToggle, onThreadOpen, activeThreadI
         ? <MediaGallery items={message.media} />
         : null}
       {message.embeds?.map(embed => <Embed key={embed.id} embed={embed} referenceTime={referenceTime} />)}
+      {message.components?.length
+        ? <MessageComponents components={message.components} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} />
+        : null}
       {message.reactions?.length
         ? (
             <Reactions

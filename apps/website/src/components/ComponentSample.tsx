@@ -1,9 +1,11 @@
 import type { ThemeName } from "@arcscord/discord-ui";
-import { ActionRow, Author, Avatar, ChannelComposer, ChannelHeader, Container, Embed, Emoji, LinkButton, Markdown, Media, MediaGallery, Mention, Message, MessageComponents, MessageContent, MessageFrame, MessageHeader, MessageList, MessageTimestamp, Reactions, Section, Separator, Spoiler, TextDisplay, ThreadPanel, ThreadPreview, Thumbnail } from "@arcscord/discord-ui";
+import { ActionRow, Author, Avatar, Button, ChannelComposer, ChannelHeader, Container, Embed, Emoji, File, LinkButton, Markdown, Media, MediaGallery, Mention, Message, MessageComponents, MessageContent, MessageFrame, MessageHeader, MessageList, MessageTimestamp, Reactions, Section, SelectMenu, Separator, Spoiler, TextDisplay, ThreadPanel, ThreadPreview, Thumbnail } from "@arcscord/discord-ui";
 import { useRef, useState } from "react";
+import { selectMenuExamples } from "../../../../fixtures/select-menus";
 import { initialChannel, markdown, release, ticket, welcome } from "../data/examples";
 import { demoMedia } from "../data/live-scope";
 import { ConversationDemo } from "./ConversationDemo";
+import { SelectMenuSample } from "./SelectMenuSample";
 
 export function ComponentSample({ id, theme }: { id: string; theme: ThemeName }) {
   const [reactions, setReactions] = useState([
@@ -25,6 +27,9 @@ export function ComponentSample({ id, theme }: { id: string; theme: ThemeName })
   const [thread, setThread] = useState(initialChannel.threads![0]!);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLDivElement>(null);
+  const selectExample = selectMenuExamples.find(example => example.id === id);
+  if (selectExample)
+    return <SelectMenuSample key={id} example={selectExample} />;
   switch (id) {
     case "reactions": return (
       <Reactions
@@ -40,8 +45,8 @@ export function ComponentSample({ id, theme }: { id: string; theme: ThemeName })
     case "message-frame": return <MessageFrame avatar={<Avatar author={welcome.author} />} header={<MessageHeader author={welcome.author} timestamp={welcome.timestamp} />} footer={<small>Composed with React primitives.</small>}><MessageContent content="Every part has its place." /></MessageFrame>;
     case "avatar": return (
       <Avatar author={{
-        id: "alex",
-        displayName: "Alex",
+        id: "ines",
+        displayName: "Inès",
         avatarFallback: { background: "#337c96", letter: "A" },
       }}
       />
@@ -58,7 +63,7 @@ export function ComponentSample({ id, theme }: { id: string; theme: ThemeName })
     );
     case "mention": return (
       <div>
-        <Mention name="Alex" />
+        <Mention name="Inès" />
         {" "}
         in
         {" "}
@@ -107,6 +112,45 @@ export function ComponentSample({ id, theme }: { id: string; theme: ThemeName })
         <LinkButton label="Arcscord" url="https://arcscord.dev" />
         <LinkButton label="GitHub" url="https://github.com/arcscord/discord-ui" />
       </ActionRow>
+    );
+    case "button": return (
+      <>
+        <ActionRow>
+          {([
+            "primary",
+            "secondary",
+            "success",
+            "danger",
+          ] as const).map(style => <Button key={style} label={style} style={style} onClick={() => setSent(style)} />)}
+          <Button label="Disabled" disabled />
+        </ActionRow>
+        <p role="status">{sent}</p>
+      </>
+    );
+    case "select-menu": return (
+      <SelectMenu menu={{
+        id: "choices",
+        kind: "string-select",
+        placeholder: "Choose test values",
+        minValues: 0,
+        maxValues: 2,
+        options: [
+          { value: "alpha", label: "Alpha", description: "First typed value" },
+          { value: "beta", label: "Beta", description: "Second typed value" },
+          { value: "gamma", label: "Gamma", description: "Third typed value" },
+        ],
+      }}
+      />
+    );
+    case "file": return (
+      <File file={{
+        id: "guide",
+        kind: "file",
+        name: "guide.pdf",
+        size: "2.4 MB",
+        url: "https://example.com/guide.pdf",
+      }}
+      />
     );
     case "link-button": return (
       <ActionRow>

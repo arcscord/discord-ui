@@ -23,7 +23,8 @@
     "dev:website": "pnpm build:lib && pnpm --filter @arcscord/discord-ui-website dev",
     "build:website": "pnpm --filter @arcscord/discord-ui-website... build",
     "test:browser": "pnpm build && playwright test",
-    "test:website": "pnpm build:website && playwright test -c playwright.website.config.mts"
+    "test:website": "pnpm build:website && playwright test -c playwright.website.config.mts",
+    "generate:avatars": "node scripts/workspace/generate-avatars.mts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",

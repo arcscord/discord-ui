@@ -1,8 +1,10 @@
-export type EntityView = { name: string; color?: string };
+import type { EntityView, RoleView } from "./entities";
+
+export type { EntityView } from "./entities";
 export type MessageEntities = {
   users?: Record<string, EntityView>;
   channels?: Record<string, EntityView>;
-  roles?: Record<string, EntityView>;
+  roles?: Record<string, Omit<RoleView, "id">>;
   emojis?: Record<string, { name: string; image: string }>;
   commands?: Record<string, EntityView>;
 };

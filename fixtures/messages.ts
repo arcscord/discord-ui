@@ -1,4 +1,6 @@
-import type { MessageView } from "@arcscord/discord-ui";
+import type { MessageView, SelectMenuView } from "@arcscord/discord-ui";
+import { singleSelectMenu } from "../packages/discord-ui/src/utils/select-menus";
+import { selectMenuExamples } from "./select-menus";
 
 export const basicMessage: MessageView = {
   id: "message-welcome",
@@ -6,7 +8,7 @@ export const basicMessage: MessageView = {
     id: "author-arcscord",
     displayName: "Arcscord",
     bot: true,
-    avatarUrl: "/bot-avatar.png",
+    avatarUrl: "/generated/avatars/arcscord.svg",
     verified: true,
     color: "#8ea1e1",
   },
@@ -222,7 +224,198 @@ export const reactionsMessage: MessageView = {
   ],
 };
 
+function demoEntitySelect(index: number, id: string, placeholder: string, maxValues: number): SelectMenuView {
+  const menu = selectMenuExamples[index]!.menu;
+  if (menu.kind === "string-select")
+    throw new Error("Entity menu expected");
+  return {
+    ...menu,
+    id,
+    placeholder,
+    maxValues,
+    defaultValues: [],
+  };
+}
+
+export const interactiveMessage: MessageView = {
+  author: basicMessage.author,
+  timestamp: basicMessage.timestamp,
+  id: "message-interactive",
+  body: {
+    kind: "components-v2",
+    components: [
+      {
+        id: "interactive-card",
+        kind: "container",
+        accentColor: "#fff26b",
+        components: [
+          { id: "interactive-title", kind: "text-display", content: "# Interactive components\nEvery interaction is handled locally in this preview." },
+          {
+            id: "interactive-buttons",
+            kind: "action-row",
+            buttons: [
+              {
+                id: "primary",
+                kind: "button",
+                style: "primary",
+                label: "Primary",
+              },
+              {
+                id: "secondary",
+                kind: "button",
+                style: "secondary",
+                label: "Secondary",
+              },
+              {
+                id: "success",
+                kind: "button",
+                style: "success",
+                label: "Success",
+              },
+              {
+                id: "danger",
+                kind: "button",
+                style: "danger",
+                label: "Danger",
+              },
+              {
+                id: "link",
+                kind: "link-button",
+                label: "Link",
+                url: "https://discord.com",
+              },
+            ],
+          },
+          {
+            id: "string-row",
+            kind: "action-row",
+            select: {
+              id: "test-values",
+              kind: "string-select",
+              placeholder: "Choose test values",
+              minValues: 0,
+              maxValues: 2,
+              options: [
+                { value: "alpha", label: "Alpha", description: "First typed value" },
+                { value: "beta", label: "Beta", description: "Second typed value" },
+                { value: "gamma", label: "Gamma", description: "Third typed value" },
+              ],
+            },
+          },
+          {
+            id: "user-row",
+            kind: "action-row",
+            select: demoEntitySelect(1, "users", "Select a user", 1),
+          },
+          {
+            id: "role-row",
+            kind: "action-row",
+            select: demoEntitySelect(2, "roles", "Select roles", 2),
+          },
+          {
+            id: "mention-row",
+            kind: "action-row",
+            select: demoEntitySelect(3, "mentions", "Select users or roles", 1),
+          },
+          {
+            id: "channel-row",
+            kind: "action-row",
+            select: demoEntitySelect(4, "channels", "Select a channel", 1),
+          },
+          {
+            id: "disabled-row",
+            kind: "action-row",
+            select: {
+              id: "disabled-menu",
+              kind: "string-select",
+              placeholder: "Disabled menu",
+              disabled: true,
+              options: [],
+            },
+          },
+          {
+            id: "extra-buttons",
+            kind: "action-row",
+            buttons: [
+              {
+                id: "disabled-button",
+                kind: "button",
+                label: "Disabled",
+                disabled: true,
+              },
+              {
+                id: "premium",
+                kind: "premium-button",
+                skuId: "demo-sku",
+                label: "Premium · 4.99 €",
+              },
+            ],
+          },
+          {
+            id: "demo-file",
+            kind: "file",
+            name: "guide.pdf",
+            size: "2.4 MB",
+            url: "https://example.com/guide.pdf",
+          },
+        ],
+      },
+    ],
+  },
+};
+
+function selectMenuMessage(example: typeof selectMenuExamples[number]): MessageView {
+  const menu = example.menu;
+  return {
+    id: `message-${example.id}`,
+    author: basicMessage.author,
+    timestamp: basicMessage.timestamp,
+    body: {
+      kind: "components-v2",
+      components: [
+        {
+          id: `${example.id}-card`,
+          kind: "container",
+          accentColor: "#5865f2",
+          components: [
+            { id: "title", kind: "text-display", content: `# ${example.title}\n${example.description}` },
+            { id: "limits", kind: "text-display", content: `**Multiple selection:** ${menu.minValues}–${menu.maxValues} values. Default selections are restored when you reset the message.` },
+            { id: "multiple", kind: "action-row", select: menu },
+            { id: "divider", kind: "separator" },
+            { id: "single-title", kind: "text-display", content: "### Single selection\nChoose one option; the menu closes after selection." },
+            {
+              id: "single",
+              kind: "action-row",
+              select: singleSelectMenu(menu),
+            },
+            { id: "disabled-title", kind: "text-display", content: "### Disabled state\nThe default selection stays visible, but the menu cannot be opened." },
+            {
+              id: "disabled",
+              kind: "action-row",
+              select: {
+                ...menu,
+                id: `${menu.id}-disabled`,
+                placeholder: "Disabled selection",
+                disabled: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
+const selectScenarios = Object.fromEntries(selectMenuExamples.map(example => [
+  example.id,
+  {
+    label: example.title,
+    message: selectMenuMessage(example),
+  },
+])) as Record<typeof selectMenuExamples[number]["id"], { label: string; message: MessageView }>;
+
 export const scenarios = {
+  ...selectScenarios,
+  interactive: { label: "Composants interactifs", message: interactiveMessage },
   reactions: { label: "Réactions et emojis", message: reactionsMessage },
   basic: { label: "Message simple", message: basicMessage },
   markdown: { label: "Markdown et mentions", message: markdownMessage },
@@ -234,7 +427,7 @@ export const scenarios = {
 
 export const demoEntities = {
   users: {
-    "123456789012345678": { name: "Alice" },
+    "123456789012345678": { name: "Inès" },
   },
   channels: {
     "234567890123456789": { name: "général" },

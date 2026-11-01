@@ -1,6 +1,10 @@
 /* Preset palette source. Layout rules use tokens rather than theme names. */
 .arcscord-discord-ui {
   color-scheme: dark;
+  --discord-ui-select-chip-background: #1e1e22;
+  --discord-ui-select-background: #202024;
+  --discord-ui-select-menu-background: #27272c;
+  --discord-ui-select-muted: #ababb2;
   --discord-ui-channel-header-divider: #29292E;
   --discord-ui-channel-input-background: #222327;
   --discord-ui-background: #1A1A1E;
@@ -58,6 +62,10 @@
 
 .arcscord-discord-ui:where([data-base-theme="light"], :not([data-base-theme])[data-theme="light"]) {
   color-scheme: light;
+  --discord-ui-select-chip-background: #e8e8ec;
+  --discord-ui-select-background: #fff;
+  --discord-ui-select-menu-background: #fff;
+  --discord-ui-select-muted: #707885;
   --discord-ui-link-button-background: #EEEEEF;
   --discord-ui-link-button-disabled-background: #F4F4F5;
   --discord-ui-channel-header-divider: #DFDFE1;

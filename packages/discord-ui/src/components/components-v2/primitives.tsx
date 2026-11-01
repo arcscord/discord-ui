@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import type { FileView } from "../../model/components";
 import type { MediaView } from "../../model/content";
 import { linkUrl } from "../../utils/urls";
 import { Markdown } from "../content/markdown";
@@ -72,4 +73,38 @@ export function LinkButton({ label, url, disabled = false, emoji }: { label: str
   return href
     ? <a className={className} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
     : <span className={className} role="link" aria-disabled="true">{content}</span>;
+}
+
+export function Button({ label, style = "primary", disabled = false, emoji, onClick }: { label: string; style?: "primary" | "secondary" | "success" | "danger" | "premium" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined }) {
+  return (
+    <button type="button" className={`dui-component-button dui-button-${style}`} disabled={disabled} onClick={onClick}>
+      {emoji
+        ? <span className="dui-button-emoji" aria-hidden="true">{emoji}</span>
+        : null}
+      <span className="dui-button-label">{label}</span>
+    </button>
+  );
+}
+
+export function File({ file }: { file: FileView }) {
+  const href = linkUrl(file.url);
+  const content = (
+    <div className="dui-file">
+      <span className="dui-file-icon" aria-hidden="true">▤</span>
+      <div className="dui-file-details">
+        {href
+          ? <a href={href} target="_blank" rel="noopener noreferrer">{file.name}</a>
+          : <span>{file.name}</span>}
+        {file.size
+          ? <small>{file.size}</small>
+          : null}
+      </div>
+      {href
+        ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Download ${file.name}`}>↓</a>
+        : null}
+    </div>
+  );
+  return file.spoiler
+    ? <Spoiler inline={false}>{content}</Spoiler>
+    : content;
 }

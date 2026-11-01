@@ -1,6 +1,9 @@
+import { selectMenuExamples, selectMenuForWebsite } from "../../../../fixtures/select-menus";
+
 export type ComponentExample = {
   id: string;
   title: string;
+  component?: string;
   family: string;
   description: string;
   code: string;
@@ -65,7 +68,41 @@ export const channelCode = `function SupportChannel() {
     onSend={send} onThreadSend={reply} onReactionToggle={toggleReaction} />;
 }`;
 
+function selectMenuCode(example: typeof selectMenuExamples[number]): string {
+  const menu = selectMenuForWebsite(example.menu);
+  return `function SelectExample() {
+  const menu = ${JSON.stringify(menu, null, 2)};
+  const defaults = menu.kind === "string-select"
+    ? menu.options.filter(option => option.default).map(option => option.value)
+    : (menu.defaultValues ?? []).map(value => value.id);
+  const [values, setValues] = useState(defaults);
+  const [single, setSingle] = useState([]);
+
+  return <div style={{ display: "grid", gap: 16 }}>
+    <h3>${example.title}</h3>
+    <p>${example.description}</p>
+    <p>Multiple selection: {menu.minValues}–{menu.maxValues} values.</p>
+    <SelectMenu menu={menu} values={values} onChange={setValues} />
+    <p role="status" aria-label="Selected values">{JSON.stringify(values)}</p>
+    <h4>Single selection</h4>
+    <SelectMenu menu={{ ...menu, id: menu.id + "-single", placeholder: "Choose one option", minValues: 1, maxValues: 1 }} values={single} onChange={setSingle} />
+    <p role="status" aria-label="Single selected value">{JSON.stringify(single)}</p>
+    <h4>Disabled state</h4>
+    <SelectMenu menu={{ ...menu, id: menu.id + "-disabled", placeholder: "Disabled selection", disabled: true }} values={defaults} />
+    <div><Button label="Reset selections" style="secondary" onClick={() => { setValues(defaults); setSingle([]); }} /></div>
+  </div>;
+}`;
+}
+
 export const componentExamples: ComponentExample[] = [
+  ...selectMenuExamples.map(example => ({
+    id: example.id,
+    title: example.title,
+    component: "SelectMenu",
+    family: "Select menus",
+    description: example.description,
+    code: selectMenuCode(example),
+  })),
   {
     id: "reactions",
     title: "Reactions",
@@ -128,7 +165,7 @@ export const componentExamples: ComponentExample[] = [
   const [letter, setLetter] = useState("A");
   const [background, setBackground] = useState("#337c96");
   const [color, setColor] = useState("#ffffff");
-  const author = { id: "custom-avatar", displayName: "Alex", avatarFallback: { letter, background, color } };
+  const author = { id: "custom-avatar", displayName: "Inès", avatarFallback: { letter, background, color } };
   return <div style={{ display: "grid", gap: 16 }}>
     <label>Letter <input aria-label="Avatar letter" value={letter} onChange={event => setLetter(event.target.value)} /></label>
     <label>Background <input aria-label="Avatar background" type="color" value={background} onChange={event => setBackground(event.target.value)} /></label>
@@ -179,7 +216,7 @@ export const componentExamples: ComponentExample[] = [
     family: "Rich content",
     description: "Show user, role, channel or command mentions.",
     code: `() => (
-  <div><Mention name="Alex" /> in <Mention name="support" kind="channel" />
+  <div><Mention name="Inès" /> in <Mention name="support" kind="channel" />
     with <Mention name="Moderators" kind="role" color="#a7a9ff" /></div>
 )`,
   },
@@ -264,8 +301,39 @@ export const componentExamples: ComponentExample[] = [
     id: "action-row",
     title: "ActionRow",
     family: "Components V2",
-    description: "Arrange supported link buttons in a row.",
+    description: "Arrange message buttons or a select menu in an action row.",
     code: "() => <ActionRow><LinkButton label=\"Arcscord\" url=\"https://arcscord.dev\" /><LinkButton label=\"GitHub\" url=\"https://github.com/arcscord/discord-ui\" /></ActionRow>",
+  },
+  {
+    id: "button",
+    title: "Button",
+    family: "Components V2",
+    description: "Primary, secondary, success, danger and premium actions with disabled states.",
+    code: `function Buttons() {
+  const [clicked, setClicked] = useState("");
+  return <><ActionRow>{["primary", "secondary", "success", "danger"].map(style => <Button key={style} style={style} label={style} onClick={() => setClicked(style)} />)}<Button label="Disabled" disabled /></ActionRow><p role="status">{clicked}</p></>;
+}`,
+  },
+  {
+    id: "select-menu",
+    title: "SelectMenu",
+    family: "Components V2",
+    description: "Text, user, role, mentionable and channel menus with local or controlled selection.",
+    code: `function SelectExample() {
+  const [values, setValues] = useState([]);
+  return <><SelectMenu menu={{ id: "choices", kind: "string-select", placeholder: "Choose test values", minValues: 0, maxValues: 2, options: [
+    { value: "alpha", label: "Alpha", description: "First typed value" },
+    { value: "beta", label: "Beta", description: "Second typed value" },
+    { value: "gamma", label: "Gamma", description: "Third typed value" },
+  ] }} values={values} onChange={setValues} /><p role="status">{values.join(", ")}</p></>;
+}`,
+  },
+  {
+    id: "file",
+    title: "File",
+    family: "Components V2",
+    description: "Display an attached file with its size, safe link and optional spoiler.",
+    code: "() => <File file={{ id: \"guide\", kind: \"file\", name: \"guide.pdf\", size: \"2.4 MB\", url: \"https://example.com/guide.pdf\" }} />",
   },
   {
     id: "link-button",

@@ -10,7 +10,7 @@ import { componentExamples } from "../src/data/component-examples";
 describe("curated component examples", () => {
   it("covers every public React component", () => {
     const publicComponents = Object.entries(components).filter(([name, value]) => typeof value === "function" && name !== "defineTheme").map(([name]) => name).sort();
-    expect(componentExamples.map(example => example.title).sort()).toEqual(publicComponents);
+    expect(Array.from(new Set(componentExamples.map(example => example.component ?? example.title))).sort()).toEqual(publicComponents);
     expect(new Set(componentExamples.map(example => example.id)).size).toBe(componentExamples.length);
   });
 

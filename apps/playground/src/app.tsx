@@ -19,6 +19,7 @@ export function App() {
   const [width, setWidth] = useState(760);
   const [editor, setEditor] = useState(() => createMessageEditor(basicMessage));
   const [channelEditor, setChannelEditor] = useState(() => createChannelEditor(demoChannel));
+  const [interaction, setInteraction] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   const isChannel = scenario === "channel";
   const activeEditor = isChannel ? channelEditor : editor;
@@ -200,6 +201,7 @@ export function App() {
                   setChannelEditor(createChannelEditor(demoChannel));
                 else setEditor(createMessageEditor(scenarios[next].message));
                 setRevision(value => value + 1);
+                setInteraction("");
                 setCopyStatus("");
               }}
             >
@@ -237,6 +239,7 @@ export function App() {
                   setChannelEditor(createChannelEditor(demoChannel));
                 else setEditor(createMessageEditor(selected));
                 setRevision(value => value + 1);
+                setInteraction("");
                 setCopyStatus("");
               }}
             >
@@ -284,7 +287,10 @@ export function App() {
                 >
                   {isChannel
                     ? <ChannelView key={`channel-${revision}`} channel={channelEditor.channel} onReactionToggle={toggleReaction} height={620} onSend={sendDemoMessage} onThreadSend={sendDemoThreadMessage} composerDisabled={Boolean(channelEditor.error)} />
-                    : <Message key={`${scenario}-${revision}`} message={message} onReactionToggle={toggleReaction} />}
+                    : <Message key={`${scenario}-${revision}`} message={message} onReactionToggle={toggleReaction} onButtonClick={id => setInteraction(`Button: ${id}`)} onSelectChange={(id, values) => setInteraction(`${id}: ${values.join(", ") || "—"}`)} onPremiumClick={skuId => setInteraction(`Premium: ${skuId}`)} />}
+                  {interaction
+                    ? <p role="status" aria-label="Dernière interaction">{interaction}</p>
+                    : null}
 
                 </DiscordUI>
               </div>

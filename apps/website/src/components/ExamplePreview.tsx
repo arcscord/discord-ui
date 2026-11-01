@@ -29,7 +29,7 @@ function InteractiveMessage({ message }: { message: MessageView }) {
 type Example = { label: string; file: string; message: MessageView };
 const entities = {
   users: {
-    "123456789012345678": { name: "Alex" },
+    "123456789012345678": { name: "Inès" },
   },
 };
 

@@ -1,0 +1,34 @@
+{
+  "chris": {
+    "letter": "C",
+    "color": "#b58b3c"
+  },
+  "ines": {
+    "letter": "I",
+    "color": "#5865f2"
+  },
+  "lucas": {
+    "letter": "L",
+    "color": "#3a8562"
+  },
+  "emma": {
+    "letter": "E",
+    "color": "#747f8d"
+  },
+  "helper-bot": {
+    "letter": "H",
+    "color": "#7252ad"
+  },
+  "music-bot": {
+    "letter": "M",
+    "color": "#bd527c"
+  },
+  "arcscord": {
+    "letter": "A",
+    "color": "#5865f2"
+  },
+  "support-bot": {
+    "letter": "S",
+    "color": "#398b7b"
+  }
+}

@@ -2,8 +2,8 @@
   "name": "@arcscord/discord-ui-website",
   "private": true,
   "scripts": {
-    "dev": "docusaurus start --host 127.0.0.1",
-    "build": "docusaurus build",
+    "dev": "node ../../scripts/workspace/generate-avatars.mts website && docusaurus start --host 127.0.0.1",
+    "build": "node ../../scripts/workspace/generate-avatars.mts website && docusaurus build",
     "preview": "docusaurus serve --host 127.0.0.1",
     "typecheck": "tsc --noEmit"
   },

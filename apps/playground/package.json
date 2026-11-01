@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
+    "dev": "node ../../scripts/workspace/generate-avatars.mts playground && vite --host 127.0.0.1",
+    "build": "node ../../scripts/workspace/generate-avatars.mts playground && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

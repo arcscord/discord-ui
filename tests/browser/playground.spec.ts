@@ -21,7 +21,7 @@ test("renders rich content and keyboard accessible spoilers", async ({ page }) =
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/");
   await page.getByLabel("Scénario", { exact: true }).selectOption("markdown");
-  await expect(page.locator("article")).toContainText("@Alice");
+  await expect(page.locator("article")).toContainText("@Inès");
   await expect(page.locator("article .hljs-keyword").first()).toBeVisible();
   const spoiler = page.getByRole("button", { name: "Afficher le spoiler" });
   await spoiler.focus();

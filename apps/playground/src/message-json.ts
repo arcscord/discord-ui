@@ -61,16 +61,190 @@ function textDisplay(value: unknown, path: string): void {
 }
 function button(value: unknown, path: string): void {
   const item = identified(value, path);
-  if (item.kind !== "link-button")
-    throw new Error(`${path}.kind : « link-button » attendu.`);
+  if (!["link-button", "button", "premium-button"].includes(String(item.kind)))
+    throw new Error(`${path}.kind : bouton attendu.`);
   string(item.label, `${path}.label`);
-  string(item.url, `${path}.url`);
+  if (item.kind === "link-button")
+    string(item.url, `${path}.url`);
+  if (item.kind === "premium-button")
+    string(item.skuId, `${path}.skuId`);
+  if (item.kind === "button" && "style" in item && ![
+    "primary",
+    "secondary",
+    "success",
+    "danger",
+  ].includes(String(item.style))) {
+    throw new Error(`${path}.style : style de bouton invalide.`);
+  }
   optional(item, "disabled", path, boolean);
   optional(item, "emoji", path, (value, location) => {
     const emoji = object(value, location);
     string(emoji.name, `${location}.name`);
     optional(emoji, "image", location, string);
   });
+}
+function selectMenu(value: unknown, path: string): void {
+  const item = identified(value, path);
+  if (![
+    "string-select",
+    "user-select",
+    "role-select",
+    "mentionable-select",
+    "channel-select",
+  ].includes(String(item.kind))) {
+    throw new Error(`${path}.kind : menu de sélection attendu.`);
+  }
+  optional(item, "placeholder", path, string);
+  optional(item, "disabled", path, boolean);
+  for (const key of ["minValues", "maxValues"]) {
+    optional(item, key, path, (value, location) => {
+      if (typeof value !== "number" || !Number.isInteger(value) || value < (key === "maxValues"
+        ? 1
+        : 0) || value > 25) {
+        throw new Error(`${location} : limite de sélection invalide.`);
+      }
+    });
+  }
+  if (Number(item.minValues ?? 1) > Number(item.maxValues ?? 1))
+    throw new Error(`${path} : minimum supérieur au maximum.`);
+  function fields(value: ObjectValue, allowed: string[], location: string): void {
+    for (const key of Object.keys(value)) {
+      if (!allowed.includes(key))
+        throw new Error(`${location}.${key} : propriété non prise en charge pour ce type de menu.`);
+    }
+  }
+  const isString = item.kind === "string-select";
+  const entityTypes = item.kind === "mentionable-select"
+    ? ["user", "role"]
+    : [
+        String(item.kind).replace("-select", ""),
+      ];
+  fields(item, [
+    "id",
+    "kind",
+    "placeholder",
+    "minValues",
+    "maxValues",
+    "disabled",
+    ...(isString
+      ? ["options"]
+      : ["entities", "defaultValues"]),
+    ...(item.kind === "channel-select"
+      ? ["channelTypes"]
+      : []),
+  ], path);
+  const values = new Map<string, string>();
+  const choicesKey = isString ? "options" : "entities";
+  list(item[choicesKey], `${path}.${choicesKey}`, (value, location) => {
+    const option = object(value, location);
+    const valueKey = isString ? "value" : "id";
+    const labelKey = isString
+      ? "label"
+      : option.entityType === "user"
+        ? "displayName"
+        : "name";
+    string(option[valueKey], `${location}.${valueKey}`);
+    string(option[labelKey], `${location}.${labelKey}`);
+    if (values.has(option[valueKey] as string))
+      throw new Error(`${location}.${valueKey} : valeur dupliquée.`);
+    values.set(option[valueKey] as string, String(option.entityType));
+    if (isString) {
+      fields(option, [
+        "value",
+        "label",
+        "description",
+        "emoji",
+        "default",
+      ], location);
+      for (const key of ["value", "label", "description"]) {
+        optional(option, key, location, (value, location) => {
+          string(value, location);
+          if ((value as string).length > 100)
+            throw new Error(`${location} : 100 caractères maximum.`);
+        });
+      }
+      optional(option, "default", location, boolean);
+      optional(option, "emoji", location, (value, location) => {
+        const emoji = object(value, location);
+        string(emoji.name, `${location}.name`);
+        optional(emoji, "image", location, string);
+      });
+    }
+    else {
+      if (!entityTypes.includes(String(option.entityType)))
+        throw new Error(`${location}.entityType : type d’entité incompatible avec ce menu.`);
+      const extra = option.entityType === "user"
+        ? [
+            "username",
+            "avatarUrl",
+            "status",
+            "bot",
+            "verified",
+          ]
+        : option.entityType === "role"
+          ? ["color"]
+          : ["channelType", "rules", "locked"];
+      fields(option, [
+        "id",
+        option.entityType === "user"
+          ? "displayName"
+          : "name",
+        "entityType",
+        ...extra,
+      ], location);
+      for (const key of ["username", "avatarUrl", "color"]) optional(option, key, location, string);
+      for (const key of ["bot", "verified", "rules", "locked"]) optional(option, key, location, boolean);
+      if ("status" in option && !["online", "idle", "dnd", "offline"].includes(String(option.status)))
+        throw new Error(`${location}.status : statut invalide.`);
+      if (option.entityType === "channel" && ![
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+      ].includes(Number(option.channelType))) {
+        throw new Error(`${location}.channelType : type de salon invalide.`);
+      }
+      if (option.entityType === "channel" && typeof option.channelType !== "number")
+        throw new Error(`${location}.channelType : nombre attendu.`);
+    }
+  });
+  if (isString && (item.options as unknown[]).length > 25)
+    throw new Error(`${path}.options : 25 options maximum.`);
+  optional(item, "defaultValues", path, (value, location) => list(value, location, (value, location) => {
+    const entry = identified(value, location);
+    if (!entityTypes.includes(String(entry.type)) || values.get(entry.id as string) !== entry.type)
+      throw new Error(`${location} : valeur par défaut incompatible avec les entités du menu.`);
+  }));
+  optional(item, "channelTypes", path, (value, location) => {
+    if (!Array.isArray(value) || value.some(type => typeof type !== "number" || ![
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+    ].includes(type))) {
+      throw new Error(`${location} : types de salons invalides.`);
+    }
+  });
+  if (typeof item.placeholder === "string" && item.placeholder.length > 150)
+    throw new Error(`${path}.placeholder : 150 caractères maximum.`);
 }
 function component(value: unknown, path: string, allowContainer = true): void {
   const item = identified(value, path);
@@ -96,7 +270,17 @@ function component(value: unknown, path: string, allowContainer = true): void {
         throw new Error(`${path}.spacing : « small » ou « large » attendu.`);
       break;
     case "action-row":
-      list(item.buttons, `${path}.buttons`, button);
+      if ("select" in item && "buttons" in item)
+        throw new Error(`${path} : choisir boutons ou menu.`);
+      if ("select" in item)
+        selectMenu(item.select, `${path}.select`);
+      else list(item.buttons, `${path}.buttons`, button);
+      break;
+    case "file":
+      string(item.name, `${path}.name`);
+      string(item.url, `${path}.url`);
+      optional(item, "size", path, string);
+      optional(item, "spoiler", path, boolean);
       break;
     case "container":
       if (!allowContainer)
@@ -177,12 +361,17 @@ function validateMessage(value: unknown, path = "$", allowThread = true): assert
   string(message.timestamp, `${path}.timestamp`);
   const body = object(message.body, `${path}.body`);
   if (body.kind === "components-v2") {
-    if ("embeds" in message || "media" in message)
+    if ("embeds" in message || "media" in message || "components" in message)
       throw new Error(`${path} : un message V2 ne peut pas mélanger embeds ou médias classiques.`);
     list(body.components, `${path}.body.components`, component);
   }
   else if (body.kind === "text" || body.kind === "markdown") {
     string(body.content, `${path}.body.content`);
+    optional(message, "components", path, (value, location) => list(value, location, (value, location) => {
+      if (object(value, location).kind !== "action-row")
+        throw new Error(`${location} : ligne d’actions attendue.`);
+      component(value, location);
+    }));
     optional(message, "media", path, (value, path) => list(value, path, media));
     optional(message, "embeds", path, (value, path) => list(value, path, embed));
   }

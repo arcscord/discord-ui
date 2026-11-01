@@ -1,11 +1,12 @@
+import type { ComponentHandlers } from "../../model/components";
 import type { MessageView } from "../../model/message";
 import type { ReactionToggleHandler } from "../../model/reaction";
 import { useDisplayOptions } from "../display-context";
 import { Message } from "../message/message";
 
-export type MessageListProps = { onReactionToggle?: ReactionToggleHandler | undefined; messages: readonly MessageView[]; showDateSeparators?: boolean; showThreadPreviews?: boolean | undefined; onThreadOpen?: ((id: string) => void) | undefined; activeThreadId?: string | undefined; availableThreadIds?: readonly string[] | undefined };
+export type MessageListProps = ComponentHandlers & { onReactionToggle?: ReactionToggleHandler | undefined; messages: readonly MessageView[]; showDateSeparators?: boolean; showThreadPreviews?: boolean | undefined; onThreadOpen?: ((id: string) => void) | undefined; activeThreadId?: string | undefined; availableThreadIds?: readonly string[] | undefined };
 
-export function MessageList({ messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps) {
+export function MessageList({ onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps) {
   const { locale, timeZone, labels } = useDisplayOptions();
   const keyFormat = new Intl.DateTimeFormat("en-CA", {
     year: "numeric",
@@ -36,6 +37,9 @@ export function MessageList({ messages, onReactionToggle, showDateSeparators = t
               ? <div className="dui-date-separator"><time dateTime={dateKey}>{labelFormat.format(date)}</time></div>
               : null}
             <Message
+              onButtonClick={onButtonClick}
+              onSelectChange={onSelectChange}
+              onPremiumClick={onPremiumClick}
               message={message}
               onReactionToggle={onReactionToggle}
               showThreadPreview={showThreadPreviews}
