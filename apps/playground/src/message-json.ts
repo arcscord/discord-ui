@@ -161,6 +161,15 @@ function validateMessage(value: unknown, path = "$", allowThread = true): assert
   if (!allowThread && "thread" in message)
     throw new Error(`${path}.thread : les réponses d’un fil ne peuvent pas contenir un autre fil.`);
   optional(message, "thread", path, validateThreadSummary);
+  optional(message, "reactions", path, (value, location) => list(value, location, (value, location) => {
+    const reaction = identified(value, location);
+    const emoji = object(reaction.emoji, `${location}.emoji`);
+    string(emoji.name, `${location}.emoji.name`);
+    optional(emoji, "image", `${location}.emoji`, string);
+    if (typeof reaction.count !== "number" || !Number.isSafeInteger(reaction.count) || reaction.count < 0)
+      throw new Error(`${location}.count : entier positif ou nul attendu.`);
+    optional(reaction, "me", location, boolean);
+  }));
   string(message.timestamp, `${path}.timestamp`);
   const body = object(message.body, `${path}.body`);
   if (body.kind === "components-v2") {

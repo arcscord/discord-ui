@@ -95,3 +95,19 @@ it("rejects nested threads and orphan thread records", () => {
   if (!orphanResult.ok)
     expect(orphanResult.error).toContain("parentMessageId");
 });
+
+it.each([-1, 1.5, "12", null])("rejects invalid reaction count %s", (count) => {
+  const result = parseMessageJson(JSON.stringify({
+    ...basicMessage,
+    reactions: [
+      {
+        id: "like",
+        emoji: { name: "👍" },
+        count,
+      },
+    ],
+  }));
+  expect(result.ok).toBe(false);
+  if (!result.ok)
+    expect(result.error).toContain("$.reactions[0].count");
+});

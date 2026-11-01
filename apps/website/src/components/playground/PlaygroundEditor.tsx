@@ -61,7 +61,9 @@ export default function PlaygroundEditor() {
                   <option key={item.id} value={item.id}>
                     {item.id === "channel-view"
                       ? "Support channel"
-                      : item.title}
+                      : item.id === "reactions"
+                        ? "Reactions — complete message"
+                        : item.title}
                   </option>
                 ))}
               </optgroup>

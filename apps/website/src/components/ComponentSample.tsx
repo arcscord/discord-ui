@@ -1,17 +1,41 @@
 import type { ThemeName } from "@arcscord/discord-ui";
-import { ActionRow, Author, Avatar, ChannelComposer, ChannelHeader, Container, Embed, Emoji, LinkButton, Markdown, Media, MediaGallery, Mention, Message, MessageComponents, MessageContent, MessageFrame, MessageHeader, MessageList, MessageTimestamp, Section, Separator, Spoiler, TextDisplay, ThreadPanel, ThreadPreview, Thumbnail } from "@arcscord/discord-ui";
+import { ActionRow, Author, Avatar, ChannelComposer, ChannelHeader, Container, Embed, Emoji, LinkButton, Markdown, Media, MediaGallery, Mention, Message, MessageComponents, MessageContent, MessageFrame, MessageHeader, MessageList, MessageTimestamp, Reactions, Section, Separator, Spoiler, TextDisplay, ThreadPanel, ThreadPreview, Thumbnail } from "@arcscord/discord-ui";
 import { useRef, useState } from "react";
 import { initialChannel, markdown, release, ticket, welcome } from "../data/examples";
 import { demoMedia } from "../data/live-scope";
 import { ConversationDemo } from "./ConversationDemo";
 
 export function ComponentSample({ id, theme }: { id: string; theme: ThemeName }) {
+  const [reactions, setReactions] = useState([
+    {
+      id: "like",
+      emoji: { name: "👍" },
+      count: 12,
+      me: false,
+    },
+    {
+      id: "heart",
+      emoji: { name: "❤️" },
+      count: 3,
+      me: true,
+    },
+  ]);
   const [draft, setDraft] = useState("");
   const [sent, setSent] = useState("");
   const [thread, setThread] = useState(initialChannel.threads![0]!);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLDivElement>(null);
   switch (id) {
+    case "reactions": return (
+      <Reactions
+        reactions={reactions}
+        onToggle={id => setReactions(current => current.map(reaction => reaction.id === id
+          ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me
+              ? -1
+              : 1) }
+          : reaction))}
+      />
+    );
     case "discord-ui": case "message": return <Message message={welcome} />;
     case "message-frame": return <MessageFrame avatar={<Avatar author={welcome.author} />} header={<MessageHeader author={welcome.author} timestamp={welcome.timestamp} />} footer={<small>Composed with React primitives.</small>}><MessageContent content="Every part has its place." /></MessageFrame>;
     case "avatar": return <Avatar author={welcome.author} />;

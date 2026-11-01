@@ -26,6 +26,13 @@ export const demoChannel: ChannelViewModel = {
     },
     {
       id: "channel-3",
+      reactions: [
+        {
+          id: "like",
+          emoji: { name: "👍" },
+          count: 4,
+        },
+      ],
       thread: {
         id: "thread-landscape",
         name: "paysage",
@@ -70,6 +77,13 @@ export const demoChannel: ChannelViewModel = {
       messages: [
         {
           id: "thread-reply-1",
+          reactions: [
+            {
+              id: "heart",
+              emoji: { name: "❤️" },
+              count: 2,
+            },
+          ],
           author: {
             id: "auto-threads",
             displayName: "Auto Threads",

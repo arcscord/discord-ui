@@ -1,5 +1,6 @@
 import type { ComponentsV2Body } from "./components";
 import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
+import type { ReactionView } from "./reaction";
 import type { ThreadSummaryView } from "./thread";
 
 /** Display metadata supplied by the application, without Discord API calls. */
@@ -24,6 +25,7 @@ export type MessageMetadata = {
   author: MessageAuthor;
   /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */
   timestamp: string;
+  reactions?: ReactionView[];
 };
 
 export type MessageContentView = (

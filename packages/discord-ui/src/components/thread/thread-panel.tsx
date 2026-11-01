@@ -1,4 +1,5 @@
 import type { MessageView } from "../../model/message";
+import type { ReactionToggleHandler } from "../../model/reaction";
 import type { ThreadView } from "../../model/thread";
 import { useEffect, useRef, useState } from "react";
 import { ChannelComposer } from "../channel/channel-composer";
@@ -9,6 +10,7 @@ import { useDisplayOptions } from "../display-context";
 
 export type ThreadPanelProps = {
   thread: ThreadView;
+  onReactionToggle?: ReactionToggleHandler | undefined;
   parentMessage?: MessageView | undefined;
   onClose?: (() => void) | undefined;
   onSend?: ((content: string) => void) | undefined;
@@ -16,7 +18,7 @@ export type ThreadPanelProps = {
   autoScroll?: boolean | undefined;
 };
 
-export function ThreadPanel({ thread, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
+export function ThreadPanel({ thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
   const { labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -49,7 +51,7 @@ export function ThreadPanel({ thread, parentMessage, onClose, onSend, composerDi
           : undefined}
       />
       <div className="dui-channel-history" role="log" aria-label={`${labels.thread} : ${thread.name}`} aria-live="polite" tabIndex={0} ref={historyRef} onScroll={event => updateFollowState(event.currentTarget)}>
-        <MessageList messages={messages} showThreadPreviews={false} />
+        <MessageList onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
       </div>
       <ChannelComposer channelName={thread.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />
     </aside>

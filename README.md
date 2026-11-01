@@ -105,7 +105,7 @@ synchronized with the content editor. Reset restores the selected fixture; switc
 scenarios loads that fixture. These checks are for display, not Discord publication.
 
 The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
-image galleries, embeds and unavailable-media states. The renderer has no payload adapter or reactions yet. A Components V2 scene demonstrates
+image galleries, embeds and unavailable-media states. The renderer supports controlled emoji reactions and Twemoji rendering; no payload adapter is included. A Components V2 scene demonstrates
 containers, sections, thumbnails, galleries, separators and link buttons.
 
 Mentions and custom emoji resources are supplied through `DiscordUI.entities`.

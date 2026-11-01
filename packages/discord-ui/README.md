@@ -144,7 +144,7 @@ keep their natural dimensions under a mask. Hidden media remains unmounted.
 
 Current scope: messages, basic Markdown lists, image media, embeds and the V2 subset
 above. Nested lists, exact Discord gallery parity, video/audio, payload adapters,
-custom-id button interactions and reactions are not implemented. Next.js/Docusaurus integration builds remain pending.
+custom-id button interactions are not implemented. Next.js/Docusaurus integration builds remain pending.
 
 Markdown/highlighting logic is adapted from AutoThreads; see `THIRD_PARTY_NOTICES`
 for the upstream BF-GO MIT notice and dependency licenses. Styles and the external-link icon also adapt the renderer. Example assets are new.
@@ -227,3 +227,24 @@ metadata. The playground updates all of these for its local simulation.
 `onClose` and `onSend` inside `DiscordUI`. It does not open nested thread panels.
 No Discord API calls are made. UI labels and singular/plural count text are overridable
 through `DiscordUI.labels`.
+
+
+## Reactions and emoji
+
+Unicode emoji use `@twemoji/parser` and Twemoji SVG assets (version 17.0.3).
+Plain text, Markdown, button emoji and reactions share this rendering. Code stays
+literal. With `allowRemoteMedia={false}` or a failed image, Unicode characters remain
+visible. Custom emoji continue to use caller-supplied image URLs.
+
+Add `reactions: [{ id: "like", emoji: { name: "👍" }, count: 12, me: true }]` to
+any message, including V2 messages and thread replies. Custom emoji use
+`emoji: { name: "arc", image: "/arc.png" }`. Zero-count reactions are hidden.
+
+`Message`, `MessageList`, `ChannelView` and `ThreadPanel` accept
+`onReactionToggle(messageId, reactionId)`. The caller updates the count and `me`
+state; without a handler reactions are read-only. The standalone `Reactions`
+primitive accepts `reactions` and `onToggle(reactionId)`. The group label is
+customizable with `labels.reactions`.
+
+Fenced and inline code wrap long lines, including highlighted tokens, without
+internal scrollbars. Source whitespace and line breaks are preserved.

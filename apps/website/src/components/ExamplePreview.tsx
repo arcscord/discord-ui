@@ -7,6 +7,25 @@ import { useId, useRef, useState } from "react";
 import { playgroundUrl } from "../data/component-examples";
 import { messageSource } from "../data/examples";
 
+function InteractiveMessage({ message }: { message: MessageView }) {
+  const [current, setCurrent] = useState(message);
+  return (
+    <Message
+      message={current}
+      onReactionToggle={(_messageId, reactionId) => {
+        setCurrent(previous => ({
+          ...previous,
+          reactions: previous.reactions?.map(reaction => reaction.id === reactionId
+            ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me
+                ? -1
+                : 1) }
+            : reaction) ?? [],
+        }));
+      }}
+    />
+  );
+}
+
 type Example = { label: string; file: string; message: MessageView };
 const entities = {
   users: {
@@ -20,13 +39,15 @@ export function ExamplePreview({ examples, label }: { examples: Example[]; label
   const id = useId();
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const example = examples[selected]!;
-  const playgroundId = example.message.body.kind === "components-v2"
-    ? "message-components"
-    : example.message.embeds?.length
-      ? "embed"
-      : example.message.id === "markdown"
-        ? "markdown"
-        : "message";
+  const playgroundId = example.message.reactions?.length
+    ? "reactions"
+    : example.message.body.kind === "components-v2"
+      ? "message-components"
+      : example.message.embeds?.length
+        ? "embed"
+        : example.message.id === "markdown"
+          ? "markdown"
+          : "message";
   function moveTab(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     let next = index;
     if (event.key === "ArrowRight")
@@ -85,7 +106,7 @@ export function ExamplePreview({ examples, label }: { examples: Example[]; label
               </select>
             </label>
           </div>
-          <DiscordUI theme={theme} entities={entities} locale="en-US" timeZone="UTC" className="message-preview"><Message message={example.message} /></DiscordUI>
+          <DiscordUI theme={theme} entities={entities} locale="en-US" timeZone="UTC" className="message-preview"><InteractiveMessage key={example.message.id} message={example.message} /></DiscordUI>
           <div className="example-caption">
             <span>React components. Real interactions.</span>
             <Link to={playgroundUrl(playgroundId)}>Open in playground</Link>

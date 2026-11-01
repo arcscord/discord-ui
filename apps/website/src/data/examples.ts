@@ -3,12 +3,43 @@ import type { ChannelViewModel, MessageView, ThemeName } from "@arcscord/discord
 export const timestamp = "2026-11-01T10:24:00Z";
 export const welcome: MessageView = {
   id: "welcome",
+  reactions: [
+    {
+      id: "wave",
+      emoji: { name: "👋" },
+      count: 8,
+    },
+    {
+      id: "heart",
+      emoji: { name: "❤️" },
+      count: 3,
+      me: true,
+    },
+  ],
   author: { id: "welcome-bot", displayName: "Welcome Bot", bot: true },
   timestamp,
   body: { kind: "markdown", content: "## Welcome to the community, <@123456789012345678>!\nYour next great conversation starts here.\n\n> ||This is a spoiler — click to reveal.||" },
 };
 export const release: MessageView = {
   id: "release",
+  reactions: [
+    {
+      id: "fire",
+      emoji: { name: "🔥" },
+      count: 12,
+    },
+    {
+      id: "eyes",
+      emoji: { name: "👀" },
+      count: 4,
+      me: true,
+    },
+    {
+      id: "arc",
+      emoji: { name: "arc", image: "/examples/emoji.svg" },
+      count: 2,
+    },
+  ],
   author: { id: "release-bot", displayName: "Release Bot", bot: true },
   timestamp,
   body: { kind: "markdown", content: "A little update. A lot of possibilities." },
@@ -73,7 +104,20 @@ export const richExamples = [
   { label: "Components V2", file: "components.tsx", message: ticket },
 ];
 export function messageSource(message: MessageView, theme: ThemeName): string {
-  return `import type { MessageView } from "@arcscord/discord-ui";\nimport { DiscordUI, Message } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst message: MessageView = ${JSON.stringify(message, null, 2)};\n\nexport function Example() {\n  return (\n    <DiscordUI theme="${theme}" locale="en-US" timeZone="UTC"\n      entities={{ users: { "123456789012345678": { name: "Alex" } } }}>\n      <Message message={message} />\n    </DiscordUI>\n  );\n}`;
+  const interactive = Boolean(message.reactions?.length);
+  const state = interactive
+    ? `  const [current, setCurrent] = useState(message);
+  function toggleReaction(messageId: string, reactionId: string) {
+    setCurrent(previous => ({
+      ...previous,
+      reactions: previous.reactions?.map(reaction => reaction.id === reactionId
+        ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me ? -1 : 1) }
+        : reaction),
+    }));
+  }
+`
+    : "";
+  return `${interactive ? "import { useState } from \"react\";\n" : ""}import type { MessageView } from "@arcscord/discord-ui";\nimport { DiscordUI, Message } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst message: MessageView = ${JSON.stringify(message, null, 2)};\n\nexport function Example() {\n${state}  return (\n    <DiscordUI theme="${theme}" locale="en-US" timeZone="UTC"\n      entities={{ users: { "123456789012345678": { name: "Alex" } } }}>\n      <Message message={${interactive ? "current" : "message"}}${interactive ? " onReactionToggle={toggleReaction}" : ""} />\n    </DiscordUI>\n  );\n}`;
 }
 export const initialChannel: ChannelViewModel = {
   id: "support",
@@ -88,6 +132,13 @@ export const initialChannel: ChannelViewModel = {
     },
     {
       id: "answer",
+      reactions: [
+        {
+          id: "like",
+          emoji: { name: "👍" },
+          count: 3,
+        },
+      ],
       author: ticket.author,
       timestamp: "2026-11-01T09:15:00Z",
       body: { kind: "markdown", content: "Make sure you've added the bot to your server and granted the required permissions. You can also check out the [docs](https://ui.arcscord.dev/docs/introduction) for a full setup guide." },
@@ -123,6 +174,13 @@ export const initialChannel: ChannelViewModel = {
         },
         {
           id: "reply-2",
+          reactions: [
+            {
+              id: "heart",
+              emoji: { name: "❤️" },
+              count: 2,
+            },
+          ],
           author: ticket.author,
           timestamp: "2026-11-01T09:22:00Z",
           body: { kind: "text", content: "That looks correct. Make sure the bot also has the Send Messages permission in that channel." },

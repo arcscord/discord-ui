@@ -197,7 +197,32 @@ export function editableContent(message: MessageView): string {
     : message.body.content;
 }
 
+export const reactionsMessage: MessageView = {
+  ...basicMessage,
+  id: "message-reactions",
+  body: { kind: "markdown", content: "Des réactions comme sur Discord 🎉\nCliquez pour ajouter ou retirer votre réaction.\n```ts\nconst message = { content: \"Une ligne suffisamment longue pour revenir automatiquement à la ligne même dans un aperçu étroit.\" };\n```" },
+  reactions: [
+    {
+      id: "thumbs-up",
+      emoji: { name: "👍" },
+      count: 12,
+    },
+    {
+      id: "heart",
+      emoji: { name: "❤️" },
+      count: 3,
+      me: true,
+    },
+    {
+      id: "arc",
+      emoji: { name: "arc", image: "/emoji.svg" },
+      count: 2,
+    },
+  ],
+};
+
 export const scenarios = {
+  reactions: { label: "Réactions et emojis", message: reactionsMessage },
   basic: { label: "Message simple", message: basicMessage },
   markdown: { label: "Markdown et mentions", message: markdownMessage },
   media: { label: "Médias et spoilers", message: mediaMessage },

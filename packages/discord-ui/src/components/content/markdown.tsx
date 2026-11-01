@@ -8,6 +8,7 @@ import { useDisplayOptions } from "../display-context";
 import { Emoji } from "./emoji";
 import { Mention } from "./mention";
 import { Spoiler } from "./spoiler";
+import { UnicodeEmoji } from "./unicode-emoji";
 
 type Node = Record<string, unknown> & { type?: string; content?: unknown };
 function string(value: unknown): string {
@@ -28,7 +29,7 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
   function render(node: Node, key: string): ReactNode {
     const body = () => children(node.content, key);
     switch (node.type) {
-      case "text": return string(node.content);
+      case "text": return <UnicodeEmoji key={key} content={string(node.content)} />;
       case "br": case "newline": return <br key={key} />;
       case "strong": return <strong key={key}>{body()}</strong>;
       case "em": return <em key={key}>{body()}</em>;
@@ -50,7 +51,7 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
         const url = linkUrl(string(node.target ?? node.content));
         const label = Array.isArray(node.content)
           ? body()
-          : string(node.content ?? node.target);
+          : <UnicodeEmoji content={string(node.content ?? node.target)} />;
         return url
           ? <a key={key} href={url} target="_blank" rel="noreferrer noopener">{label}</a>
           : <Fragment key={key}>{label}</Fragment>;
@@ -70,7 +71,7 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
         const entity = options.entities.emojis?.[string(node.id)];
         return <Emoji key={key} name={entity?.name ?? string(node.name)} image={entity?.image} />;
       }
-      case "twemoji": return <span key={key} className="dui-unicode-emoji">{string(node.name)}</span>;
+      case "twemoji": return <UnicodeEmoji key={key} content={string(node.name)} />;
       case "slashCommand": return <Mention key={key} kind="command" name={options.entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)} />;
       case "timestamp": {
         const timestamp = formatDiscordTimestamp(string(node.timestamp), string(node.format), { ...options, referenceTime: referenceTime ?? options.referenceTime ?? "1970-01-01T00:00:00Z" });

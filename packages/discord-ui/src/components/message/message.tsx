@@ -1,4 +1,5 @@
 import type { MessageView } from "../../model/message";
+import type { ReactionToggleHandler } from "../../model/reaction";
 import { Avatar } from "../author/avatar";
 import { MessageComponents } from "../components-v2/message-components";
 import { Markdown } from "../content/markdown";
@@ -9,15 +10,17 @@ import { ThreadPreview } from "../thread/thread-preview";
 import { MessageContent } from "./message-content";
 import { MessageFrame } from "./message-frame";
 import { MessageHeader } from "./message-header";
+import { Reactions } from "./reactions";
 
 export type MessageProps = {
+  onReactionToggle?: ReactionToggleHandler | undefined;
   message: MessageView;
   onThreadOpen?: ((id: string) => void) | undefined;
   activeThreadId?: string | undefined;
   showThreadPreview?: boolean | undefined;
 };
 
-export function Message({ message, onThreadOpen, activeThreadId, showThreadPreview = true }: MessageProps) {
+export function Message({ message, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true }: MessageProps) {
   const { referenceTime: reference } = useDisplayOptions();
   const referenceTime = reference ?? message.timestamp;
   return (
@@ -38,6 +41,16 @@ export function Message({ message, onThreadOpen, activeThreadId, showThreadPrevi
         ? <MediaGallery items={message.media} />
         : null}
       {message.embeds?.map(embed => <Embed key={embed.id} embed={embed} referenceTime={referenceTime} />)}
+      {message.reactions?.length
+        ? (
+            <Reactions
+              reactions={message.reactions}
+              onToggle={onReactionToggle
+                ? id => onReactionToggle(message.id, id)
+                : undefined}
+            />
+          )
+        : null}
     </MessageFrame>
   );
 }

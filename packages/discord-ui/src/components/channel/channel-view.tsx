@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { ChannelViewModel } from "../../model/channel";
+import type { ReactionToggleHandler } from "../../model/reaction";
 import { useEffect, useRef, useState } from "react";
 import { DiscordUI } from "../discord-ui";
 import { useDisplayOptions } from "../display-context";
@@ -11,6 +12,7 @@ import { useMessageScroll } from "./use-message-scroll";
 
 export type ChannelViewProps = {
   channel: ChannelViewModel;
+  onReactionToggle?: ReactionToggleHandler | undefined;
   height?: CSSProperties["height"];
   header?: ReactNode;
   composer?: ReactNode | false;
@@ -21,7 +23,7 @@ export type ChannelViewProps = {
   showDateSeparators?: boolean;
 };
 
-export function ChannelView({ channel, height = 560, header, composer, onSend, onThreadSend, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
+export function ChannelView({ channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
   const { scoped, labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const { historyRef, updateFollowState } = useMessageScroll(channel.id, channel.messages.at(-1)?.id, autoScroll);
@@ -69,7 +71,7 @@ export function ChannelView({ channel, height = 560, header, composer, onSend, o
             tabIndex={0}
             onScroll={event => updateFollowState(event.currentTarget)}
           >
-            <MessageList messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
+            <MessageList onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
           </div>
           {composer === false
             ? null
@@ -80,6 +82,7 @@ export function ChannelView({ channel, height = 560, header, composer, onSend, o
               <ThreadPanel
                 key={open.id}
                 thread={open}
+                onReactionToggle={onReactionToggle}
                 parentMessage={channel.messages.find(message => message.id === open.parentMessageId)}
                 onClose={closeThread}
                 onSend={onThreadSend

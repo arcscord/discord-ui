@@ -1,4 +1,4 @@
-import type { ThemeName, ThreadMessageView } from "@arcscord/discord-ui";
+import type { MessageView, ThemeName, ThreadMessageView } from "@arcscord/discord-ui";
 import { ChannelView, DiscordUI } from "@arcscord/discord-ui";
 import { useState } from "react";
 import { initialChannel } from "../data/examples";
@@ -14,6 +14,25 @@ function localMessage(content: string): ThreadMessageView {
 
 export function ConversationDemo({ theme = "dark" }: { theme?: ThemeName }) {
   const [channel, setChannel] = useState(initialChannel);
+  function toggleReaction(messageId: string, reactionId: string) {
+    function update<T extends MessageView>(message: T): T {
+      return message.id === messageId
+        ? { ...message, reactions: message.reactions?.map(reaction => reaction.id === reactionId
+            ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me
+                ? -1
+                : 1) }
+            : reaction) ?? [] }
+        : message;
+    }
+    setChannel(current => ({
+      ...current,
+      messages: current.messages.map(update),
+      threads: current.threads?.map(thread => ({
+        ...thread,
+        messages: thread.messages.map(update),
+      })) ?? [],
+    }));
+  }
   function send(content: string) {
     const message = localMessage(content);
     setChannel(current => ({
@@ -43,5 +62,5 @@ export function ConversationDemo({ theme = "dark" }: { theme?: ThemeName }) {
         : item),
     }));
   }
-  return <DiscordUI theme={theme} locale="en-US" timeZone="UTC" className="conversation-frame"><ChannelView channel={channel} height={540} showDateSeparators={false} onSend={send} onThreadSend={reply} /></DiscordUI>;
+  return <DiscordUI theme={theme} locale="en-US" timeZone="UTC" className="conversation-frame"><ChannelView channel={channel} height={540} showDateSeparators={false} onSend={send} onThreadSend={reply} onReactionToggle={toggleReaction} /></DiscordUI>;
 }

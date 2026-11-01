@@ -9,6 +9,21 @@ export type ComponentExample = {
 export const channelCode = `function SupportChannel() {
   const [channel, setChannel] = useState(initialChannel);
 
+  function toggleReaction(messageId, reactionId) {
+    function update(message) {
+      return message.id === messageId
+        ? { ...message, reactions: message.reactions?.map(reaction => reaction.id === reactionId
+          ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me ? -1 : 1) }
+          : reaction) }
+        : message;
+    }
+    setChannel(current => ({
+      ...current,
+      messages: current.messages.map(update),
+      threads: current.threads.map(thread => ({ ...thread, messages: thread.messages.map(update) })),
+    }));
+  }
+
   function send(content) {
     const message = {
       id: crypto.randomUUID(),
@@ -47,10 +62,34 @@ export const channelCode = `function SupportChannel() {
 
   return <ChannelView channel={channel} height={560}
     showDateSeparators={false}
-    onSend={send} onThreadSend={reply} />;
+    onSend={send} onThreadSend={reply} onReactionToggle={toggleReaction} />;
 }`;
 
 export const componentExamples: ComponentExample[] = [
+  {
+    id: "reactions",
+    title: "Reactions",
+    family: "Messages",
+    description: "Try a complete message with Markdown, media, an embed and interactive Unicode and custom emoji reactions.",
+    code: `function ReactionExample() {
+  const [message, setMessage] = useState({
+    ...release,
+    body: { kind: "markdown", content: "## A release worth celebrating 🎉\\nTry a reaction below. **Rich content**, an embed and custom emoji work together.\\n\\n||A little surprise for the community.||" },
+    media: [{ id: "landscape", url: "/examples/landscape.svg", alt: "Illustrated mountains beneath a blue sky", width: 600, height: 320 }],
+  });
+
+  function toggleReaction(messageId, reactionId) {
+    setMessage(current => ({
+      ...current,
+      reactions: current.reactions.map(reaction => reaction.id === reactionId
+        ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me ? -1 : 1) }
+        : reaction),
+    }));
+  }
+
+  return <Message message={message} onReactionToggle={toggleReaction} />;
+}`,
+  },
   {
     id: "discord-ui",
     title: "DiscordUI",

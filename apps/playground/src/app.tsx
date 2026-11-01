@@ -1,4 +1,4 @@
-import type { ThemeName } from "@arcscord/discord-ui";
+import type { MessageView, ThemeName } from "@arcscord/discord-ui";
 import { ChannelView, DiscordUI, Message, themes } from "@arcscord/discord-ui";
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useState } from "react";
@@ -106,6 +106,36 @@ export function App() {
           : message),
       });
     });
+    setCopyStatus("");
+  }
+
+  function toggleReaction(messageId: string, reactionId: string): void {
+    function update<T extends MessageView>(message: T): T {
+      return message.id === messageId
+        ? { ...message, reactions: message.reactions?.map(reaction => reaction.id === reactionId
+            ? {
+                ...reaction,
+                me: !reaction.me,
+                count: Math.max(0, reaction.count + (reaction.me
+                  ? -1
+                  : 1)),
+              }
+            : reaction) ?? [] }
+        : message;
+    }
+    if (isChannel) {
+      setChannelEditor(previous => createChannelEditor({
+        ...previous.channel,
+        messages: previous.channel.messages.map(update),
+        threads: previous.channel.threads?.map(thread => ({
+          ...thread,
+          messages: thread.messages.map(update),
+        })) ?? [],
+      }));
+    }
+    else {
+      setEditor(previous => createMessageEditor(update(previous.message)));
+    }
     setCopyStatus("");
   }
 
@@ -224,6 +254,7 @@ export function App() {
                   entities={demoEntities}
                   renderCode={renderHighlightedCode}
                   labels={{
+                    reactions: "Réactions",
                     thread: "Fil",
                     openThread: "Ouvrir le fil",
                     closeThread: "Fermer le fil",
@@ -242,8 +273,8 @@ export function App() {
                   }}
                 >
                   {isChannel
-                    ? <ChannelView key={`channel-${revision}`} channel={channelEditor.channel} height={620} onSend={sendDemoMessage} onThreadSend={sendDemoThreadMessage} composerDisabled={Boolean(channelEditor.error)} />
-                    : <Message key={`${scenario}-${revision}`} message={message} />}
+                    ? <ChannelView key={`channel-${revision}`} channel={channelEditor.channel} onReactionToggle={toggleReaction} height={620} onSend={sendDemoMessage} onThreadSend={sendDemoThreadMessage} composerDisabled={Boolean(channelEditor.error)} />
+                    : <Message key={`${scenario}-${revision}`} message={message} onReactionToggle={toggleReaction} />}
 
                 </DiscordUI>
               </div>
