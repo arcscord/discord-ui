@@ -50,6 +50,8 @@ jobs:
           persist-credentials: false
       - name: Set up workspace
         uses: ./.github/actions/setup
+      - name: Build library for website test imports
+        run: pnpm build:lib
       - name: Run unit tests
         run: pnpm test --reporter=default --reporter=junit --outputFile=.local/unit-results.xml
       - name: Upload test results

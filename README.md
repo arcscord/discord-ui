@@ -58,8 +58,10 @@ desktop and mobile interaction checks. CI runs these checks too.
 
 Pull requests, pushes to `main` and manual runs execute separate lint, unit test,
 build/typecheck/package and browser jobs. The library, playground and Docusaurus
-site are built once; browser jobs reuse those artifacts and test both desktop and
-mobile. The package check installs the tarball in an isolated consumer and checks
+site are built together; browser jobs reuse those artifacts and test both desktop
+and mobile. The independent unit test job builds the library before testing the
+website examples, which import its public package exports.
+The package check installs the tarball in an isolated consumer and checks
 ESM imports, SSR, declarations and CSS. JUnit results, HTML browser reports,
 failure screenshots and traces are retained for seven days.
 
