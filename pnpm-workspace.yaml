@@ -14,4 +14,6 @@ overrides:
   semver@^6.3.1: 7.8.5
 
 allowBuilds:
+  # core-js only prints funding information; no generated files are required.
+  core-js: false
   esbuild: true
