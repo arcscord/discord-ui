@@ -2,10 +2,14 @@ import { expect, test } from "@playwright/test";
 
 test("explorer filters components, compares themes and opens the selected example", async ({ page }) => {
   await page.goto("/components");
+  if ((page.viewportSize()?.width ?? 0) <= 640)
+    await page.getByRole("button", { name: /Browse components/ }).click();
   await page.getByRole("searchbox", { name: "Find a component" }).fill("Embed");
   await page.getByRole("button", { name: "Embed", exact: true }).click();
   await expect(page).toHaveURL(/example=embed/);
   await page.getByRole("checkbox", { name: "Compare all themes" }).check();
+  await expect(page.getByText("Showing Light, Ash and Dark")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Light", exact: true })).toHaveCount(0);
   for (const theme of ["light", "ash", "dark"]) {
     await expect(page.getByRole("region", { name: `${theme} preview` }).locator(".dui-embed")).toBeVisible();
   }
@@ -13,6 +17,88 @@ test("explorer filters components, compares themes and opens the selected exampl
   await expect(page).toHaveURL(/playground\?example=embed/);
   await expect(page.getByRole("combobox", { name: "Example", exact: true })).toHaveValue("embed");
   await expect(page.locator(".live-panel .dui-embed")).toBeVisible();
+});
+
+test("drafts survive switching, navigation and reload, and reset can be undone", async ({ page }) => {
+  await page.goto("/playground?example=message-content");
+  const editor = page.getByRole("textbox", { name: "React JSX editor" });
+  const initial = await editor.inputValue();
+  const edited = `${initial}\n// My unfinished example`;
+  await editor.fill(edited);
+  await page.getByRole("combobox", { name: "Example", exact: true }).selectOption("embed");
+  await expect(page.getByRole("combobox", { name: "Example", exact: true })).toBeFocused();
+  await page.goBack();
+  await expect(editor).toHaveValue(edited);
+  await page.reload();
+  await expect(editor).toHaveValue(edited);
+  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await expect(editor).toHaveValue(initial);
+  await page.reload();
+  await page.getByRole("button", { name: "Undo reset", exact: true }).click();
+  await expect(editor).toHaveValue(edited);
+  await expect(page.getByRole("button", { name: "Reset", exact: true })).toBeFocused();
+  await expect(page.getByRole("button", { name: "Undo reset", exact: true })).toHaveCount(0);
+});
+
+test("editing and switching examples still work when browser storage is blocked", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "sessionStorage", {
+      get() {
+        throw new Error("Storage blocked");
+      },
+    });
+  });
+  await page.goto("/playground?example=message-content");
+  const editor = page.getByRole("textbox", { name: "React JSX editor" });
+  const edited = `${await editor.inputValue()}\n// In-memory draft`;
+  await editor.fill(edited);
+  const examples = page.getByRole("combobox", { name: "Example", exact: true });
+  await examples.selectOption("embed");
+  await examples.selectOption("message-content");
+  await expect(editor).toHaveValue(edited);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
+test("width reports the rendered preview and follows viewport changes", async ({ page }) => {
+  await page.goto("/playground?example=message");
+  await page.getByRole("slider", { name: "Width", exact: true }).fill("1000");
+  const output = page.getByRole("status", { name: "Actual preview width" });
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect(async () => {
+      const actual = Math.round(await page.locator(".preview-width").evaluate(element => element.getBoundingClientRect().width));
+      await expect(output).toHaveText(`${actual} px`);
+      expect(actual).toBeLessThan(1000);
+    }).toPass();
+    await expect(page.locator("#width-hint")).toHaveText("Target 1000 px · fitted to panel");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  }
+  await page.getByRole("slider", { name: "Width", exact: true }).fill("320");
+  await expect(output).toHaveText("320 px");
+  await expect(page.locator("#width-hint")).toHaveText("Actual preview width");
+});
+
+test("mobile catalogue collapses after selection and restores keyboard focus", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/components");
+  const browse = page.getByRole("button", { name: /Browse components/ });
+  await expect(browse).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("searchbox")).toBeHidden();
+  const preview = page.locator(".component-preview");
+  expect((await preview.boundingBox())!.y).toBeLessThan(600);
+  await browse.click();
+  await page.getByRole("searchbox").fill("Embed");
+  await page.getByRole("button", { name: "Embed", exact: true }).click();
+  await expect(browse).toHaveAttribute("aria-expanded", "false");
+  await expect(browse).toBeFocused();
+  await expect(browse).toContainText("Embed");
+  await expect(page.locator(".component-preview .dui-embed")).toBeVisible();
+  await browse.click();
+  await page.getByRole("searchbox").press("Escape");
+  await expect(browse).toBeFocused();
+  await expect(browse).toHaveAttribute("aria-expanded", "false");
+  await page.setViewportSize({ width: 1440, height: 844 });
+  await expect(page.getByRole("searchbox")).toBeVisible();
 });
 
 test("JSX edits render, errors retain the last preview, and Reset recovers", async ({ page }) => {

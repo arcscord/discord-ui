@@ -26,13 +26,15 @@ export function StablePreview() {
   );
 }
 
-export function CompileStatus() {
+export function CompileStatus({ pending = false }: { pending?: boolean }) {
   const { error, element } = use(LiveContext);
   return (
     <div className="compile-status" role="status">
-      {error
-        ? "Check the code below"
-        : element ? "Example loaded" : "Compiling…"}
+      {pending
+        ? "Updating preview…"
+        : error
+          ? "Check the code below"
+          : element ? "Example loaded" : "Compiling…"}
       <span>React (JSX)</span>
     </div>
   );

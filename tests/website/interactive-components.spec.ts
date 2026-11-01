@@ -9,9 +9,13 @@ test("catalog exposes the new interactive controls and file primitive", async ({
   await page.getByRole("option", { name: "Alpha First typed value" }).click();
   await expect(menu).toHaveText("Alpha");
   await menu.press("Escape");
+  if ((page.viewportSize()?.width ?? 0) <= 640)
+    await page.getByRole("button", { name: /Browse components/ }).click();
   await page.getByRole("button", { name: "Button", exact: true }).click();
   await page.getByRole("button", { name: "success", exact: true }).click();
   await expect(page.getByRole("status")).toHaveText("success");
+  if ((page.viewportSize()?.width ?? 0) <= 640)
+    await page.getByRole("button", { name: /Browse components/ }).click();
   await page.getByRole("button", { name: "File", exact: true }).click();
   await expect(page.getByRole("link", { name: "guide.pdf", exact: true })).toBeVisible();
   expect(errors).toEqual([]);

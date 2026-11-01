@@ -5,7 +5,7 @@ import { useHistory, useLocation } from "@docusaurus/router";
 import useIsBrowser from "@docusaurus/useIsBrowser";
 import CodeBlock from "@theme/CodeBlock";
 import Layout from "@theme/Layout";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Arrow } from "../components/Arrow";
 import { ComponentSample } from "../components/ComponentSample";
 import { ThemeControl } from "../components/ThemeControl";
@@ -26,41 +26,77 @@ export default function Components() {
   const [query, setQuery] = useState("");
   const [theme, setTheme] = useState<ThemeName>("dark");
   const [compare, setCompare] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(false);
+  const browseRef = useRef<HTMLButtonElement>(null);
+  const restoreBrowseFocusRef = useRef(false);
   const example = componentExamples.find(item => item.id === selected)!;
   const matching = componentExamples.filter(item => `${item.title} ${item.family}`.toLowerCase().includes(query.toLowerCase()));
   const families = Array.from(new Set(matching.map(item => item.family)));
+  useEffect(() => {
+    if (!restoreBrowseFocusRef.current)
+      return;
+    // Route navigation manages focus too; restore it after the new page commits.
+    const frame = window.requestAnimationFrame(() => {
+      restoreBrowseFocusRef.current = false;
+      browseRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [selected, browseOpen]);
   function choose(id: string) {
-    history.replace({ pathname: "/components", search: `?example=${id}` });
+    restoreBrowseFocusRef.current = window.matchMedia("(max-width: 640px)").matches;
+    if (id !== selected)
+      history.push({ pathname: "/components", search: `?example=${id}` });
+    setBrowseOpen(false);
   }
   return (
     <Layout title="Components" description="Explore the Arcscord Discord UI components, compare their themes, and open runnable React examples.">
       <main className="explorer-shell">
-        <aside className="explorer-sidebar" aria-label="Component explorer">
+        <aside
+          className="explorer-sidebar"
+          aria-label="Component explorer"
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && browseOpen) {
+              event.preventDefault();
+              setBrowseOpen(false);
+              browseRef.current?.focus();
+            }
+          }}
+        >
           <h1>Components</h1>
-          <label htmlFor="component-search">Find a component</label>
-          <input id="component-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search components…" />
-          <nav aria-label="Component families">
-            {families.map(family => (
-              <div key={family}>
-                <h2>{family}</h2>
-                {matching.filter(item => item.family === family).map(item => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-current={selected === item.id
-                      ? "page"
-                      : undefined}
-                    onClick={() => choose(item.id)}
-                  >
-                    {item.title}
-                  </button>
-                ))}
-              </div>
-            ))}
-            {matching.length === 0
-              ? <p role="status">No components found.</p>
-              : null}
-          </nav>
+          <button className="explorer-toggle" type="button" ref={browseRef} aria-expanded={browseOpen} aria-controls="explorer-navigation" onClick={() => setBrowseOpen(open => !open)}>
+            <span>Browse components</span>
+            <span>
+              {example.title}
+              {" "}
+              <span aria-hidden="true">{browseOpen ? "−" : "+"}</span>
+            </span>
+          </button>
+          <div id="explorer-navigation" className="explorer-navigation" data-open={browseOpen}>
+            <label htmlFor="component-search">Find a component</label>
+            <input id="component-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search components…" />
+            <nav aria-label="Component families">
+              {families.map(family => (
+                <div key={family}>
+                  <h2>{family}</h2>
+                  {matching.filter(item => item.family === family).map(item => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-current={selected === item.id
+                        ? "page"
+                        : undefined}
+                      onClick={() => choose(item.id)}
+                    >
+                      {item.title}
+                    </button>
+                  ))}
+                </div>
+              ))}
+              {matching.length === 0
+                ? <p role="status">No components found.</p>
+                : null}
+            </nav>
+          </div>
         </aside>
         <div className="explorer-content">
           <header className="explorer-heading">
@@ -69,7 +105,9 @@ export default function Components() {
             <p>{example.description}</p>
           </header>
           <div className="explorer-toolbar">
-            <ThemeControl value={theme} onChange={setTheme} />
+            {compare
+              ? <p className="comparison-note">Showing Light, Ash and Dark</p>
+              : <ThemeControl value={theme} onChange={setTheme} />}
             <label className="compare-toggle">
               <input type="checkbox" checked={compare} onChange={event => setCompare(event.target.checked)} />
               Compare all themes

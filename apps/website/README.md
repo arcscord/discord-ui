@@ -38,6 +38,16 @@ reusing the example.
 The preview is a local browser evaluation environment, with no TypeScript
 diagnostics. Syntax and render errors keep the editor and last successful preview.
 Reset restores the selected fixture and its local state.
+Each example keeps its code draft in the current browser tab, including across
+reloads when session storage is available. When storage is blocked, drafts remain
+available while navigating within the site. Reset offers Undo reset until the next
+code edit; both the draft and pending reset recovery survive a reload. The width
+control reports the rendered preview width and explains when the requested width
+is constrained by the panel. The mobile component catalogue starts collapsed and
+returns keyboard focus to its browse button after selection.
+Embedded channel and thread histories use native scroll chaining: at their top or
+bottom boundary, scrolling continues on the page. This site-only override keeps
+the library defaults and dropdown scroll containment unchanged.
 
 The complete documentation, search, major-version snapshots and GitHub Pages
 deployment remain subsequent stages. npm links point to installation status until

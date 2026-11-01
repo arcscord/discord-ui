@@ -1,5 +1,30 @@
 import { expect, test } from "@playwright/test";
 
+for (const route of ["/", "/components?example=channel-view", "/playground?example=channel-view"]) {
+  test(`embedded conversation scrolls internally and hands off to the page at its boundary: ${route}`, async ({ page }) => {
+    await page.goto(route);
+    const composer = page.getByRole("textbox", { name: "Message #support", exact: true });
+    for (let index = 0; index < 8; index++) {
+      await composer.fill(`Scroll example ${index}: a message to explore in this conversation.`);
+      await composer.press("Enter");
+    }
+    const history = page.locator(".dui-channel-main > .dui-channel-history");
+    await history.evaluate((element) => {
+      element.scrollIntoView({ block: "center" });
+      element.scrollTop = 0;
+    });
+    await history.hover();
+    const pagePosition = await page.evaluate(() => window.scrollY);
+    expect(pagePosition).toBeGreaterThan(0);
+    await page.mouse.wheel(0, 100);
+    await expect.poll(() => history.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(pagePosition);
+    await history.evaluate(element => element.scrollTop = 0);
+    await page.mouse.wheel(0, -240);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(pagePosition);
+  });
+}
+
 test("landing hydrates, keyboard tabs and independent preview themes work", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
