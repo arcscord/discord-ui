@@ -5,6 +5,11 @@
   "type": "module",
   "license": "MIT",
   "author": "Arcoz0308",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcscord/discord-ui.git",
+    "directory": "packages/discord-ui"
+  },
   "files": [
     "LICENSE",
     "README.md",

@@ -2,21 +2,179 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Exact commit to validate for a release.
+        type: string
+        required: false
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-checks
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CI: true
+
 jobs:
-  check:
-    runs-on: ubuntu-latest
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          node-version-file: .node-version
-      - uses: pnpm/action-setup@v6
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm exec playwright test
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+      - name: Set up workspace
+        uses: ./.github/actions/setup
+      - name: Run ESLint
+        run: pnpm lint
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+      - name: Set up workspace
+        uses: ./.github/actions/setup
+      - name: Run unit tests
+        run: pnpm test --reporter=default --reporter=junit --outputFile=.local/unit-results.xml
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: unit-results
+          path: .local/unit-results.xml
+          retention-days: 7
+
+  build:
+    name: Build, types and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+      - name: Set up workspace
+        uses: ./.github/actions/setup
+      - name: Build library, playground and documentation
+        run: pnpm build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+      - name: Check TypeScript
+        run: pnpm typecheck
+      - name: Verify tarball in an isolated consumer
+        run: pnpm pack:check
+      - name: Pack release candidate
+        run: pnpm --filter @arcscord/discord-ui pack --pack-destination "$GITHUB_WORKSPACE/.local/package"
+      - name: Upload package
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: npm-package
+          path: .local/package/*.tgz
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload browser builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: browser-builds
+          path: |
+            apps/playground/dist
+            apps/website/build
+            packages/discord-ui/dist
+          if-no-files-found: error
+          retention-days: 1
+
+  browser:
+    name: Browser tests (${{ matrix.suite }})
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: playground
+            config: playwright.config.mts
+            results: .local/browser-results
+          - suite: website
+            config: playwright.website.config.mts
+            results: .local/website-results
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+      - name: Set up workspace
+        uses: ./.github/actions/setup
+      - name: Download browser builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: browser-builds
+          path: .
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Test desktop and mobile
+        run: pnpm exec playwright test --config "${{ matrix.config }}"
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: .local/playwright-report-${{ matrix.suite }}
+      - name: Upload report and failure traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: browser-results-${{ matrix.suite }}
+          path: |
+            .local/playwright-report-${{ matrix.suite }}
+            ${{ matrix.results }}
+          retention-days: 7
+
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Review production dependency changes
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: critical
+          fail-on-scopes: runtime
+      - name: Skip review outside pull requests
+        if: github.event_name != 'pull_request'
+        run: echo "Dependency review only applies to pull requests."
+
+  required:
+    name: CI / Required
+    if: always()
+    needs: [lint, unit, build, browser, dependency-review]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Summarize and require every check
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+          const jobs = Object.entries(JSON.parse(process.env.RESULTS));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            ['## CI results', '', '| Job | Result |', '| --- | --- |',
+              ...jobs.map(([name, job]) => `| ${name} | ${job.result} |`), ''].join('\n'));
+          if (jobs.some(([, job]) => job.result !== 'success')) process.exit(1);
+          NODE
