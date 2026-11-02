@@ -7,7 +7,7 @@ AutoThreads and the Arcscord documentation. Package: `@arcscord/discord-ui`.
 
 Version `0.0.0`, not published. The package currently
 exports composable message primitives, serializable types and scoped light/dark styles.
-A Vite playground consumes the library. The payload adapter is planned.
+The payload adapter is planned.
 A dedicated Docusaurus site in `apps/website` contains the landing, interactive
 examples and initial documentation. See [website development](./apps/website/README.md).
 No AutoThreads or Arcscord runtime dependency is included.
@@ -31,7 +31,7 @@ and desktop/mobile interactions. Next.js and Docusaurus integration builds are s
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Start the playground with live package updates |
+| `pnpm dev` | Build the library and start the Docusaurus website |
 | `pnpm dev:website` | Build the library and start the Docusaurus website |
 | `pnpm build:website` | Build the library and production website |
 | `pnpm build` | Build all workspace packages |
@@ -44,20 +44,20 @@ and desktop/mobile interactions. Next.js and Docusaurus integration builds are s
 | `pnpm test:browser` | Build and run desktop/mobile browser checks |
 | `pnpm pack:check` | Verify the built tarball in an isolated consumer |
 | `pnpm check` | Lint, types, tests, build and tarball verification |
-| `pnpm clean` | Remove library, playground, website output and coverage |
+| `pnpm clean` | Remove library, website output and coverage |
 
 Run `pnpm build:lib` before `pnpm pack:check`, or use `pnpm check`. The tarball check
 installs pinned consumer dependencies in a temporary directory and needs registry
 access. It removes the temporary directory when done. No package is published.
-`pnpm dev` starts the playground at http://127.0.0.1:5173. Development uses package
-sources with HMR; production builds use the compiled workspace package.
+`pnpm dev` builds the library and starts the website at http://127.0.0.1:3000.
+Rebuild the library after changing its sources.
 Run `pnpm exec playwright install chromium` once, then `pnpm test:browser` for
 desktop and mobile interaction checks. CI runs these checks too.
 
 ## Continuous integration
 
 Pull requests, pushes to `main` and manual runs execute separate lint, unit test,
-build/typecheck/package and browser jobs. The library, playground and Docusaurus
+build/typecheck/package and browser jobs. The library and Docusaurus
 site are built together; browser jobs reuse those artifacts and test both desktop
 and mobile. The independent unit test job builds the library before testing the
 website examples, which import its public package exports.
@@ -121,7 +121,7 @@ do not publish anything.
 ## Package layout
 
 - `packages/discord-ui`: publishable ESM library, declarations and CSS.
-- `apps/playground`: private Vite application using the package.
+- `apps/website`: Docusaurus website with documentation and an interactive React playground.
 - `fixtures`: synthetic scenes shared by the playground and tests.
 - `scripts`: small TypeScript CLIs for cleanup and distribution checks.
 - `.github/workflows`: CI, CodeQL scanning and npm publication.
@@ -156,21 +156,11 @@ and the preset palette table.
 
 ## Content and scope
 
-The playground includes thread summaries and an interactive thread panel with local
-replies. Thread cards share the container surface/border; thread data remains editable
-in the channel JSON.
-
-The playground includes a channel scene with multiple messages, date separators,
-a fixed header/composer and local simulated sending. It opens at the bottom.
-
-The playground includes a live JSON editor for message and channel view models, with syntax
-and shape diagnostics, last-valid-preview retention, formatting and copy. It stays
-synchronized with the content editor. Reset restores the selected fixture; switching
-scenarios loads that fixture. These checks are for display, not Discord publication.
-
-The playground includes plain text, Discord Markdown and entities, keyboard spoilers,
-image galleries, embeds and unavailable-media states. The renderer supports controlled emoji reactions and Twemoji rendering; no payload adapter is included. A Components V2 scene demonstrates
-containers, sections, thumbnails, galleries, separators and link buttons.
+The website includes editable React examples for the public components, including
+channels, threads, reactions, Markdown, media, Components V2 and interactive controls.
+Its integrated playground lets you edit imports, demo data and rendering, with
+Light/Ash/Dark themes and adjustable preview width. See the
+[website guide](./apps/website/README.md) for editor behavior and supported imports.
 
 Mentions and custom emoji resources are supplied through `DiscordUI.entities`.
 Use `allowRemoteMedia={false}` to block remote avatars, emoji and message/embed
@@ -188,12 +178,12 @@ MIT, copyright 2026 Arcoz0308. Markdown AST rendering and optional highlighting
 adapt AutoThreads logic. See `packages/discord-ui/THIRD_PARTY_NOTICES` for provenance
 and full dependency/upstream notices. The renderer styles are adapted from AutoThreads and shipped as standalone CSS.
 Synthetic SVG fixtures are new.
-The notices are included in the package and available from the playground footer.
+The notices are included in the package.
 
 ### Generated demo avatars
 
-`fixtures/avatars.json` stores fixed avatar letters and colors. Both playgrounds
-run `scripts/workspace/generate-avatars.mts` before `dev` and `build`, generating
-SVG files under their ignored `public/generated/avatars` or
-`static/generated/avatars` directories. Use `pnpm generate:avatars` to regenerate
-both sets manually. Only the definitions and generator belong in Git.
+`fixtures/avatars.json` stores fixed avatar letters and colors. The website runs
+`scripts/workspace/generate-avatars.mts` before `dev` and `build`, generating
+SVG files under its ignored `static/generated/avatars` directory.
+Use `pnpm generate:avatars` to regenerate them manually. Only the definitions
+and generator belong in Git.

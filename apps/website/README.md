@@ -3,14 +3,14 @@
 Docusaurus app for the landing and documentation. Run from the workspace root:
 
 ```sh
-pnpm dev:website
+pnpm dev
 pnpm build:website
 pnpm --filter @arcscord/discord-ui-website preview
 pnpm test:website
 ```
 
 Use the workspace's Node 26 and pnpm 12 versions. The library must be built before
-starting Docusaurus; `dev:website` and `build:website` handle this.
+starting Docusaurus; `dev` (alias `dev:website`) and `build:website` handle this.
 
 The site uses Arcscord's palette and a locally served Inter variable font (see
 `static/fonts/OFL.txt`). Discord previews use the package's compiled CSS unchanged.
@@ -51,7 +51,7 @@ the library defaults and dropdown scroll containment unchanged.
 
 The complete documentation, search, major-version snapshots and GitHub Pages
 deployment remain subsequent stages. npm links point to installation status until
-the package is published. The original Vite playground is unchanged.
+the package is published.
 
 The reference concepts are in the design chat's `website-design-plan.md`; their
 Discord skins and illustrative snippets are replaced by real package components

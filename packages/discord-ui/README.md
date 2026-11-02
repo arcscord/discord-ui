@@ -191,9 +191,8 @@ at rest and the container outline color on focus, without an additional outline.
 | `channelHeaderDivider` | `#DFDFE1` | `#3E3F45` | `#29292E` |
 | `channelInputBackground` | `#FFFFFF` | `#383A41` | `#222327` |
 
-The playground's channel scenario includes multiple authors, an image and local
-simulated sending. Its JSON editor accepts the whole channel model, including
-message arrays, while preserving the last valid preview on errors.
+The website's ChannelView playground example includes multiple authors and local
+simulated sending. Its React editor lets you edit the channel model and rendering.
 
 
 ## Threads
@@ -308,7 +307,7 @@ and `selectMuted` control their opaque surfaces and placeholder text.
 
 `Button` supports primary, secondary, success, danger and premium styles.
 `File` renders a file name, optional display size, safe HTTP(S) link and spoiler.
-The playground's **Composants interactifs** scenario demonstrates every variant.
+The website playground includes editable examples for each interactive component.
 
 ## Replies, edits and classic attachments
 
@@ -373,7 +372,7 @@ command and returns to the message input. The close button cancels the command
 when no argument is being edited. Submission calls `onSlashCommand` separately
 from `onSend`.
 
-In the playground, select **Commandes slash — saisie et arguments** and type
+In the website playground, select **Slash commands** and type
 `/config autoreact` to try free text (`word`, `emoji`) and fixed choices
 (`channel`). The submitted invocation appears below the preview.
 

@@ -325,7 +325,7 @@ export const selectMenuExamples: SelectMenuExample[] = [
   },
 ];
 
-// Both playgrounds serve the same generated paths.
+// The website serves these generated paths.
 export function selectMenuForWebsite(menu: SelectMenuView): SelectMenuView {
   return menu;
 }

@@ -74,7 +74,7 @@ jobs:
           persist-credentials: false
       - name: Set up workspace
         uses: ./.github/actions/setup
-      - name: Build library, playground and documentation
+      - name: Build library and documentation
         run: pnpm build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
@@ -96,7 +96,6 @@ jobs:
         with:
           name: browser-builds
           path: |
-            apps/playground/dist
             apps/website/build
             packages/discord-ui/dist
           if-no-files-found: error
@@ -111,9 +110,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - suite: playground
-            config: playwright.config.mts
-            results: .local/browser-results
           - suite: website
             config: playwright.website.config.mts
             results: .local/website-results
