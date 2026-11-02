@@ -4,6 +4,9 @@ coverage/
 *.tsbuildinfo
 *.tgz
 .local/
+# Project-local agent instructions and skills.
+/AGENTS.md
+/.agents/skills/
 **/.docusaurus/
 apps/website/build/
 .DS_Store

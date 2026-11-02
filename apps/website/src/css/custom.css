@@ -271,3 +271,28 @@ button[class*="closeButton_"] { color: #e8eefb; }
  .site-button, .theme-control button, .example-select select, .example-bar select, .explorer-sidebar input, .explorer-toggle { border-color: #b5bdd4; }
  .explorer-sidebar nav button[aria-current='page'] { outline: 2px solid var(--site-accent); outline-offset: -2px; }
 }
+
+/* Landing demos each show a distinct use case: message, transcript, interaction. */
+.hero-demo .example-source { height: 500px; }
+.hero-demo .example-source pre { min-height: 500px; }
+.demo-theme, .demo-tools { display: flex; align-items: center; gap: 10px; }
+.demo-theme > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.demo-status { color: #9ce1bd; }
+.demo-reset { min-height: 44px; padding: 6px 12px; border: 1px solid #37344f; border-radius: 5px; background: transparent; color: #e8eefb; font: inherit; cursor: pointer; }
+.demo-reset:hover { background: #292442; }
+.transcript-demo .dui-thread-panel > .dui-channel-composer { display: none; }
+.command-shortcuts { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--discord-ui-channel-header-divider); background: var(--discord-ui-background); }
+.command-shortcuts > span { margin-right: auto; color: var(--discord-ui-muted); font-size: 13px; }
+.command-shortcut { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-height: 44px; padding: 10px 14px; border: 1px solid var(--discord-ui-container-outline); border-radius: 6px; background: var(--discord-ui-channel-input-background); color: var(--discord-ui-text); font: inherit; font-weight: 650; cursor: pointer; }
+.command-shortcut span { font-size: 12px; color: var(--discord-ui-muted); font-weight: 400; }
+.command-shortcut:hover { border-color: var(--discord-ui-muted); }
+.command-shortcut:focus-visible, .demo-reset:focus-visible { outline: 2px solid #69a9ef; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .hero-demo .example-source { height: 240px; }
+  .hero-demo .example-source pre { min-height: 240px; }
+  .arcade-demo > .example-bar, .transcript-demo > .example-bar { gap: 8px; flex-wrap: wrap; }
+  .command-shortcuts { padding: 12px; gap: 8px; }
+  .command-shortcuts > span { flex-basis: 100%; }
+  .command-shortcut { flex: 1; padding: 8px 10px; }
+  .command-shortcut span { display: none; }
+}

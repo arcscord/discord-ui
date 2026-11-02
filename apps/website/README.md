@@ -18,8 +18,14 @@ The font comes from the [official Inter project](https://github.com/rsms/inter/b
 Set `site.inDevelopment` in `src/data/site.ts` to `false` to remove the dismissible
 development announcement. Shared external destinations live in the same file.
 
-Implemented: shared dark shell, responsive landing, keyboard tabs, independent
-preview themes, local channel messages and thread replies, initial Markdown/MDX
+Implemented: shared dark shell, responsive landing with a single Components V2
+announcement, a read-only resolved-ticket transcript with a browsable thread, and
+a local slash-command arcade (`/dice`, `/quiz`, `/8ball`). Each landing demo has
+an independent Light/Ash/Dark selector. Arcade shortcuts prepare commands in the
+real composer; quiz buttons reveal and lock the answer. Reset clears the arcade
+history and unfinished commands. All responses are local simulations, with fixed
+fixture timestamps and no Discord connection. Channel sending and thread replies
+remain available in the catalogue and playground. Also included: initial Markdown/MDX
 documentation, `/components` and `/playground`. The explorer covers all 29 public
 components and compares Light/Ash/Dark. Deep links use `?example=channel-view`
 (or another ID in `src/data/component-examples.ts`).

@@ -1,4 +1,4 @@
-import type { ChannelViewModel, MessageView, ThemeName } from "@arcscord/discord-ui";
+import type { ChannelViewModel, MessageView } from "@arcscord/discord-ui";
 
 export const timestamp = "2026-11-01T10:24:00Z";
 export const welcome: MessageView = {
@@ -117,32 +117,6 @@ export const markdown: MessageView = {
   timestamp,
   body: { kind: "markdown", content: "**Welcome to the server, <@123456789012345678>!**\n\nWe're excited to have you here.\nHere's a quick tip: ||you can find the full guide in the server guide channel.||\n\nTo get started, try running:\n```bash\n/help\n```" },
 };
-export const heroExamples = [
-  { label: "Welcome bot", file: "welcome.tsx", message: welcome },
-  { label: "Release notes", file: "release.tsx", message: release },
-  { label: "Support ticket", file: "support.tsx", message: ticket },
-];
-export const richExamples = [
-  { label: "Markdown", file: "markdown.tsx", message: markdown },
-  { label: "Embeds", file: "embed.tsx", message: release },
-  { label: "Components V2", file: "components.tsx", message: ticket },
-];
-export function messageSource(message: MessageView, theme: ThemeName): string {
-  const interactive = Boolean(message.reactions?.length);
-  const state = interactive
-    ? `  const [current, setCurrent] = useState(message);
-  function toggleReaction(messageId: string, reactionId: string) {
-    setCurrent(previous => ({
-      ...previous,
-      reactions: previous.reactions?.map(reaction => reaction.id === reactionId
-        ? { ...reaction, me: !reaction.me, count: reaction.count + (reaction.me ? -1 : 1) }
-        : reaction),
-    }));
-  }
-`
-    : "";
-  return `${interactive ? "import { useState } from \"react\";\n" : ""}import type { MessageView } from "@arcscord/discord-ui";\nimport { DiscordUI, Message } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst message: MessageView = ${JSON.stringify(message, null, 2)};\n\nexport function Example() {\n${state}  return (\n    <DiscordUI theme="${theme}" locale="en-US" timeZone="UTC"\n      entities={{ users: { "123456789012345678": { name: "Inès" } } }}>\n      <Message message={${interactive ? "current" : "message"}}${interactive ? " onReactionToggle={toggleReaction}" : ""} />\n    </DiscordUI>\n  );\n}`;
-}
 export const initialChannel: ChannelViewModel = {
   id: "support",
   name: "support",

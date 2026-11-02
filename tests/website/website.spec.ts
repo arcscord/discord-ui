@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-for (const route of ["/", "/components?example=channel-view", "/playground?example=channel-view"]) {
+for (const route of ["/components?example=channel-view", "/playground?example=channel-view"]) {
   test(`embedded conversation scrolls internally and hands off to the page at its boundary: ${route}`, async ({ page }) => {
     await page.goto(route);
     const composer = page.getByRole("textbox", { name: "Message #support", exact: true });
@@ -25,7 +25,7 @@ for (const route of ["/", "/components?example=channel-view", "/playground?examp
   });
 }
 
-test("landing hydrates, keyboard tabs and independent preview themes work", async ({ page }) => {
+test("landing has three distinct demos with independent themes and a read-only transcript", async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   page.on("console", (message) => {
@@ -35,25 +35,40 @@ test("landing hydrates, keyboard tabs and independent preview themes work", asyn
   await page.goto("/");
   await expect(page).toHaveTitle(/Discord messages. Without screenshots/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Discord messages.Without screenshots.");
-  await page.getByRole("tab", { name: "Welcome bot", exact: true }).focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("tab", { name: "Release notes" })).toBeFocused();
-  await expect(page.locator(".message-preview").first()).toContainText("What's new");
-  await page.getByRole("combobox", { name: "Bot examples theme" }).selectOption("light");
-  await expect(page.locator(".message-preview").first()).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("tab")).toHaveCount(0);
+  await expect(page.locator(".hero-demo .dui-message")).toHaveCount(1);
+  for (const theme of ["light", "ash", "dark"]) {
+    await page.getByRole("combobox", { name: "Announcement theme" }).selectOption(theme);
+    await page.getByRole("combobox", { name: "Transcript theme" }).selectOption(theme);
+    await expect(page.locator(".hero-demo .arcscord-discord-ui")).toHaveAttribute("data-theme", theme);
+    await expect(page.locator(".transcript-demo .arcscord-discord-ui")).toHaveAttribute("data-theme", theme);
+    await expect(page.locator(".arcade-demo .arcscord-discord-ui")).toHaveAttribute("data-theme", "dark");
+  }
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("tab", { name: "Components V2", exact: true }).click();
-  await expect(page.locator(".message-preview").last().getByRole("link", { name: "Read the guide" })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
-  expect(await page.evaluate(async () => {
-    await document.fonts.ready;
-    return document.fonts.check("16px Inter");
-  })).toBe(true);
+  const transcript = page.locator(".transcript-demo");
+  await expect(transcript.getByRole("textbox")).toHaveCount(0);
+  await expect(transcript.locator(".dui-message")).toHaveCount(6);
+  const attachment = transcript.getByRole("link", { name: "welcome-config.json", exact: true });
+  await expect(attachment).toBeVisible();
+  const response = await page.request.get("/examples/welcome-config.json");
+  expect(response.ok()).toBe(true);
+  expect(await response.json()).toHaveProperty("enabled", true);
+  const opener = transcript.getByRole("button", { name: /Open thread.*Permission check/ });
+  await opener.click();
+  const thread = transcript.locator(".dui-thread-panel");
+  await expect(thread).toContainText("Send Messages was disabled. Fixed!");
+  await expect(thread.getByRole("textbox")).toHaveCount(0);
+  await thread.getByRole("button", { name: "Close thread" }).press("Escape");
+  await expect(thread).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: `/tmp/landing-${testInfo.project.name}.png`, fullPage: true });
   expect(errors).toEqual([]);
 });
 
 test("channel sending, thread replies, Escape and restored focus", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/components?example=channel-view");
   const channelInput = page.getByRole("textbox", { name: "Message #support", exact: true });
   await channelInput.fill("A local channel message");
   await channelInput.press("Enter");

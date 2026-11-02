@@ -1,10 +1,7 @@
 import Link from "@docusaurus/Link";
-import Heading from "@theme/Heading";
 import Layout from "@theme/Layout";
 import { Arrow } from "../components/Arrow";
-import { ConversationDemo } from "../components/ConversationDemo";
-import { ExamplePreview } from "../components/ExamplePreview";
-import { heroExamples, richExamples } from "../data/examples";
+import { HeroDemo, SlashCommandDemo, TranscriptDemo } from "../components/LandingDemos";
 
 export default function Home() {
   return (
@@ -30,38 +27,25 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <ExamplePreview examples={heroExamples} label="Bot examples" />
+          <HeroDemo />
         </section>
-        <section className="landing-section" aria-labelledby="components">
-          <Heading as="h2" id="components">
-            Built for the messages
+        <section className="landing-section" aria-labelledby="transcript-title">
+          <h2 id="transcript-title">
+            Every conversation.
             {" "}
-            <span>your bot sends.</span>
-          </Heading>
-          <p className="section-intro">From a welcome message to a release announcement.</p>
-          <ExamplePreview examples={richExamples} label="Rich content" />
-          <div className="section-links">
-            <Link to="/components">
-              Explore every component
-              <Arrow />
-            </Link>
-          </div>
-        </section>
-        <section className="landing-section" aria-labelledby="conversation-title">
-          <h2 id="conversation-title">
-            Give the conversation
-            {" "}
-            <span>room.</span>
+            <span>All the context.</span>
           </h2>
-          <p className="section-intro">Render a full channel. Open a thread. Keep the context.</p>
-          <ConversationDemo />
-          <div className="section-links">
-            <span>Try sending a message or opening a thread. Messages stay in this demo.</span>
-            <Link to="/playground?example=channel-view">
-              Open this example in the playground
-              <Arrow />
-            </Link>
-          </div>
+          <p className="section-intro">Turn a resolved ticket into a readable transcript. Replies, files and threads included.</p>
+          <TranscriptDemo />
+        </section>
+        <section className="landing-section" aria-labelledby="arcade-title">
+          <h2 id="arcade-title">
+            Less watching.
+            {" "}
+            <span>More playing.</span>
+          </h2>
+          <p className="section-intro">Roll a die. Take a quiz. Ask the eight ball. Three commands, real UI interactions.</p>
+          <SlashCommandDemo />
         </section>
         <section className="closing" aria-labelledby="closing-title">
           <h2 id="closing-title">

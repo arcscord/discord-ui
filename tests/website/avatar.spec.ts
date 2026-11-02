@@ -21,10 +21,11 @@ test("generates an avatar with live letter and color controls and resets", async
 });
 
 test("uses the supplied bot image and colors channel authors including new messages", async ({ page }) => {
-  await page.goto("/");
-  const bot = page.locator(".landing-hero .dui-avatar img");
+  await page.goto("/components?example=message");
+  const bot = page.locator(".component-preview .dui-avatar img").first();
   await expect(bot).toHaveAttribute("src", "/generated/avatars/arcscord.svg");
   await expect(bot).toHaveJSProperty("naturalWidth", 64);
+  await page.goto("/components?example=channel-view");
   const channel = page.locator(".dui-channel");
   await expect(channel.locator(".dui-author-name").first()).toHaveCSS("color", "rgb(87, 191, 160)");
   await expect(channel.locator(".dui-author-name").nth(1)).toHaveCSS("color", "rgb(167, 169, 255)");

@@ -1,18 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test("landing examples have interactive reactions and open a full playground example", async ({ page }) => {
+test("reactions work in a full editable playground example", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/");
-  const hero = page.locator(".landing-hero");
-  await hero.getByRole("button", { name: "👋: 8", exact: true }).click();
-  await expect(hero.getByRole("button", { name: "👋: 9", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await hero.getByRole("tab", { name: "Release notes", exact: true }).click();
-  await hero.getByRole("button", { name: "🔥: 12", exact: true }).press("Space");
-  await expect(hero.getByRole("button", { name: "🔥: 13", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(hero.locator(".example-source")).toContainText("onReactionToggle={toggleReaction}");
-  await hero.getByRole("link", { name: "Open in playground" }).click();
-  await expect(page).toHaveURL(/playground\?example=reactions/);
+  await page.goto("/playground?example=reactions");
   const preview = page.getByRole("region", { name: "Live preview" });
   await expect(preview.getByRole("heading", { name: "A release worth celebrating 🎉" })).toBeVisible();
   await expect(preview.locator(".dui-embed")).toContainText("What's new");
@@ -31,8 +22,8 @@ test("landing examples have interactive reactions and open a full playground exa
   expect(errors).toEqual([]);
 });
 
-test("support channel reactions work on the landing and in editable React, including thread replies", async ({ page }) => {
-  for (const url of ["/", "/playground?example=channel-view"]) {
+test("support channel reactions work in the catalogue and editable React, including thread replies", async ({ page }) => {
+  for (const url of ["/components?example=channel-view", "/playground?example=channel-view"]) {
     await page.goto(url);
     const channel = page.locator(".dui-channel");
     await channel.getByRole("button", { name: "👍: 3", exact: true }).click();
