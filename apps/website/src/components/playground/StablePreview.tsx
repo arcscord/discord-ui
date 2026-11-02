@@ -3,7 +3,7 @@ import { createElement, use, useEffect, useState } from "react";
 import { LiveContext } from "react-live";
 
 /** Keep a successfully mounted example when a subsequent edit fails. */
-export function StablePreview() {
+export function StablePreview({ revision = 0 }: { revision?: number }) {
   const { element, error } = use(LiveContext);
   const [lastGood, setLastGood] = useState<ComponentType | null>(null);
   useEffect(() => {
@@ -20,7 +20,7 @@ export function StablePreview() {
         ? <p className="preview-stale" role="status">{lastGood ? "Showing the last working preview." : "Fix the code to render a preview."}</p>
         : null}
       {Element
-        ? createElement(Element)
+        ? createElement(Element, { key: revision })
         : <p className="preview-loading">Preparing the preview…</p>}
     </>
   );
@@ -47,7 +47,7 @@ export function CompileError() {
         <div className="compile-error" role="alert">
           <strong>Could not render this edit</strong>
           <pre>{error}</pre>
-          <p>Your code is kept. Correct it or use Reset.</p>
+          <p>Your code is kept. Correct it or use Reset code.</p>
         </div>
       )
     : null;

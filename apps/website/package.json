@@ -5,7 +5,8 @@
     "dev": "node ../../scripts/workspace/generate-avatars.mts website && docusaurus start --host 127.0.0.1",
     "build": "node ../../scripts/workspace/generate-avatars.mts website && docusaurus build",
     "preview": "docusaurus serve --host 127.0.0.1",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "node ../../scripts/workspace/generate-website-examples.mts && tsc --noEmit",
+    "generate:examples": "node ../../scripts/workspace/generate-website-examples.mts"
   },
   "dependencies": {
     "@arcscord/discord-ui": "workspace:*",

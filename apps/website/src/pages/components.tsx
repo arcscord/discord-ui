@@ -1,5 +1,4 @@
 import type { ThemeName } from "@arcscord/discord-ui";
-import { DiscordUI } from "@arcscord/discord-ui";
 import Link from "@docusaurus/Link";
 import { useHistory, useLocation } from "@docusaurus/router";
 import useIsBrowser from "@docusaurus/useIsBrowser";
@@ -8,9 +7,9 @@ import Layout from "@theme/Layout";
 import { useEffect, useRef, useState } from "react";
 import { Arrow } from "../components/Arrow";
 import { ComponentSample } from "../components/ComponentSample";
+import { exportCode } from "../components/playground/export-code";
 import { ThemeControl } from "../components/ThemeControl";
 import { componentExamples, playgroundUrl } from "../data/component-examples";
-import { previewEntities } from "../data/live-scope";
 import { previewThemes } from "../data/preview-themes";
 
 export default function Components() {
@@ -25,6 +24,7 @@ export default function Components() {
     : "message";
   const [query, setQuery] = useState("");
   const [theme, setTheme] = useState<ThemeName>("dark");
+  const [revision, setRevision] = useState(0);
   const [compare, setCompare] = useState(false);
   const [browseOpen, setBrowseOpen] = useState(false);
   const browseRef = useRef<HTMLButtonElement>(null);
@@ -108,6 +108,7 @@ export default function Components() {
             {compare
               ? <p className="comparison-note">Showing Light, Ash and Dark</p>
               : <ThemeControl value={theme} onChange={setTheme} />}
+            <button type="button" className="demo-reset" onClick={() => setRevision(current => current + 1)}>Restart demo</button>
             <label className="compare-toggle">
               <input type="checkbox" checked={compare} onChange={event => setCompare(event.target.checked)} />
               Compare all themes
@@ -117,21 +118,21 @@ export default function Components() {
             {(compare
               ? previewThemes
               : [theme]).map(value => (
-              <section className="component-preview" key={`${example.id}-${value}`} aria-label={`${value} preview`}>
+              <section className="component-preview" key={`${example.id}-${value}-${revision}`} aria-label={`${value} preview`}>
                 <div className="example-bar">{value[0]!.toUpperCase() + value.slice(1)}</div>
-                <DiscordUI theme={value} locale="en-US" timeZone="UTC" entities={previewEntities} className="component-sample"><ComponentSample id={example.id} theme={value} /></DiscordUI>
+                <div className="component-sample"><ComponentSample id={example.id} theme={value} /></div>
               </section>
             ))}
           </div>
           <div className="explorer-source-heading">
             <h3>React example</h3>
-            <Link to={playgroundUrl(example.id)}>
+            <Link to={playgroundUrl(example.id, theme)}>
               Open in playground
               <Arrow />
             </Link>
           </div>
           <p className="scope-note">Open the complete example in the playground to edit its imports, demo data and rendering.</p>
-          <CodeBlock language="jsx" title={`${example.id}.jsx`}>{example.code}</CodeBlock>
+          <CodeBlock language="jsx" title={`${example.id}.jsx`}>{exportCode(example.code, theme)}</CodeBlock>
         </div>
       </main>
     </Layout>

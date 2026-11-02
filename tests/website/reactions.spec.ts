@@ -12,7 +12,7 @@ test("reactions work in a full editable playground example", async ({ page }) =>
   await expect(preview.getByRole("button", { name: "arc: 3", exact: true })).toHaveAttribute("aria-pressed", "true");
   await preview.getByRole("button", { name: "👀: 4", exact: true }).click();
   await expect(preview.getByRole("button", { name: "👀: 3", exact: true })).toHaveAttribute("aria-pressed", "false");
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await page.getByRole("button", { name: "Reset code", exact: true }).click();
   await expect(preview.getByRole("button", { name: "arc: 2", exact: true })).toHaveAttribute("aria-pressed", "false");
   await expect(preview.getByRole("button", { name: "👀: 4", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Light", exact: true }).click();

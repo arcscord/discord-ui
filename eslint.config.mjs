@@ -9,6 +9,7 @@ export default antfu({
     "**/dist/**",
     "**/.docusaurus/**",
     "apps/website/build/**",
+    "apps/website/src/generated/**",
     "coverage/**",
     ".local/**",
   ],

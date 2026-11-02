@@ -8,12 +8,21 @@ const fixtures = [
   "ticket",
   "markdown",
   "demoMedia",
+  "announcement",
+  "transcript",
+  "arcadeChannel",
+  "arcadeCommands",
+  "demoBot",
+  "demoUser",
+  "demoTime",
 ] as const;
 const hooks = ["useState", "useEffect", "useRef"];
 
 /** Export the scoped JSX as a standalone module, including its fixtures. */
 export function exportCode(code: string, theme: string): string {
-  const uses = (name: string): boolean => new RegExp(`\\b${name}\\b`, "u").test(code);
+  // Literal labels and comments are not dependencies (for example "welcome preview").
+  const identifiers = code.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\/[^\n]*|\/\*[\s\S]*?\*\//gu, "");
+  const uses = (name: string): boolean => new RegExp(`\\b${name}\\b`, "u").test(identifiers);
   const names = Object.keys(liveScope).filter(name => ![
     "React",
     ...hooks,
@@ -25,7 +34,7 @@ export function exportCode(code: string, theme: string): string {
     ? `, { ${usedHooks.join(", ")} }`
     : ""} from "react";`;
   const data = fixtures.filter(uses).map(name => `const ${name} = ${JSON.stringify(liveScope[name], null, 2)};`).join("\n\n");
-  return `${reactImport}\nimport { ${imports} } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst previewTheme = "${theme}";\n\n${data}${data ? "\n\n" : ""}const Example = (${code.trim().replace(/;$/u, "")});\n\nexport default function Preview() {\n  return (\n    <DiscordUI theme={previewTheme} locale="en-US" timeZone="UTC"\n      entities={${JSON.stringify(previewEntities)}}>\n      <Example />\n    </DiscordUI>\n  );\n}\n`;
+  return `${reactImport}\nimport { ${imports} } from "@arcscord/discord-ui";\nimport "@arcscord/discord-ui/styles.css";\n\nconst previewTheme = "${theme}";\n\n${data}${data ? "\n\n" : ""}const Example = (${code.trim().replace(/;$/u, "")});\n\nexport default function Preview({ theme = previewTheme } = {}) {\n  return (\n    <DiscordUI theme={theme} locale="en-US" timeZone="UTC"\n      entities={${JSON.stringify(previewEntities)}}>\n      <Example theme={theme} />\n    </DiscordUI>\n  );\n}\n`;
 }
 
 /** The toolbar edits the visible constant instead of overriding the rendered scope. */

@@ -1,6 +1,7 @@
 import * as DiscordComponents from "@arcscord/discord-ui";
 import React, { useEffect, useRef, useState } from "react";
 import { initialChannel, markdown, release, ticket, welcome } from "./examples";
+import { arcadeChannel, arcadeCommands, createAnnouncement, createTranscript, demoBot, demoTime, demoUser } from "./landing-demos";
 
 export const demoMedia = {
   id: "landscape",
@@ -27,4 +28,11 @@ export const liveScope = {
   ticket,
   markdown,
   demoMedia,
+  announcement: createAnnouncement("https://ui.arcscord.dev"),
+  transcript: createTranscript("https://ui.arcscord.dev"),
+  arcadeChannel,
+  arcadeCommands,
+  demoBot,
+  demoUser,
+  demoTime,
 };

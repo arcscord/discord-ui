@@ -16,3 +16,6 @@ apps/website/build/
 
 # Deterministic demo avatars are generated from fixtures/avatars.json.
 apps/website/static/generated/
+
+# Precompiled previews generated from the editable website examples.
+apps/website/src/generated/

@@ -18,10 +18,10 @@ test("website playground exposes and runs the slash command example", async ({ p
   await preview.getByRole("listbox").getByRole("option", { name: "#support", exact: true }).click();
   await page.screenshot({ path: `/tmp/website-slash-${testInfo.project.name}.png` });
   await preview.getByRole("button", { name: "Send message", exact: true }).click();
-  await expect(preview.getByRole("status", { name: "Command result" })).toHaveText(JSON.stringify({
-    command: "config autoreact",
-    arguments: { word: "hello", channel: "support" },
-  }));
+  await expect(preview.getByRole("status", { name: "Command result" })).toHaveText("Command response added to the channel.");
+  await expect(preview.locator(".dui-interaction-command")).toHaveText("/config autoreact");
+  await expect(preview).toContainText("for “hello” in #support");
+  await expect(preview.getByAltText("✨", { exact: true })).toBeVisible();
   await expect(page.getByRole("alert")).toHaveCount(0);
   expect(errors).toEqual([]);
 });

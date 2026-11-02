@@ -1,10 +1,20 @@
-type Draft = { code: string; beforeReset?: string };
+export type Draft = { code: string; beforeReset?: string | undefined; beforeResetBaseline?: string | undefined; baseline?: string | undefined };
 
 const drafts = new Map<string, Draft>();
 const prefix = "discord-ui:playground-draft:v1:";
 
-/** Keep drafts within this tab, including when browser storage is unavailable. */
-export function readDraft(id: string, fallback: string): Draft {
+/** A stable source signature detects updates without storing another complete module. */
+export function sourceVersion(source: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < source.length; index++) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+}
+
+/** Read legacy drafts too: a new example must never overwrite a user's edits. */
+export function readDraft(id: string, fallback: string, canonicalSource = fallback): Draft {
   const cached = drafts.get(id);
   if (cached)
     return cached;
@@ -14,12 +24,19 @@ export function readDraft(id: string, fallback: string): Draft {
       const draft: Draft = { code: stored.code };
       if ("beforeReset" in stored && typeof stored.beforeReset === "string")
         draft.beforeReset = stored.beforeReset;
+      if ("beforeResetBaseline" in stored && typeof stored.beforeResetBaseline === "string")
+        draft.beforeResetBaseline = stored.beforeResetBaseline;
+      if ("baseline" in stored && typeof stored.baseline === "string")
+        draft.baseline = stored.baseline;
       drafts.set(id, draft);
       return draft;
     }
   }
   catch { /* Private browsing or invalid storage must not block the editor. */ }
-  return { code: fallback };
+  return {
+    code: fallback,
+    baseline: sourceVersion(canonicalSource),
+  };
 }
 
 export function writeDraft(id: string, draft: Draft): void {

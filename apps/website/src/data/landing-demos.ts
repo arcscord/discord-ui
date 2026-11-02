@@ -57,7 +57,7 @@ export function createAnnouncement(origin: string): MessageView {
                   id: "explore",
                   kind: "link-button",
                   label: "Build a message like this",
-                  url: new URL("/playground?example=message-components", origin).href,
+                  url: new URL("/playground?example=announcement", origin).href,
                 },
               ],
             },

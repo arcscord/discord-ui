@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { exportCode } from "../src/components/playground/export-code";
 import { compileModule, moduleScope } from "../src/components/playground/module-runtime";
 import { componentExamples } from "../src/data/component-examples";
+import { examplePreviews } from "../src/generated/examples";
 
 describe("curated component examples", () => {
   it("covers every public React component", () => {
@@ -27,6 +28,27 @@ describe("curated component examples", () => {
       expect(html).toContain("dui-");
     });
   }
+
+  for (const example of componentExamples) {
+    it(`precompiles the exact editable module for ${example.id}`, () => {
+      const Element = generateElement({
+        code: compileModule(exportCode(example.code, "light")),
+        scope: moduleScope,
+        enableTypeScript: false,
+      }, (error) => { throw error; });
+      const Preview = examplePreviews[example.id]!;
+      expect(renderToStaticMarkup(createElement(Preview, { theme: "light" })))
+        .toEqual(renderToStaticMarkup(createElement(Element)));
+    });
+  }
+
+  it("does not include fixtures or hooks mentioned only in labels or comments", () => {
+    const code = exportCode("() => <MessageContent content=\"welcome preview, useState\" /> /* release */", "dark");
+    expect(code).not.toContain("const welcome =");
+    expect(code).not.toContain("const release =");
+    expect(code).not.toContain("{ useState }");
+    expect(code).toContain("DiscordUI, MessageContent");
+  });
 
   it("does not inject undeclared message data", () => {
     const code = `import React from "react";

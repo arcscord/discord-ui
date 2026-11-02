@@ -1,4 +1,5 @@
 import { selectMenuExamples, selectMenuForWebsite } from "../../../../fixtures/select-menus";
+import { scenarioExamples } from "./scenarios";
 
 export type ComponentExample = {
   id: string;
@@ -7,6 +8,8 @@ export type ComponentExample = {
   family: string;
   description: string;
   code: string;
+  layout?: "compact" | "message" | "conversation";
+  interactive?: boolean;
 };
 
 export const channelCode = `function SupportChannel() {
@@ -94,7 +97,47 @@ function selectMenuCode(example: typeof selectMenuExamples[number]): string {
 }`;
 }
 
-export const componentExamples: ComponentExample[] = [
+export const componentExamples: ComponentExample[] = ([
+  ...scenarioExamples,
+  {
+    id: "interaction",
+    title: "Interaction response",
+    component: "ReplyPreview",
+    family: "Messages",
+    layout: "message",
+    description: "Show the invoking user and command above the application's response, without a separate user message.",
+    code: `() => <Message message={{
+      id: "command-response", author: demoBot, timestamp: demoTime,
+      reply: { kind: "interaction", author: demoUser, commandName: "welcome preview" },
+      body: { kind: "markdown", content: "## Preview ready\\nYour welcome message is ready to review." },
+    }} />`,
+  },
+  {
+    id: "ephemeral",
+    title: "Ephemeral message",
+    component: "Message",
+    family: "Messages",
+    layout: "message",
+    interactive: true,
+    description: "Dismiss and restore a private response. Compare its background, border and keyboard focus across Light, Ash and Dark.",
+    code: `function EphemeralExample() {
+  const [visible, setVisible] = useState(true);
+  const restore = useRef(null);
+  useEffect(() => {
+    if (!visible)
+      restore.current?.querySelector("button")?.focus();
+  }, [visible]);
+  return <div>
+    {visible ? <Message message={{
+      id: "private-preview", author: demoBot, timestamp: demoTime,
+      reply: { kind: "interaction", author: demoUser, commandName: "welcome preview" },
+      ephemeral: true,
+      body: { kind: "text", content: "Your preview is visible only to you." },
+    }} onEphemeralDismiss={() => setVisible(false)} /> : <p role="status">Private response dismissed.</p>}
+    <div ref={restore}><Button label="Restore message" style="secondary" disabled={visible} onClick={() => setVisible(true)} /></div>
+  </div>;
+}`,
+  },
   ...selectMenuExamples.map(example => ({
     id: example.id,
     title: example.title,
@@ -124,7 +167,11 @@ export const componentExamples: ComponentExample[] = [
     }));
   }
 
-  return <Message message={message} onReactionToggle={toggleReaction} />;
+  return <>
+    <Message message={message} onReactionToggle={toggleReaction} />
+    <p>Read-only reactions</p>
+    <Reactions reactions={release.reactions} />
+  </>;
 }`,
   },
   {
@@ -186,20 +233,36 @@ export const componentExamples: ComponentExample[] = [
     id: "reply-preview",
     title: "ReplyPreview",
     family: "Messages",
-    description: "Show a message reply, an unavailable original or the user and command behind an interaction.",
+    description: "Compare a resolved message reply and an unavailable original. Interaction responses have their own example.",
     code: `() => <div style={{ display: "grid", gap: 12 }}>
-      <ReplyPreview reply={{ messageId: welcome.id, author: welcome.author, content: "Can you share the guide?" }} />
-      <ReplyPreview reply={{ messageId: "deleted", unavailable: true }} />
-      <Message message={{ ...welcome, reply: { kind: "interaction", author: welcome.author, commandName: "welcome preview" }, ephemeral: true }} />
-      <Message message={{ ...welcome, reply: { messageId: "original", author: welcome.author, content: "Can you share the guide?" }, edited: true, attachments: [{ id: "guide", kind: "file", name: "guide.pdf", url: "https://example.com/guide.pdf", size: "24 KB" }] }} />
+      <Message message={{ ...welcome, id: "resolved-reply", reactions: [],
+        reply: { messageId: "question", author: demoUser, content: "Can you share the guide?" },
+        body: { kind: "text", content: "The guide is ready to read." },
+      }} />
+      <Message message={{ ...welcome, id: "unavailable-reply", reactions: [],
+        reply: { messageId: "deleted", unavailable: true },
+        body: { kind: "text", content: "The original question is no longer available." },
+      }} />
     </div>`,
+  },
+  {
+    id: "attachments",
+    title: "Classic attachments",
+    component: "Message",
+    family: "Messages",
+    layout: "message",
+    description: "Attach a downloadable file to a classic message. File components inside Components V2 have a separate example.",
+    code: `() => <Message message={{ ...welcome, reactions: [],
+      body: { kind: "text", content: "Here is the community guide." },
+      attachments: [{ id: "guide", kind: "file", name: "guide.pdf", url: "https://example.com/guide.pdf", size: "24 KB" }],
+    }} />`,
   },
   {
     id: "message-header",
     title: "MessageHeader",
     family: "Messages",
     description: "Combine an author and deterministic timestamp.",
-    code: "() => <MessageHeader author={welcome.author} timestamp={welcome.timestamp} />",
+    code: "() => <MessageHeader author={welcome.author} timestamp={welcome.timestamp} edited />",
   },
   {
     id: "message-timestamp",
@@ -375,13 +438,13 @@ export const componentExamples: ComponentExample[] = [
     family: "Conversations",
     description: "Type / to choose a command, add inline arguments, and try free text or fixed choices.",
     code: `function SlashCommandsExample() {
-  const [result, setResult] = useState(null);
+  const [channel, setChannel] = useState({ ...initialChannel, messages: [] });
   const commands = [
-    { name: "bot-info", description: "Show statistics and technical information", application: "Auto Threads" },
+    { name: "bot-info", description: "Show community information", application: "Community Bot" },
     {
       name: "config autoreact",
       description: "View reactions or create a simple automatic reaction",
-      application: "Auto Threads",
+      application: "Community Bot",
       arguments: [
         { name: "word", description: "Word or phrase to react to in every channel", required: true },
         { name: "emoji", description: "Emoji for the quick reaction" },
@@ -394,10 +457,16 @@ export const componentExamples: ComponentExample[] = [
   ];
   return <>
     <p>Type / below, choose config autoreact, then add word, emoji or channel.</p>
-    <ChannelView channel={initialChannel} height={450}
+    <ChannelView channel={channel} height={450}
       commands={commands}
-      onSlashCommand={({ command, arguments: values }) => setResult({ command: command.name, arguments: values })} />
-    <p role="status" aria-label="Command result">{result ? JSON.stringify(result) : "No command submitted yet."}</p>
+      onSlashCommand={({ command, arguments: values }) => setChannel(current => ({ ...current, messages: [...current.messages, {
+        id: "command-" + (current.messages.length + 1), author: demoBot, timestamp: demoTime,
+        reply: { kind: "interaction", author: demoUser, commandName: command.name },
+        body: { kind: "text", content: command.name === "bot-info"
+          ? "Community Bot is ready to help."
+          : "Reaction preview: " + (values.emoji || "✨") + " for “" + values.word + "” in " + (values.channel ? "#" + values.channel : "all channels") },
+      }] }))} />
+    <p role="status" aria-label="Command result">{channel.messages.length ? "Command response added to the channel." : "No command submitted yet."}</p>
   </>;
 }`,
   },
@@ -468,12 +537,48 @@ export const componentExamples: ComponentExample[] = [
   </div>;
 }`,
   },
-];
+] satisfies ComponentExample[]).sort((a, b) => {
+  const families = [
+    "Scenarios",
+    "Messages",
+    "Rich content",
+    "Components V2",
+    "Select menus",
+    "Conversations",
+    "Foundation",
+  ];
+  return families.indexOf(a.family) - families.indexOf(b.family);
+});
 
 export function getExample(id: string | null | undefined): ComponentExample {
-  return componentExamples.find(example => example.id === id) ?? componentExamples.find(example => example.id === "channel-view")!;
+  return componentExamples.find(example => example.id === id) ?? componentExamples.find(example => example.id === "announcement")!;
 }
 
-export function playgroundUrl(id: string): string {
-  return `/playground?example=${encodeURIComponent(id)}`;
+export { playgroundUrl } from "./example-links";
+
+export function exampleLayout(example: ComponentExample): "compact" | "message" | "conversation" {
+  if (example.layout)
+    return example.layout;
+  if ([
+    "channel-view",
+    "message-list",
+    "thread-panel",
+    "thread-preview",
+    "slash-commands",
+  ].includes(example.id)) {
+    return "conversation";
+  }
+  if ([
+    "message",
+    "reactions",
+    "reply-preview",
+    "message-components",
+    "markdown",
+    "media",
+    "media-gallery",
+    "embed",
+  ].includes(example.id) || example.family === "Select menus") {
+    return "message";
+  }
+  return "compact";
 }

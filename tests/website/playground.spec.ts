@@ -31,12 +31,12 @@ test("drafts survive switching, navigation and reload, and reset can be undone",
   await expect(editor).toHaveValue(edited);
   await page.reload();
   await expect(editor).toHaveValue(edited);
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await page.getByRole("button", { name: "Reset code", exact: true }).click();
   await expect(editor).toHaveValue(initial);
   await page.reload();
   await page.getByRole("button", { name: "Undo reset", exact: true }).click();
   await expect(editor).toHaveValue(edited);
-  await expect(page.getByRole("button", { name: "Reset", exact: true })).toBeFocused();
+  await expect(page.getByRole("button", { name: "Reset code", exact: true })).toBeFocused();
   await expect(page.getByRole("button", { name: "Undo reset", exact: true })).toHaveCount(0);
 });
 
@@ -121,11 +121,11 @@ export default function Preview() { return <DiscordUI><MessageContent content="$
   await editor.fill("export default function Preview() { throw new Error(\"Example render failed\"); }");
   await expect(page.getByRole("alert")).toContainText("Example render failed");
   await expect(page.locator(".live-panel")).toContainText("Recovered");
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await page.getByRole("button", { name: "Reset code", exact: true }).click();
   await expect(page.locator(".live-panel")).toContainText("A new line, a new thought.");
   await editor.focus();
   await editor.press("Escape");
-  await expect(page.getByRole("button", { name: "Reset", exact: true })).toBeFocused();
+  await expect(page.getByRole("button", { name: "Reset code", exact: true })).toBeFocused();
 });
 
 test("live channel state, preview theme and width controls work independently", async ({ page }) => {

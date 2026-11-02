@@ -296,3 +296,32 @@ button[class*="closeButton_"] { color: #e8eefb; }
   .command-shortcut { flex: 1; padding: 8px 10px; }
   .command-shortcut span { display: none; }
 }
+
+/* One example system across landing, catalogue and editor. */
+.playground-heading { margin: 0 0 24px; max-width: 860px; }
+.playground-heading > span { color: var(--site-accent); font-size: 12px; }
+.playground-heading h2 { margin: 6px 0 10px; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.8px; }
+.playground-heading p { color: var(--site-muted); margin: 0; line-height: 1.6; }
+.playground-toolbar { align-items: start; gap: 24px; }
+.playground-toolbar .example-select { flex: 1; }
+.playground-workspace .live-panel { align-self: start; }
+.playground-workspace .example-bar { flex-wrap: wrap; gap: 12px; }
+.playground-workspace .playground-actions { display: flex; padding: 0; margin: 0 0 0 auto; gap: 8px; }
+.playground-workspace .preview-canvas { height: auto; max-height: 720px; }
+.playground-workspace .playground-discord { min-height: 0; padding: 0; }
+.playground-workspace .playground-discord > .arcscord-discord-ui { padding: 20px 16px; min-height: 120px; }
+.playground-workspace[data-layout="conversation"] .playground-discord > .arcscord-discord-ui { padding: 0; }
+.playground-workspace[data-layout="compact"] .live-panel { min-height: 180px; }
+.playground-details { margin: 18px 0; color: var(--site-muted); font-size: 13px; }
+.playground-details summary { cursor: pointer; padding: 8px 0; }
+.component-sample { padding: 0; min-height: 0; }
+.component-sample > .arcscord-discord-ui { padding: 20px 16px; min-height: 120px; }
+.component-sample:has(.dui-channel) > .arcscord-discord-ui { padding: 0; }
+.message-preview { padding: 0; }
+.message-preview > .arcscord-discord-ui { padding: 28px 20px; height: 100%; }
+@media (max-width: 640px) {
+  .playground-workspace .example-bar { align-items: center; padding: 12px; }
+  .playground-workspace .playground-actions { gap: 6px; }
+  .playground-workspace .demo-reset { padding: 6px 8px; }
+  .playground-heading { margin-bottom: 20px; }
+}

@@ -2,6 +2,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { createRequire } from "node:module";
 import { themes } from "prism-react-renderer";
+import examplePreviews from "./plugins/example-previews";
 import { site } from "./src/data/site";
 
 const require = createRequire(import.meta.url);
@@ -29,6 +30,7 @@ const config: Config = {
     defaultLocale: "en",
     locales: ["en"],
   },
+  plugins: [examplePreviews],
   presets: [
     ["classic", classicOptions],
   ],
