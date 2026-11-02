@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { ChannelViewModel } from "../../model/channel";
 import type { ComponentHandlers } from "../../model/components";
 import type { ReactionToggleHandler } from "../../model/reaction";
+import type { SlashCommand, SlashCommandHandler } from "../../model/slash-command";
 import { useEffect, useRef, useState } from "react";
 import { DiscordUI } from "../discord-ui";
 import { useDisplayOptions } from "../display-context";
@@ -19,12 +20,14 @@ export type ChannelViewProps = ComponentHandlers & {
   composer?: ReactNode | false;
   onSend?: ((content: string) => void) | undefined;
   onThreadSend?: ((threadId: string, content: string) => void) | undefined;
+  commands?: readonly SlashCommand[];
+  onSlashCommand?: SlashCommandHandler;
   composerDisabled?: boolean;
   autoScroll?: boolean;
   showDateSeparators?: boolean;
 };
 
-export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
+export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
   const { scoped, labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const { historyRef, updateFollowState } = useMessageScroll(channel.id, channel.messages.at(-1)?.id, autoScroll);
@@ -76,7 +79,7 @@ export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, cha
           </div>
           {composer === false
             ? null
-            : composer ?? <ChannelComposer channelName={channel.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />}
+            : composer ?? <ChannelComposer key={channel.id} commands={commands} onSlashCommand={onSlashCommand} channelName={channel.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />}
         </div>
         {open
           ? (

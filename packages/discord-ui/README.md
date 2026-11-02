@@ -356,3 +356,61 @@ instead of classic attachments.
 Override `labels.reply`, `labels.replyUnavailable`, `labels.edited` and
 `labels.downloadFile` (`{name}` placeholder) to localize these elements. Edit
 markers are in the message header. Reply previews truncate to one line.
+
+### Slash commands
+
+Pass `commands` and `onSlashCommand` to `ChannelView` or `ChannelComposer`.
+Typing `/` opens a filtered name/description list. Use ↑/↓ then Enter or Tab,
+or click a command. Escape closes the list or cancels the selected command.
+Arguments accept free text unless `choices` is supplied; `required` defaults to
+false. Pick an argument from the Options list to add an inline name/value chip.
+The header follows the focused argument. Tab returns to the remaining options;
+fixed choices can be filtered and selected with the keyboard or mouse. The
+header's close button removes the focused argument. Backspace in an empty
+argument removes its chip; Backspace on the remaining-options hint returns to
+the last argument. With no argument chips left, Backspace removes the selected
+command and returns to the message input. The close button cancels the command
+when no argument is being edited. Submission calls `onSlashCommand` separately
+from `onSend`.
+
+In the playground, select **Commandes slash — saisie et arguments** and type
+`/config autoreact` to try free text (`word`, `emoji`) and fixed choices
+(`channel`). The submitted invocation appears below the preview.
+
+```tsx
+const commands: SlashCommand[] = [
+  {
+    name: "config autothreads",
+    description: "Manage automatic threads",
+    application: "Auto Threads", // optional label in the list
+    arguments: [
+      { name: "name", description: "Configuration name", required: true },
+      {
+        name: "mode",
+        description: "Creation mode",
+        required: true,
+        choices: [
+          { name: "Every message", value: "every-message" }
+        ],
+      },
+    ],
+  }
+];
+
+<ChannelView
+  channel={channel}
+  commands={commands}
+  onSlashCommand={({ command, arguments: values }) => {
+    console.log(command.name, values); // { name: "Support", mode: "every-message" }
+  }}
+/>;
+```
+
+All argument values are strings. Empty optional values are omitted. Names must
+be unique within the command list, argument list and each choice list; choice
+values must be nonempty. This is a UI primitive: command execution belongs to
+the consuming application. Import the types `SlashCommand`,
+`SlashCommandArgument`, `SlashCommandInvocation` and `SlashCommandHandler` from
+`@arcscord/discord-ui`. Labels `slashCommands`, `chooseValue`, `cancelCommand`, `commandOptions`,
+`commandReady` and `removeArgument`
+can be customized through `DiscordUI`.

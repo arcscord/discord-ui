@@ -1,4 +1,4 @@
-import type { MessageView, ThemeName } from "@arcscord/discord-ui";
+import type { MessageView, SlashCommand, ThemeName } from "@arcscord/discord-ui";
 import { ChannelView, DiscordUI, Message, themes } from "@arcscord/discord-ui";
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useState } from "react";
@@ -7,7 +7,48 @@ import { basicMessage, demoEntities, editableContent, scenarios } from "../../..
 import { JsonEditor } from "./json-editor";
 import { createChannelEditor, createMessageEditor, parseChannelJson, parseMessageJson, serializeChannel, serializeMessage } from "./message-json";
 
-type ScenarioName = keyof typeof scenarios | "channel";
+type ScenarioName = keyof typeof scenarios | "channel" | "slash";
+
+const demoCommands: readonly SlashCommand[] = [
+  { name: "admin-config history", description: "Show recent global quota changes", application: "Auto Threads" },
+  { name: "admin-config show", description: "Show current global Free quotas", application: "Auto Threads" },
+  { name: "bot-info", description: "Show Auto Threads statistics and technical information", application: "Auto Threads" },
+  {
+    name: "config autoreact",
+    description: "View reactions or create a simple automatic reaction",
+    application: "Auto Threads",
+    arguments: [
+      { name: "word", description: "Word or phrase to react to in every channel" },
+      { name: "emoji", description: "Emoji for the quick reaction" },
+      {
+        name: "channel",
+        description: "Limit the quick reaction to this channel",
+        choices: [
+          { name: "#general", value: "general" },
+          { name: "#support", value: "support" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "config autothreads",
+    description: "Manage automatic thread configurations",
+    application: "Auto Threads",
+    arguments: [
+      { name: "name", description: "Configuration name", required: true },
+      {
+        name: "mode",
+        description: "Thread creation mode",
+        required: true,
+        choices: [
+          { name: "Every message", value: "every-message" },
+          { name: "With a keyword", value: "keyword" },
+        ],
+      },
+      { name: "reason", description: "Optional note" },
+    ],
+  },
+];
 
 const themeLabels: Record<ThemeName, string> = { light: "Clair", ash: "Ash", dark: "Sombre" };
 
@@ -21,7 +62,7 @@ export function App() {
   const [channelEditor, setChannelEditor] = useState(() => createChannelEditor(demoChannel));
   const [interaction, setInteraction] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
-  const isChannel = scenario === "channel";
+  const isChannel = scenario === "channel" || scenario === "slash";
   const activeEditor = isChannel ? channelEditor : editor;
   const selected = isChannel ? basicMessage : scenarios[scenario].message;
   const message = editor.message;
@@ -197,7 +238,7 @@ export function App() {
               onChange={(event) => {
                 const next = event.target.value as ScenarioName;
                 setScenario(next);
-                if (next === "channel")
+                if (next === "channel" || next === "slash")
                   setChannelEditor(createChannelEditor(demoChannel));
                 else setEditor(createMessageEditor(scenarios[next].message));
                 setRevision(value => value + 1);
@@ -207,6 +248,7 @@ export function App() {
             >
               {Object.entries(scenarios).map(([id, entry]) => <option key={id} value={id}>{entry.label}</option>)}
               <option value="channel">Salon — plusieurs messages</option>
+              <option value="slash">Commandes slash — saisie et arguments</option>
             </select>
             <label htmlFor="theme">Thème</label>
             <select id="theme" value={theme} onChange={event => setTheme(event.target.value as ThemeName)}>
@@ -222,7 +264,13 @@ export function App() {
             </label>
             <input id="width" type="range" min="320" max="960" step="20" value={width} onChange={event => setWidth(Number(event.target.value))} />
             {isChannel
-              ? <p className="scenario-note">Le JSON pilote le salon. La saisie ajoute des messages à cette démo.</p>
+              ? (
+                  <p className="scenario-note">
+                    {scenario === "slash"
+                      ? "Tapez / puis choisissez config autoreact. Ajoutez word et emoji en texte libre, ou channel parmi les choix proposés. Le résultat apparaît sous l’aperçu."
+                      : "Le JSON pilote le salon. La saisie ajoute des messages à cette démo."}
+                  </p>
+                )
               : message.body.kind === "components-v2"
                 ? <p className="scenario-note">Modifiez les composants V2 dans l’éditeur JSON.</p>
                 : (
@@ -267,6 +315,12 @@ export function App() {
                   entities={demoEntities}
                   renderCode={renderHighlightedCode}
                   labels={{
+                    commandOptions: "Options",
+                    commandReady: "Prêt",
+                    removeArgument: "Retirer l’argument",
+                    cancelCommand: "Annuler la commande",
+                    slashCommands: "Commandes slash",
+                    chooseValue: "Choisir une valeur",
                     reactions: "Réactions",
                     thread: "Fil",
                     openThread: "Ouvrir le fil",
@@ -290,7 +344,7 @@ export function App() {
                   }}
                 >
                   {isChannel
-                    ? <ChannelView key={`channel-${revision}`} channel={channelEditor.channel} onReactionToggle={toggleReaction} height={620} onSend={sendDemoMessage} onThreadSend={sendDemoThreadMessage} composerDisabled={Boolean(channelEditor.error)} />
+                    ? <ChannelView key={`${scenario}-${revision}`} channel={channelEditor.channel} onReactionToggle={toggleReaction} height={620} commands={demoCommands} onSlashCommand={({ command, arguments: values }) => setInteraction(JSON.stringify({ command: command.name, arguments: values }))} onSend={sendDemoMessage} onThreadSend={sendDemoThreadMessage} composerDisabled={Boolean(channelEditor.error)} />
                     : <Message key={`${scenario}-${revision}`} message={message} onReactionToggle={toggleReaction} onButtonClick={id => setInteraction(`Button: ${id}`)} onSelectChange={(id, values) => setInteraction(`${id}: ${values.join(", ") || "—"}`)} onPremiumClick={skuId => setInteraction(`Premium: ${skuId}`)} />}
                   {interaction
                     ? <p role="status" aria-label="Dernière interaction">{interaction}</p>

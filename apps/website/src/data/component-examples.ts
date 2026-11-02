@@ -368,6 +368,39 @@ export const componentExamples: ComponentExample[] = [
     code: "() => <ChannelHeader name=\"support\" topic=\"A little help goes a long way.\" />",
   },
   {
+    id: "slash-commands",
+    title: "Slash commands",
+    component: "ChannelComposer",
+    family: "Conversations",
+    description: "Type / to choose a command, add inline arguments, and try free text or fixed choices.",
+    code: `function SlashCommandsExample() {
+  const [result, setResult] = useState(null);
+  const commands = [
+    { name: "bot-info", description: "Show statistics and technical information", application: "Auto Threads" },
+    {
+      name: "config autoreact",
+      description: "View reactions or create a simple automatic reaction",
+      application: "Auto Threads",
+      arguments: [
+        { name: "word", description: "Word or phrase to react to in every channel", required: true },
+        { name: "emoji", description: "Emoji for the quick reaction" },
+        { name: "channel", description: "Limit the quick reaction to this channel", choices: [
+          { name: "#general", value: "general" },
+          { name: "#support", value: "support" },
+        ] },
+      ],
+    },
+  ];
+  return <>
+    <p>Type / below, choose config autoreact, then add word, emoji or channel.</p>
+    <ChannelView channel={initialChannel} height={450}
+      commands={commands}
+      onSlashCommand={({ command, arguments: values }) => setResult({ command: command.name, arguments: values })} />
+    <p role="status" aria-label="Command result">{result ? JSON.stringify(result) : "No command submitted yet."}</p>
+  </>;
+}`,
+  },
+  {
     id: "channel-composer",
     title: "ChannelComposer",
     family: "Conversations",

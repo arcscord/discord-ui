@@ -220,3 +220,46 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-reply-content { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dui-message-edited { color: var(--discord-ui-muted); font-size: 11px; }
 .dui-file-details a, .dui-file-details > span { overflow-wrap: anywhere; }
+
+/* Slash command suggestions and the selected command's arguments. */
+.dui-channel-composer { position: relative; }
+.dui-channel-input[hidden] { display: none; }
+.dui-slash-list { position: absolute; z-index: 5; bottom: calc(100% + 8px); inset-inline: 0; max-height: min(320px, 40vh); overflow-y: auto; padding: 6px; border: 1px solid var(--discord-ui-container-outline); border-radius: 8px; background: var(--discord-ui-channel-input-background); box-shadow: 0 8px 24px #0003; }
+.dui-slash-option { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; padding: 12px; border: 0; border-radius: 4px; background: transparent; color: var(--discord-ui-text); font: inherit; text-align: start; cursor: pointer; }
+.dui-slash-option[aria-selected="true"] { background: color-mix(in srgb, var(--discord-ui-text) 8%, transparent); }
+.dui-slash-option:focus-visible { outline: 2px solid var(--discord-ui-text); outline-offset: -2px; }
+.dui-slash-summary { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.dui-slash-summary strong { font-size: 1.05em; }
+.dui-slash-summary > span, .dui-slash-application, .dui-slash-heading > span, .dui-slash-field small { color: var(--discord-ui-muted); }
+.dui-slash-application { flex-shrink: 0; font-size: .85em; }
+.dui-composer-command { padding: 0; align-items: stretch; }
+.dui-composer-command .dui-channel-send { position: absolute; right: 12px; bottom: 14px; }
+.dui-slash-fields, .dui-slash-editor { flex: 1; min-width: 0; }
+.dui-slash-heading { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--discord-ui-channel-header-divider); background: color-mix(in srgb, var(--discord-ui-channel-input-background), var(--discord-ui-text) 3%); border-radius: 8px 8px 0 0; }
+.dui-slash-heading strong { flex-shrink: 0; }
+.dui-slash-heading > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .9em; }
+.dui-slash-heading button { display: grid; place-items: center; flex: 0 0 16px; width: 16px; height: 16px; padding: 0; border: 0; border-radius: 50%; background: var(--discord-ui-muted); color: var(--discord-ui-channel-input-background); font: inherit; font-size: 16px; line-height: 1; cursor: pointer; }
+.dui-slash-line { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; min-height: 58px; padding: 12px 50px 12px 14px; }
+.dui-slash-app-icon { display: grid; place-items: center; flex: 0 0 24px; height: 24px; margin-right: 10px; border-radius: 50%; background: #18112c; color: #a94bff; font-size: 20px; font-weight: 800; transform: rotate(-25deg); }
+.dui-slash-command-name { overflow-wrap: anywhere; }
+.dui-slash-token { box-sizing: border-box; display: inline-flex; align-items: stretch; height: 28px; max-width: 100%; min-width: 0; margin: 0; border: 1px solid var(--discord-ui-container-outline); border-radius: 4px; overflow: hidden; background: var(--discord-ui-background); line-height: 24px; }
+.dui-slash-token:focus-within { border-color: #769ec4; box-shadow: 0 0 0 1px #769ec4; }
+.dui-slash-token > span { display: flex; align-items: center; padding: 0 8px; }
+.dui-slash-token input { box-sizing: content-box; width: var(--dui-argument-width); min-width: 1ch; max-width: min(320px, 55vw); height: 26px; min-height: 0; margin: 0; padding: 0 8px; border: 0; border-radius: 0; outline: 0; box-shadow: none; background: var(--discord-ui-channel-input-background); color: var(--discord-ui-text); font: inherit; line-height: 26px; }
+@supports (field-sizing: content) { .dui-slash-token input { field-sizing: content; width: auto; } }
+.dui-slash-more { min-width: 0; padding: 0 2px; border: 0; border-radius: 0; outline: none; box-shadow: none; background: transparent; color: var(--discord-ui-muted); font: inherit; line-height: 28px; cursor: pointer; }
+.dui-slash-more:focus-visible { outline: none; text-decoration: underline; text-underline-offset: 4px; }
+.dui-slash-list-title { padding: 6px 8px 10px; color: var(--discord-ui-muted); font-size: .9em; font-weight: 600; }
+.dui-slash-arguments .dui-slash-option { padding: 10px; }
+.dui-slash-option-description { color: var(--discord-ui-muted); font-size: .85em; text-align: end; }
+@container (max-width: 480px) {
+  .dui-slash-option { gap: 8px; padding: 10px 6px; }
+  .dui-slash-application { max-width: 25%; overflow-wrap: anywhere; }
+  .dui-slash-heading { flex-wrap: wrap; gap: 4px 8px; padding: 8px 10px; }
+  .dui-slash-heading > span { order: 3; flex-basis: 100%; white-space: normal; }
+  .dui-slash-heading button { margin-left: auto; }
+  .dui-slash-line { padding-left: 10px; gap: 6px; }
+  .dui-slash-app-icon { margin-right: 2px; }
+  .dui-slash-arguments .dui-slash-option { align-items: flex-start; }
+  .dui-slash-option-description { max-width: 65%; }
+}

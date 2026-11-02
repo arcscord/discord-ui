@@ -44,6 +44,7 @@ export type { EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEnti
 export type { ChannelEntityView, ChannelType, RoleView, UserView } from "./model/entities";
 export type { AvatarFallback, MessageAuthor, MessageView, ReplyView, TextMessageBody } from "./model/message";
 export type { ReactionToggleHandler, ReactionView } from "./model/reaction";
+export type { SlashCommand, SlashCommandArgument, SlashCommandHandler, SlashCommandInvocation } from "./model/slash-command";
 export type { ThreadMessageView, ThreadSummaryView, ThreadView } from "./model/thread";
 export { defineTheme, themes, themeTokenProperties } from "./themes";
 export type { DiscordTheme, ThemeInput, ThemeName, ThemeOverrides, ThemeTokens } from "./themes";
