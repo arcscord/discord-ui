@@ -244,7 +244,6 @@ it("validates reply snapshots, edit metadata and classic attachments", () => {
     ...basicMessage,
     reply: { messageId: "original", author: basicMessage.author, content: "Hello" },
     edited: true,
-    editedTimestamp: "2026-10-29T18:04:00Z",
     attachments: [
       {
         id: "file",
@@ -269,7 +268,6 @@ it("validates reply snapshots, edit metadata and classic attachments", () => {
       reply: { messageId: "original", unavailable: true, content: "stale" },
     },
     { ...message, edited: "yes" },
-    { ...message, editedTimestamp: 42 },
     {
       ...message,
       attachments: [

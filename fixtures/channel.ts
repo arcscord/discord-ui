@@ -79,7 +79,7 @@ export const demoChannel: ChannelViewModel = {
         author: { id: "chris", displayName: "Chris", color: "#57bfa0" },
         content: "Voici une image de démonstration :",
       },
-      editedTimestamp: "2026-10-29T18:04:00Z",
+      edited: true,
       attachments: [
         {
           id: "guide",

@@ -329,7 +329,7 @@ const message: MessageView = {
     author: { id: "alice", displayName: "Alice" },
     content: "Can you share the guide?",
   },
-  editedTimestamp: "2026-10-29T18:04:00Z",
+  edited: true,
   body: { kind: "markdown", content: "Here is the **guide**." },
   attachments: [
     {
@@ -343,10 +343,9 @@ const message: MessageView = {
 };
 ```
 
-`editedTimestamp` shows an edited marker with a tooltip formatted using the scope's
-locale and timezone. Use `edited: true` when the edit date is unknown. These fields
-are optional and do not change the original timestamp. An invalid edit date keeps
-the marker with the invalid-timestamp tooltip.
+`edited: true` shows the localized edited marker. Omit it or use `edited: false`
+to hide the marker. It carries no edit date and does not change the original
+message timestamp.
 
 Text and Markdown messages accept `attachments: FileView[]` alongside images,
 embeds and action rows. Files reuse `File`, including safe HTTP(S) links and

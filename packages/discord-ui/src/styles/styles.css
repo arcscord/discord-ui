@@ -219,5 +219,4 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-reply-preview .dui-author { flex-shrink: 0; max-width: 35%; overflow: hidden; }
 .dui-reply-content { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dui-message-edited { color: var(--discord-ui-muted); font-size: 11px; }
-.dui-message-edited .dui-timestamp { font-size: inherit; }
 .dui-file-details a, .dui-file-details > span { overflow-wrap: anywhere; }

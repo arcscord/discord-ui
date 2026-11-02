@@ -32,7 +32,7 @@ export function Message({ message, onReactionToggle, onThreadOpen, activeThreadI
         ? <ReplyPreview reply={message.reply} />
         : undefined}
       avatar={<Avatar author={message.author} />}
-      header={<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} editedTimestamp={message.editedTimestamp} />}
+      header={<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} />}
       hasThread={showThreadPreview && Boolean(message.thread)}
       footer={showThreadPreview && message.thread
         ? <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />

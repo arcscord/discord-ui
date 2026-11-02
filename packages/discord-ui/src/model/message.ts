@@ -41,9 +41,8 @@ export type MessageMetadata = {
   timestamp: string;
   reactions?: ReactionView[];
   reply?: ReplyView;
-  /** Shows the edited marker even when the edit date is unknown. */
+  /** Shows the edited marker; omitted is equivalent to false. */
   edited?: boolean;
-  editedTimestamp?: string;
 };
 
 export type MessageContentView = (

@@ -61,15 +61,12 @@ it("blocks remote avatars in reply previews", () => {
   expect(html).not.toContain("https://example.com/avatar.png");
 });
 
-it("renders a localized edit tooltip with a deterministic timezone and supports unknown edit dates", () => {
-  const html = renderToStaticMarkup(<DiscordUI timeZone="Europe/Zurich" labels={{ edited: "(modifié)" }}><Message message={{ ...base, editedTimestamp: "2026-10-29T18:04:00Z" }} /></DiscordUI>);
-  expect(html).toContain("dateTime=\"2026-10-29T18:04:00.000Z\"");
-  expect(html).toContain("7:04 PM");
-  expect(html).toContain("(modifié)");
-  const unknownDate = renderToStaticMarkup(<Message message={{ ...base, edited: true }} />);
-  expect(unknownDate).toContain("(edited)");
-  const invalidDate = renderToStaticMarkup(<Message message={{ ...base, editedTimestamp: "invalid" }} />);
-  expect(invalidDate).toContain("title=\"Invalid timestamp\">(edited)");
+it("shows the localized edited marker only when edited is true, without an edit timestamp", () => {
+  const html = renderToStaticMarkup(<DiscordUI labels={{ edited: "(modifié)" }}><Message message={{ ...base, edited: true }} /></DiscordUI>);
+  expect(html).toContain("<span class=\"dui-message-edited\">(modifié)</span>");
+  expect(html.match(/<time /g)).toHaveLength(1);
+  expect(renderToStaticMarkup(<Message message={{ ...base, edited: true }} />)).toContain("(edited)");
+  expect(renderToStaticMarkup(<Message message={{ ...base, edited: false }} />)).not.toContain("dui-message-edited");
   expect(renderToStaticMarkup(<Message message={base} />)).not.toContain("dui-message-edited");
 });
 

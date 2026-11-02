@@ -360,7 +360,6 @@ function validateMessage(value: unknown, path = "$", allowThread = true): assert
   }));
   string(message.timestamp, `${path}.timestamp`);
   optional(message, "edited", path, boolean);
-  optional(message, "editedTimestamp", path, string);
   optional(message, "reply", path, (value, location) => {
     const reply = object(value, location);
     string(reply.messageId, `${location}.messageId`);
