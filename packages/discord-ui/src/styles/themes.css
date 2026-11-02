@@ -8,7 +8,12 @@
   --discord-ui-channel-header-divider: #29292E;
   --discord-ui-channel-input-background: #222327;
   --discord-ui-background: #1A1A1E;
+  --discord-ui-ephemeral-background: #1E1E29;
+  --discord-ui-ephemeral-hover: #202133;
+  --discord-ui-ephemeral-border: #5865F2;
   --discord-ui-row-hover: #29292E;
+  --discord-ui-reaction-background: var(--discord-ui-surface);
+  --discord-ui-reaction-selected-background: color-mix(in srgb, var(--discord-ui-accent) 18%, var(--discord-ui-background));
   --discord-ui-code-background: #1F202F;
   --discord-ui-spoiler-hidden: #666770;
   --discord-ui-quote-border: #474850;
@@ -51,6 +56,8 @@
   --discord-ui-channel-header-divider: #3E3F45;
   --discord-ui-channel-input-background: #383A41;
   --discord-ui-background: #323339;
+  --discord-ui-ephemeral-background: #343543;
+  --discord-ui-ephemeral-hover: #35384C;
   --discord-ui-row-hover: #3E3F46;
   --discord-ui-code-background: #343748;
   --discord-ui-spoiler-hidden: #7D7E86;
@@ -71,7 +78,11 @@
   --discord-ui-channel-header-divider: #DFDFE1;
   --discord-ui-channel-input-background: #FFF;
   --discord-ui-background: #FBFBFB;
+  --discord-ui-ephemeral-background: #F3F3FB;
+  --discord-ui-ephemeral-hover: #EAEBF9;
   --discord-ui-row-hover: #EEEEEF;
+  --discord-ui-reaction-background: #EEEEEF;
+  --discord-ui-reaction-selected-background: #E6EAFF;
   --discord-ui-code-background: #E8E8EF;
   --discord-ui-spoiler-hidden: #8E9097;
   --discord-ui-quote-border: #C5C6CA;

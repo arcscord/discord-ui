@@ -18,25 +18,51 @@ import { ReplyPreview } from "./reply-preview";
 export type MessageProps = ComponentHandlers & {
   onReactionToggle?: ReactionToggleHandler | undefined;
   message: MessageView;
+  onEphemeralDismiss?: ((messageId: string) => void) | undefined;
   onThreadOpen?: ((id: string) => void) | undefined;
   activeThreadId?: string | undefined;
   showThreadPreview?: boolean | undefined;
 };
 
-export function Message({ message, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick }: MessageProps) {
-  const { referenceTime: reference } = useDisplayOptions();
+export function Message({ message, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick }: MessageProps) {
+  const { referenceTime: reference, labels } = useDisplayOptions();
   const referenceTime = reference ?? message.timestamp;
   return (
     <MessageFrame
+      ephemeral={message.ephemeral === true}
       reply={message.reply
         ? <ReplyPreview reply={message.reply} />
         : undefined}
       avatar={<Avatar author={message.author} />}
       header={<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} />}
       hasThread={showThreadPreview && Boolean(message.thread)}
-      footer={showThreadPreview && message.thread
-        ? <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
-        : undefined}
+      footer={(
+        <>
+          {showThreadPreview && message.thread
+            ? <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
+            : null}
+          {message.ephemeral
+            ? (
+                <div className="dui-ephemeral-notice">
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+                    <path d="m4 21 16-18" stroke="currentColor" strokeWidth="2" />
+                  </svg>
+                  <span>{labels.ephemeralNotice}</span>
+                  {onEphemeralDismiss
+                    ? (
+                        <>
+                          <span aria-hidden="true">·</span>
+                          <button type="button" className="dui-ephemeral-dismiss" onClick={() => onEphemeralDismiss(message.id)}>{labels.dismissMessage}</button>
+                        </>
+                      )
+                    : null}
+                </div>
+              )
+            : null}
+        </>
+      )}
     >
       {message.body.kind === "components-v2"
         ? <MessageComponents components={message.body.components} referenceTime={referenceTime} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} />

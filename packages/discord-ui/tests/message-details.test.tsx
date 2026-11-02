@@ -112,3 +112,65 @@ it("renders classic attachments with safe links and leaves spoiler files unmount
 it("excludes classic attachments from V2 messages", () => {
   expectTypeOf<Extract<MessageView, { body: { kind: "components-v2" } }>["attachments"]>().toEqualTypeOf<undefined>();
 });
+
+it("renders interaction context safely, with custom labels and blocked remote avatars", () => {
+  const message = {
+    ...base,
+    reply: {
+      kind: "interaction",
+      author: { id: "alice", displayName: "<Alice>", avatarUrl: "https://example.com/private.png" },
+      commandName: "settings <script>",
+    },
+    ephemeral: true,
+  } satisfies MessageView;
+  expect(JSON.parse(JSON.stringify(message))).toEqual(message);
+  const html = renderToStaticMarkup(
+    <DiscordUI
+      allowRemoteMedia={false}
+      labels={{
+        interactionReply: "Réponse à une interaction",
+        interactionUsed: "a utilisé",
+        ephemeralNotice: "Vous seul pouvez voir ceci",
+        dismissMessage: "Fermer le message",
+      }}
+    >
+      <Message message={message} onEphemeralDismiss={() => {}} />
+    </DiscordUI>,
+  );
+  expect(html).toContain("aria-label=\"Réponse à une interaction\"");
+  expect(html).toContain("&lt;Alice&gt;");
+  expect(html).toContain("a utilisé");
+  expect(html).toContain("/settings &lt;script&gt;");
+  expect(html).not.toContain("https://example.com/private.png");
+  expect(html).not.toContain("<script>");
+  expect(html).toContain("Vous seul pouvez voir ceci");
+  expect(html).toContain("Fermer le message");
+  expect(html.indexOf("dui-ephemeral-notice")).toBeGreaterThan(html.indexOf("Here it is."));
+});
+
+it("shows ephemeral notices for classic and V2 messages, with no inactive dismissal control", () => {
+  const messages = [
+    { ...base, ephemeral: true },
+    {
+      id: "private-v2",
+      author: base.author,
+      timestamp: base.timestamp,
+      ephemeral: true,
+      body: {
+        kind: "components-v2",
+        components: [
+          { id: "private", kind: "text-display", content: "Private response" },
+        ],
+      },
+    },
+  ] satisfies MessageView[];
+  for (const message of messages) {
+    const html = renderToStaticMarkup(<Message message={message} />);
+    expect(html).toContain("data-ephemeral=\"true\"");
+    expect(html).toContain("Only you can see this");
+    expect(html).not.toContain("Dismiss message");
+  }
+  const publicMessage = renderToStaticMarkup(<Message message={base} onEphemeralDismiss={() => {}} />);
+  expect(publicMessage).not.toContain("dui-ephemeral-notice");
+  expect(publicMessage).not.toContain("data-ephemeral");
+});

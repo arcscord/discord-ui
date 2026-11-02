@@ -22,7 +22,9 @@ Implemented: shared dark shell, responsive landing with a single Components V2
 announcement, a read-only resolved-ticket transcript with a browsable thread, and
 a local slash-command arcade (`/dice`, `/quiz`, `/8ball`). Each landing demo has
 an independent Light/Ash/Dark selector. Arcade shortcuts prepare commands in the
-real composer; quiz buttons reveal and lock the answer. Reset clears the arcade
+real composer; responses show the invoking user and command in an interaction
+reply. Quiz buttons reveal and lock the answer. `/8ball` responses are ephemeral
+and can be dismissed locally. Reset clears the arcade
 history and unfinished commands. All responses are local simulations, with fixed
 fixture timestamps and no Discord connection. Channel sending and thread replies
 remain available in the catalogue and playground. Also included: initial Markdown/MDX

@@ -42,7 +42,7 @@ export type { ChannelViewModel } from "./model/channel";
 export type { ActionRowView, ButtonView, ChannelSelectMenuView, ChannelSelectOptionView, ComponentHandlers, ComponentsV2Body, ContainerChild, ContainerView, FileView, GalleryView, LinkButtonView, MentionableSelectMenuView, MessageButtonView, MessageComponent, PremiumButtonView, RoleSelectMenuView, RoleSelectOptionView, SectionView, SelectChannelType, SelectDefaultValue, SelectMenuView, SelectOptionView, SeparatorView, StringSelectMenuView, StringSelectOptionView, TextDisplayView, ThumbnailView, UserSelectMenuView, UserSelectOptionView } from "./model/components";
 export type { EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities } from "./model/content";
 export type { ChannelEntityView, ChannelType, RoleView, UserView } from "./model/entities";
-export type { AvatarFallback, MessageAuthor, MessageView, ReplyView, TextMessageBody } from "./model/message";
+export type { AvatarFallback, InteractionReplyView, MessageAuthor, MessageReplyView, MessageView, ReplyView, TextMessageBody } from "./model/message";
 export type { ReactionToggleHandler, ReactionView } from "./model/reaction";
 export type { SlashCommand, SlashCommandArgument, SlashCommandHandler, SlashCommandInvocation } from "./model/slash-command";
 export type { ThreadMessageView, ThreadSummaryView, ThreadView } from "./model/thread";

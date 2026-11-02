@@ -12,6 +12,7 @@ import { useDisplayOptions } from "../display-context";
 export type ThreadPanelProps = ComponentHandlers & {
   thread: ThreadView;
   onReactionToggle?: ReactionToggleHandler | undefined;
+  onEphemeralDismiss?: ((messageId: string) => void) | undefined;
   parentMessage?: MessageView | undefined;
   onClose?: (() => void) | undefined;
   onSend?: ((content: string) => void) | undefined;
@@ -19,7 +20,7 @@ export type ThreadPanelProps = ComponentHandlers & {
   autoScroll?: boolean | undefined;
 };
 
-export function ThreadPanel({ onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
+export function ThreadPanel({ onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
   const { labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -52,7 +53,7 @@ export function ThreadPanel({ onButtonClick, onSelectChange, onPremiumClick, thr
           : undefined}
       />
       <div className="dui-channel-history" role="log" aria-label={`${labels.thread} : ${thread.name}`} aria-live="polite" tabIndex={0} ref={historyRef} onScroll={event => updateFollowState(event.currentTarget)}>
-        <MessageList onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
+        <MessageList onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
       </div>
       <ChannelComposer channelName={thread.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />
     </aside>

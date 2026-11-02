@@ -15,6 +15,7 @@ import { useMessageScroll } from "./use-message-scroll";
 export type ChannelViewProps = ComponentHandlers & {
   channel: ChannelViewModel;
   onReactionToggle?: ReactionToggleHandler | undefined;
+  onEphemeralDismiss?: ((messageId: string) => void) | undefined;
   height?: CSSProperties["height"];
   header?: ReactNode;
   composer?: ReactNode | false;
@@ -27,7 +28,7 @@ export type ChannelViewProps = ComponentHandlers & {
   showDateSeparators?: boolean;
 };
 
-export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
+export function ChannelView({ onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, channel, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
   const { scoped, labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const { historyRef, updateFollowState } = useMessageScroll(channel.id, channel.messages.at(-1)?.id, autoScroll);
@@ -75,7 +76,7 @@ export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, cha
             tabIndex={0}
             onScroll={event => updateFollowState(event.currentTarget)}
           >
-            <MessageList onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
+            <MessageList onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
           </div>
           {composer === false
             ? null
@@ -84,6 +85,7 @@ export function ChannelView({ onButtonClick, onSelectChange, onPremiumClick, cha
         {open
           ? (
               <ThreadPanel
+                onEphemeralDismiss={onEphemeralDismiss}
                 onButtonClick={onButtonClick}
                 onSelectChange={onSelectChange}
                 onPremiumClick={onPremiumClick}

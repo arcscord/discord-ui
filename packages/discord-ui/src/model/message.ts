@@ -28,10 +28,20 @@ export type TextMessageBody = {
 };
 
 /** A resolved, plain-text reply snapshot, or an unavailable original message. */
-export type ReplyView = { messageId: string } & (
+export type MessageReplyView = { kind?: "message"; messageId: string } & (
   | { unavailable: true; author?: never; content?: never }
   | { unavailable?: false; author: MessageAuthor; content: string }
 );
+
+/** The invoking user and slash command, supplied by the host application. */
+export type InteractionReplyView = {
+  kind: "interaction";
+  author: MessageAuthor;
+  /** Command name without the leading slash; may include a subcommand. */
+  commandName: string;
+};
+
+export type ReplyView = MessageReplyView | InteractionReplyView;
 
 /** Serializable display data. This is not a Discord send-payload validator. */
 export type MessageMetadata = {
@@ -43,6 +53,8 @@ export type MessageMetadata = {
   reply?: ReplyView;
   /** Shows the edited marker; omitted is equivalent to false. */
   edited?: boolean;
+  /** Display-only visibility hint. The host controls access to private data. */
+  ephemeral?: boolean;
 };
 
 export type MessageContentView = (

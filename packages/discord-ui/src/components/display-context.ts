@@ -4,7 +4,7 @@ import type { DiscordTheme, ThemeInput, ThemeOverrides } from "../themes";
 import { createContext, use } from "react";
 import { themes } from "../themes";
 
-export type UILabels = { commandOptions: string; commandReady: string; removeArgument: string; slashCommands: string; cancelCommand: string; chooseValue: string; edited: string; reply: string; replyUnavailable: string; downloadFile: string; reactions: string; thread: string; openThread: string; closeThread: string; threadMessageSingular: string; threadMessagePlural: string; threadNoRecentMessages: string; messages: string; emptyChannel: string; messagePlaceholder: string; sendMessage: string; spoiler: string; showSpoiler: string; hideSpoiler: string; mediaUnavailable: string; invalidTimestamp: string };
+export type UILabels = { commandOptions: string; commandReady: string; removeArgument: string; slashCommands: string; cancelCommand: string; chooseValue: string; edited: string; reply: string; replyUnavailable: string; interactionReply: string; interactionUsed: string; ephemeralNotice: string; dismissMessage: string; downloadFile: string; reactions: string; thread: string; openThread: string; closeThread: string; threadMessageSingular: string; threadMessagePlural: string; threadNoRecentMessages: string; messages: string; emptyChannel: string; messagePlaceholder: string; sendMessage: string; spoiler: string; showSpoiler: string; hideSpoiler: string; mediaUnavailable: string; invalidTimestamp: string };
 export type DisplayOptions = {
   theme: ThemeInput;
   tokens?: ThemeOverrides;
@@ -38,6 +38,10 @@ export const defaults: DisplayContextValue = {
     edited: "(edited)",
     reply: "Reply to",
     replyUnavailable: "Original message unavailable",
+    interactionReply: "Interaction response",
+    interactionUsed: "used",
+    ephemeralNotice: "Only you can see this",
+    dismissMessage: "Dismiss message",
     downloadFile: "Download {name}",
     reactions: "Reactions",
     thread: "Thread",

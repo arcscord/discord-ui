@@ -122,12 +122,6 @@ function ArcadeSession() {
   }, [composerVersion]);
   function invoke({ command, arguments: args }: SlashCommandInvocation) {
     const id = `play-${++serialRef.current}`;
-    const user: MessageView = {
-      id: `${id}-user`,
-      author: demoUser,
-      timestamp: demoTime,
-      body: { kind: "text", content: `/${command.name}${Object.entries(args).map(([name, value]) => ` ${name}:${value}`).join("")}` },
-    };
     let response: MessageView;
     if (command.name === "quiz") {
       const category = args.category === "space"
@@ -182,7 +176,9 @@ function ArcadeSession() {
         body: { kind: "text", content: `🎱 “${args.question}”\n${fortunes[Math.floor(Math.random() * fortunes.length)]}` },
       };
     }
-    setMessages(current => [...current, user, response]);
+    response.reply = { kind: "interaction", author: demoUser, commandName: command.name };
+    response.ephemeral = command.name === "8ball";
+    setMessages(current => [...current, response]);
   }
   function answer(buttonId: string) {
     const [messageId, category, chosen] = buttonId.split(":");
@@ -200,6 +196,12 @@ function ArcadeSession() {
         id: message.id,
         author: message.author,
         timestamp: message.timestamp,
+        ...(message.reply
+          ? { reply: message.reply }
+          : {}),
+        ...(message.ephemeral
+          ? { ephemeral: true }
+          : {}),
         body: {
           kind: "components-v2",
           components: [
@@ -255,7 +257,7 @@ function ArcadeSession() {
           </button>
         ))}
       </div>
-      <ChannelView channel={{ ...arcadeChannel, messages }} height={520} showDateSeparators={false} onButtonClick={answer} composer={<ChannelComposer key={composerVersion} channelName="bot-playground" value={draft} onValueChange={setDraft} commands={arcadeCommands} onSlashCommand={invoke} />} />
+      <ChannelView channel={{ ...arcadeChannel, messages }} height={520} showDateSeparators={false} onButtonClick={answer} onEphemeralDismiss={id => setMessages(current => current.filter(message => message.id !== id))} composer={<ChannelComposer key={composerVersion} channelName="bot-playground" value={draft} onValueChange={setDraft} commands={arcadeCommands} onSlashCommand={invoke} />} />
     </div>
   );
 }

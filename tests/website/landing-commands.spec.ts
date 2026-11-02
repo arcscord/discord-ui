@@ -23,11 +23,15 @@ test("landing arcade runs all commands, locks quiz answers and resets local stat
   await arcade.getByRole("option", { name: "20 sides", exact: true }).click();
   await send.click();
   await expect(arcade).toContainText("A 20-sided die.");
+  await expect(arcade.locator(".dui-interaction-command").first()).toHaveText("/dice");
+  await expect(arcade.locator(".dui-message")).toHaveCount(2);
+  await expect(arcade.locator(".dui-message-header").filter({ hasText: "You" })).toHaveCount(0);
   await expect(arcade.getByRole("heading", { name: /🎲 You rolled/ })).toHaveText(/You rolled ([1-9]|1\d|20)$/);
   await prepare("quiz");
   await send.click();
   await arcade.getByRole("button", { name: "Banana Peel", exact: true }).click();
   await expect(arcade).toContainText("Good try! The answer is Super Mushroom.");
+  await expect(arcade.locator(".dui-interaction-command").last()).toHaveText("/quiz");
   await expect(arcade.getByRole("button", { name: "Super Mushroom", exact: true })).toBeDisabled();
   await expect(arcade.getByRole("button", { name: "Banana Peel", exact: true })).toBeDisabled();
   await page.getByRole("combobox", { name: "Arcade theme" }).selectOption("light");
@@ -46,12 +50,40 @@ test("landing arcade runs all commands, locks quiz answers and resets local stat
   await question.fill("Will this demo work?");
   await question.press("Enter");
   await expect(arcade).toContainText("“Will this demo work?”");
-  for (const theme of ["ash", "dark"]) {
+  await expect(arcade).toContainText("Only you can see this");
+  const ephemeralColors = {
+    light: ["rgb(243, 243, 251)", "rgb(234, 235, 249)"],
+    ash: ["rgb(52, 53, 67)", "rgb(53, 56, 76)"],
+    dark: ["rgb(30, 30, 41)", "rgb(32, 33, 51)"],
+  } as const;
+  for (const theme of ["light", "ash", "dark"] as const) {
     await page.getByRole("combobox", { name: "Arcade theme" }).selectOption(theme);
     await expect(arcade.locator(".arcscord-discord-ui")).toHaveAttribute("data-theme", theme);
+    await expect(arcade.locator(".dui-interaction-command").last()).toHaveText("/8ball");
+    await expect(arcade.getByRole("button", { name: "Dismiss message", exact: true })).toBeVisible();
+    const ephemeral = arcade.locator(".dui-message[data-ephemeral=\"true\"]");
+    await page.getByRole("combobox", { name: "Arcade theme" }).hover();
+    await expect(ephemeral).toHaveCSS("background-color", ephemeralColors[theme][0]);
+    await expect(ephemeral).toHaveCSS("border-left-color", "rgb(88, 101, 242)");
+    await expect(ephemeral).toHaveCSS("border-left-width", "2px");
+    await ephemeral.hover();
+    await expect(ephemeral).toHaveCSS("background-color", ephemeralColors[theme][1]);
+    const dismissControl = ephemeral.getByRole("button", { name: "Dismiss message", exact: true });
+    await dismissControl.focus();
+    await page.getByRole("combobox", { name: "Arcade theme" }).hover();
+    await expect(ephemeral).toHaveCSS("background-color", ephemeralColors[theme][1]);
+    await dismissControl.blur();
+    await arcade.screenshot({ path: `/tmp/landing-arcade-${theme}-${testInfo.project.name}.png` });
   }
   await arcade.scrollIntoViewIfNeeded();
   await page.screenshot({ path: `/tmp/landing-arcade-${testInfo.project.name}.png` });
+  const dismiss = arcade.getByRole("button", { name: "Dismiss message", exact: true });
+  await dismiss.focus();
+  await expect(dismiss).toBeFocused();
+  await dismiss.press("Enter");
+  await expect(arcade).not.toContainText("Only you can see this");
+  await expect(arcade).not.toContainText("Will this demo work?");
+  await expect(arcade.locator(".dui-message")).toHaveCount(4);
   await prepare("8ball");
   await arcade.getByRole("button", { name: "Reset demo" }).click();
   await expect(arcade.locator(".dui-message")).toHaveCount(1);

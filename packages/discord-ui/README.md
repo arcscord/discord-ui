@@ -309,7 +309,7 @@ and `selectMuted` control their opaque surfaces and placeholder text.
 `File` renders a file name, optional display size, safe HTTP(S) link and spoiler.
 The website playground includes editable examples for each interactive component.
 
-## Replies, edits and classic attachments
+## Replies, interactions, ephemeral messages, edits and attachments
 
 Messages and thread replies accept a non-recursive `reply` snapshot. Supply the
 original ID, author and plain-text preview, or `{ messageId, unavailable: true }`
@@ -341,6 +341,43 @@ const message: MessageView = {
   ],
 };
 ```
+
+An interaction response uses `reply: { kind: "interaction", author, commandName }`.
+`author` is the user who invoked the command, while `message.author` is the
+responding app. `commandName` omits the leading slash and may contain subcommands.
+It renders the invoking user's avatar/name, “used” and a command mention; no
+original message ID is required. Existing message replies remain valid; an
+explicit `kind: "message"` is also accepted.
+
+Set `ephemeral: true` on classic or Components V2 messages to show “Only you can
+see this”, with a tinted background and left border. The `ephemeralBackground`,
+`ephemeralHover` and `ephemeralBorder` theme tokens customize these surfaces
+(including keyboard focus within the message). Pass `onEphemeralDismiss(messageId)` to `Message`, `MessageList`,
+`ChannelView` or `ThreadPanel` to show “Dismiss message”. The callback reports
+intent; the host removes the message from its data. Without a handler, only the
+notice appears. This flag controls display, not authorization: the host must
+filter private messages before supplying them to the library.
+
+```tsx
+<Message
+  message={{
+    id: "private-response",
+    author: { id: "app", displayName: "Helper", bot: true },
+    timestamp: "2026-10-29T18:00:00Z",
+    reply: {
+      kind: "interaction",
+      author: { id: "alice", displayName: "Alice" },
+      commandName: "bot-info",
+    },
+    ephemeral: true,
+    body: { kind: "text", content: "Here are your settings." },
+  }}
+  onEphemeralDismiss={id => setMessages(current => current.filter(message => message.id !== id))}
+/>;
+```
+
+Localize this context with `labels.interactionReply`, `labels.interactionUsed`,
+`labels.ephemeralNotice` and `labels.dismissMessage`.
 
 `edited: true` shows the localized edited marker. Omit it or use `edited: false`
 to hide the marker. It carries no edit date and does not change the original
