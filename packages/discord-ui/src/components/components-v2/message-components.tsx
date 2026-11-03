@@ -1,11 +1,23 @@
 import type { ReactNode } from "react";
-import type { ComponentHandlers, MessageButtonView, MessageComponent } from "../../model/components";
+import type { ComponentHandlers, ComponentInteractionContext, MessageButtonView, MessageComponent, SelectValues } from "../../model/components";
 import { Emoji } from "../content/emoji";
 import { MediaGallery } from "../media/media-gallery";
 import { ActionRow, Button, Container, File, LinkButton, Section, Separator, TextDisplay, Thumbnail } from "./primitives";
 import { SelectMenu } from "./select-menu";
 
-export function MessageComponents({ components, referenceTime, onButtonClick, onSelectChange, onPremiumClick }: { components: readonly MessageComponent[]; referenceTime?: string | undefined } & ComponentHandlers) {
+export type MessageComponentsProps = ComponentHandlers & {
+  components: readonly MessageComponent[];
+  referenceTime?: string | undefined;
+  messageId?: string | undefined;
+  selectValues?: SelectValues | undefined;
+};
+
+export function MessageComponents({ components, referenceTime, messageId, selectValues, onButtonClick, onSelectChange, onPremiumClick }: MessageComponentsProps) {
+  function context(componentId: string): ComponentInteractionContext {
+    return messageId === undefined
+      ? { componentId }
+      : { componentId, messageId };
+  }
   function button(view: MessageButtonView): ReactNode {
     if (view.kind === "premium-button") {
       return (
@@ -15,7 +27,7 @@ export function MessageComponents({ components, referenceTime, onButtonClick, on
           style="premium"
           disabled={view.disabled}
           onClick={onPremiumClick
-            ? () => onPremiumClick(view.skuId)
+            ? () => onPremiumClick(view.skuId, context(view.id))
             : undefined}
         />
       );
@@ -33,7 +45,7 @@ export function MessageComponents({ components, referenceTime, onButtonClick, on
             disabled={view.disabled}
             emoji={emoji}
             onClick={onButtonClick
-              ? () => onButtonClick(view.id)
+              ? () => onButtonClick(view.id, context(view.id))
               : undefined}
           />
         );
@@ -59,8 +71,11 @@ export function MessageComponents({ components, referenceTime, onButtonClick, on
             ? (
                 <SelectMenu
                   menu={component.select}
+                  values={selectValues && Object.hasOwn(selectValues, component.select.id)
+                    ? selectValues[component.select.id]
+                    : undefined}
                   onChange={onSelectChange
-                    ? values => onSelectChange(component.select.id, values)
+                    ? values => onSelectChange(component.select.id, values, context(component.select.id))
                     : undefined}
                 />
               )

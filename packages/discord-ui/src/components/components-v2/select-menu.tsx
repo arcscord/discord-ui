@@ -5,6 +5,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { defaultSelectValues, selectOptions } from "../../utils/select-menus";
 import { mediaUrl } from "../../utils/urls";
 import { Emoji } from "../content/emoji";
+import { defaults, useDisplayOptions } from "../display-context";
 
 export type SelectMenuProps = {
   menu: SelectMenuView;
@@ -48,16 +49,28 @@ function ChannelIcon({ option }: { option: ChannelSelectOptionView }) {
   );
 }
 
+function SelectAvatar({ source, label }: { source: string | undefined; label: string }) {
+  const [failed, setFailed] = useState(false);
+  return source && !failed
+    ? <img src={source} alt="" onError={() => setFailed(true)} />
+    : <span aria-hidden="true">{Array.from(label)[0]}</span>;
+}
+
 function OptionIcon({ option, chip = false }: { option: ResolvedSelectOption; chip?: boolean }) {
+  const { allowRemoteMedia, labels } = useDisplayOptions();
+  const statuses = {
+    online: labels.userOnline,
+    idle: labels.userIdle,
+    dnd: labels.userDnd,
+    offline: labels.userOffline,
+  };
   if (option.entityType === "user") {
-    const avatar = mediaUrl(option.avatarUrl);
+    const avatar = mediaUrl(option.avatarUrl, allowRemoteMedia);
     return (
       <span className="dui-select-avatar">
-        {avatar
-          ? <img src={avatar} alt="" />
-          : <span aria-hidden="true">{option.label.slice(0, 1)}</span>}
+        <SelectAvatar key={avatar} source={avatar} label={option.label} />
         {option.status && !chip
-          ? <span className={`dui-select-status dui-select-status-${option.status}`} aria-label={option.status} />
+          ? <span className={`dui-select-status dui-select-status-${option.status}`} aria-label={statuses[option.status] ?? option.status} />
           : null}
       </span>
     );
@@ -78,7 +91,12 @@ function OptionIcon({ option, chip = false }: { option: ResolvedSelectOption; ch
 }
 
 /** String options are fixed; entity menus search resolved server data supplied by the host. */
-export function SelectMenu({ menu, values, onChange }: SelectMenuProps) {
+export function SelectMenu(props: SelectMenuProps) {
+  return <SelectMenuInput key={JSON.stringify([props.menu.id, props.menu.kind])} {...props} />;
+}
+
+function SelectMenuInput({ menu, values, onChange }: SelectMenuProps) {
+  const { labels } = useDisplayOptions();
   const id = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,19 +108,25 @@ export function SelectMenu({ menu, values, onChange }: SelectMenuProps) {
   const [active, setActive] = useState(-1);
   const [localValues, setLocalValues] = useState(() => defaultSelectValues(menu));
   const [placement, setPlacement] = useState<CSSProperties>({});
-  const selected = values ?? localValues;
   const options = selectOptions(menu);
+  const max = Math.min(25, Math.max(1, menu.maxValues ?? 1));
+  const min = Math.min(max, Math.max(0, menu.minValues ?? 1));
+  // The host supplies the complete resolved option set, including selected entities.
+  const available = new Set(options.map(option => option.value));
+  const selected = [
+    ...new Set(values ?? localValues),
+  ].filter(value => available.has(value)).slice(0, max);
+  if (values === undefined && (selected.length !== localValues.length || selected.some((value, index) => value !== localValues[index])))
+    setLocalValues(selected);
   const entityMenu = menu.kind !== "string-select";
   const filtered = entityMenu && query
     ? options.filter(option => `${option.label} ${option.username ?? ""}`.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
     : options;
   const chosen = options.filter(option => selected.includes(option.value));
-  const max = Math.min(25, Math.max(1, menu.maxValues ?? 1));
-  const min = Math.max(0, menu.minValues ?? 1);
   const expanded = open && !menu.disabled;
   const placeholder = menu.placeholder ?? (menu.kind === "channel-select"
-    ? "Select a channel"
-    : "Make a selection");
+    ? labels.channelSelectPlaceholder ?? defaults.labels.channelSelectPlaceholder!
+    : labels.selectPlaceholder ?? defaults.labels.selectPlaceholder!);
 
   const desiredHeight = Math.min(280, filtered.reduce((height, option) => height + (entityMenu
     ? 44
@@ -312,7 +336,7 @@ export function SelectMenu({ menu, values, onChange }: SelectMenuProps) {
                   <span>{option.label}</span>
                   <button
                     type="button"
-                    aria-label={`Remove ${option.label}`}
+                    aria-label={(labels.removeSelection ?? defaults.labels.removeSelection!).replace("{name}", option.label)}
                     disabled={menu.disabled || selected.length <= min}
                     onMouseDown={event => event.preventDefault()}
                     onClick={(event) => {
@@ -412,7 +436,13 @@ export function SelectMenu({ menu, values, onChange }: SelectMenuProps) {
                 );
               })}
               {!filtered.length
-                ? <div className="dui-select-empty" role="note">{query ? "No results found" : "No options available"}</div>
+                ? (
+                    <div className="dui-select-empty" role="note">
+                      {query
+                        ? labels.selectNoResults ?? defaults.labels.selectNoResults
+                        : labels.selectNoOptions ?? defaults.labels.selectNoOptions}
+                    </div>
+                  )
                 : null}
             </div>
           )

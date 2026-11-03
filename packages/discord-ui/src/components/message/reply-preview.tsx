@@ -5,7 +5,9 @@ import { Mention } from "../content/mention";
 import { useDisplayOptions } from "../display-context";
 
 /** Renders the host-supplied message or interaction preview without loading original attachments. */
-export function ReplyPreview({ reply }: { reply: ReplyView }) {
+export type ReplyPreviewProps = { reply: ReplyView };
+
+export function ReplyPreview({ reply }: ReplyPreviewProps) {
   const { labels } = useDisplayOptions();
   return (
     <div

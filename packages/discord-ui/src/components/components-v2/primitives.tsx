@@ -7,7 +7,9 @@ import { Spoiler } from "../content/spoiler";
 import { useDisplayOptions } from "../display-context";
 import { Media } from "../media/media";
 
-export function Container({ children, accentColor, spoiler = false }: { children: ReactNode; accentColor?: string | undefined; spoiler?: boolean | undefined }) {
+export type ContainerProps = { children: ReactNode; accentColor?: string | undefined; spoiler?: boolean | undefined };
+
+export function Container({ children, accentColor, spoiler = false }: ContainerProps) {
   const color = /^#[a-f\d]{6}$/iu.test(accentColor ?? "")
     ? accentColor
     : undefined;
@@ -26,7 +28,9 @@ export function Container({ children, accentColor, spoiler = false }: { children
     : content;
 }
 
-export function Section({ children, accessory }: { children: ReactNode; accessory: ReactNode }) {
+export type SectionProps = { children: ReactNode; accessory: ReactNode };
+
+export function Section({ children, accessory }: SectionProps) {
   return (
     <div className="dui-section">
       <div className="dui-section-content">{children}</div>
@@ -35,24 +39,34 @@ export function Section({ children, accessory }: { children: ReactNode; accessor
   );
 }
 
-export function TextDisplay({ content, referenceTime }: { content: string; referenceTime?: string | undefined }) {
+export type TextDisplayProps = { content: string; referenceTime?: string | undefined };
+
+export function TextDisplay({ content, referenceTime }: TextDisplayProps) {
   return <div className="dui-text-display"><Markdown content={content} referenceTime={referenceTime} /></div>;
 }
 
-export function Thumbnail({ media }: { media: MediaView }) {
+export type ThumbnailProps = { media: MediaView };
+
+export function Thumbnail({ media }: ThumbnailProps) {
   return <div className="dui-thumbnail"><Media media={media} /></div>;
 }
 
-export function Separator({ divider = true, spacing = "small" }: { divider?: boolean | undefined; spacing?: "small" | "large" | undefined }) {
+export type SeparatorProps = { divider?: boolean | undefined; spacing?: "small" | "large" | undefined };
+
+export function Separator({ divider = true, spacing = "small" }: SeparatorProps) {
   return <div role={divider ? "separator" : undefined} aria-hidden={!divider || undefined} className={`dui-separator dui-separator-${spacing}${divider ? " dui-separator-divider" : ""}`} />;
 }
 
-export function ActionRow({ children }: { children: ReactNode }) {
+export type ActionRowProps = { children: ReactNode };
+
+export function ActionRow({ children }: ActionRowProps) {
   return <div className="dui-action-row">{children}</div>;
 }
 
 /** Link buttons navigate only for allowed HTTP(S) URLs and never when disabled. */
-export function LinkButton({ label, url, disabled = false, emoji }: { label: string; url: string; disabled?: boolean | undefined; emoji?: ReactNode }) {
+export type LinkButtonProps = { label: string; url: string; disabled?: boolean | undefined; emoji?: ReactNode };
+
+export function LinkButton({ label, url, disabled = false, emoji }: LinkButtonProps) {
   const href = disabled
     ? undefined
     : linkUrl(url);
@@ -76,7 +90,9 @@ export function LinkButton({ label, url, disabled = false, emoji }: { label: str
     : <span className={className} role="link" aria-disabled="true">{content}</span>;
 }
 
-export function Button({ label, style = "primary", disabled = false, emoji, onClick }: { label: string; style?: "primary" | "secondary" | "success" | "danger" | "premium" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined }) {
+export type ButtonProps = { label: string; style?: "primary" | "secondary" | "success" | "danger" | "premium" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined };
+
+export function Button({ label, style = "primary", disabled = false, emoji, onClick }: ButtonProps) {
   return (
     <button type="button" className={`dui-component-button dui-button-${style}`} disabled={disabled} onClick={onClick}>
       {emoji
@@ -87,7 +103,9 @@ export function Button({ label, style = "primary", disabled = false, emoji, onCl
   );
 }
 
-export function File({ file }: { file: FileView }) {
+export type FileProps = { file: FileView };
+
+export function File({ file }: FileProps) {
   const { labels } = useDisplayOptions();
   const href = linkUrl(file.url);
   const content = (

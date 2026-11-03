@@ -25,7 +25,7 @@ export type EmbedView = {
   author?: { name: string; url?: string; iconUrl?: string };
   thumbnail?: MediaView;
   image?: MediaView;
-  fields?: { id: string; name: string; value: string; inline?: boolean }[];
+  fields?: readonly { id: string; name: string; value: string; inline?: boolean }[];
   footer?: { text: string; iconUrl?: string };
   timestamp?: string;
 };

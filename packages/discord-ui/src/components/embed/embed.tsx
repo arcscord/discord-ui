@@ -6,7 +6,9 @@ import { useDisplayOptions } from "../display-context";
 import { Media } from "../media/media";
 import { MessageTimestamp } from "../message/message-timestamp";
 
-export function Embed({ embed, referenceTime }: { embed: EmbedView; referenceTime?: string | undefined }) {
+export type EmbedProps = { embed: EmbedView; referenceTime?: string | undefined };
+
+export function Embed({ embed, referenceTime }: EmbedProps) {
   const { allowRemoteMedia } = useDisplayOptions();
   const url = linkUrl(embed.url);
   const authorUrl = linkUrl(embed.author?.url);

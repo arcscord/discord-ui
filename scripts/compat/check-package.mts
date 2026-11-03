@@ -74,7 +74,7 @@ assert(css.includes("--discord-ui-channel-input-background"));
 assert(!css.includes("@import"), "Published CSS must not reference source stylesheets.");
 `);
   await writeFile(join(temporary, "types.mts"), `
-import type { MessageView } from "@arcscord/discord-ui";
+import type { AvatarProps, ChannelViewProps, ComponentInteractionContext, MessageComponentsProps, MessageView, SelectValuesByMessage } from "@arcscord/discord-ui";
 const message: MessageView = {
   id: "example", author: { id: "author", displayName: "Example" },
   timestamp: "2026-10-29T18:00:00Z", body: { kind: "text", content: "Hello" },
@@ -87,6 +87,19 @@ message.body = { kind: "unknown", content: "Hello" };
 const invalidV2: MessageView = { id: "v2", author: message.author, timestamp: message.timestamp, body: { kind: "components-v2", components: [] }, embeds: [] };
 void invalidV2;
 void message;
+const selections = { example: { pick: ["a"] } } as const satisfies SelectValuesByMessage;
+const props: ChannelViewProps = {
+  channel: { id: "channel", name: "general", messages: [message] as const },
+  selectValuesByMessage: selections,
+  activeThreadId: null,
+  onButtonClick: (_id, context) => { const typed: ComponentInteractionContext = context; void typed; },
+  onSelectChange: (_id, _values) => {},
+};
+const components: MessageComponentsProps = { components: [] as const, messageId: "example", selectValues: selections.example };
+const avatar: AvatarProps = { author: message.author };
+void props;
+void components;
+void avatar;
 `);
   await pnpm(["install", "--ignore-scripts"], temporary);
   await pnpm([

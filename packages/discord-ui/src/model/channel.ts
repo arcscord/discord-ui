@@ -6,6 +6,6 @@ export type ChannelViewModel = {
   id: string;
   name: string;
   topic?: string;
-  messages: MessageView[];
-  threads?: ThreadView[];
+  messages: readonly MessageView[];
+  threads?: readonly ThreadView[];
 };

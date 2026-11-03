@@ -1,6 +1,8 @@
 import type { MessageAuthor } from "../../model/message";
 
-export function Author({ author }: { author: MessageAuthor }) {
+export type AuthorProps = { author: MessageAuthor };
+
+export function Author({ author }: AuthorProps) {
   const color = /^#[a-f\d]{6}$/iu.test(author.color ?? "")
     ? author.color
     : undefined;

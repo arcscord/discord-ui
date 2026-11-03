@@ -2,7 +2,7 @@ import type { SelectMenuView, SelectOptionView } from "../model/components";
 
 export type ResolvedSelectOption = SelectOptionView & { value: string; label: string };
 
-export function selectOptions(menu: SelectMenuView): ResolvedSelectOption[] {
+export function selectOptions(menu: SelectMenuView): readonly ResolvedSelectOption[] {
   if (menu.kind === "string-select")
     return menu.options;
   const entities = menu.kind === "channel-select" && menu.channelTypes

@@ -4,7 +4,48 @@ import type { DiscordTheme, ThemeInput, ThemeOverrides } from "../themes";
 import { createContext, use } from "react";
 import { themes } from "../themes";
 
-export type UILabels = { commandOptions: string; commandReady: string; removeArgument: string; slashCommands: string; cancelCommand: string; chooseValue: string; edited: string; reply: string; replyUnavailable: string; interactionReply: string; interactionUsed: string; ephemeralNotice: string; dismissMessage: string; download: string; downloadFile: string; reactions: string; thread: string; openThread: string; closeThread: string; threadMessageSingular: string; threadMessagePlural: string; threadNoRecentMessages: string; messages: string; emptyChannel: string; messagePlaceholder: string; sendMessage: string; spoiler: string; showSpoiler: string; hideSpoiler: string; mediaUnavailable: string; invalidTimestamp: string };
+export type UILabels = {
+  selectPlaceholder?: string;
+  channelSelectPlaceholder?: string;
+  removeSelection?: string;
+  selectNoResults?: string;
+  selectNoOptions?: string;
+  userOnline?: string;
+  userIdle?: string;
+  userDnd?: string;
+  userOffline?: string;
+  commandOptions: string;
+  commandReady: string;
+  removeArgument: string;
+  slashCommands: string;
+  cancelCommand: string;
+  chooseValue: string;
+  edited: string;
+  reply: string;
+  replyUnavailable: string;
+  interactionReply: string;
+  interactionUsed: string;
+  ephemeralNotice: string;
+  dismissMessage: string;
+  download: string;
+  downloadFile: string;
+  reactions: string;
+  thread: string;
+  openThread: string;
+  closeThread: string;
+  threadMessageSingular: string;
+  threadMessagePlural: string;
+  threadNoRecentMessages: string;
+  messages: string;
+  emptyChannel: string;
+  messagePlaceholder: string;
+  sendMessage: string;
+  spoiler: string;
+  showSpoiler: string;
+  hideSpoiler: string;
+  mediaUnavailable: string;
+  invalidTimestamp: string;
+};
 export type DisplayOptions = {
   theme: ThemeInput;
   tokens?: ThemeOverrides;
@@ -29,6 +70,15 @@ export const defaults: DisplayContextValue = {
   entities: {},
   allowRemoteMedia: true,
   labels: {
+    selectPlaceholder: "Make a selection",
+    channelSelectPlaceholder: "Select a channel",
+    removeSelection: "Remove {name}",
+    selectNoResults: "No results found",
+    selectNoOptions: "No options available",
+    userOnline: "online",
+    userIdle: "idle",
+    userDnd: "dnd",
+    userOffline: "offline",
     commandOptions: "Options",
     commandReady: "Ready",
     removeArgument: "Remove argument",

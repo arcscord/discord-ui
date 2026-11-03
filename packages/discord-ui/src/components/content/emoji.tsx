@@ -28,7 +28,9 @@ function EmojiImage({ name, source }: { name: string; source: string | undefined
       );
 }
 
-export function Emoji({ name, image }: { name: string; image?: string | undefined }) {
+export type EmojiProps = { name: string; image?: string | undefined };
+
+export function Emoji({ name, image }: EmojiProps) {
   const { allowRemoteMedia } = useDisplayOptions();
   const unicode = !image
     ? parse(name)

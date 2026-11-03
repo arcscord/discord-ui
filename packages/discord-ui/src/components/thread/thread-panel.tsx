@@ -1,4 +1,4 @@
-import type { ComponentHandlers } from "../../model/components";
+import type { ComponentHandlers, SelectValuesByMessage } from "../../model/components";
 import type { MessageView } from "../../model/message";
 import type { ReactionToggleHandler } from "../../model/reaction";
 import type { ThreadView } from "../../model/thread";
@@ -10,6 +10,7 @@ import { useMessageScroll } from "../channel/use-message-scroll";
 import { useDisplayOptions } from "../display-context";
 
 export type ThreadPanelProps = ComponentHandlers & {
+  selectValuesByMessage?: SelectValuesByMessage | undefined;
   thread: ThreadView;
   onReactionToggle?: ReactionToggleHandler | undefined;
   onEphemeralDismiss?: ((messageId: string) => void) | undefined;
@@ -20,7 +21,11 @@ export type ThreadPanelProps = ComponentHandlers & {
   autoScroll?: boolean | undefined;
 };
 
-export function ThreadPanel({ onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
+export function ThreadPanel(props: ThreadPanelProps) {
+  return <ThreadPanelContent key={props.thread.id} {...props} />;
+}
+
+function ThreadPanelContent({ selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
   const { labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -53,7 +58,7 @@ export function ThreadPanel({ onEphemeralDismiss, onButtonClick, onSelectChange,
           : undefined}
       />
       <div className="dui-channel-history" role="log" aria-label={`${labels.thread} : ${thread.name}`} aria-live="polite" tabIndex={0} ref={historyRef} onScroll={event => updateFollowState(event.currentTarget)}>
-        <MessageList onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
+        <MessageList selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
       </div>
       <ChannelComposer channelName={thread.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />
     </aside>

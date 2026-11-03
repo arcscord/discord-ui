@@ -14,5 +14,5 @@ export type ThreadView = {
   name: string;
   parentMessageId: string;
   /** Replies only; the starter remains in the channel's messages. */
-  messages: ThreadMessageView[];
+  messages: readonly ThreadMessageView[];
 };

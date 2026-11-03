@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useDisplayOptions } from "../display-context";
 
 /** Text keeps its natural size under the mask; media is not mounted before reveal. */
-export function Spoiler({ children, inline = true, placeholder }: { children: ReactNode; inline?: boolean; placeholder?: ReactNode }) {
+export type SpoilerProps = { children: ReactNode; inline?: boolean; placeholder?: ReactNode };
+
+export function Spoiler({ children, inline = true, placeholder }: SpoilerProps) {
   const [revealed, setRevealed] = useState(false);
   const { labels } = useDisplayOptions();
   const Wrapper = inline ? "span" : "div";

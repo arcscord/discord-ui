@@ -49,7 +49,7 @@ export type MessageMetadata = {
   author: MessageAuthor;
   /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */
   timestamp: string;
-  reactions?: ReactionView[];
+  reactions?: readonly ReactionView[];
   reply?: ReplyView;
   /** Shows the edited marker; omitted is equivalent to false. */
   edited?: boolean;
@@ -58,7 +58,7 @@ export type MessageMetadata = {
 };
 
 export type MessageContentView = (
-  | { body: TextMessageBody | MarkdownMessageBody; media?: MediaView[]; attachments?: FileView[]; embeds?: EmbedView[]; components?: ActionRowView[] }
+  | { body: TextMessageBody | MarkdownMessageBody; media?: readonly MediaView[]; attachments?: readonly FileView[]; embeds?: readonly EmbedView[]; components?: readonly ActionRowView[] }
   | { body: ComponentsV2Body; media?: never; attachments?: never; embeds?: never; components?: never }
 );
 

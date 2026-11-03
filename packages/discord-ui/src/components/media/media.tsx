@@ -16,7 +16,9 @@ function MediaImage({ media, source }: { media: MediaView; source: string | unde
   );
 }
 
-export function Media({ media }: { media: MediaView }) {
+export type MediaProps = { media: MediaView };
+
+export function Media({ media }: MediaProps) {
   const { allowRemoteMedia } = useDisplayOptions();
   const source = mediaUrl(media.url, allowRemoteMedia);
   const image = <MediaImage key={source} media={media} source={source} />;

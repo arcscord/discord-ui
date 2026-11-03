@@ -1,6 +1,8 @@
 import { useDisplayOptions } from "../display-context";
 
-export function MessageTimestamp({ timestamp }: { timestamp: string }) {
+export type MessageTimestampProps = { timestamp: string };
+
+export function MessageTimestamp({ timestamp }: MessageTimestampProps) {
   const { locale, timeZone, labels } = useDisplayOptions();
   const date = new Date(timestamp);
   if (!/T.*(?:Z|[+-]\d{2}:\d{2})$/u.test(timestamp) || !Number.isFinite(date.valueOf()))
