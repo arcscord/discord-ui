@@ -92,7 +92,10 @@ export function File({ file }: { file: FileView }) {
   const href = linkUrl(file.url);
   const content = (
     <div className="dui-file">
-      <span className="dui-file-icon" aria-hidden="true">▤</span>
+      <svg className="dui-file-icon" aria-hidden="true" width="32" height="40" viewBox="0 0 32 40" fill="none">
+        <path d="M5 1.5h13.5L29 12v23a3.5 3.5 0 0 1-3.5 3.5H5A3.5 3.5 0 0 1 1.5 35V5A3.5 3.5 0 0 1 5 1.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        <path d="M18 2v10h10M8 21h14M8 27h14M8 33h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
       <div className="dui-file-details">
         {href
           ? <a href={href} target="_blank" rel="noopener noreferrer">{file.name}</a>
@@ -102,7 +105,13 @@ export function File({ file }: { file: FileView }) {
           : null}
       </div>
       {href
-        ? <a href={href} target="_blank" rel="noopener noreferrer" aria-label={labels.downloadFile.replace("{name}", file.name)}>↓</a>
+        ? (
+            <a className="dui-file-download" href={href} download={file.name} target="_blank" rel="noopener noreferrer" aria-label={labels.downloadFile.replace("{name}", file.name)} title={labels.downloadFile.replace("{name}", file.name)}>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v12m-5-5 5 5 5-5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+          )
         : null}
     </div>
   );

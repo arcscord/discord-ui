@@ -72,7 +72,7 @@ it("shows the localized edited marker only when edited is true, without an edit 
 
 it("renders classic attachments with safe links and leaves spoiler files unmounted", () => {
   const html = renderToStaticMarkup(
-    <DiscordUI labels={{ downloadFile: "Télécharger {name}" }}>
+    <DiscordUI labels={{ download: "Télécharger", downloadFile: "Télécharger {name}" }}>
       <Message message={{
         ...base,
         attachments: [
@@ -103,6 +103,8 @@ it("renders classic attachments with safe links and leaves spoiler files unmount
   );
   expect(html).toContain("href=\"https://example.com/guide.pdf\"");
   expect(html).toContain("24 KB");
+  expect(html).toContain("download=\"guide.pdf\"");
+  expect(html).toContain("title=\"Télécharger guide.pdf\"");
   expect(html).toContain("aria-label=\"Télécharger guide.pdf\"");
   expect(html).toContain("unsafe.txt");
   expect(html).not.toContain("javascript:");

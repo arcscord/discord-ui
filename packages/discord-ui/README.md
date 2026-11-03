@@ -390,7 +390,7 @@ no file metadata is fetched. V2 messages use file components in `body.components
 instead of classic attachments.
 
 Override `labels.reply`, `labels.replyUnavailable`, `labels.edited` and
-`labels.downloadFile` (`{name}` placeholder) to localize these elements. Edit
+`labels.downloadFile` (`{name}` placeholder for the icon-only download link and tooltip) to localize these elements. Edit
 markers are in the message header. Reply previews truncate to one line.
 
 ### Slash commands
