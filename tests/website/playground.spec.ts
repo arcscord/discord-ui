@@ -61,10 +61,18 @@ test("editing and switching examples still work when browser storage is blocked"
 
 test("width reports the rendered preview and follows viewport changes", async ({ page }) => {
   await page.goto("/playground?example=message");
+  await page.locator(".width-settings").waitFor();
+  if (!await page.getByRole("slider", { name: "Width", exact: true }).isVisible())
+    await page.getByText("Preview width", { exact: true }).click();
   await page.getByRole("slider", { name: "Width", exact: true }).fill("1000");
   const output = page.getByRole("status", { name: "Actual preview width" });
   for (const width of [390, 1440]) {
+    const wasWide = (page.viewportSize()?.width ?? 0) > 640;
     await page.setViewportSize({ width, height: 844 });
+    if (wasWide !== (width > 640))
+      await expect(page.locator(".width-settings")).toHaveJSProperty("open", width > 640);
+    if (!await page.locator(".width-settings").evaluate(element => (element as HTMLDetailsElement).open))
+      await page.getByText("Preview width", { exact: true }).click();
     await expect(async () => {
       const actual = Math.round(await page.locator(".preview-width").evaluate(element => element.getBoundingClientRect().width));
       await expect(output).toHaveText(`${actual} px`);
@@ -146,6 +154,8 @@ test("live channel state, preview theme and width controls work independently", 
   await expect(page.locator(".dui-thread-panel")).toContainText("A live thread reply");
   await reply.press("Escape");
   await expect(page.getByRole("button", { name: /Open thread.*Setup help/ })).toBeFocused();
+  if (!await page.getByRole("slider", { name: "Width", exact: true }).isVisible())
+    await page.getByText("Preview width", { exact: true }).click();
   await page.getByRole("slider", { name: "Width" }).fill("320");
   await expect(page.locator(".preview-width")).toHaveCSS("width", "320px");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
@@ -166,7 +176,7 @@ test("copy exports the edited JSX, dependencies and selected theme", async ({ pa
   await editor.fill((await editor.inputValue()).replace("Arcscord", "Copied edit"));
   await page.getByRole("button", { name: "Ash", exact: true }).click();
   await page.getByRole("button", { name: "Copy code", exact: true }).click();
-  await expect(page.getByText("Copied the code shown in the editor.")).toBeVisible();
+  await expect(page.locator(".editor-panel .example-bar").getByText("Copied the code shown in the editor.")).toBeVisible();
   const code = await page.evaluate(() => sessionStorage.getItem("copied-example"));
   expect(code).toContain("import { DiscordUI, Message } from \"@arcscord/discord-ui\"");
   expect(code).toContain("const welcome =");
@@ -188,4 +198,18 @@ test("message data and imports are editable in the displayed module", async ({ p
   await editor.fill(edited.replace("DiscordUI, MessageList", "DiscordUI, MessageList as Timeline").replace("<MessageList", "<Timeline"));
   await expect(page.getByRole("alert")).toHaveCount(0);
   await expect(page.locator(".live-panel")).toContainText("Edited message data");
+});
+
+test("narrow playground keeps optional width settings collapsed before the preview", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/playground?example=message");
+  const settings = page.locator(".width-settings");
+  await expect(settings).not.toHaveAttribute("open");
+  await expect(page.locator(".live-panel .dui-message")).toBeVisible();
+  expect((await page.locator(".live-panel").boundingBox())!.y).toBeLessThan(650);
+  await settings.locator("summary").click();
+  await page.getByRole("slider", { name: "Width", exact: true }).fill("320");
+  await expect(page.getByRole("status", { name: "Actual preview width" })).toHaveText("320 px");
+  await page.setViewportSize({ width: 1536, height: 1024 });
+  await expect(settings).toHaveAttribute("open", "");
 });

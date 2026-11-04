@@ -52,6 +52,13 @@ function ExampleEditor({ example, initialTheme, width, onWidthChange, onExampleC
   const [actualWidth, setActualWidth] = useState<number>();
   const [run, setRun] = useState(0);
   const [copyStatus, setCopyStatus] = useState("");
+  const [widthSettingsOpen, setWidthSettingsOpen] = useState(() => typeof window === "undefined" || window.matchMedia("(min-width: 641px)").matches);
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 641px)");
+    const update = () => setWidthSettingsOpen(desktop.matches);
+    desktop.addEventListener("change", update);
+    return () => desktop.removeEventListener("change", update);
+  }, []);
   const resetRef = useRef<HTMLButtonElement>(null);
   const observeWidth = useCallback((node: HTMLDivElement | null) => {
     if (!node)
@@ -130,22 +137,24 @@ function ExampleEditor({ example, initialTheme, width, onWidthChange, onExampleC
           </select>
         </label>
         <ThemeControl value={theme} onChange={value => setCode(changeModuleTheme(code, value))} />
-        <label className="width-control">
-          Width
-          <div>
-            <input aria-label="Width" aria-describedby="width-hint" type="range" min="320" max="1000" step="20" value={width} onChange={event => onWidthChange(Number(event.target.value))} />
-            <output aria-label="Actual preview width">
-              {actualWidth ?? "…"}
-              {" px"}
-            </output>
-          </div>
-          <span id="width-hint" className="width-hint">
-            {actualWidth !== undefined && actualWidth < width
-              ? `Target ${width} px · fitted to panel`
-              : "Actual preview width"}
-          </span>
-        </label>
-
+        <details className="width-settings" open={widthSettingsOpen} onToggle={event => setWidthSettingsOpen(event.currentTarget.open)}>
+          <summary>Preview width</summary>
+          <label className="width-control">
+            Width
+            <div>
+              <input aria-label="Width" aria-describedby="width-hint" type="range" min="320" max="1000" step="20" value={width} onChange={event => onWidthChange(Number(event.target.value))} />
+              <output aria-label="Actual preview width">
+                {actualWidth ?? "…"}
+                {" px"}
+              </output>
+            </div>
+            <span id="width-hint" className="width-hint">
+              {actualWidth !== undefined && actualWidth < width
+                ? `Target ${width} px · fitted to panel`
+                : "Actual preview width"}
+            </span>
+          </label>
+        </details>
       </div>
       {outdated
         ? (
@@ -175,6 +184,7 @@ function ExampleEditor({ example, initialTheme, width, onWidthChange, onExampleC
                 <button className="demo-reset" type="button" ref={resetRef} onClick={reset}>Reset code</button>
                 <button className="demo-reset" type="button" onClick={copy}>Copy code</button>
               </div>
+              <p className="copy-status" role="status">{copyStatus}</p>
             </div>
             <JsxEditor code={code} onChange={setCode} onEscape={() => resetRef.current?.focus()} />
             <CompileStatus pending={code !== compiledCode} />
@@ -201,7 +211,6 @@ function ExampleEditor({ example, initialTheme, width, onWidthChange, onExampleC
         <summary>About editing and local demos</summary>
         <p className="scope-note">Edit the complete React module: imports, message data and rendering. Drafts stay in this browser tab when you switch examples. Copy code copies exactly this editor. The theme control edits previewTheme in the code. Interactive examples run locally in this browser, without a Discord connection.</p>
       </details>
-      <p className="copy-status" role="status">{copyStatus}</p>
     </>
   );
 }

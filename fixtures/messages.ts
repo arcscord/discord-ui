@@ -117,7 +117,7 @@ export const componentsV2Message: MessageView = {
             id: "v2-header",
             kind: "section",
             components: [
-              { id: "v2-intro", kind: "text-display", content: "Un conteneur, une section, une galerie et des liens.\nLes styles sont repris du renderer **AutoThreads**." },
+              { id: "v2-intro", kind: "text-display", content: "Un conteneur, une section, une galerie et des liens.\nUn exemple composé avec **Discord UI**." },
             ],
             accessory: {
               id: "v2-thumbnail",

@@ -8,7 +8,7 @@ const summary: ThreadSummaryView = {
   name: "image-discussion",
   messageCount: 1,
   lastMessage: {
-    author: { id: "bot", displayName: "Auto Threads", bot: true },
+    author: { id: "bot", displayName: "Community Bot", bot: true },
     content: "<script>message</script>",
     timestamp: "2026-10-29T18:03:00Z",
   },
@@ -26,7 +26,7 @@ it("renders the connector, count, author and escaped last-message preview", () =
   expect(html).toContain("data-has-thread=\"true\"");
   expect(html).toContain("image-discussion");
   expect(html).toContain("1 message");
-  expect(html).toContain("Auto Threads");
+  expect(html).toContain("Community Bot");
   expect(html).toContain("&lt;script&gt;message&lt;/script&gt;");
   expect(html).not.toContain("<script>");
   expect(html).toContain("dateTime=\"2026-10-29T18:03:00.000Z\"");

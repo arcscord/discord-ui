@@ -1,7 +1,6 @@
 # Arcscord Discord UI
 
-Independent React/TypeScript library for Discord message interfaces, intended for
-AutoThreads and the Arcscord documentation. Package: `@arcscord/discord-ui`.
+Independent React/TypeScript library for Discord message interfaces. Package: `@arcscord/discord-ui`.
 
 ## Status
 
@@ -10,7 +9,7 @@ exports composable message primitives, serializable types and scoped light/dark 
 The payload adapter is planned.
 A dedicated Docusaurus site in `apps/website` contains the landing, interactive
 examples and initial documentation. See [website development](./apps/website/README.md).
-No AutoThreads or Arcscord runtime dependency is included.
+No bot or application runtime dependency is included.
 
 ## Development
 
@@ -174,9 +173,9 @@ plain text. Supported grammars: JavaScript, TypeScript, JSON, CSS, Bash and Pyth
 
 ## License and provenance
 
-MIT, copyright 2026 Arcoz0308. Markdown AST rendering and optional highlighting
-adapt AutoThreads logic. See `packages/discord-ui/THIRD_PARTY_NOTICES` for provenance
-and full dependency/upstream notices. The renderer styles are adapted from AutoThreads and shipped as standalone CSS.
+MIT, copyright 2026 Arcoz0308. See `packages/discord-ui/THIRD_PARTY_NOTICES`
+for renderer provenance and full dependency/upstream notices.
+Renderer styles ship as standalone CSS.
 Synthetic SVG fixtures are new.
 The notices are included in the package.
 

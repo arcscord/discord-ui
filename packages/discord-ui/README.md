@@ -137,7 +137,7 @@ serializable view model. Supported primitives: `Container`, `Section`, `TextDisp
 classic embeds or message-level media. This is a display model, not a Discord API
 payload adapter or validator. Disabled/unsafe link buttons never render an href.
 
-Styles are adapted from the AutoThreads renderer, preserving the original cascade
+Styles preserve the adapted renderer’s original cascade
 and its local corrections. They are mapped to this package's classes and tokens and
 inlined into the distributed stylesheet; no source CSS imports remain. Text spoilers
 keep their natural dimensions under a mask. Hidden media remains unmounted.
@@ -146,7 +146,7 @@ Current scope: messages, basic Markdown lists, image media, embeds and the V2 su
 above. Nested lists, exact Discord gallery parity, video/audio, payload adapters,
 custom-id button interactions are not implemented. Next.js/Docusaurus integration builds remain pending.
 
-Markdown/highlighting logic is adapted from AutoThreads; see `THIRD_PARTY_NOTICES`
+For Markdown/highlighting provenance, see `THIRD_PARTY_NOTICES`
 for the upstream BF-GO MIT notice and dependency licenses. Styles and the external-link icon also adapt the renderer. Example assets are new.
 
 MIT © 2026 Arcoz0308.
@@ -416,9 +416,9 @@ In the website playground, select **Slash commands** and type
 ```tsx
 const commands: SlashCommand[] = [
   {
-    name: "config autothreads",
+    name: "config threads",
     description: "Manage automatic threads",
-    application: "Auto Threads", // optional label in the list
+    application: "Community Bot", // optional label in the list
     arguments: [
       { name: "name", description: "Configuration name", required: true },
       {

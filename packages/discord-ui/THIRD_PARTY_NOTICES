@@ -9,7 +9,7 @@ upstream revision 8bcc6c8ec5502186fea38fd680e0262c09c72747.
 The AST renderer was reorganized for explicit props, a new display context and
 composable primitives. No upstream slot implementation is copied.
 
-Styles in src/styles/autothreads.css are adapted from AutoThreads src/upstream/style.css
+Styles in src/styles/renderer.css are adapted from AutoThreads src/upstream/style.css
 and src/style.css at the same revision. Supported selectors and variables are mapped
 to the new primitives, with upstream rules followed by AutoThreads corrections.
 The standalone build inlines these rules into styles.css. Components V2 primitive

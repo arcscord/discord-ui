@@ -19,10 +19,10 @@ export default defineConfig({
   hooks: {
     "build:done": async () => {
       const styles = await readFile("src/styles/styles.css", "utf8");
-      const imported = await readFile("src/styles/autothreads.css", "utf8");
+      const imported = await readFile("src/styles/renderer.css", "utf8");
       const themes = await readFile("src/styles/themes.css", "utf8");
       // Ship one standalone stylesheet, with no unresolved source imports.
-      await writeFile("dist/styles.css", styles.replace("@import \"./autothreads.css\";", imported).replace("@import \"./themes.css\";", themes));
+      await writeFile("dist/styles.css", styles.replace("@import \"./renderer.css\";", imported).replace("@import \"./themes.css\";", themes));
     },
   },
 });

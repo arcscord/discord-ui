@@ -99,6 +99,9 @@ test("touch mobile has no shortcut but can open and close search", async ({ brow
   await page.goto("/docs/introduction");
   const trigger = page.getByRole("button", { name: "Search documentation", exact: true });
   await expect(trigger).toBeVisible();
+  const triggerBounds = (await trigger.boundingBox())!;
+  expect(triggerBounds.width).toBeGreaterThanOrEqual(44);
+  expect(triggerBounds.height).toBeGreaterThanOrEqual(44);
   await expect(trigger.locator("kbd")).toHaveCount(0);
   await page.keyboard.press("Meta+k");
   await page.keyboard.press("Control+k");

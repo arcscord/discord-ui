@@ -144,7 +144,7 @@ export const initialChannel: ChannelViewModel = {
       ],
       author: ticket.author,
       timestamp: "2026-11-01T09:15:00Z",
-      body: { kind: "markdown", content: "Make sure you've added the bot to your server and granted the required permissions. You can also check out the [docs](https://ui.arcscord.dev/docs/introduction) for a full setup guide." },
+      body: { kind: "markdown", content: "Check that your bot has permission to send messages in this channel. This conversation is a local demo; the [Discord UI docs](https://ui.arcscord.dev/docs/introduction) explain how to render it in React." },
     },
     {
       id: "starter",

@@ -74,9 +74,12 @@ available while navigating within the site. Drafts carry a source signature;
 legacy drafts and drafts based on an older example remain intact, with an explicit
 Load updated example action. Loading an update can be undone after a reload.
 Reset code offers Undo reset until the next
-code edit; both the draft and pending reset recovery survive a reload. The width
-control reports the rendered preview width and explains when the requested width
-is constrained by the panel. The mobile component catalogue starts collapsed and
+code edit; both the draft and pending reset recovery survive a reload.
+The optional width settings start collapsed on narrow screens and remain expanded
+on desktop. Copy feedback appears next to the editor actions. Reset recovery notices
+use a brief fade; demo controls respond on press, with reduced-motion alternatives.
+The width control reports the rendered preview width and explains when the
+requested width is constrained by the panel. The mobile component catalogue starts collapsed and
 returns keyboard focus to its browse button after selection.
 Embedded channel and thread histories use native scroll chaining: at their top or
 bottom boundary, scrolling continues on the page. This site-only override keeps

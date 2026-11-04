@@ -385,7 +385,7 @@ export const componentExamples: ComponentExample[] = ([
     id: "button",
     title: "Button",
     family: "Components V2",
-    description: "Primary, secondary, success, danger and premium actions with disabled states.",
+    description: "Primary, secondary, success and danger actions with a disabled state.",
     code: `function Buttons() {
   const [clicked, setClicked] = useState("");
   return <><ActionRow>{["primary", "secondary", "success", "danger"].map(style => <Button key={style} style={style} label={style} onClick={() => setClicked(style)} />)}<Button label="Disabled" disabled /></ActionRow><p role="status">{clicked}</p></>;

@@ -1,7 +1,7 @@
-@import "./autothreads.css";
+@import "./renderer.css";
 @import "./themes.css";
 
-/* Layout adaptations for the new primitives. Visual values come from AutoThreads. */
+/* Layout adaptations for the new primitives. See THIRD_PARTY_NOTICES for visual provenance. */
 .arcscord-discord-ui { text-align: left; }
 .dui-message { background: var(--discord-ui-background); }
 .dui-message-main { min-width: 0; }
