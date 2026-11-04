@@ -1,0 +1,76 @@
+---
+title: Components V2
+description: Practical usage and behavior of components v2 in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/ComponentsV2';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/ComponentsV2.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Components V2
+
+A Components V2 body is a serializable layout tree. Render it through `Message`
+for author metadata and message-scoped callbacks, or use `MessageComponents` for
+just the tree.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [Message](/docs/api/display-components#message).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="ComponentsV2.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Compose the tree
+
+| Node | Contents |
+| --- | --- |
+| `text-display` | Markdown `content` |
+| `section` | Text-display children and one required thumbnail/button accessory |
+| `media-gallery` | Image `items` |
+| `separator` | Optional `divider` and `spacing` (`small` or `large`) |
+| `action-row` | Either a `buttons` array or one `select`, never both |
+| `file` | Name, URL and optional display size/spoiler |
+| `container` | Supported non-container children, optional accent and spoiler |
+
+Containers cannot contain other containers in the public model. Sections contain
+text-display nodes; their accessory is a thumbnail or message button. Standalone
+React primitives (`Container`, `Section`, `ActionRow`, etc.) accept React children
+for custom composition, but do not validate Discord send-payload limits.
+
+## Keep body families separate
+
+`body: { kind: "components-v2", components: [...] }` forbids classic top-level
+`embeds`, `media`, `attachments` and `components`. The tree belongs inside `body`.
+A classic text/Markdown message can have top-level action rows; it does not accept
+the full V2 tree in that field. See [message contracts](../concepts.md#classic-messages-and-components-v2).
+
+## Route interaction intent
+
+`onButtonClick(id, context)` receives the clicked ID. Select and premium handlers
+use their own arguments. `Message` supplies `context.messageId`; a standalone
+`MessageComponents` needs `messageId` if your handler relies on it. Component IDs
+must be unique inside one message; scope stored state by message ID when reusing
+IDs in other messages.
+
+Accent colors require six-digit hex values. A container spoiler gates its contents
+locally. The minimal example updates a status after approval; it does not persist
+approval or disable the action unless the application updates that model.
+
+## A realistic example
+
+[Inspect the components v2 example](/components?example=message-components) or
+[edit the full catalogue module](/playground?example=message-components). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="message-components" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

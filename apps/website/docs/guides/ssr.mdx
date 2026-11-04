@@ -1,0 +1,77 @@
+---
+title: SSR and hydration
+description: Practical usage and behavior of ssr and hydration in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/SSR';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/SSR.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# SSR and hydration
+
+The display components support deterministic server rendering when supplied the
+same data and display settings. The example above can be rendered on the server
+and hydrated by an application's existing React entry point.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [Message](/docs/api/display-components#message).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="SSR.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Share a snapshot
+
+Create or fetch IDs and timestamps before rendering. Serialize the resolved
+message/channel data and reuse it on the client. Keep the initial theme, entity
+maps, labels, locale, time zone and reference time equal on both sides.
+
+Do not call `Date.now()`, `new Date()` or `crypto.randomUUID()` to create initial
+visible data inside a render function. They are appropriate in application event
+handling when creating a new message, or in a server data-loading boundary whose
+result is passed to the client. The local catalogue may generate timestamps when
+a user sends a message; that is distinct from its fixed initial fixture snapshot.
+
+## Separate deterministic rendering from runtime validation
+
+An ISO timestamp must include a time zone; use an explicit `referenceTime` for
+relative tokens. An invalid date produces a translated invalid label. Invalid
+locale/time-zone configurations can cause `Intl` errors; validate application
+configuration before rendering. Do not mask a data mismatch with hydration-warning
+suppression.
+
+TypeScript verifies authored examples, not untrusted runtime JSON. Normalize and
+validate incoming data in the host. Models are display contracts, not a Discord
+send-payload validator or an implemented payload adapter.
+
+## Interactive boundaries and styles
+
+Import the compiled stylesheet through the integration's supported global-CSS
+entry. Keep handlers on the client side. The component and highlighting builds
+carry client directives; `/themes` is a separate helper entry without that directive.
+A React server rendering test does not establish compatibility with every framework,
+React version or React Server Components arrangement. Follow the framework's own
+client boundaries and CSS-loading rules.
+
+The website validates static generation and browser hydration of its fixtures.
+Its playground evaluates local browser modules and is not an SSR harness or a
+TypeScript diagnostics service.
+
+## A realistic example
+
+[Inspect the ssr and hydration example](/components?example=message) or
+[edit the full catalogue module](/playground?example=message). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="message" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

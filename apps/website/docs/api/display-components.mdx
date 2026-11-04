@@ -1,0 +1,620 @@
+---
+title: Display components
+description: Public signatures, fields, examples and behavior for display components.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+<div className="api-reference-page">
+
+# Display components
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## Author
+
+<CodeBlock language="ts">{"import { Author } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a resolved author name, validated color and supplied bot/verification markers. It does not fetch profiles or link to a Discord account.
+
+[Usage guide](/docs/guides/messages) · [Props type](#authorprops)
+
+<CodeBlock language="ts">{"export function Author({ author }: AuthorProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+
+<ReferenceExample id="author" />
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+## AuthorProps
+
+<CodeBlock language="ts">{"import type { AuthorProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a resolved author name, validated color and supplied bot/verification markers. It does not fetch profiles or link to a Discord account.
+
+[Usage guide](/docs/guides/messages) · [Component](#author)
+
+<CodeBlock language="ts">{"export type AuthorProps = { author: MessageAuthor };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+## Avatar
+
+<CodeBlock language="ts">{"import { Avatar } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Loads an allowed avatar URL or displays a deterministic initial/color fallback. Blocked and failed images use the fallback. Appearance is supplied by the application; this component has only image-failure state.
+
+[Usage guide](/docs/guides/messages) · [Props type](#avatarprops)
+
+<CodeBlock language="ts">{"export function Avatar({ author }: AvatarProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+
+<ReferenceExample id="avatar" />
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+## AvatarProps
+
+<CodeBlock language="ts">{"import type { AvatarProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Loads an allowed avatar URL or displays a deterministic initial/color fallback. Blocked and failed images use the fallback. Appearance is supplied by the application; this component has only image-failure state.
+
+[Usage guide](/docs/guides/messages) · [Component](#avatar)
+
+<CodeBlock language="ts">{"export type AvatarProps = { author: MessageAuthor };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+## Emoji
+
+<CodeBlock language="ts">{"import { Emoji } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders Unicode through Twemoji when remote media is allowed, otherwise text. Custom images follow the media policy and fall back to their supplied name on failure.
+
+[Usage guide](/docs/guides/markdown) · [Props type](#emojiprops)
+
+<CodeBlock language="ts">{"export function Emoji({ name, image }: EmojiProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `image` | No | `string \| undefined` | — | Resolved image model/URL as specified by the type; shared media policy applies. |
+
+<ReferenceExample id="emoji" />
+
+## EmojiProps
+
+<CodeBlock language="ts">{"import type { EmojiProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders Unicode through Twemoji when remote media is allowed, otherwise text. Custom images follow the media policy and fall back to their supplied name on failure.
+
+[Usage guide](/docs/guides/markdown) · [Component](#emoji)
+
+<CodeBlock language="ts">{"export type EmojiProps = { name: string; image?: string | undefined };"}</CodeBlock>
+
+## Markdown
+
+<CodeBlock language="ts">{"import { Markdown } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Parses supported Discord formatting into React nodes. Mentions use resolved entity maps; links use the shared HTTP(S) policy. Spoilers have local reveal state. Reference time is explicit prop, then wrapper, then the deterministic epoch fallback. Code highlighting is opt-in.
+
+[Usage guide](/docs/guides/markdown) · [Props type](#markdownprops)
+
+<CodeBlock language="ts">{"export function Markdown({ content, referenceTime }: MarkdownProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+| `referenceTime` | No | `string \| undefined` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+
+<ReferenceExample id="markdown" />
+
+## MarkdownProps
+
+<CodeBlock language="ts">{"import type { MarkdownProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Parses supported Discord formatting into React nodes. Mentions use resolved entity maps; links use the shared HTTP(S) policy. Spoilers have local reveal state. Reference time is explicit prop, then wrapper, then the deterministic epoch fallback. Code highlighting is opt-in.
+
+[Usage guide](/docs/guides/markdown) · [Component](#markdown)
+
+<CodeBlock language="ts">{"export type MarkdownProps = { content: string; referenceTime?: string | undefined };"}</CodeBlock>
+
+## Mention
+
+<CodeBlock language="ts">{"import { Mention } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a supplied user/role/channel/command name with its prefix and optional six-digit hex color. It is a display token, without navigation or network lookup.
+
+[Usage guide](/docs/guides/markdown) · [Props type](#mentionprops)
+
+<CodeBlock language="ts">{"export function Mention({ name, kind, color }: MentionProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `kind` | No | `"user" \| "role" \| "channel" \| "command"` | `"user"` | Discriminator selecting this model variant. |
+| `color` | No | `string \| undefined` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+<ReferenceExample id="mention" />
+
+## MentionProps
+
+<CodeBlock language="ts">{"import type { MentionProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a supplied user/role/channel/command name with its prefix and optional six-digit hex color. It is a display token, without navigation or network lookup.
+
+[Usage guide](/docs/guides/markdown) · [Component](#mention)
+
+<CodeBlock language="ts">{"export type MentionProps = { name: string; kind?: \"user\" | \"role\" | \"channel\" | \"command\"; color?: string | undefined };"}</CodeBlock>
+
+## DiscordUI
+
+<CodeBlock language="ts">{"import { DiscordUI } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Scopes compiled CSS and provides theme, entities, labels, date formatting and media policy. Partial labels merge with English defaults; tokens override the selected theme. Configuration does not fetch entities or authorize access. The wrapper owns no message data.
+
+[Usage guide](/docs/guides/themes) · [Props type](#discorduiprops)
+
+<CodeBlock language="ts">{"export function DiscordUI({ children, className, ...options }: DiscordUIProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `theme` | No | `ThemeInput` | `"dark"` | Preset name or custom theme object; does not replace the stylesheet import. |
+| `tokens` | No | `Partial<ThemeTokens>` | `{}` | Semantic token overrides applied over the selected/inherited theme. |
+| `locale` | No | `string` | `"en-US"` | Intl locale for dates, numbers and thread plural selection; does not translate labels. |
+| `timeZone` | No | `string` | `"UTC"` | Explicit Intl time zone for date/time formatting and date separators. |
+| `referenceTime` | No | `string` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+| `entities` | No | `MessageEntities` | `{}` | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `allowRemoteMedia` | No | `boolean` | `true` | Allows HTTP(S) image sources. false preserves accepted local/blob/data images and does not disable outgoing links. |
+| `renderCode` | No | `((content: string, language: string) => ReactNode) \| undefined` | — | Optional code renderer receiving (content, language). Return React content; opt-in highlighter has a separate entry. |
+| `labels` | No | `Partial<UILabels>` | `English defaults (partial merge)` | Interface-label configuration; DiscordUI accepts partial overrides merged with English defaults. |
+| `children` | Yes | `ReactNode` | — | Explicit React content/slots; not part of a serializable display snapshot. |
+| `className` | No | `string` | `""` | Additional class on the scope wrapper. |
+
+<ReferenceExample id="discord-ui" />
+
+Related types: [DisplayOptions](/docs/api/display-components#displayoptions), [UILabels](/docs/api/display-components#uilabels).
+
+## DiscordUIProps
+
+<CodeBlock language="ts">{"import type { DiscordUIProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Scopes compiled CSS and provides theme, entities, labels, date formatting and media policy. Partial labels merge with English defaults; tokens override the selected theme. Configuration does not fetch entities or authorize access. The wrapper owns no message data.
+
+[Usage guide](/docs/guides/themes) · [Component](#discordui)
+
+<CodeBlock language="ts">{"export type DiscordUIProps = Partial<Omit<DisplayOptions, \"labels\">> & { labels?: Partial<UILabels> } & { children: ReactNode; className?: string };"}</CodeBlock>
+
+Related types: [DisplayOptions](/docs/api/display-components#displayoptions), [UILabels](/docs/api/display-components#uilabels).
+
+## DisplayOptions
+
+<CodeBlock language="ts">{"import type { DisplayOptions } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Display configuration, not a serializable message model: renderCode is a callback. DiscordUI accepts a partial configuration, and partial labels, while this type describes the complete configuration.
+
+<CodeBlock language="ts">{"export type DisplayOptions = {\n  theme: ThemeInput;\n  tokens?: ThemeOverrides;\n  locale: string;\n  timeZone: string;\n  referenceTime?: string;\n  entities: MessageEntities;\n  allowRemoteMedia: boolean;\n  renderCode?: ((content: string, language: string) => ReactNode) | undefined;\n  labels: UILabels;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `theme` | Yes | `ThemeInput` | `"dark"` | Preset name or custom theme object; does not replace the stylesheet import. |
+| `tokens` | No | `Partial<ThemeTokens>` | `{}` | Semantic token overrides applied over the selected/inherited theme. |
+| `locale` | Yes | `string` | `"en-US"` | Intl locale for dates, numbers and thread plural selection; does not translate labels. |
+| `timeZone` | Yes | `string` | `"UTC"` | Explicit Intl time zone for date/time formatting and date separators. |
+| `referenceTime` | No | `string` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+| `entities` | Yes | `MessageEntities` | `{}` | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `allowRemoteMedia` | Yes | `boolean` | `true` | Allows HTTP(S) image sources. false preserves accepted local/blob/data images and does not disable outgoing links. |
+| `renderCode` | No | `((content: string, language: string) => ReactNode) \| undefined` | — | Optional code renderer receiving (content, language). Return React content; opt-in highlighter has a separate entry. |
+| `labels` | Yes | `UILabels` | `English defaults (partial merge)` | Interface-label configuration; DiscordUI accepts partial overrides merged with English defaults. |
+
+### Example
+
+<CodeBlock language="ts">{"import type { DisplayOptions } from \"@arcscord/discord-ui\";\n\nconst configuration: DisplayOptions = { theme: \"dark\", locale: \"en-US\", timeZone: \"UTC\", entities: {}, allowRemoteMedia: false, labels: { selectPlaceholder: \"Make a selection\", channelSelectPlaceholder: \"Select a channel\", removeSelection: \"Remove {name}\", selectNoResults: \"No results found\", selectNoOptions: \"No options available\", userOnline: \"online\", userIdle: \"idle\", userDnd: \"dnd\", userOffline: \"offline\", commandOptions: \"Options\", commandReady: \"Ready\", removeArgument: \"Remove argument\", slashCommands: \"Slash commands\", cancelCommand: \"Cancel command\", chooseValue: \"Choose a value\", edited: \"(edited)\", reply: \"Reply to\", replyUnavailable: \"Original message unavailable\", interactionReply: \"Interaction response\", interactionUsed: \"used\", ephemeralNotice: \"Only you can see this\", dismissMessage: \"Dismiss message\", download: \"Download\", downloadFile: \"Download {name}\", reactions: \"Reactions\", thread: \"Thread\", openThread: \"Open thread\", closeThread: \"Close thread\", threadMessageSingular: \"{count} message\", threadMessagePlural: \"{count} messages\", threadNoRecentMessages: \"No recent messages in this thread.\", messages: \"Messages\", emptyChannel: \"No messages yet.\", messagePlaceholder: \"Message #{channel}\", sendMessage: \"Send message\", spoiler: \"Spoiler\", showSpoiler: \"Reveal spoiler\", hideSpoiler: \"Hide spoiler\", mediaUnavailable: \"Media unavailable\", invalidTimestamp: \"Invalid timestamp\" } };"}</CodeBlock>
+
+[Wrapper reference](#discordui) · [Localization guide](/docs/guides/localization)
+
+## UILabels
+
+<CodeBlock language="ts">{"import type { UILabels } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Complete interface-label schema. DiscordUI accepts `Partial<UILabels>` and merges English defaults. Keep `{name}`, `{channel}` and `{count}` placeholders where present; locale formatting is separate.
+
+<CodeBlock language="ts">{"export type UILabels = {\n  selectPlaceholder?: string;\n  channelSelectPlaceholder?: string;\n  removeSelection?: string;\n  selectNoResults?: string;\n  selectNoOptions?: string;\n  userOnline?: string;\n  userIdle?: string;\n  userDnd?: string;\n  userOffline?: string;\n  commandOptions: string;\n  commandReady: string;\n  removeArgument: string;\n  slashCommands: string;\n  cancelCommand: string;\n  chooseValue: string;\n  edited: string;\n  reply: string;\n  replyUnavailable: string;\n  interactionReply: string;\n  interactionUsed: string;\n  ephemeralNotice: string;\n  dismissMessage: string;\n  download: string;\n  downloadFile: string;\n  reactions: string;\n  thread: string;\n  openThread: string;\n  closeThread: string;\n  threadMessageSingular: string;\n  threadMessagePlural: string;\n  threadNoRecentMessages: string;\n  messages: string;\n  emptyChannel: string;\n  messagePlaceholder: string;\n  sendMessage: string;\n  spoiler: string;\n  showSpoiler: string;\n  hideSpoiler: string;\n  mediaUnavailable: string;\n  invalidTimestamp: string;\n};"}</CodeBlock>
+
+| Label | English default |
+| --- | --- |
+| `selectPlaceholder` | `"Make a selection"` |
+| `channelSelectPlaceholder` | `"Select a channel"` |
+| `removeSelection` | `"Remove {name}"` |
+| `selectNoResults` | `"No results found"` |
+| `selectNoOptions` | `"No options available"` |
+| `userOnline` | `"online"` |
+| `userIdle` | `"idle"` |
+| `userDnd` | `"dnd"` |
+| `userOffline` | `"offline"` |
+| `commandOptions` | `"Options"` |
+| `commandReady` | `"Ready"` |
+| `removeArgument` | `"Remove argument"` |
+| `slashCommands` | `"Slash commands"` |
+| `cancelCommand` | `"Cancel command"` |
+| `chooseValue` | `"Choose a value"` |
+| `edited` | `"(edited)"` |
+| `reply` | `"Reply to"` |
+| `replyUnavailable` | `"Original message unavailable"` |
+| `interactionReply` | `"Interaction response"` |
+| `interactionUsed` | `"used"` |
+| `ephemeralNotice` | `"Only you can see this"` |
+| `dismissMessage` | `"Dismiss message"` |
+| `download` | `"Download"` |
+| `downloadFile` | `"Download {name}"` |
+| `reactions` | `"Reactions"` |
+| `thread` | `"Thread"` |
+| `openThread` | `"Open thread"` |
+| `closeThread` | `"Close thread"` |
+| `threadMessageSingular` | `"{count} message"` |
+| `threadMessagePlural` | `"{count} messages"` |
+| `threadNoRecentMessages` | `"No recent messages in this thread."` |
+| `messages` | `"Messages"` |
+| `emptyChannel` | `"No messages yet."` |
+| `messagePlaceholder` | `"Message #{channel}"` |
+| `sendMessage` | `"Send message"` |
+| `spoiler` | `"Spoiler"` |
+| `showSpoiler` | `"Reveal spoiler"` |
+| `hideSpoiler` | `"Hide spoiler"` |
+| `mediaUnavailable` | `"Media unavailable"` |
+| `invalidTimestamp` | `"Invalid timestamp"` |
+
+All label fields have type string; optional keys in the declaration remain optional in UILabels.
+
+### Example
+
+<CodeBlock language="ts">{"import type { UILabels } from \"@arcscord/discord-ui\";\n\nconst configuration: UILabels = { selectPlaceholder: \"Make a selection\", channelSelectPlaceholder: \"Select a channel\", removeSelection: \"Remove {name}\", selectNoResults: \"No results found\", selectNoOptions: \"No options available\", userOnline: \"online\", userIdle: \"idle\", userDnd: \"dnd\", userOffline: \"offline\", commandOptions: \"Options\", commandReady: \"Ready\", removeArgument: \"Remove argument\", slashCommands: \"Slash commands\", cancelCommand: \"Cancel command\", chooseValue: \"Choose a value\", edited: \"(edited)\", reply: \"Reply to\", replyUnavailable: \"Original message unavailable\", interactionReply: \"Interaction response\", interactionUsed: \"used\", ephemeralNotice: \"Only you can see this\", dismissMessage: \"Dismiss message\", download: \"Download\", downloadFile: \"Download {name}\", reactions: \"Reactions\", thread: \"Thread\", openThread: \"Open thread\", closeThread: \"Close thread\", threadMessageSingular: \"{count} message\", threadMessagePlural: \"{count} messages\", threadNoRecentMessages: \"No recent messages in this thread.\", messages: \"Messages\", emptyChannel: \"No messages yet.\", messagePlaceholder: \"Message #{channel}\", sendMessage: \"Send message\", spoiler: \"Spoiler\", showSpoiler: \"Reveal spoiler\", hideSpoiler: \"Hide spoiler\", mediaUnavailable: \"Media unavailable\", invalidTimestamp: \"Invalid timestamp\" };"}</CodeBlock>
+
+[Wrapper reference](#discordui) · [Localization guide](/docs/guides/localization)
+
+## Embed
+
+<CodeBlock language="ts">{"import { Embed } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders a supplied card with Markdown descriptions/values and optional images, fields, author and footer. No URL preview is fetched. Unsafe links lose their anchor; images obey the wrapper media policy.
+
+[Usage guide](/docs/guides/embeds) · [Props type](#embedprops)
+
+<CodeBlock language="ts">{"export function Embed({ embed, referenceTime }: EmbedProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `embed` | Yes | `EmbedView` | — | Resolved EmbedView, with no remote preview lookup. |
+| `referenceTime` | No | `string \| undefined` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+
+<ReferenceExample id="embed" />
+
+Related types: [EmbedView](/docs/api/models#embedview).
+
+## EmbedProps
+
+<CodeBlock language="ts">{"import type { EmbedProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders a supplied card with Markdown descriptions/values and optional images, fields, author and footer. No URL preview is fetched. Unsafe links lose their anchor; images obey the wrapper media policy.
+
+[Usage guide](/docs/guides/embeds) · [Component](#embed)
+
+<CodeBlock language="ts">{"export type EmbedProps = { embed: EmbedView; referenceTime?: string | undefined };"}</CodeBlock>
+
+Related types: [EmbedView](/docs/api/models#embedview).
+
+## Media
+
+<CodeBlock language="ts">{"import { Media } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders an allowed image source with dimensions and alternative text. Invalid/blocked/failed images have a translated unavailable state. Spoiled images are not mounted until reveal; remote-media policy is separate from outgoing-link policy.
+
+[Usage guide](/docs/guides/media) · [Props type](#mediaprops)
+
+<CodeBlock language="ts">{"export function Media({ media }: MediaProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `media` | Yes | `MediaView` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+
+<ReferenceExample id="media" />
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+## MediaProps
+
+<CodeBlock language="ts">{"import type { MediaProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders an allowed image source with dimensions and alternative text. Invalid/blocked/failed images have a translated unavailable state. Spoiled images are not mounted until reveal; remote-media policy is separate from outgoing-link policy.
+
+[Usage guide](/docs/guides/media) · [Component](#media)
+
+<CodeBlock language="ts">{"export type MediaProps = { media: MediaView };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+## MediaGallery
+
+<CodeBlock language="ts">{"import { MediaGallery } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Lays out supplied image models in array order; each item delegates to Media, including spoilers and failure states. It performs no fetching beyond accepted image sources.
+
+[Usage guide](/docs/guides/media) · [Props type](#mediagalleryprops)
+
+<CodeBlock language="ts">{"export function MediaGallery({ items }: MediaGalleryProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+
+<ReferenceExample id="media-gallery" />
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+## MediaGalleryProps
+
+<CodeBlock language="ts">{"import type { MediaGalleryProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Lays out supplied image models in array order; each item delegates to Media, including spoilers and failure states. It performs no fetching beyond accepted image sources.
+
+[Usage guide](/docs/guides/media) · [Component](#mediagallery)
+
+<CodeBlock language="ts">{"export type MediaGalleryProps = { items: readonly MediaView[] };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+## Message
+
+<CodeBlock language="ts">{"import { Message } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders a complete classic or Components V2 snapshot, with optional reply, edits, reactions, ephemeral notice and thread summary. Callbacks report intent; the host updates the model. Ephemeral is appearance, not authorization. Body Markdown/V2 and embeds use the wrapper reference time or message timestamp.
+
+[Usage guide](/docs/guides/messages) · [Props type](#messageprops)
+
+<CodeBlock language="ts">{"export function Message({ message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview, onButtonClick, onSelectChange, onPremiumClick }: MessageProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
+| `message` | Yes | `MessageView` | — | Complete display snapshot. Classic and V2 body families cannot be mixed. |
+| `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` | — | Values by select ID. Missing keys/undefined use local state; [] controls an empty selection. |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` | — | Called with messageId; host removes/hides the message and manages focus. |
+| `onThreadOpen` | No | `((id: string) => void) \| undefined` | — | Called with threadId; open/fetch/update controlled navigation in the host. |
+| `activeThreadId` | No | `string \| undefined` | — | Selected/active thread ID. ChannelView also accepts null to explicitly close; omission allows local navigation there. |
+| `showThreadPreview` | No | `boolean \| undefined` | `true` | Show the message's thread summary when supplied. |
+
+<ReferenceExample id="message" />
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview), [SelectValues](/docs/api/callbacks#selectvalues).
+
+## MessageProps
+
+<CodeBlock language="ts">{"import type { MessageProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders a complete classic or Components V2 snapshot, with optional reply, edits, reactions, ephemeral notice and thread summary. Callbacks report intent; the host updates the model. Ephemeral is appearance, not authorization. Body Markdown/V2 and embeds use the wrapper reference time or message timestamp.
+
+[Usage guide](/docs/guides/messages) · [Component](#message)
+
+<CodeBlock language="ts">{"export type MessageProps = ComponentHandlers & {\n  onReactionToggle?: ReactionToggleHandler | undefined;\n  message: MessageView;\n  selectValues?: SelectValues | undefined;\n  onEphemeralDismiss?: ((messageId: string) => void) | undefined;\n  onThreadOpen?: ((id: string) => void) | undefined;\n  activeThreadId?: string | undefined;\n  showThreadPreview?: boolean | undefined;\n};"}</CodeBlock>
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview), [SelectValues](/docs/api/callbacks#selectvalues).
+
+## MessageContent
+
+<CodeBlock language="ts">{"import { MessageContent } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a plain content string as escaped text. Choose Markdown when formatting and entity tokens should be interpreted.
+
+[Usage guide](/docs/guides/messages) · [Props type](#messagecontentprops)
+
+<CodeBlock language="ts">{"export function MessageContent({ content }: MessageContentProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+<ReferenceExample id="message-content" />
+
+## MessageContentProps
+
+<CodeBlock language="ts">{"import type { MessageContentProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a plain content string as escaped text. Choose Markdown when formatting and entity tokens should be interpreted.
+
+[Usage guide](/docs/guides/messages) · [Component](#messagecontent)
+
+<CodeBlock language="ts">{"export type MessageContentProps = { content: string };"}</CodeBlock>
+
+## MessageFrame
+
+<CodeBlock language="ts">{"import { MessageFrame } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Composes explicit avatar, reply, header, body and footer React slots. It supplies a default style scope when standalone; it does not normalize a MessageView or add send/interaction handlers.
+
+[Usage guide](/docs/guides/messages) · [Props type](#messageframeprops)
+
+<CodeBlock language="ts">{"export function MessageFrame({ avatar, reply, header, footer, children, ephemeral, hasThread }: MessageFrameProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `hasThread` | No | `boolean` | `false` | Enables the message-frame thread connector layout. |
+| `ephemeral` | No | `boolean` | `false` | Display-only visibility notice and appearance. Host enforces authorization. |
+| `reply` | No | `ReactNode` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+| `avatar` | No | `ReactNode` | — | React avatar slot. |
+| `header` | No | `ReactNode` | — | Custom React header slot; ChannelView otherwise renders ChannelHeader. |
+| `footer` | No | `ReactNode` | — | Resolved footer metadata or React footer slot as indicated by the type. |
+| `children` | Yes | `ReactNode` | — | Explicit React content/slots; not part of a serializable display snapshot. |
+
+<ReferenceExample id="message-frame" />
+
+## MessageFrameProps
+
+<CodeBlock language="ts">{"import type { MessageFrameProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Composes explicit avatar, reply, header, body and footer React slots. It supplies a default style scope when standalone; it does not normalize a MessageView or add send/interaction handlers.
+
+[Usage guide](/docs/guides/messages) · [Component](#messageframe)
+
+<CodeBlock language="ts">{"export type MessageFrameProps = {\n  hasThread?: boolean;\n  ephemeral?: boolean;\n  reply?: ReactNode;\n  avatar?: ReactNode;\n  header?: ReactNode;\n  footer?: ReactNode;\n  children: ReactNode;\n};"}</CodeBlock>
+
+## MessageHeader
+
+<CodeBlock language="ts">{"import { MessageHeader } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Combines Author and MessageTimestamp. The edited marker is a boolean display choice and needs no edit timestamp.
+
+[Usage guide](/docs/guides/messages) · [Props type](#messageheaderprops)
+
+<CodeBlock language="ts">{"export function MessageHeader({ author, timestamp, edited }: MessageHeaderProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+| `edited` | No | `boolean \| undefined` | `false` | Shows the translated edit marker when true; no edit timestamp is required. |
+
+<ReferenceExample id="message-header" />
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+## MessageHeaderProps
+
+<CodeBlock language="ts">{"import type { MessageHeaderProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Combines Author and MessageTimestamp. The edited marker is a boolean display choice and needs no edit timestamp.
+
+[Usage guide](/docs/guides/messages) · [Component](#messageheader)
+
+<CodeBlock language="ts">{"export type MessageHeaderProps = { author: MessageAuthor; timestamp: string; edited?: boolean | undefined };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+## MessageTimestamp
+
+<CodeBlock language="ts">{"import { MessageTimestamp } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Formats an explicit ISO instant with a time zone using the wrapper locale/timeZone. Invalid timestamps render the translated invalid label; no current clock is substituted.
+
+[Usage guide](/docs/guides/localization) · [Props type](#messagetimestampprops)
+
+<CodeBlock language="ts">{"export function MessageTimestamp({ timestamp }: MessageTimestampProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+
+<ReferenceExample id="message-timestamp" />
+
+## MessageTimestampProps
+
+<CodeBlock language="ts">{"import type { MessageTimestampProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Formats an explicit ISO instant with a time zone using the wrapper locale/timeZone. Invalid timestamps render the translated invalid label; no current clock is substituted.
+
+[Usage guide](/docs/guides/localization) · [Component](#messagetimestamp)
+
+<CodeBlock language="ts">{"export type MessageTimestampProps = { timestamp: string };"}</CodeBlock>
+
+## ReplyPreview
+
+<CodeBlock language="ts">{"import { ReplyPreview } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays the supplied original-message snapshot, unavailable-original state or interaction invocation. It does not fetch the original, render its attachments or open a thread.
+
+[Usage guide](/docs/guides/messages) · [Props type](#replypreviewprops)
+
+<CodeBlock language="ts">{"export function ReplyPreview({ reply }: ReplyPreviewProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `reply` | Yes | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+
+<ReferenceExample id="reply-preview" />
+
+Related types: [ReplyView](/docs/api/models#replyview).
+
+## ReplyPreviewProps
+
+<CodeBlock language="ts">{"import type { ReplyPreviewProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays the supplied original-message snapshot, unavailable-original state or interaction invocation. It does not fetch the original, render its attachments or open a thread.
+
+[Usage guide](/docs/guides/messages) · [Component](#replypreview)
+
+<CodeBlock language="ts">{"export type ReplyPreviewProps = { reply: ReplyView };"}</CodeBlock>
+
+Related types: [ReplyView](/docs/api/models#replyview).
+
+</div>

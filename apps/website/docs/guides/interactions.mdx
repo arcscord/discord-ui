@@ -1,0 +1,96 @@
+---
+title: Buttons and select menus
+description: Practical usage and behavior of buttons and select menus in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Interactions';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Interactions.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Buttons and select menus
+
+Buttons report intent and selects can manage local state or receive controlled
+values. A rendered control never persists a selection, performs a purchase or
+calls Discord on its own.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [Message](/docs/api/display-components#message).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Interactions.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Button variants
+
+Normal button models use `kind: "button"`, a string `id`, `label` and optional
+`style` (`primary`, `secondary`, `success` or `danger`). `disabled` prevents clicks;
+optional emoji is display metadata. A primitive `Button` receives `onClick()`;
+message-rendered buttons call `onButtonClick(id, context)`.
+
+A `link-button` uses `url` instead of a button callback. It navigates only for an
+allowed HTTP(S) URL; disabled or unsafe links are inert. A `premium-button` supplies
+`skuId` and a resolved `label`; it calls `onPremiumClick(skuId, context)`. Product
+lookup, billing and purchase confirmation belong to the application. The primitive
+`Button` also offers a premium visual style, without any purchase implementation.
+
+## Choose one of five menu models
+
+| `kind` | Supplied choices | Defaults | Working example |
+| --- | --- | --- | --- |
+| `string-select` | `options` with `value`, `label`, optional description/emoji | `option.default` | [String menu](/components?example=select-menu) |
+| `user-select` | `entities` with `entityType: "user"`, `id`, `displayName` | `defaultValues: [{ id, type: "user" }]` | [Resolved menus](/components?example=user-select) |
+| `role-select` | `entities` with `entityType: "role"`, `id`, `name`, optional color | `type: "role"` | [Resolved menus](/components?example=role-select) |
+| `mentionable-select` | User and role entities together | Matching user/role type | [Resolved menus](/components?example=mentionable-select) |
+| `channel-select` | Channel entities with `id`, `name`, `channelType` | `type: "channel"` | [Resolved menus](/components?example=channel-select) |
+
+Entity menus do not accept string `options`, descriptions or string-option default
+flags. They search the supplied entity names (and user usernames), with no remote
+lookup. `channelTypes` filters resolved channel entities. Keep selected entities
+in the available snapshot even when an external search returns different results.
+
+## Defaults, limits and controlled state
+
+Omitting standalone `values` enables local state initialized from defaults. Passing
+`[]` explicitly controls an empty selection. `Message`/`MessageComponents` use
+`selectValues[selectId]`; conversations use
+`selectValuesByMessage[messageId][selectId]`. Missing keys or `undefined` values
+permit local state. Controlled callbacks report proposals: keep your controlled
+value unchanged to reject one.
+
+Changing defaults on the same menu does not overwrite user state. A new menu ID
+or kind starts new local state. IDs can repeat across messages; use the message
+context to store each message's selections separately.
+
+Values unavailable in the resolved snapshot are excluded from display/callbacks
+and removed from local state. Controlled values remain owned by the application.
+Duplicates are removed and values are truncated to the effective maximum. The
+maximum defaults to 1 and is bounded to 1–25; the minimum defaults to 1 and is
+bounded to 0–maximum. Minimum selection affects user removal; it does not invent
+a missing default or validate a Discord payload. Use `minValues: 0` for clearing.
+
+## Keyboard and resolved avatars
+
+Arrow keys navigate choices; Enter chooses; Escape dismisses. Entity menus have
+a searchable input and selection chips. Disabled menus do not accept changes.
+Blocked/failed user avatars fall back to the first character. Localize menu and
+removal labels through `DiscordUI.labels`. See [Interaction state](../public-api.md)
+for complete callback argument context and conversation identity behavior.
+
+## A realistic example
+
+[Inspect the buttons and select menus example](/components?example=select-menu) or
+[edit the full catalogue module](/playground?example=select-menu). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="select-menu" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

@@ -1,0 +1,32 @@
+---
+title: Optional syntax highlighting
+description: Public signatures, fields, examples and behavior for optional syntax highlighting.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import HighlightExample from '@site/src/components/docs/HighlightModule';
+import highlightSource from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/HighlightModule.tsx';
+
+<div className="api-reference-page">
+
+# Optional syntax highlighting
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## renderHighlightedCode
+
+<CodeBlock language="ts">{"import { renderHighlightedCode } from \"@arcscord/discord-ui/highlight\";"}</CodeBlock>
+
+Opt-in renderer returning a code React element from (content, language). Language is lowercased. Registered languages are javascript, typescript, json, css, bash and python; unsupported languages return escaped plain code. It does not sanitize arbitrary custom renderer output.
+
+<CodeBlock language="ts">{"export function renderHighlightedCode(content: string, language: string): ReactNode;"}</CodeBlock>
+
+<HighlightExample />
+
+<CodeBlock language="tsx" title="HighlightModule.tsx">{highlightSource}</CodeBlock>
+
+Import the compiled stylesheet once. This entry is opt-in and is not supported as a runtime playground import. The main component entry does not enable it. [Markdown guide](/docs/guides/markdown) · [Playground behavior](/docs/playground)
+
+</div>

@@ -1,0 +1,72 @@
+---
+title: Embeds
+description: Practical usage and behavior of embeds in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Embeds';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Embeds.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Embeds
+
+Use `Embed` for a standalone card, or supply `embeds` on a classic `MessageView`.
+All metadata is supplied by the application; the component does not fetch URL previews.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [Embed](/docs/api/display-components#embed).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Embeds.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Build the card
+
+Only `id` is required by `EmbedView`. Supply the fields that belong in the preview:
+`title`, `url`, `description`, `color`, `author`, `thumbnail`, `image`, `fields`,
+`footer` and `timestamp`. Each field needs its own string `id`, `name` and `value`;
+`inline: true` requests the compact field layout.
+
+Descriptions and field values use the Markdown renderer. Title, author name,
+field names and footer text are displayed as text. The title becomes a link only
+when `url` is allowed; author links use the same HTTP(S) policy. Colors must be
+six-digit hex values such as `#5865f2`; invalid accent colors fall back to styling.
+
+## Images and narrow layouts
+
+`thumbnail` and `image` use `MediaView` with `id`, `url` and meaningful `alt` text.
+Dimensions help reserve image space. Author/footer icons and card images follow
+`allowRemoteMedia`, with image loading and blocked-media fallbacks described in
+[Media, galleries and files](./media.mdx).
+
+Inline fields and long values must fit the constrained card width. Inspect the
+realistic example at a narrow preview width, especially with translated field
+names and long URLs. Inline fields are a layout request, not a fixed column size.
+
+## Message bodies and time
+
+A Components V2 message cannot receive top-level `embeds`. Build a V2 layout with
+its supported text, section, media and file nodes instead, or use a classic body.
+
+An embed timestamp uses the explicit timestamp formatter. Relative tokens in its
+Markdown use the `referenceTime` passed to `Embed`, otherwise the wrapper's value
+and standalone Markdown fallback apply. Embeds rendered through `Message` receive
+the message's resolved reference time.
+
+## A realistic example
+
+[Inspect the embeds example](/components?example=embed) or
+[edit the full catalogue module](/playground?example=embed). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="embed" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

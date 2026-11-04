@@ -1,0 +1,1705 @@
+---
+title: Serializable models
+description: Public signatures, fields, examples and behavior for serializable models.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+
+<div className="api-reference-page">
+
+# Serializable models
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## ChannelViewModel
+
+<CodeBlock language="ts">{"import type { ChannelViewModel } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Ordered loaded message/thread snapshot. No fetch cursor or transport state. Linked threads require a matching parentMessageId and starter.thread.id.
+
+<CodeBlock language="ts">{"export type ChannelViewModel = {\n  id: string;\n  name: string;\n  topic?: string;\n  messages: readonly MessageView[];\n  threads?: readonly ThreadView[];\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `topic` | No | `string` | — | Optional channel topic text. |
+| `messages` | Yes | `readonly MessageView[]` | — | Ordered snapshots; array order is render order. Host owns loading and updates. |
+| `threads` | No | `readonly ThreadView[]` | — | Loaded threads linked to starter messages; not an instruction to fetch. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelViewModel = { id: \"support\", name: \"support\", messages: [message] };"}</CodeBlock>
+
+Related types: [MessageView](/docs/api/models#messageview), [ThreadView](/docs/api/models#threadview).
+
+[Usage guide and runnable example](/docs/guides/channels)
+
+## ActionRowView
+
+<CodeBlock language="ts">{"import type { ActionRowView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Exactly one branch: buttons array or one select. Supplying both is forbidden by the union.
+
+<CodeBlock language="ts">{"export type ActionRowView = { id: string; kind: \"action-row\" } & (\n  | { buttons: readonly MessageButtonView[]; select?: never }\n  | { select: SelectMenuView; buttons?: never }\n);"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"action-row"` | — | Discriminator selecting this model variant. |
+| `buttons` | Yes | `readonly MessageButtonView[]` | — | Ordered message buttons; mutually exclusive with select in ActionRowView. |
+| `select` | Forbidden | `never` | — | One select menu; mutually exclusive with buttons in ActionRowView. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"action-row"` | — | Discriminator selecting this model variant. |
+| `select` | Yes | `SelectMenuView` | — | One select menu; mutually exclusive with buttons in ActionRowView. |
+| `buttons` | Forbidden | `never` | — | Ordered message buttons; mutually exclusive with select in ActionRowView. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ActionRowView = { id: \"actions\", kind: \"action-row\", buttons: [{ id: \"approve\", kind: \"button\", label: \"Approve\" }] };\nconst example2: API.ActionRowView = { id: \"choices\", kind: \"action-row\", select: { id: \"topics\", kind: \"string-select\", options: [{ value: \"news\", label: \"News\" }] } };"}</CodeBlock>
+
+Related types: [MessageButtonView](/docs/api/models#messagebuttonview), [SelectMenuView](/docs/api/models#selectmenuview).
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## ButtonView
+
+<CodeBlock language="ts">{"import type { ButtonView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Normal action button. Allowed styles exclude premium, which is a separate model variant. Disabled prevents activation; callbacks are props rather than model fields.
+
+<CodeBlock language="ts">{"export type ButtonView = { id: string; kind: \"button\"; label: string; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\"; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"button"` | — | Discriminator selecting this model variant. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `style` | No | `"primary" \| "secondary" \| "success" \| "danger"` | — | Button visual variant; premium is appearance, not a billing integration. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ButtonView = { id: \"approve\", kind: \"button\", label: \"Approve\", style: \"success\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## ChannelSelectMenuView
+
+<CodeBlock language="ts">{"import type { ChannelSelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Uses resolved channels and channel defaults. channelTypes filters their numeric types; excluded IDs are unavailable selections.
+
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type ChannelSelectMenuView = SelectMenuBase & {\n  kind: \"channel-select\";\n  entities: readonly ChannelSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"channel\">[];\n  channelTypes?: readonly SelectChannelType[];\n  options?: never;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"channel-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly ChannelSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"channel">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `channelTypes` | No | `readonly ChannelType[]` | — | Filters supplied channel entities by their numeric Discord type. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelSelectMenuView = { id: \"channels\", kind: \"channel-select\", channelTypes: [0], entities: [{ id: \"support\", entityType: \"channel\", name: \"support\", channelType: 0 }] };"}</CodeBlock>
+
+Related types: [ChannelSelectOptionView](/docs/api/models#channelselectoptionview), [SelectDefaultValue](/docs/api/models#selectdefaultvalue), [SelectChannelType](/docs/api/models#selectchanneltype).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## ChannelSelectOptionView
+
+<CodeBlock language="ts">{"import type { ChannelSelectOptionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved channel identity/type plus entityType=channel. No string-option or user/role-only metadata.
+
+<CodeBlock language="ts">{"type NoStringFields = { description?: never; emoji?: never; default?: never };\n\ntype NoUserFields = { avatarUrl?: never; username?: never; status?: never; bot?: never; verified?: never };\n\nexport type ChannelSelectOptionView = ChannelEntityView & NoStringFields & NoUserFields & { entityType: \"channel\"; color?: never };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `channelType` | Yes | `ChannelType` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | No | `boolean` | — | Supplied lock indicator. |
+| `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
+| `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `avatarUrl` | Forbidden | `never` | — | Optional image URL checked by the shared media policy. |
+| `username` | Forbidden | `never` | — | Optional user search/display metadata. |
+| `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
+| `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
+| `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `entityType` | Yes | `"channel"` | — | Resolved entity discriminator; must match the menu family. |
+| `color` | Forbidden | `never` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelSelectOptionView = { id: \"support\", entityType: \"channel\", name: \"support\", channelType: 0 };"}</CodeBlock>
+
+Related types: [ChannelEntityView](/docs/api/models#channelentityview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## ComponentsV2Body
+
+<CodeBlock language="ts">{"import type { ComponentsV2Body } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+V2 body containing a complete component tree. Classic extra fields belong to the other content family and are forbidden beside this body in MessageContentView.
+
+<CodeBlock language="ts">{"export type ComponentsV2Body = { kind: \"components-v2\"; components: readonly MessageComponent[] };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"components-v2"` | — | Discriminator selecting this model variant. |
+| `components` | Yes | `readonly MessageComponent[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ComponentsV2Body = { kind: \"components-v2\", components: [{ id: \"text\", kind: \"text-display\", content: \"Hello\" }] };"}</CodeBlock>
+
+Related types: [MessageComponent](/docs/api/models#messagecomponent).
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## ContainerChild
+
+<CodeBlock language="ts">{"import type { ContainerChild } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Union of supported non-container nodes. Nested containers are deliberately excluded.
+
+<CodeBlock language="ts">{"export type ContainerChild = TextDisplayView | SectionView | GalleryView | SeparatorView | ActionRowView | FileView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"text-display"` | — | Discriminator selecting this model variant. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"section"` | — | Discriminator selecting this model variant. |
+| `components` | Yes | `readonly TextDisplayView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `accessory` | Yes | `MessageButtonView \| ThumbnailView` | — | Required section accessory: React node in props; thumbnail/message button in the display model. |
+
+#### Variant 3
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"media-gallery"` | — | Discriminator selecting this model variant. |
+| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+
+#### Variant 4
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"separator"` | — | Discriminator selecting this model variant. |
+| `divider` | No | `boolean` | — | Whether a visible, semantic dividing line is rendered. |
+| `spacing` | No | `"small" \| "large"` | — | Small or large spacing around a separator. |
+
+#### Variant 5
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"action-row"` | — | Discriminator selecting this model variant. |
+| `buttons` | Yes | `readonly MessageButtonView[]` | — | Ordered message buttons; mutually exclusive with select in ActionRowView. |
+| `select` | Forbidden | `never` | — | One select menu; mutually exclusive with buttons in ActionRowView. |
+
+#### Variant 6
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"action-row"` | — | Discriminator selecting this model variant. |
+| `select` | Yes | `SelectMenuView` | — | One select menu; mutually exclusive with buttons in ActionRowView. |
+| `buttons` | Forbidden | `never` | — | Ordered message buttons; mutually exclusive with select in ActionRowView. |
+
+#### Variant 7
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"file"` | — | Discriminator selecting this model variant. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `size` | No | `string` | — | Already formatted file-size label, not a byte count. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ContainerChild = { id: \"text\", kind: \"text-display\", content: \"Hello\" };"}</CodeBlock>
+
+Related types: [TextDisplayView](/docs/api/models#textdisplayview), [SectionView](/docs/api/models#sectionview), [GalleryView](/docs/api/models#galleryview), [SeparatorView](/docs/api/models#separatorview), [ActionRowView](/docs/api/models#actionrowview), [FileView](/docs/api/models#fileview).
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## ContainerView
+
+<CodeBlock language="ts">{"import type { ContainerView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Contains non-container children, optional six-digit hex accent and local spoiler. Nested containers are not accepted by this model.
+
+<CodeBlock language="ts">{"export type ContainerView = { id: string; kind: \"container\"; accentColor?: string; spoiler?: boolean; components: readonly ContainerChild[] };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"container"` | — | Discriminator selecting this model variant. |
+| `accentColor` | No | `string` | — | Optional six-digit hex accent; invalid values use normal styling. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `components` | Yes | `readonly ContainerChild[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ContainerView = { id: \"card\", kind: \"container\", accentColor: \"#5865f2\", components: [{ id: \"text\", kind: \"text-display\", content: \"Hello\" }] };"}</CodeBlock>
+
+Related types: [ContainerChild](/docs/api/models#containerchild).
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## FileView
+
+<CodeBlock language="ts">{"import type { FileView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved file metadata, with already-formatted size. HTTP(S) links only; spoofed MIME/remote contents are not inspected. Spoilers hide mounting, not access rights.
+
+<CodeBlock language="ts">{"export type FileView = { id: string; kind: \"file\"; name: string; url: string; size?: string; spoiler?: boolean };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"file"` | — | Discriminator selecting this model variant. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `size` | No | `string` | — | Already formatted file-size label, not a byte count. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.FileView = { id: \"report\", kind: \"file\", name: \"report.pdf\", url: \"https://example.com/report.pdf\", size: \"24 KB\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/media)
+
+## GalleryView
+
+<CodeBlock language="ts">{"import type { GalleryView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Ordered media items in a V2 tree; each follows MediaView behavior.
+
+<CodeBlock language="ts">{"export type GalleryView = { id: string; kind: \"media-gallery\"; items: readonly MediaView[] };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"media-gallery"` | — | Discriminator selecting this model variant. |
+| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.GalleryView = { id: \"gallery\", kind: \"media-gallery\", items: [{ id: \"image\", url: \"/examples/landscape.svg\", alt: \"Landscape\" }] };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+[Usage guide and runnable example](/docs/guides/media)
+
+## LinkButtonView
+
+<CodeBlock language="ts">{"import type { LinkButtonView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+HTTP(S) navigation button, without action callback. Invalid/disabled URLs are inert.
+
+<CodeBlock language="ts">{"export type LinkButtonView = { id: string; kind: \"link-button\"; label: string; url: string; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"link-button"` | — | Discriminator selecting this model variant. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.LinkButtonView = { id: \"docs\", kind: \"link-button\", label: \"Documentation\", url: \"https://ui.arcscord.dev\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## MentionableSelectMenuView
+
+<CodeBlock language="ts">{"import type { MentionableSelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Combines resolved users and roles with corresponding defaults; channel entities and string options are forbidden.
+
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type MentionableSelectMenuView = SelectMenuBase & {\n  kind: \"mentionable-select\";\n  entities: readonly (UserSelectOptionView | RoleSelectOptionView)[];\n  defaultValues?: readonly SelectDefaultValue<\"user\" | \"role\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"mentionable-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly (UserSelectOptionView \| RoleSelectOptionView)[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"user" \| "role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MentionableSelectMenuView = { id: \"people\", kind: \"mentionable-select\", entities: [{ id: \"sam\", entityType: \"user\", displayName: \"Sam\" }, { id: \"mods\", entityType: \"role\", name: \"Moderators\" }] };"}</CodeBlock>
+
+Related types: [UserSelectOptionView](/docs/api/models#userselectoptionview), [RoleSelectOptionView](/docs/api/models#roleselectoptionview), [SelectDefaultValue](/docs/api/models#selectdefaultvalue).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## MessageButtonView
+
+<CodeBlock language="ts">{"import type { MessageButtonView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Discriminated normal, link and premium button union. Normal buttons report an ID, links navigate and premium buttons report a SKU.
+
+<CodeBlock language="ts">{"export type MessageButtonView = LinkButtonView | ButtonView | PremiumButtonView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"link-button"` | — | Discriminator selecting this model variant. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"button"` | — | Discriminator selecting this model variant. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `style` | No | `"primary" \| "secondary" \| "success" \| "danger"` | — | Button visual variant; premium is appearance, not a billing integration. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+
+#### Variant 3
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"premium-button"` | — | Discriminator selecting this model variant. |
+| `skuId` | Yes | `string` | — | Premium product identifier; host supplies details and handles purchase intent. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageButtonView = { id: \"approve\", kind: \"button\", label: \"Approve\" };\nconst example2: API.MessageButtonView = { id: \"docs\", kind: \"link-button\", label: \"Docs\", url: \"https://ui.arcscord.dev\" };\nconst example3: API.MessageButtonView = { id: \"upgrade\", kind: \"premium-button\", skuId: \"sku\", label: \"Upgrade\" };"}</CodeBlock>
+
+Related types: [LinkButtonView](/docs/api/models#linkbuttonview), [ButtonView](/docs/api/models#buttonview), [PremiumButtonView](/docs/api/models#premiumbuttonview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## MessageComponent
+
+<CodeBlock language="ts">{"import type { MessageComponent } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Top-level V2 component union, including a container or supported non-container node.
+
+<CodeBlock language="ts">{"export type MessageComponent = ContainerChild | ContainerView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"text-display"` | — | Discriminator selecting this model variant. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"section"` | — | Discriminator selecting this model variant. |
+| `components` | Yes | `readonly TextDisplayView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `accessory` | Yes | `MessageButtonView \| ThumbnailView` | — | Required section accessory: React node in props; thumbnail/message button in the display model. |
+
+#### Variant 3
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"media-gallery"` | — | Discriminator selecting this model variant. |
+| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+
+#### Variant 4
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"separator"` | — | Discriminator selecting this model variant. |
+| `divider` | No | `boolean` | — | Whether a visible, semantic dividing line is rendered. |
+| `spacing` | No | `"small" \| "large"` | — | Small or large spacing around a separator. |
+
+#### Variant 5
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"action-row"` | — | Discriminator selecting this model variant. |
+| `buttons` | Yes | `readonly MessageButtonView[]` | — | Ordered message buttons; mutually exclusive with select in ActionRowView. |
+| `select` | Forbidden | `never` | — | One select menu; mutually exclusive with buttons in ActionRowView. |
+
+#### Variant 6
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"action-row"` | — | Discriminator selecting this model variant. |
+| `select` | Yes | `SelectMenuView` | — | One select menu; mutually exclusive with buttons in ActionRowView. |
+| `buttons` | Forbidden | `never` | — | Ordered message buttons; mutually exclusive with select in ActionRowView. |
+
+#### Variant 7
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"file"` | — | Discriminator selecting this model variant. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `size` | No | `string` | — | Already formatted file-size label, not a byte count. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+
+#### Variant 8
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"container"` | — | Discriminator selecting this model variant. |
+| `accentColor` | No | `string` | — | Optional six-digit hex accent; invalid values use normal styling. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `components` | Yes | `readonly ContainerChild[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageComponent = { id: \"text\", kind: \"text-display\", content: \"Hello\" };\nconst example2: API.MessageComponent = { id: \"card\", kind: \"container\", components: [{ id: \"text\", kind: \"text-display\", content: \"Hello\" }] };"}</CodeBlock>
+
+Related types: [ContainerChild](/docs/api/models#containerchild), [ContainerView](/docs/api/models#containerview).
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## PremiumButtonView
+
+<CodeBlock language="ts">{"import type { PremiumButtonView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved premium label and product SKU. Premium callbacks report intent and perform no billing or product lookup.
+
+<CodeBlock language="ts">{"export type PremiumButtonView = { id: string; kind: \"premium-button\"; skuId: string; label: string; disabled?: boolean };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"premium-button"` | — | Discriminator selecting this model variant. |
+| `skuId` | Yes | `string` | — | Premium product identifier; host supplies details and handles purchase intent. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.PremiumButtonView = { id: \"upgrade\", kind: \"premium-button\", skuId: \"sku\", label: \"Upgrade\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## RoleSelectMenuView
+
+<CodeBlock language="ts">{"import type { RoleSelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Uses resolved role entities and role defaults. String options and channelTypes are forbidden.
+
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type RoleSelectMenuView = SelectMenuBase & {\n  kind: \"role-select\";\n  entities: readonly RoleSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"role\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"role-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly RoleSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.RoleSelectMenuView = { id: \"roles\", kind: \"role-select\", entities: [{ id: \"moderators\", entityType: \"role\", name: \"Moderators\" }] };"}</CodeBlock>
+
+Related types: [RoleSelectOptionView](/docs/api/models#roleselectoptionview), [SelectDefaultValue](/docs/api/models#selectdefaultvalue).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## RoleSelectOptionView
+
+<CodeBlock language="ts">{"import type { RoleSelectOptionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved role identity plus entityType=role, with optional color. No string-option or user/channel-only fields.
+
+<CodeBlock language="ts">{"type NoStringFields = { description?: never; emoji?: never; default?: never };\n\ntype NoUserFields = { avatarUrl?: never; username?: never; status?: never; bot?: never; verified?: never };\n\ntype NoChannelFields = { channelType?: never; locked?: never; rules?: never };\n\nexport type RoleSelectOptionView = RoleView & NoStringFields & NoUserFields & NoChannelFields & { entityType: \"role\" };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `avatarUrl` | Forbidden | `never` | — | Optional image URL checked by the shared media policy. |
+| `username` | Forbidden | `never` | — | Optional user search/display metadata. |
+| `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
+| `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
+| `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | Forbidden | `never` | — | Supplied lock indicator. |
+| `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
+| `entityType` | Yes | `"role"` | — | Resolved entity discriminator; must match the menu family. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.RoleSelectOptionView = { id: \"moderators\", entityType: \"role\", name: \"Moderators\" };"}</CodeBlock>
+
+Related types: [RoleView](/docs/api/models#roleview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SectionView
+
+<CodeBlock language="ts">{"import type { SectionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Only text-display children plus a required thumbnail or message-button accessory. Other layout nodes cannot be inserted in its components list.
+
+<CodeBlock language="ts">{"export type SectionView = { id: string; kind: \"section\"; components: readonly TextDisplayView[]; accessory: ThumbnailView | MessageButtonView };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"section"` | — | Discriminator selecting this model variant. |
+| `components` | Yes | `readonly TextDisplayView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `accessory` | Yes | `MessageButtonView \| ThumbnailView` | — | Required section accessory: React node in props; thumbnail/message button in the display model. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SectionView = { id: \"section\", kind: \"section\", components: [{ id: \"text\", kind: \"text-display\", content: \"Ready\" }], accessory: { id: \"approve\", kind: \"button\", label: \"Approve\" } };"}</CodeBlock>
+
+Related types: [TextDisplayView](/docs/api/models#textdisplayview), [ThumbnailView](/docs/api/models#thumbnailview), [MessageButtonView](/docs/api/models#messagebuttonview).
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## SelectChannelType
+
+<CodeBlock language="ts">{"import type { SelectChannelType } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Alias of the numeric ChannelType contract, used for channel-menu filtering.
+
+<CodeBlock language="ts">{"export type SelectChannelType = ChannelType;"}</CodeBlock>
+
+The declaration lists the permitted alternatives; no additional object fields apply.
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectChannelType = 0;\nconst example2: API.SelectChannelType = 15;"}</CodeBlock>
+
+Related types: [ChannelType](/docs/api/models#channeltype).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SelectDefaultValue
+
+<CodeBlock language="ts">{"import type { SelectDefaultValue } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Generic entity default constrained to user, role or channel. The discriminator must match the selected menu family. This example instantiates the user form.
+
+<CodeBlock language="ts">{"export type SelectDefaultValue<Type extends \"user\" | \"role\" | \"channel\"> = { id: string; type: Type };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `type` | Yes | `Type` | — | Entity default discriminator matching the associated ID. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectDefaultValue<\"user\"> = { id: \"sam\", type: \"user\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SelectMenuView
+
+<CodeBlock language="ts">{"import type { SelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; minValues defaults to 1 and is bounded to 0–maximum. Missing/duplicate/unavailable values are filtered. Defaults initialize local state, not later user state. The model is not a Discord payload validator.
+
+<CodeBlock language="ts">{"export type SelectMenuView = StringSelectMenuView | UserSelectMenuView | RoleSelectMenuView | MentionableSelectMenuView | ChannelSelectMenuView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"string-select"` | — | Discriminator selecting this model variant. |
+| `options` | Yes | `readonly StringSelectOptionView[]` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `entities` | Forbidden | `never` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | Forbidden | `never` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"user-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly UserSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"user">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+#### Variant 3
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"role-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly RoleSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+#### Variant 4
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"mentionable-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly (UserSelectOptionView \| RoleSelectOptionView)[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"user" \| "role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+#### Variant 5
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"channel-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly ChannelSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"channel">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `channelTypes` | No | `readonly ChannelType[]` | — | Filters supplied channel entities by their numeric Discord type. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectMenuView = { id: \"topics\", kind: \"string-select\", options: [{ value: \"news\", label: \"News\" }] };\nconst example2: API.SelectMenuView = { id: \"reviewers\", kind: \"user-select\", entities: [{ id: \"sam\", entityType: \"user\", displayName: \"Sam\" }] };\nconst example3: API.SelectMenuView = { id: \"roles\", kind: \"role-select\", entities: [{ id: \"mods\", entityType: \"role\", name: \"Moderators\" }] };\nconst example4: API.SelectMenuView = { id: \"people\", kind: \"mentionable-select\", entities: [{ id: \"sam\", entityType: \"user\", displayName: \"Sam\" }] };\nconst example5: API.SelectMenuView = { id: \"channels\", kind: \"channel-select\", entities: [{ id: \"support\", entityType: \"channel\", name: \"support\", channelType: 0 }] };"}</CodeBlock>
+
+Related types: [StringSelectMenuView](/docs/api/models#stringselectmenuview), [UserSelectMenuView](/docs/api/models#userselectmenuview), [RoleSelectMenuView](/docs/api/models#roleselectmenuview), [MentionableSelectMenuView](/docs/api/models#mentionableselectmenuview), [ChannelSelectMenuView](/docs/api/models#channelselectmenuview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SelectOptionView
+
+<CodeBlock language="ts">{"import type { SelectOptionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Union of fixed string options and resolved user/role/channel options. A specific menu narrows the permitted variant.
+
+<CodeBlock language="ts">{"export type SelectOptionView = StringSelectOptionView | UserSelectOptionView | RoleSelectOptionView | ChannelSelectOptionView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `channelType` | Yes | `ChannelType` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | No | `boolean` | — | Supplied lock indicator. |
+| `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
+| `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `avatarUrl` | Forbidden | `never` | — | Optional image URL checked by the shared media policy. |
+| `username` | Forbidden | `never` | — | Optional user search/display metadata. |
+| `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
+| `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
+| `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `entityType` | Yes | `"channel"` | — | Resolved entity discriminator; must match the menu family. |
+| `color` | Forbidden | `never` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `displayName` | Yes | `string` | — | Visible user/author name supplied by the host. |
+| `avatarUrl` | No | `string` | — | Optional image URL checked by the shared media policy. |
+| `bot` | No | `boolean` | — | Shows the supplied application/bot identity marker. |
+| `verified` | No | `boolean` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `username` | No | `string` | — | Optional user search/display metadata. |
+| `status` | No | `"online" \| "idle" \| "dnd" \| "offline"` | — | Supplied user presence indicator, not live presence. |
+| `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | Forbidden | `never` | — | Supplied lock indicator. |
+| `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
+| `entityType` | Yes | `"user"` | — | Resolved entity discriminator; must match the menu family. |
+| `color` | Forbidden | `never` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+#### Variant 3
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `avatarUrl` | Forbidden | `never` | — | Optional image URL checked by the shared media policy. |
+| `username` | Forbidden | `never` | — | Optional user search/display metadata. |
+| `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
+| `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
+| `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | Forbidden | `never` | — | Supplied lock indicator. |
+| `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
+| `entityType` | Yes | `"role"` | — | Resolved entity discriminator; must match the menu family. |
+
+#### Variant 4
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `value` | Yes | `string` | — | Controlled draft or option value, as indicated by the type. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `avatarUrl` | Forbidden | `never` | — | Optional image URL checked by the shared media policy. |
+| `username` | Forbidden | `never` | — | Optional user search/display metadata. |
+| `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
+| `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
+| `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | Forbidden | `never` | — | Supplied lock indicator. |
+| `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
+| `description` | No | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | No | `boolean` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `entityType` | Forbidden | `never` | — | Resolved entity discriminator; must match the menu family. |
+| `color` | Forbidden | `never` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectOptionView = { value: \"news\", label: \"News\" };\nconst example2: API.SelectOptionView = { id: \"sam\", entityType: \"user\", displayName: \"Sam\" };\nconst example3: API.SelectOptionView = { id: \"moderators\", entityType: \"role\", name: \"Moderators\" };\nconst example4: API.SelectOptionView = { id: \"support\", entityType: \"channel\", name: \"support\", channelType: 0 };"}</CodeBlock>
+
+Related types: [StringSelectOptionView](/docs/api/models#stringselectoptionview), [UserSelectOptionView](/docs/api/models#userselectoptionview), [RoleSelectOptionView](/docs/api/models#roleselectoptionview), [ChannelSelectOptionView](/docs/api/models#channelselectoptionview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SeparatorView
+
+<CodeBlock language="ts">{"import type { SeparatorView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Optional divider and small/large spacing; renderer defaults are divider=true, spacing=small.
+
+<CodeBlock language="ts">{"export type SeparatorView = { id: string; kind: \"separator\"; divider?: boolean; spacing?: \"small\" | \"large\" };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"separator"` | — | Discriminator selecting this model variant. |
+| `divider` | No | `boolean` | — | Whether a visible, semantic dividing line is rendered. |
+| `spacing` | No | `"small" \| "large"` | — | Small or large spacing around a separator. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SeparatorView = { id: \"separator\", kind: \"separator\", divider: true, spacing: \"small\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## StringSelectMenuView
+
+<CodeBlock language="ts">{"import type { StringSelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Uses fixed options and option.default; entities, defaultValues and channelTypes are forbidden.
+
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type StringSelectMenuView = SelectMenuBase & {\n  kind: \"string-select\";\n  options: readonly StringSelectOptionView[];\n  entities?: never;\n  defaultValues?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"string-select"` | — | Discriminator selecting this model variant. |
+| `options` | Yes | `readonly StringSelectOptionView[]` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `entities` | Forbidden | `never` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | Forbidden | `never` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.StringSelectMenuView = { id: \"topics\", kind: \"string-select\", minValues: 0, options: [{ value: \"news\", label: \"News\" }] };"}</CodeBlock>
+
+Related types: [StringSelectOptionView](/docs/api/models#stringselectoptionview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## StringSelectOptionView
+
+<CodeBlock language="ts">{"import type { StringSelectOptionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Fixed value/label with optional description, emoji and initial default flag. Entity-only fields are forbidden.
+
+<CodeBlock language="ts">{"type SelectValue = { value: string; label: string };\n\ntype NoUserFields = { avatarUrl?: never; username?: never; status?: never; bot?: never; verified?: never };\n\ntype NoChannelFields = { channelType?: never; locked?: never; rules?: never };\n\nexport type StringSelectOptionView = SelectValue & NoUserFields & NoChannelFields & {\n  description?: string;\n  emoji?: { name: string; image?: string };\n  default?: boolean;\n  entityType?: never;\n  color?: never;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `value` | Yes | `string` | — | Controlled draft or option value, as indicated by the type. |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `avatarUrl` | Forbidden | `never` | — | Optional image URL checked by the shared media policy. |
+| `username` | Forbidden | `never` | — | Optional user search/display metadata. |
+| `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
+| `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
+| `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | Forbidden | `never` | — | Supplied lock indicator. |
+| `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
+| `description` | No | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | No | `boolean` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `entityType` | Forbidden | `never` | — | Resolved entity discriminator; must match the menu family. |
+| `color` | Forbidden | `never` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.StringSelectOptionView = { value: \"news\", label: \"News\", default: true };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## TextDisplayView
+
+<CodeBlock language="ts">{"import type { TextDisplayView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Markdown text block in a Components V2 tree.
+
+<CodeBlock language="ts">{"export type TextDisplayView = { id: string; kind: \"text-display\"; content: string };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"text-display"` | — | Discriminator selecting this model variant. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.TextDisplayView = { id: \"text\", kind: \"text-display\", content: \"## Preview\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/components-v2)
+
+## ThumbnailView
+
+<CodeBlock language="ts">{"import type { ThumbnailView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Media model used as a section thumbnail accessory. Uses the same image URL/spoiler/failure policy.
+
+<CodeBlock language="ts">{"export type ThumbnailView = { id: string; kind: \"thumbnail\"; media: MediaView };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"thumbnail"` | — | Discriminator selecting this model variant. |
+| `media` | Yes | `MediaView` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ThumbnailView = { id: \"thumbnail\", kind: \"thumbnail\", media: { id: \"image\", url: \"/examples/landscape.svg\", alt: \"Landscape\" } };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+[Usage guide and runnable example](/docs/guides/media)
+
+## UserSelectMenuView
+
+<CodeBlock language="ts">{"import type { UserSelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Uses resolved user entities and user defaults. String options and channelTypes are forbidden. Include selected users in every supplied snapshot.
+
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type UserSelectMenuView = SelectMenuBase & {\n  kind: \"user-select\";\n  entities: readonly UserSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"user\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `placeholder` | No | `string` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+| `minValues` | No | `number` | — | Minimum user-removal limit, bounded to 0–effective maximum; does not invent missing selections. |
+| `maxValues` | No | `number` | — | Effective selection maximum, bounded to 1–25; default is 1. |
+| `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
+| `kind` | Yes | `"user-select"` | — | Discriminator selecting this model variant. |
+| `entities` | Yes | `readonly UserSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
+| `defaultValues` | No | `readonly SelectDefaultValue<"user">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
+| `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.UserSelectMenuView = { id: \"reviewers\", kind: \"user-select\", entities: [{ id: \"sam\", entityType: \"user\", displayName: \"Sam\" }], defaultValues: [{ id: \"sam\", type: \"user\" }] };"}</CodeBlock>
+
+Related types: [UserSelectOptionView](/docs/api/models#userselectoptionview), [SelectDefaultValue](/docs/api/models#selectdefaultvalue).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## UserSelectOptionView
+
+<CodeBlock language="ts">{"import type { UserSelectOptionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved user identity plus entityType=user. No string-option description/default/emoji or channel/role-only fields.
+
+<CodeBlock language="ts">{"type NoStringFields = { description?: never; emoji?: never; default?: never };\n\ntype NoChannelFields = { channelType?: never; locked?: never; rules?: never };\n\nexport type UserSelectOptionView = UserView & NoStringFields & NoChannelFields & { entityType: \"user\"; color?: never };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `displayName` | Yes | `string` | — | Visible user/author name supplied by the host. |
+| `avatarUrl` | No | `string` | — | Optional image URL checked by the shared media policy. |
+| `bot` | No | `boolean` | — | Shows the supplied application/bot identity marker. |
+| `verified` | No | `boolean` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `username` | No | `string` | — | Optional user search/display metadata. |
+| `status` | No | `"online" \| "idle" \| "dnd" \| "offline"` | — | Supplied user presence indicator, not live presence. |
+| `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
+| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | Forbidden | `never` | — | Supplied lock indicator. |
+| `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
+| `entityType` | Yes | `"user"` | — | Resolved entity discriminator; must match the menu family. |
+| `color` | Forbidden | `never` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.UserSelectOptionView = { id: \"sam\", entityType: \"user\", displayName: \"Sam\", status: \"online\" };"}</CodeBlock>
+
+Related types: [UserView](/docs/api/models#userview).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## EmbedView
+
+<CodeBlock language="ts">{"import type { EmbedView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved optional card fields. Only id is required. Description and field values use Markdown; title/author/footer/field names are text. Fields need stable IDs; inline is a responsive layout request. Six-digit hex accents only.
+
+<CodeBlock language="ts">{"export type EmbedView = {\n  id: string;\n  title?: string;\n  url?: string;\n  description?: string;\n  color?: string;\n  author?: { name: string; url?: string; iconUrl?: string };\n  thumbnail?: MediaView;\n  image?: MediaView;\n  fields?: readonly { id: string; name: string; value: string; inline?: boolean }[];\n  footer?: { text: string; iconUrl?: string };\n  timestamp?: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `title` | No | `string` | — | Visible embed title; links only when the URL is allowed. |
+| `url` | No | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `description` | No | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+| `author` | No | `{ name: string; url?: string; iconUrl?: string; }` | — | Resolved author display metadata; not a fetch instruction. |
+| `thumbnail` | No | `MediaView` | — | Optional resolved thumbnail image. |
+| `image` | No | `MediaView` | — | Resolved image model/URL as specified by the type; shared media policy applies. |
+| `fields` | No | `readonly { id: string; name: string; value: string; inline?: boolean; }[]` | — | Ordered embed fields with stable IDs, name, Markdown value and optional inline layout. |
+| `footer` | No | `{ text: string; iconUrl?: string; }` | — | Resolved footer metadata or React footer slot as indicated by the type. |
+| `timestamp` | No | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.EmbedView = { id: \"card\", title: \"Preview\", description: \"**Ready**\", fields: [{ id: \"status\", name: \"Status\", value: \"Ready\", inline: true }] };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+[Usage guide and runnable example](/docs/guides/embeds)
+
+## EntityView
+
+<CodeBlock language="ts">{"import type { EntityView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved mention name and optional six-digit hex display color; no entity ID because the lookup key supplies it.
+
+<CodeBlock language="ts">{"export type EntityView = { name: string; color?: string };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.EntityView = { name: \"Sam\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MarkdownMessageBody
+
+<CodeBlock language="ts">{"import type { MarkdownMessageBody } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Discord-oriented Markdown source. Entity maps and timestamp options come from the display wrapper.
+
+<CodeBlock language="ts">{"export type MarkdownMessageBody = { kind: \"markdown\"; content: string };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"markdown"` | — | Discriminator selecting this model variant. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MarkdownMessageBody = { kind: \"markdown\", content: \"**Hello**\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MediaView
+
+<CodeBlock language="ts">{"import type { MediaView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Image display data. Spoilers defer mounting until reveal, dimensions reserve space, and failed/blocked sources show a translated unavailable state. Copy the example landscape asset or replace its path.
+
+<CodeBlock language="ts">{"export type MediaView = {\n  id: string;\n  url: string;\n  alt: string;\n  spoiler?: boolean;\n  width?: number;\n  height?: number;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `alt` | Yes | `string` | — | Meaningful image alternative describing the visual content. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `width` | No | `number` | — | Optional intrinsic image width. |
+| `height` | No | `number` | — | Channel viewport height (CSS height); or image intrinsic height where specified. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MediaView = { id: \"image\", url: \"/examples/landscape.svg\", alt: \"Mountain landscape\", width: 600, height: 320 };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/media)
+
+## MessageEntities
+
+<CodeBlock language="ts">{"import type { MessageEntities } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Lookup maps resolve parsed tokens; the map key is the string ID and the value holds display metadata. Full Discord snowflake IDs are needed inside parsed mention syntax. These maps differ from select entities, which include their own id/entityType.
+
+<CodeBlock language="ts">{"export type MessageEntities = {\n  users?: Record<string, EntityView>;\n  channels?: Record<string, EntityView>;\n  roles?: Record<string, Omit<RoleView, \"id\">>;\n  emojis?: Record<string, { name: string; image: string }>;\n  commands?: Record<string, EntityView>;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `users` | No | `Record<string, EntityView>` | — | User mention lookup map keyed by string ID. |
+| `channels` | No | `Record<string, EntityView>` | — | Channel mention lookup map keyed by string ID. |
+| `roles` | No | `Record<string, Omit<RoleView, "id">>` | — | Role mention lookup map keyed by string ID. |
+| `emojis` | No | `Record<string, { name: string; image: string; }>` | — | Custom emoji lookup map keyed by string ID, with resolved name/image. |
+| `commands` | No | `Record<string, EntityView>` | — | Supplied local command catalogue; no registration/Discord discovery. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageEntities = { users: { \"123456789012345678\": { name: \"Sam\" } }, roles: { moderators: { name: \"Moderators\", color: \"#5865f2\" } } };"}</CodeBlock>
+
+Related types: [EntityView](/docs/api/models#entityview), [RoleView](/docs/api/models#roleview).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## ChannelEntityView
+
+<CodeBlock language="ts">{"import type { ChannelEntityView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved channel identity/type, with optional rules and lock indicators. Used by channel-select options after adding entityType=channel.
+
+<CodeBlock language="ts">{"export type ChannelEntityView = Pick<ChannelViewModel, \"id\" | \"name\"> & {\n  channelType: ChannelType;\n  locked?: boolean;\n  rules?: boolean;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `channelType` | Yes | `ChannelType` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `locked` | No | `boolean` | — | Supplied lock indicator. |
+| `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelEntityView = { id: \"support\", name: \"support\", channelType: 0 };"}</CodeBlock>
+
+Related types: [ChannelViewModel](/docs/api/models#channelviewmodel), [ChannelType](/docs/api/models#channeltype).
+
+[Usage guide and runnable example](/docs/guides/channels)
+
+## ChannelType
+
+<CodeBlock language="ts">{"import type { ChannelType } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Accepted numeric channel type IDs for display/icons/filtering. The type does not fetch a channel or validate server permissions.
+
+<CodeBlock language="ts">{"export type ChannelType = 0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16;"}</CodeBlock>
+
+The declaration lists the permitted alternatives; no additional object fields apply.
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelType = 0;\nconst example2: API.ChannelType = 15;"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/channels)
+
+## RoleView
+
+<CodeBlock language="ts">{"import type { RoleView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved role identity/name/color, reusable in display contexts. A select option adds entityType=role.
+
+<CodeBlock language="ts">{"export type RoleView = EntityView & { id: string };"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.RoleView = { id: \"moderators\", name: \"Moderators\", color: \"#5865f2\" };"}</CodeBlock>
+
+Related types: [EntityView](/docs/api/models#entityview).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## UserView
+
+<CodeBlock language="ts">{"import type { UserView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved identity, avatar/application markers and optional username/presence. Presence is supplied, not live. User displayName differs from EntityView.name.
+
+<CodeBlock language="ts">{"export type UserView = Pick<MessageAuthor, \"id\" | \"displayName\" | \"avatarUrl\" | \"bot\" | \"verified\"> & {\n  username?: string;\n  status?: \"online\" | \"idle\" | \"dnd\" | \"offline\";\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `displayName` | Yes | `string` | — | Visible user/author name supplied by the host. |
+| `avatarUrl` | No | `string` | — | Optional image URL checked by the shared media policy. |
+| `bot` | No | `boolean` | — | Shows the supplied application/bot identity marker. |
+| `verified` | No | `boolean` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `username` | No | `string` | — | Optional user search/display metadata. |
+| `status` | No | `"online" \| "idle" \| "dnd" \| "offline"` | — | Supplied user presence indicator, not live presence. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.UserView = { id: \"sam\", displayName: \"Sam\", status: \"online\" };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## AvatarFallback
+
+<CodeBlock language="ts">{"import type { AvatarFallback } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Colors require six-digit hex values. The first grapheme of letter or the author's display name is used; blank names fall back to a question mark. Missing colors are deterministic from author identity.
+
+<CodeBlock language="ts">{"export type AvatarFallback = {\n  background?: string;\n  letter?: string;\n  color?: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `background` | No | `string` | — | Six-digit hex background override for the generated avatar. |
+| `letter` | No | `string` | — | Initial text override; first grapheme is used. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.AvatarFallback = { letter: \"S\", background: \"#5865f2\", color: \"#ffffff\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## InteractionReplyView
+
+<CodeBlock language="ts">{"import type { InteractionReplyView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Supplies the invoking user and command name above a response. The name has no leading slash and may include subcommands.
+
+<CodeBlock language="ts">{"export type InteractionReplyView = {\n  kind: \"interaction\";\n  author: MessageAuthor;\n  /** Command name without the leading slash; may include a subcommand. */\n  commandName: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"interaction"` | — | Discriminator selecting this model variant. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `commandName` | Yes | `string` | — | Invoked command name without the leading slash. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.InteractionReplyView = { kind: \"interaction\", author, commandName: \"welcome preview\" };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MessageAuthor
+
+<CodeBlock language="ts">{"import type { MessageAuthor } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Resolved author metadata, including optional avatar fallback and application/verification markers. IDs stay strings and the host supplies display names.
+
+<CodeBlock language="ts">{"export type MessageAuthor = {\n  id: string;\n  displayName: string;\n  avatarUrl?: string;\n  avatarFallback?: AvatarFallback;\n  bot?: boolean;\n  verified?: boolean;\n  color?: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `displayName` | Yes | `string` | — | Visible user/author name supplied by the host. |
+| `avatarUrl` | No | `string` | — | Optional image URL checked by the shared media policy. |
+| `avatarFallback` | No | `AvatarFallback` | — | Optional deterministic initial/background/foreground overrides; colors are six-digit hex. |
+| `bot` | No | `boolean` | — | Shows the supplied application/bot identity marker. |
+| `verified` | No | `boolean` | — | Shows supplied verification metadata; no verification lookup is performed. |
+| `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\", bot: false };"}</CodeBlock>
+
+Related types: [AvatarFallback](/docs/api/models#avatarfallback).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MessageContentView
+
+<CodeBlock language="ts">{"import type { MessageContentView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Classic text/Markdown permits top-level embeds, media, attachments and action rows. Components V2 forbids all four and contains its own body.components tree. Never mix both branches.
+
+<CodeBlock language="ts">{"export type MessageContentView = (\n  | { body: TextMessageBody | MarkdownMessageBody; media?: readonly MediaView[]; attachments?: readonly FileView[]; embeds?: readonly EmbedView[]; components?: readonly ActionRowView[] }\n  | { body: ComponentsV2Body; media?: never; attachments?: never; embeds?: never; components?: never }\n);"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
+| `media` | No | `readonly MediaView[]` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | No | `readonly FileView[]` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `embeds` | No | `readonly EmbedView[]` | — | Classic-message cards; forbidden on a Components V2 body. |
+| `components` | No | `readonly ActionRowView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
+| `media` | Forbidden | `never` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | Forbidden | `never` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `embeds` | Forbidden | `never` | — | Classic-message cards; forbidden on a Components V2 body. |
+| `components` | Forbidden | `never` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageContentView = { body: { kind: \"text\", content: \"Hello\" } };\nconst example2: API.MessageContentView = { body: { kind: \"components-v2\", components: [{ id: \"text\", kind: \"text-display\", content: \"Hello\" }] } };"}</CodeBlock>
+
+Related types: [TextMessageBody](/docs/api/models#textmessagebody), [MarkdownMessageBody](/docs/api/models#markdownmessagebody), [MediaView](/docs/api/models#mediaview), [FileView](/docs/api/models#fileview), [EmbedView](/docs/api/models#embedview), [ActionRowView](/docs/api/models#actionrowview), [ComponentsV2Body](/docs/api/models#componentsv2body).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MessageMetadata
+
+<CodeBlock language="ts">{"import type { MessageMetadata } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Shared serializable metadata. edited is boolean; ephemeral is a display hint and the host controls access. No implicit clock or edit timestamp is introduced.
+
+<CodeBlock language="ts">{"export type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+| `reactions` | No | `readonly ReactionView[]` | — | Supplied reaction snapshots; counts and current-viewer selection remain host-owned. |
+| `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+| `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
+| `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageMetadata = { id: \"message\", author, timestamp, edited: true };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor), [ReactionView](/docs/api/models#reactionview), [ReplyView](/docs/api/models#replyview).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MessageReplyView
+
+<CodeBlock language="ts">{"import type { MessageReplyView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+The resolved and unavailable-original branches are exclusive. unavailable=true forbids author/content. kind may be omitted or set to message; the preview does not fetch the original.
+
+<CodeBlock language="ts">{"export type MessageReplyView = { kind?: \"message\"; messageId: string } & (\n  | { unavailable: true; author?: never; content?: never }\n  | { unavailable?: false; author: MessageAuthor; content: string }\n);"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | No | `"message"` | — | Discriminator selecting this model variant. |
+| `messageId` | Yes | `string` | — | Originating message ID or original-message reference as indicated by the type. |
+| `unavailable` | Yes | `true` | — | true selects the unavailable-original variant; author/content must then be absent. |
+| `author` | Forbidden | `never` | — | Resolved author display metadata; not a fetch instruction. |
+| `content` | Forbidden | `never` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | No | `"message"` | — | Discriminator selecting this model variant. |
+| `messageId` | Yes | `string` | — | Originating message ID or original-message reference as indicated by the type. |
+| `unavailable` | No | `false` | — | true selects the unavailable-original variant; author/content must then be absent. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageReplyView = { messageId: \"original\", author, content: \"Ready?\" };\nconst example2: API.MessageReplyView = { messageId: \"original\", unavailable: true };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MessageView
+
+<CodeBlock language="ts">{"import type { MessageView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Metadata plus exactly one valid content family and an optional nonrecursive thread summary. A display snapshot is not a Discord send payload or runtime validator.
+
+<CodeBlock language="ts">{"export type MessageView = MessageMetadata & MessageContentView & { thread?: ThreadSummaryView };"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+| `reactions` | No | `readonly ReactionView[]` | — | Supplied reaction snapshots; counts and current-viewer selection remain host-owned. |
+| `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+| `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
+| `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
+| `media` | No | `readonly MediaView[]` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | No | `readonly FileView[]` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `embeds` | No | `readonly EmbedView[]` | — | Classic-message cards; forbidden on a Components V2 body. |
+| `components` | No | `readonly ActionRowView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `thread` | No | `ThreadSummaryView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+| `reactions` | No | `readonly ReactionView[]` | — | Supplied reaction snapshots; counts and current-viewer selection remain host-owned. |
+| `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+| `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
+| `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
+| `media` | Forbidden | `never` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | Forbidden | `never` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `embeds` | Forbidden | `never` | — | Classic-message cards; forbidden on a Components V2 body. |
+| `components` | Forbidden | `never` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `thread` | No | `ThreadSummaryView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"markdown\", content: \"**Hello**\" } };\nconst example2: API.MessageView = { id: \"v2\", author, timestamp, body: { kind: \"components-v2\", components: [{ id: \"text\", kind: \"text-display\", content: \"Hello\" }] } };"}</CodeBlock>
+
+Related types: [MessageMetadata](/docs/api/models#messagemetadata), [MessageContentView](/docs/api/models#messagecontentview), [ThreadSummaryView](/docs/api/models#threadsummaryview).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## ReplyView
+
+<CodeBlock language="ts">{"import type { ReplyView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Union of original-message and interaction-reply snapshots; neither represents a thread conversation.
+
+<CodeBlock language="ts">{"export type ReplyView = MessageReplyView | InteractionReplyView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | No | `"message"` | — | Discriminator selecting this model variant. |
+| `messageId` | Yes | `string` | — | Originating message ID or original-message reference as indicated by the type. |
+| `unavailable` | Yes | `true` | — | true selects the unavailable-original variant; author/content must then be absent. |
+| `author` | Forbidden | `never` | — | Resolved author display metadata; not a fetch instruction. |
+| `content` | Forbidden | `never` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | No | `"message"` | — | Discriminator selecting this model variant. |
+| `messageId` | Yes | `string` | — | Originating message ID or original-message reference as indicated by the type. |
+| `unavailable` | No | `false` | — | true selects the unavailable-original variant; author/content must then be absent. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+#### Variant 3
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"interaction"` | — | Discriminator selecting this model variant. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `commandName` | Yes | `string` | — | Invoked command name without the leading slash. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ReplyView = { messageId: \"original\", unavailable: true };\nconst example2: API.ReplyView = { kind: \"interaction\", author, commandName: \"welcome\" };"}</CodeBlock>
+
+Related types: [MessageReplyView](/docs/api/models#messagereplyview), [InteractionReplyView](/docs/api/models#interactionreplyview).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## TextMessageBody
+
+<CodeBlock language="ts">{"import type { TextMessageBody } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Escaped text content. Use MarkdownMessageBody to enable formatting and entity tokens.
+
+<CodeBlock language="ts">{"export type TextMessageBody = {\n  kind: \"text\";\n  content: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"text"` | — | Discriminator selecting this model variant. |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.TextMessageBody = { kind: \"text\", content: \"Hello\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## ReactionView
+
+<CodeBlock language="ts">{"import type { ReactionView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Count and current-viewer selection are host-owned. Only positive safe-integer counts render. Unicode/custom emoji follow the shared media policy.
+
+<CodeBlock language="ts">{"export type ReactionView = {\n  id: string;\n  emoji: { name: string; image?: string };\n  count: number;\n  me?: boolean;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `emoji` | Yes | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `count` | Yes | `number` | — | Positive safe-integer reaction count; zero/negative/fractional counts are omitted. |
+| `me` | No | `boolean` | — | Whether this viewer has selected the reaction; no session inference. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ReactionView = { id: \"thanks\", emoji: { name: \"👍\" }, count: 3, me: true };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/reactions)
+
+## SlashCommand
+
+<CodeBlock language="ts">{"import type { SlashCommand } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Supplied local command definition, not registration or a Discord interaction payload. Name omits the slash and can include subcommands.
+
+<CodeBlock language="ts">{"export type SlashCommand = {\n  name: string;\n  description: string;\n  application?: string;\n  arguments?: readonly SlashCommandArgument[];\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `description` | Yes | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `application` | No | `string` | — | Resolved application label displayed in command suggestions. |
+| `arguments` | No | `readonly SlashCommandArgument[]` | — | Command argument definitions or invocation string-value record as specified by the type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SlashCommand = { name: \"welcome\", description: \"Prepare a preview\", arguments: [{ name: \"audience\", description: \"Who is it for?\", required: true }] };"}</CodeBlock>
+
+Related types: [SlashCommandArgument](/docs/api/models#slashcommandargument).
+
+[Usage guide and runnable example](/docs/guides/composer)
+
+## SlashCommandArgument
+
+<CodeBlock language="ts">{"import type { SlashCommandArgument } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Omit choices for free text; fixed choices use visible name and submitted value. Required arguments must be nonblank before local invocation.
+
+<CodeBlock language="ts">{"export type SlashCommandArgument = {\n  name: string;\n  description: string;\n  required?: boolean;\n  /** Omit choices to accept a free text value. */\n  choices?: readonly { name: string; value: string }[];\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `description` | Yes | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
+| `required` | No | `boolean` | — | Whether an argument must contain a nonblank value before local invocation. |
+| `choices` | No | `readonly { name: string; value: string; }[]` | — | Optional fixed name/value choices; omit for free text. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SlashCommandArgument = { name: \"audience\", description: \"Who is it for?\", choices: [{ name: \"Members\", value: \"members\" }] };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/composer)
+
+## SlashCommandInvocation
+
+<CodeBlock language="ts">{"import type { SlashCommandInvocation } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Local callback data: the selected full command and nonblank string arguments keyed by argument name. Host owns transport and response generation.
+
+<CodeBlock language="ts">{"export type SlashCommandInvocation = {\n  command: SlashCommand;\n  arguments: Record<string, string>;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `command` | Yes | `SlashCommand` | — | Selected supplied command definition. |
+| `arguments` | Yes | `Record<string, string>` | — | Command argument definitions or invocation string-value record as specified by the type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SlashCommandInvocation = { command: { name: \"welcome\", description: \"Prepare a preview\" }, arguments: {} };"}</CodeBlock>
+
+Related types: [SlashCommand](/docs/api/models#slashcommand).
+
+[Usage guide and runnable example](/docs/guides/composer)
+
+## ThreadMessageView
+
+<CodeBlock language="ts">{"import type { ThreadMessageView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A reply inside a thread. It has message metadata and one content family, but forbids thread to prevent nested thread summaries.
+
+<CodeBlock language="ts">{"export type ThreadMessageView = MessageMetadata & MessageContentView & { thread?: never };"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+| `reactions` | No | `readonly ReactionView[]` | — | Supplied reaction snapshots; counts and current-viewer selection remain host-owned. |
+| `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+| `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
+| `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
+| `media` | No | `readonly MediaView[]` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | No | `readonly FileView[]` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `embeds` | No | `readonly EmbedView[]` | — | Classic-message cards; forbidden on a Components V2 body. |
+| `components` | No | `readonly ActionRowView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `thread` | Forbidden | `never` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
+| `reactions` | No | `readonly ReactionView[]` | — | Supplied reaction snapshots; counts and current-viewer selection remain host-owned. |
+| `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
+| `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
+| `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
+| `media` | Forbidden | `never` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | Forbidden | `never` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `embeds` | Forbidden | `never` | — | Classic-message cards; forbidden on a Components V2 body. |
+| `components` | Forbidden | `never` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `thread` | Forbidden | `never` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ThreadMessageView = { id: \"reply\", author, timestamp, body: { kind: \"text\", content: \"Start here\" } };"}</CodeBlock>
+
+Related types: [MessageMetadata](/docs/api/models#messagemetadata), [MessageContentView](/docs/api/models#messagecontentview).
+
+[Usage guide and runnable example](/docs/guides/threads)
+
+## ThreadSummaryView
+
+<CodeBlock language="ts">{"import type { ThreadSummaryView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Nonrecursive thread summary. Counts and latest-reply metadata must be updated by the host; it does not embed loaded replies.
+
+<CodeBlock language="ts">{"export type ThreadSummaryView = {\n  id: string;\n  name: string;\n  messageCount: number;\n  lastMessage?: { author: MessageAuthor; content: string; timestamp: string };\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `messageCount` | Yes | `number` | — | Supplied reply count; the host updates it when replies change. |
+| `lastMessage` | No | `{ author: MessageAuthor; content: string; timestamp: string; }` | — | Optional plain-text summary of the latest reply; not a recursively embedded message. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ThreadSummaryView = { id: \"setup\", name: \"Setup help\", messageCount: 1, lastMessage: { author, content: \"Start here\", timestamp } };"}</CodeBlock>
+
+Related types: [MessageAuthor](/docs/api/models#messageauthor).
+
+[Usage guide and runnable example](/docs/guides/threads)
+
+## ThreadView
+
+<CodeBlock language="ts">{"import type { ThreadView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Loaded replies only. Keep the starter in channel.messages; parentMessageId links it. A standalone panel may receive the starter separately.
+
+<CodeBlock language="ts">{"export type ThreadView = {\n  id: string;\n  name: string;\n  parentMessageId: string;\n  /** Replies only; the starter remains in the channel's messages. */\n  messages: readonly ThreadMessageView[];\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `parentMessageId` | Yes | `string` | — | ID of the starter kept in the channel messages. |
+| `messages` | Yes | `readonly ThreadMessageView[]` | — | Ordered snapshots; array order is render order. Host owns loading and updates. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ThreadView = { id: \"setup\", name: \"Setup help\", parentMessageId: \"message\", messages: [] };"}</CodeBlock>
+
+Related types: [ThreadMessageView](/docs/api/models#threadmessageview).
+
+[Usage guide and runnable example](/docs/guides/threads)
+
+</div>

@@ -7,6 +7,7 @@ import Layout from "@theme/Layout";
 import { useEffect, useRef, useState } from "react";
 import { Arrow } from "../components/Arrow";
 import { ComponentSample } from "../components/ComponentSample";
+import DocumentationLinks from "../components/docs/DocumentationLinks";
 import { exportCode } from "../components/playground/export-code";
 import { ThemeControl } from "../components/ThemeControl";
 import { componentExamples, playgroundUrl } from "../data/component-examples";
@@ -103,6 +104,7 @@ export default function Components() {
             <span>{example.family}</span>
             <h2>{example.title}</h2>
             <p>{example.description}</p>
+            <DocumentationLinks component={example.component ?? example.title} />
           </header>
           <div className="explorer-toolbar">
             {compare

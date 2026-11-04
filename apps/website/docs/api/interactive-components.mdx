@@ -1,0 +1,450 @@
+---
+title: Interactive components
+description: Public signatures, fields, examples and behavior for interactive components.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+<div className="api-reference-page">
+
+# Interactive components
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## MessageComponents
+
+<CodeBlock language="ts">{"import { MessageComponents } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders a serializable component tree. Standalone callers supply messageId when callback context needs it. Select keys scope controlled values; omitted keys use menu-local state. No Discord payload validation or network call occurs.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#messagecomponentsprops)
+
+<CodeBlock language="ts">{"export function MessageComponents({ components, referenceTime, messageId, selectValues, onButtonClick, onSelectChange, onPremiumClick }: MessageComponentsProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+| `components` | Yes | `readonly MessageComponent[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
+| `referenceTime` | No | `string \| undefined` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+| `messageId` | No | `string \| undefined` | — | Originating message ID or original-message reference as indicated by the type. |
+| `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` | — | Values by select ID. Missing keys/undefined use local state; [] controls an empty selection. |
+
+<ReferenceExample id="message-components" />
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [MessageComponent](/docs/api/models#messagecomponent), [SelectValues](/docs/api/callbacks#selectvalues).
+
+## MessageComponentsProps
+
+<CodeBlock language="ts">{"import type { MessageComponentsProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders a serializable component tree. Standalone callers supply messageId when callback context needs it. Select keys scope controlled values; omitted keys use menu-local state. No Discord payload validation or network call occurs.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#messagecomponents)
+
+<CodeBlock language="ts">{"export type MessageComponentsProps = ComponentHandlers & {\n  components: readonly MessageComponent[];\n  referenceTime?: string | undefined;\n  messageId?: string | undefined;\n  selectValues?: SelectValues | undefined;\n};"}</CodeBlock>
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [MessageComponent](/docs/api/models#messagecomponent), [SelectValues](/docs/api/callbacks#selectvalues).
+
+## ActionRow
+
+<CodeBlock language="ts">{"import { ActionRow } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Lays out React children in an action row. The serializable ActionRowView constrains a row to buttons or one select; the JSX primitive itself accepts React children.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#actionrowprops)
+
+<CodeBlock language="ts">{"export function ActionRow({ children }: ActionRowProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `children` | Yes | `ReactNode` | — | Explicit React content/slots; not part of a serializable display snapshot. |
+
+<ReferenceExample id="action-row" />
+
+## Button
+
+<CodeBlock language="ts">{"import { Button } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A native action button. onClick reports intent with no arguments; message-rendered buttons adapt this to an ID and message context. Premium style is visual only. Disabled prevents activation.
+
+[Usage guide](/docs/guides/interactions) · [Props type](#buttonprops)
+
+<CodeBlock language="ts">{"export function Button({ label, style, disabled, emoji, onClick }: ButtonProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `style` | No | `"primary" \| "secondary" \| "success" \| "danger" \| "premium" \| undefined` | `"primary"` | Button visual variant; premium is appearance, not a billing integration. |
+| `disabled` | No | `boolean \| undefined` | `false` | Prevents the rendered control from accepting activation or changes. |
+| `emoji` | No | `ReactNode` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+| `onClick` | No | `(() => void) \| undefined` | — | Native button intent callback with no arguments. |
+
+<ReferenceExample id="button" />
+
+## Container
+
+<CodeBlock language="ts">{"import { Container } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Groups React children with optional six-digit hex accent and a locally revealable spoiler. ContainerView limits serializable children to non-container nodes; this primitive is direct React composition.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#containerprops)
+
+<CodeBlock language="ts">{"export function Container({ children, accentColor, spoiler }: ContainerProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `children` | Yes | `ReactNode` | — | Explicit React content/slots; not part of a serializable display snapshot. |
+| `accentColor` | No | `string \| undefined` | — | Optional six-digit hex accent; invalid values use normal styling. |
+| `spoiler` | No | `boolean \| undefined` | `false` | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+
+<ReferenceExample id="container" />
+
+## File
+
+<CodeBlock language="ts">{"import { File } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a resolved file name and optional formatted size. Name/download links require HTTP(S) URLs; relative/unsafe URLs remain text. Spoilers defer content mounting. allowRemoteMedia=false does not block file links.
+
+[Usage guide](/docs/guides/media) · [Props type](#fileprops)
+
+<CodeBlock language="ts">{"export function File({ file }: FileProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `file` | Yes | `FileView` | — | Resolved file display metadata; HTTP(S) links are separate from the image media policy. |
+
+<ReferenceExample id="file" />
+
+Related types: [FileView](/docs/api/models#fileview).
+
+## LinkButton
+
+<CodeBlock language="ts">{"import { LinkButton } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Navigates to an allowed explicit HTTP(S) URL. Disabled or unsafe links render an inert disabled link representation; they do not fire a button-intent callback.
+
+[Usage guide](/docs/guides/interactions) · [Props type](#linkbuttonprops)
+
+<CodeBlock language="ts">{"export function LinkButton({ label, url, disabled, emoji }: LinkButtonProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `disabled` | No | `boolean \| undefined` | `false` | Prevents the rendered control from accepting activation or changes. |
+| `emoji` | No | `ReactNode` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
+
+<ReferenceExample id="link-button" />
+
+## Section
+
+<CodeBlock language="ts">{"import { Section } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Arranges React text/content children with an accessory. SectionView restricts the model to text-display children plus a required thumbnail or message-button accessory.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#sectionprops)
+
+<CodeBlock language="ts">{"export function Section({ children, accessory }: SectionProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `children` | Yes | `ReactNode` | — | Explicit React content/slots; not part of a serializable display snapshot. |
+| `accessory` | Yes | `ReactNode` | — | Required section accessory: React node in props; thumbnail/message button in the display model. |
+
+<ReferenceExample id="section" />
+
+## Separator
+
+<CodeBlock language="ts">{"import { Separator } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Adds optional visible dividing line and small/large spacing. Spacing-only separators are hidden from accessibility APIs.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#separatorprops)
+
+<CodeBlock language="ts">{"export function Separator({ divider, spacing }: SeparatorProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `divider` | No | `boolean \| undefined` | `true` | Whether a visible, semantic dividing line is rendered. |
+| `spacing` | No | `"small" \| "large" \| undefined` | `"small"` | Small or large spacing around a separator. |
+
+<ReferenceExample id="separator" />
+
+## TextDisplay
+
+<CodeBlock language="ts">{"import { TextDisplay } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A Markdown content block for Components V2 and standalone composition. Timestamp formatting uses the explicit reference prop, wrapper reference or Markdown fallback.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#textdisplayprops)
+
+<CodeBlock language="ts">{"export function TextDisplay({ content, referenceTime }: TextDisplayProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
+| `referenceTime` | No | `string \| undefined` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+
+<ReferenceExample id="text-display" />
+
+## Thumbnail
+
+<CodeBlock language="ts">{"import { Thumbnail } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Places a MediaView in thumbnail layout; URL policy, alt text, spoiler and failure behavior come from Media.
+
+[Usage guide](/docs/guides/components-v2) · [Props type](#thumbnailprops)
+
+<CodeBlock language="ts">{"export function Thumbnail({ media }: ThumbnailProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `media` | Yes | `MediaView` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+
+<ReferenceExample id="thumbnail" />
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+## ActionRowProps
+
+<CodeBlock language="ts">{"import type { ActionRowProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Lays out React children in an action row. The serializable ActionRowView constrains a row to buttons or one select; the JSX primitive itself accepts React children.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#actionrow)
+
+<CodeBlock language="ts">{"export type ActionRowProps = { children: ReactNode };"}</CodeBlock>
+
+## ButtonProps
+
+<CodeBlock language="ts">{"import type { ButtonProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A native action button. onClick reports intent with no arguments; message-rendered buttons adapt this to an ID and message context. Premium style is visual only. Disabled prevents activation.
+
+[Usage guide](/docs/guides/interactions) · [Component](#button)
+
+<CodeBlock language="ts">{"export type ButtonProps = { label: string; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"premium\" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined };"}</CodeBlock>
+
+## ContainerProps
+
+<CodeBlock language="ts">{"import type { ContainerProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Groups React children with optional six-digit hex accent and a locally revealable spoiler. ContainerView limits serializable children to non-container nodes; this primitive is direct React composition.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#container)
+
+<CodeBlock language="ts">{"export type ContainerProps = { children: ReactNode; accentColor?: string | undefined; spoiler?: boolean | undefined };"}</CodeBlock>
+
+## FileProps
+
+<CodeBlock language="ts">{"import type { FileProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a resolved file name and optional formatted size. Name/download links require HTTP(S) URLs; relative/unsafe URLs remain text. Spoilers defer content mounting. allowRemoteMedia=false does not block file links.
+
+[Usage guide](/docs/guides/media) · [Component](#file)
+
+<CodeBlock language="ts">{"export type FileProps = { file: FileView };"}</CodeBlock>
+
+Related types: [FileView](/docs/api/models#fileview).
+
+## LinkButtonProps
+
+<CodeBlock language="ts">{"import type { LinkButtonProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Navigates to an allowed explicit HTTP(S) URL. Disabled or unsafe links render an inert disabled link representation; they do not fire a button-intent callback.
+
+[Usage guide](/docs/guides/interactions) · [Component](#linkbutton)
+
+<CodeBlock language="ts">{"export type LinkButtonProps = { label: string; url: string; disabled?: boolean | undefined; emoji?: ReactNode };"}</CodeBlock>
+
+## SectionProps
+
+<CodeBlock language="ts">{"import type { SectionProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Arranges React text/content children with an accessory. SectionView restricts the model to text-display children plus a required thumbnail or message-button accessory.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#section)
+
+<CodeBlock language="ts">{"export type SectionProps = { children: ReactNode; accessory: ReactNode };"}</CodeBlock>
+
+## SeparatorProps
+
+<CodeBlock language="ts">{"import type { SeparatorProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Adds optional visible dividing line and small/large spacing. Spacing-only separators are hidden from accessibility APIs.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#separator)
+
+<CodeBlock language="ts">{"export type SeparatorProps = { divider?: boolean | undefined; spacing?: \"small\" | \"large\" | undefined };"}</CodeBlock>
+
+## TextDisplayProps
+
+<CodeBlock language="ts">{"import type { TextDisplayProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A Markdown content block for Components V2 and standalone composition. Timestamp formatting uses the explicit reference prop, wrapper reference or Markdown fallback.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#textdisplay)
+
+<CodeBlock language="ts">{"export type TextDisplayProps = { content: string; referenceTime?: string | undefined };"}</CodeBlock>
+
+## ThumbnailProps
+
+<CodeBlock language="ts">{"import type { ThumbnailProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Places a MediaView in thumbnail layout; URL policy, alt text, spoiler and failure behavior come from Media.
+
+[Usage guide](/docs/guides/components-v2) · [Component](#thumbnail)
+
+<CodeBlock language="ts">{"export type ThumbnailProps = { media: MediaView };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview).
+
+## SelectMenu
+
+<CodeBlock language="ts">{"import { SelectMenu } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A five-variant select over a complete resolved snapshot. Omit values for local defaults; pass [] to control an empty selection. Defaults do not overwrite existing local state. New ID/kind resets local state. Unavailable/duplicate values are removed from the effective selection and maximum limits apply; entity menus search locally.
+
+[Usage guide](/docs/guides/interactions) · [Props type](#selectmenuprops)
+
+<CodeBlock language="ts">{"export function SelectMenu(props: SelectMenuProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `menu` | Yes | `SelectMenuView` | — | One of the five discriminated menu models; include all currently selected entities. |
+| `values` | No | `readonly string[] \| undefined` | `Local menu defaults` | Controlled standalone values; omission uses local defaults. Duplicate/unavailable values are filtered. |
+| `onChange` | No | `((values: string[]) => void) \| undefined` | — | Proposed standalone selection values; update controlled values to accept. |
+
+<ReferenceExample id="select-menu" />
+
+Related types: [SelectMenuView](/docs/api/models#selectmenuview).
+
+## SelectMenuProps
+
+<CodeBlock language="ts">{"import type { SelectMenuProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A five-variant select over a complete resolved snapshot. Omit values for local defaults; pass [] to control an empty selection. Defaults do not overwrite existing local state. New ID/kind resets local state. Unavailable/duplicate values are removed from the effective selection and maximum limits apply; entity menus search locally.
+
+[Usage guide](/docs/guides/interactions) · [Component](#selectmenu)
+
+<CodeBlock language="ts">{"export type SelectMenuProps = {\n  menu: SelectMenuView;\n  values?: readonly string[] | undefined;\n  onChange?: ((values: string[]) => void) | undefined;\n};"}</CodeBlock>
+
+Related types: [SelectMenuView](/docs/api/models#selectmenuview).
+
+## Spoiler
+
+<CodeBlock language="ts">{"import { Spoiler } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Locally toggles reveal/hide. Hidden text remains mounted but inert; hidden media content is not mounted. The reveal state is not authorization. inline=false uses a block placeholder.
+
+[Usage guide](/docs/guides/markdown) · [Props type](#spoilerprops)
+
+<CodeBlock language="ts">{"export function Spoiler({ children, inline, placeholder }: SpoilerProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `children` | Yes | `ReactNode` | — | Explicit React content/slots; not part of a serializable display snapshot. |
+| `inline` | No | `boolean` | `true` | Inline spoiler wrapper or embed-field layout request, depending on the type. |
+| `placeholder` | No | `ReactNode` | — | Select prompt or concealed-media React placeholder as specified by the type. |
+
+<ReferenceExample id="spoiler" />
+
+## SpoilerProps
+
+<CodeBlock language="ts">{"import type { SpoilerProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Locally toggles reveal/hide. Hidden text remains mounted but inert; hidden media content is not mounted. The reveal state is not authorization. inline=false uses a block placeholder.
+
+[Usage guide](/docs/guides/markdown) · [Component](#spoiler)
+
+<CodeBlock language="ts">{"export type SpoilerProps = { children: ReactNode; inline?: boolean; placeholder?: ReactNode };"}</CodeBlock>
+
+## Reactions
+
+<CodeBlock language="ts">{"import { Reactions } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Shows positive safe-integer counts. With onToggle, buttons report the reaction ID and aria-pressed follows supplied me; without it the row is read-only. The application owns counts, selected state and persistence.
+
+[Usage guide](/docs/guides/reactions) · [Props type](#reactionsprops)
+
+<CodeBlock language="ts">{"export function Reactions({ reactions, onToggle }: ReactionsProps): import(\"react\").JSX.Element | null;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `reactions` | Yes | `readonly ReactionView[]` | — | Supplied reaction snapshots; counts and current-viewer selection remain host-owned. |
+| `onToggle` | No | `((reactionId: string) => void) \| undefined` | — | Standalone reaction ID; host updates count/me. |
+
+<ReferenceExample id="reactions" />
+
+Related types: [ReactionView](/docs/api/models#reactionview).
+
+## ReactionsProps
+
+<CodeBlock language="ts">{"import type { ReactionsProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Shows positive safe-integer counts. With onToggle, buttons report the reaction ID and aria-pressed follows supplied me; without it the row is read-only. The application owns counts, selected state and persistence.
+
+[Usage guide](/docs/guides/reactions) · [Component](#reactions)
+
+<CodeBlock language="ts">{"export type ReactionsProps = {\n  reactions: readonly ReactionView[];\n  onToggle?: ((reactionId: string) => void) | undefined;\n};"}</CodeBlock>
+
+Related types: [ReactionView](/docs/api/models#reactionview).
+
+</div>

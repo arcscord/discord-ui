@@ -2,6 +2,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { createRequire } from "node:module";
 import { themes } from "prism-react-renderer";
+import documentationSearch from "./plugins/documentation-search";
 import examplePreviews from "./plugins/example-previews";
 import { site } from "./src/data/site";
 
@@ -16,12 +17,18 @@ const classicOptions: Preset.Options = {
       "./src/css/custom.css",
     ],
   },
-  sitemap: false,
+  sitemap: {
+    ignorePatterns: ["/search", "/404.html"],
+    lastmod: null,
+    changefreq: null,
+    priority: null,
+  },
 };
 
 const config: Config = {
   title: "Arcscord Discord UI",
   tagline: "Discord messages. Without screenshots.",
+  favicon: "img/favicon.png",
   url: "https://ui.arcscord.dev",
   baseUrl: "/",
   trailingSlash: false,
@@ -30,11 +37,18 @@ const config: Config = {
     defaultLocale: "en",
     locales: ["en"],
   },
-  plugins: [examplePreviews],
+  plugins: [examplePreviews, documentationSearch],
   presets: [
     ["classic", classicOptions],
   ],
   themeConfig: {
+    image: "img/social-card.png",
+    metadata: [
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Arcscord Discord UI" },
+      { property: "og:image:alt", content: "Arcscord Discord UI — React components for Discord messages" },
+      { name: "twitter:image:alt", content: "Arcscord Discord UI — React components for Discord messages" },
+    ],
     colorMode: { defaultMode: "dark", disableSwitch: true, respectPrefersColorScheme: false },
     announcementBar: site.inDevelopment
       ? {

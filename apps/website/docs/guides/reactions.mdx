@@ -1,0 +1,66 @@
+---
+title: Reactions
+description: Practical usage and behavior of reactions in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Reactions';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Reactions.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Reactions
+
+Reactions are supplied counts and selection metadata. Use `Reactions` for a row,
+or `MessageView.reactions` to attach it to a message.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [Reactions](/docs/api/interactive-components#reactions).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Reactions.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Own the result
+
+Each `ReactionView` contains `id`, `emoji`, `count` and optional `me`. Emoji can be
+Unicode or resolved custom-image metadata. `me` indicates the current viewer's
+selection; it is not inferred from a Discord session.
+
+`Reactions.onToggle(reactionId)` is a proposal. The example updates both `me` and
+`count` with an immutable state update. A `Message` instead calls
+`onReactionToggle(messageId, reactionId)`; conversation components forward the same
+pair. Use the message ID to update the correct message and thread snapshot.
+
+For server-backed state, choose your optimistic/pending/error behavior in the
+application and reconcile counts from your authoritative source. The library does
+not call Discord, enforce per-user voting or roll back failed requests.
+
+## Read-only and hidden counts
+
+Without a toggle handler the row uses display elements, not clickable controls.
+With a handler the reaction is a button whose `aria-pressed` reflects `me`.
+Only positive safe-integer counts render. Zero, negative, fractional and invalid
+counts are omitted; an empty visible collection produces no row. Provide a
+separate add-reaction affordance in your application if you need one.
+
+Counts use the wrapper locale. Custom image emoji obey the remote-media policy.
+The realistic example combines rich message content with interactive and read-only
+reaction rows.
+
+## A realistic example
+
+[Inspect the reactions example](/components?example=reactions) or
+[edit the full catalogue module](/playground?example=reactions). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="reactions" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

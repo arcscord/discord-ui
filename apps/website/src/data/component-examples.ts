@@ -1,4 +1,5 @@
 import { selectMenuExamples, selectMenuForWebsite } from "../../../../fixtures/select-menus";
+import { recipeExamples } from "./recipe-examples";
 import { scenarioExamples } from "./scenarios";
 
 export type ComponentExample = {
@@ -99,6 +100,7 @@ function selectMenuCode(example: typeof selectMenuExamples[number]): string {
 
 export const componentExamples: ComponentExample[] = ([
   ...scenarioExamples,
+  ...recipeExamples,
   {
     id: "interaction",
     title: "Interaction response",
@@ -540,6 +542,7 @@ export const componentExamples: ComponentExample[] = ([
 ] satisfies ComponentExample[]).sort((a, b) => {
   const families = [
     "Scenarios",
+    "Recipes",
     "Messages",
     "Rich content",
     "Components V2",

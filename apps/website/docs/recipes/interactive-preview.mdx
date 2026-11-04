@@ -1,0 +1,50 @@
+---
+title: Interactive message preview
+description: Build an approval preview whose button and reaction update application-owned state without publishing anything.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Interactive message preview
+
+Build an approval preview whose button and reaction update application-owned state without publishing anything.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-interactive-preview" initiallyOpen />
+
+## Prepare the snapshot
+
+A classic message combines a Markdown body, an action row and a reaction array.
+The button ID is `approve`; the reaction ID is `thanks`. These belong to different
+interaction contracts. Initial timestamps are fixed; authors are supplied display data.
+
+## Apply intent to state
+
+The button handler verifies `context.messageId` and the clicked ID. It returns a
+new snapshot with changed content, `edited: true`, and disabled approval controls.
+The displayed status reports the local result. The library does not disable a
+button or mark a message edited unless the supplied model changes.
+
+The reaction handler receives `(messageId, reactionId)` and updates both `count`
+and `me`. Its initial positive count keeps the toggle visible when deselected.
+Calling a handler does not call Discord or persist either result.
+
+## Use the pattern in an application
+
+Replace the local approval update with your own authorized request and pending/error
+handling. Choose whether to optimistically update or await confirmation, then
+reconcile the displayed snapshot. The status in this recipe is a local simulation,
+not a server approval result. Keep handlers separate from stored display models.
+
+## Related contracts and next steps
+
+[Message](/docs/api/display-components#message), [ComponentHandlers](/docs/api/callbacks#componenthandlers), [ReactionView](/docs/api/models#reactionview).
+
+[Edit this recipe](/playground?example=recipe-interactive-preview) · [Compare all themes](/components?example=recipe-interactive-preview) · [All recipes](../recipes.md)

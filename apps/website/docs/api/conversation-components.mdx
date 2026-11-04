@@ -1,0 +1,270 @@
+---
+title: Conversation components
+description: Public signatures, fields, examples and behavior for conversation components.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+<div className="api-reference-page">
+
+# Conversation components
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## ChannelComposer
+
+<CodeBlock language="ts">{"import { ChannelComposer } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Controlled plain-text draft plus local slash-command/argument editing. onSend reports text without clearing a standalone draft; the host clears value. onSlashCommand receives a supplied command and nonblank arguments, then local command state clears. Required/choice validation gates local invocation. Enter sends and Shift+Enter inserts a line; IME composition is respected.
+
+[Usage guide](/docs/guides/composer) · [Props type](#channelcomposerprops)
+
+<CodeBlock language="ts">{"export function ChannelComposer({ channelName, value, onValueChange, onSend, commands, onSlashCommand, disabled, leading, trailing }: ChannelComposerProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `channelName` | Yes | `string` | — | Name used in the composer placeholder. |
+| `value` | Yes | `string` | — | Controlled draft or option value, as indicated by the type. |
+| `onValueChange` | Yes | `(value: string) => void` | — | Next controlled composer draft string. |
+| `onSend` | No | `((content: string) => void) \| undefined` | — | Called with content; host persists/appends data and handles any request. |
+| `commands` | No | `readonly SlashCommand[] \| undefined` | — | Supplied local command catalogue; no registration/Discord discovery. |
+| `onSlashCommand` | No | `SlashCommandHandler \| undefined` | — | Called with a SlashCommandInvocation containing the command and argument record. |
+| `disabled` | No | `boolean` | `false` | Prevents the rendered control from accepting activation or changes. |
+| `leading` | No | `ReactNode` | — | Custom React content before the composer input. |
+| `trailing` | No | `ReactNode` | — | Custom React content after the composer input. |
+
+<ReferenceExample id="channel-composer" />
+
+Related types: [SlashCommand](/docs/api/models#slashcommand), [SlashCommandHandler](/docs/api/callbacks#slashcommandhandler).
+
+## ChannelComposerProps
+
+<CodeBlock language="ts">{"import type { ChannelComposerProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Controlled plain-text draft plus local slash-command/argument editing. onSend reports text without clearing a standalone draft; the host clears value. onSlashCommand receives a supplied command and nonblank arguments, then local command state clears. Required/choice validation gates local invocation. Enter sends and Shift+Enter inserts a line; IME composition is respected.
+
+[Usage guide](/docs/guides/composer) · [Component](#channelcomposer)
+
+<CodeBlock language="ts">{"export type ChannelComposerProps = {\n  channelName: string;\n  value: string;\n  onValueChange: (value: string) => void;\n  onSend?: ((content: string) => void) | undefined;\n  commands?: readonly SlashCommand[] | undefined;\n  onSlashCommand?: SlashCommandHandler | undefined;\n  disabled?: boolean;\n  leading?: ReactNode;\n  trailing?: ReactNode;\n};"}</CodeBlock>
+
+Related types: [SlashCommand](/docs/api/models#slashcommand), [SlashCommandHandler](/docs/api/callbacks#slashcommandhandler).
+
+## ChannelHeader
+
+<CodeBlock language="ts">{"import { ChannelHeader } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a channel name/topic and optional React action slot. It is independent of conversation data and has no loading or navigation behavior.
+
+[Usage guide](/docs/guides/channels) · [Props type](#channelheaderprops)
+
+<CodeBlock language="ts">{"export function ChannelHeader({ name, topic, actions }: ChannelHeaderProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `topic` | No | `string \| undefined` | — | Optional channel topic text. |
+| `actions` | No | `ReactNode` | — | Optional React action slot in the channel header. |
+
+<ReferenceExample id="channel-header" />
+
+## ChannelHeaderProps
+
+<CodeBlock language="ts">{"import type { ChannelHeaderProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a channel name/topic and optional React action slot. It is independent of conversation data and has no loading or navigation behavior.
+
+[Usage guide](/docs/guides/channels) · [Component](#channelheader)
+
+<CodeBlock language="ts">{"export type ChannelHeaderProps = { name: string; topic?: string | undefined; actions?: ReactNode };"}</CodeBlock>
+
+## ChannelView
+
+<CodeBlock language="ts">{"import { ChannelView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays header, ordered history, built-in composer and loaded linked threads. Data is application-owned. Sends report content; the built-in local draft clears after a handled send. Channel identity resets local state. A changed last message ID scrolls to the bottom when autoScroll is enabled. Omitted activeThreadId enables local navigation; string/null makes it controlled.
+
+[Usage guide](/docs/guides/channels) · [Props type](#channelviewprops)
+
+<CodeBlock language="ts">{"export function ChannelView(props: ChannelViewProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+| `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` | — | Values by message ID and then select ID; permits reused component IDs across messages. |
+| `channel` | Yes | `ChannelViewModel` | — | Channel snapshot, including loaded linked threads when needed. |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` | — | Called with messageId; host removes/hides the message and manages focus. |
+| `height` | No | `Property.Height<string \| number> \| undefined` | `560` | Channel viewport height (CSS height); or image intrinsic height where specified. |
+| `header` | No | `ReactNode` | — | Custom React header slot; ChannelView otherwise renders ChannelHeader. |
+| `composer` | No | `ReactNode` | — | Custom channel composer slot; false hides the channel composer. Does not hide a loaded thread's composer. |
+| `onSend` | No | `((content: string) => void) \| undefined` | — | Called with content; host persists/appends data and handles any request. |
+| `activeThreadId` | No | `string \| null \| undefined` | — | Selected/active thread ID. ChannelView also accepts null to explicitly close; omission allows local navigation there. |
+| `onThreadOpen` | No | `((threadId: string) => void) \| undefined` | — | Called with threadId; open/fetch/update controlled navigation in the host. |
+| `onThreadClose` | No | `(() => void) \| undefined` | — | Close intent with no arguments; host updates controlled navigation. |
+| `onThreadSend` | No | `((threadId: string, content: string) => void) \| undefined` | — | Called with (threadId, content); host appends the reply and updates summary metadata. |
+| `commands` | No | `readonly SlashCommand[]` | — | Supplied local command catalogue; no registration/Discord discovery. |
+| `onSlashCommand` | No | `SlashCommandHandler` | — | Called with a SlashCommandInvocation containing the command and argument record. |
+| `composerDisabled` | No | `boolean` | `false` | Disables the built-in composer(s). |
+| `autoScroll` | No | `boolean` | `true` | Automatic bottom positioning on conversation/last-ID changes; resize follows while near the bottom. |
+| `showDateSeparators` | No | `boolean` | `true` | Insert date boundaries using the wrapper time zone. |
+
+<ReferenceExample id="channel-view" />
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ChannelViewModel](/docs/api/models#channelviewmodel), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [SlashCommand](/docs/api/models#slashcommand), [SlashCommandHandler](/docs/api/callbacks#slashcommandhandler).
+
+## ChannelViewProps
+
+<CodeBlock language="ts">{"import type { ChannelViewProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays header, ordered history, built-in composer and loaded linked threads. Data is application-owned. Sends report content; the built-in local draft clears after a handled send. Channel identity resets local state. A changed last message ID scrolls to the bottom when autoScroll is enabled. Omitted activeThreadId enables local navigation; string/null makes it controlled.
+
+[Usage guide](/docs/guides/channels) · [Component](#channelview)
+
+<CodeBlock language="ts">{"export type ChannelViewProps = ComponentHandlers & {\n  selectValuesByMessage?: SelectValuesByMessage | undefined;\n  channel: ChannelViewModel;\n  onReactionToggle?: ReactionToggleHandler | undefined;\n  onEphemeralDismiss?: ((messageId: string) => void) | undefined;\n  height?: CSSProperties[\"height\"];\n  header?: ReactNode;\n  composer?: ReactNode | false;\n  onSend?: ((content: string) => void) | undefined;\n  /** Omit for local navigation; null explicitly closes the controlled thread. */\n  activeThreadId?: string | null | undefined;\n  onThreadOpen?: ((threadId: string) => void) | undefined;\n  onThreadClose?: (() => void) | undefined;\n  onThreadSend?: ((threadId: string, content: string) => void) | undefined;\n  commands?: readonly SlashCommand[];\n  onSlashCommand?: SlashCommandHandler;\n  composerDisabled?: boolean;\n  autoScroll?: boolean;\n  showDateSeparators?: boolean;\n};"}</CodeBlock>
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ChannelViewModel](/docs/api/models#channelviewmodel), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [SlashCommand](/docs/api/models#slashcommand), [SlashCommandHandler](/docs/api/callbacks#slashcommandhandler).
+
+## MessageList
+
+<CodeBlock language="ts">{"import { MessageList } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders supplied array order and optional date separators in the wrapper time zone. It has no viewport, fetch, pagination or composer. Controlled selection values are scoped first by message ID; thread callbacks only receive available IDs when that filter is supplied.
+
+[Usage guide](/docs/guides/channels) · [Props type](#messagelistprops)
+
+<CodeBlock language="ts">{"export function MessageList({ selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators, showThreadPreviews, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+| `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` | — | Values by message ID and then select ID; permits reused component IDs across messages. |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` | — | Called with messageId; host removes/hides the message and manages focus. |
+| `messages` | Yes | `readonly MessageView[]` | — | Ordered snapshots; array order is render order. Host owns loading and updates. |
+| `showDateSeparators` | No | `boolean` | `true` | Insert date boundaries using the wrapper time zone. |
+| `showThreadPreviews` | No | `boolean \| undefined` | `true` | Show summaries for list messages. |
+| `onThreadOpen` | No | `((id: string) => void) \| undefined` | — | Called with threadId; open/fetch/update controlled navigation in the host. |
+| `activeThreadId` | No | `string \| undefined` | — | Selected/active thread ID. ChannelView also accepts null to explicitly close; omission allows local navigation there. |
+| `availableThreadIds` | No | `readonly string[] \| undefined` | — | When supplied, only summaries with these IDs expose the open callback. |
+
+<ReferenceExample id="message-list" />
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview).
+
+## MessageListProps
+
+<CodeBlock language="ts">{"import type { MessageListProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders supplied array order and optional date separators in the wrapper time zone. It has no viewport, fetch, pagination or composer. Controlled selection values are scoped first by message ID; thread callbacks only receive available IDs when that filter is supplied.
+
+[Usage guide](/docs/guides/channels) · [Component](#messagelist)
+
+<CodeBlock language="ts">{"export type MessageListProps = ComponentHandlers & {\n  selectValuesByMessage?: SelectValuesByMessage | undefined;\n  onReactionToggle?: ReactionToggleHandler | undefined;\n  onEphemeralDismiss?: ((messageId: string) => void) | undefined;\n  messages: readonly MessageView[];\n  showDateSeparators?: boolean;\n  showThreadPreviews?: boolean | undefined;\n  onThreadOpen?: ((id: string) => void) | undefined;\n  activeThreadId?: string | undefined;\n  availableThreadIds?: readonly string[] | undefined;\n};"}</CodeBlock>
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview).
+
+## ThreadPanel
+
+<CodeBlock language="ts">{"import { ThreadPanel } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders supplied replies and optionally prepends parentMessage. The composer has local draft state and reports sends; the host appends replies. Changing thread ID resets local state. Escape requests close and the close button receives focus when available. Standalone hosts own focus restoration. There is no composer replacement/hide prop.
+
+[Usage guide](/docs/guides/threads) · [Props type](#threadpanelprops)
+
+<CodeBlock language="ts">{"export function ThreadPanel(props: ThreadPanelProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+| `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` | — | Values by message ID and then select ID; permits reused component IDs across messages. |
+| `thread` | Yes | `ThreadView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` | — | Called with messageId; host removes/hides the message and manages focus. |
+| `parentMessage` | No | `MessageView \| undefined` | — | Optional starter snapshot prepended to standalone replies; exclude it from thread.messages. |
+| `onClose` | No | `(() => void) \| undefined` | — | Close intent with no arguments; host hides the panel. |
+| `onSend` | No | `((content: string) => void) \| undefined` | — | Called with content; host persists/appends data and handles any request. |
+| `composerDisabled` | No | `boolean \| undefined` | `false` | Disables the built-in composer(s). |
+| `autoScroll` | No | `boolean \| undefined` | `true` | Automatic bottom positioning on conversation/last-ID changes; resize follows while near the bottom. |
+
+<ReferenceExample id="thread-panel" />
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ThreadView](/docs/api/models#threadview), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview).
+
+## ThreadPanelProps
+
+<CodeBlock language="ts">{"import type { ThreadPanelProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders supplied replies and optionally prepends parentMessage. The composer has local draft state and reports sends; the host appends replies. Changing thread ID resets local state. Escape requests close and the close button receives focus when available. Standalone hosts own focus restoration. There is no composer replacement/hide prop.
+
+[Usage guide](/docs/guides/threads) · [Component](#threadpanel)
+
+<CodeBlock language="ts">{"export type ThreadPanelProps = ComponentHandlers & {\n  selectValuesByMessage?: SelectValuesByMessage | undefined;\n  thread: ThreadView;\n  onReactionToggle?: ReactionToggleHandler | undefined;\n  onEphemeralDismiss?: ((messageId: string) => void) | undefined;\n  parentMessage?: MessageView | undefined;\n  onClose?: (() => void) | undefined;\n  onSend?: ((content: string) => void) | undefined;\n  composerDisabled?: boolean | undefined;\n  autoScroll?: boolean | undefined;\n};"}</CodeBlock>
+
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ThreadView](/docs/api/models#threadview), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview).
+
+## ThreadPreview
+
+<CodeBlock language="ts">{"import { ThreadPreview } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a resolved summary/count and optional escaped last-message snapshot. It is a button only when onOpen is provided. active controls expanded appearance; onOpen reports the thread ID and never loads replies.
+
+[Usage guide](/docs/guides/threads) · [Props type](#threadpreviewprops)
+
+<CodeBlock language="ts">{"export function ThreadPreview({ thread, onOpen, active }: ThreadPreviewProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `thread` | Yes | `ThreadSummaryView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
+| `onOpen` | No | `((id: string) => void) \| undefined` | — | Called with threadId; does not fetch a conversation. |
+| `active` | No | `boolean \| undefined` | `false` | Expanded/active appearance; does not fetch or navigate by itself. |
+
+<ReferenceExample id="thread-preview" />
+
+Related types: [ThreadSummaryView](/docs/api/models#threadsummaryview).
+
+## ThreadPreviewProps
+
+<CodeBlock language="ts">{"import type { ThreadPreviewProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Displays a resolved summary/count and optional escaped last-message snapshot. It is a button only when onOpen is provided. active controls expanded appearance; onOpen reports the thread ID and never loads replies.
+
+[Usage guide](/docs/guides/threads) · [Component](#threadpreview)
+
+<CodeBlock language="ts">{"export type ThreadPreviewProps = {\n  thread: ThreadSummaryView;\n  onOpen?: ((id: string) => void) | undefined;\n  active?: boolean | undefined;\n};"}</CodeBlock>
+
+Related types: [ThreadSummaryView](/docs/api/models#threadsummaryview).
+
+</div>

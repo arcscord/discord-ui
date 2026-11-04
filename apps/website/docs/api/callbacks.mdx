@@ -1,0 +1,127 @@
+---
+title: Interaction callbacks
+description: Public signatures, fields, examples and behavior for interaction callbacks.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+
+<div className="api-reference-page">
+
+# Interaction callbacks
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## ComponentHandlers
+
+<CodeBlock language="ts">{"import type { ComponentHandlers } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Callback props kept separate from serializable models. Buttons/selects/premium actions report intent; application handlers own requests and persistence.
+
+<CodeBlock language="ts">{"export type ComponentHandlers = {\n  onButtonClick?: ((id: string, context: ComponentInteractionContext) => void) | undefined;\n  onSelectChange?: ((id: string, values: string[], context: ComponentInteractionContext) => void) | undefined;\n  onPremiumClick?: ((skuId: string, context: ComponentInteractionContext) => void) | undefined;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ComponentHandlers = { onButtonClick: (id, context) => { console.log(context.messageId, id); } };"}</CodeBlock>
+
+Related types: [ComponentInteractionContext](/docs/api/callbacks#componentinteractioncontext).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## ComponentInteractionContext
+
+<CodeBlock language="ts">{"import type { ComponentInteractionContext } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Identifies origin even when IDs repeat in other messages. messageId is present through Message/conversation renderers; standalone MessageComponents supplies it explicitly when needed.
+
+<CodeBlock language="ts">{"export type ComponentInteractionContext = {\n  componentId: string;\n  /** Present when rendered through Message, MessageList, ChannelView or ThreadPanel. */\n  messageId?: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `componentId` | Yes | `string` | — | Originating button/select ID, unique within its message. |
+| `messageId` | No | `string` | — | Originating message ID or original-message reference as indicated by the type. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ComponentInteractionContext = { componentId: \"approve\", messageId: \"message\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SelectValues
+
+<CodeBlock language="ts">{"import type { SelectValues } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Readonly map from select ID to controlled string IDs. Missing/undefined keys use local state; [] is explicitly empty. Reuse a new snapshot to accept proposed changes.
+
+<CodeBlock language="ts">{"export type SelectValues = Readonly<Record<string, readonly string[] | undefined>>;"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `[key: string]` | Per key | `readonly string[] \| undefined` | — | Keys and values follow the mapping contract described above. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectValues = { topics: [] };\nconst example2: API.SelectValues = { topics: [\"news\"] };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## SelectValuesByMessage
+
+<CodeBlock language="ts">{"import type { SelectValuesByMessage } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Readonly outer map by message ID, then select ID. This separates reused component IDs across messages.
+
+<CodeBlock language="ts">{"export type SelectValuesByMessage = Readonly<Record<string, SelectValues | undefined>>;"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `[key: string]` | Per key | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` | — | Keys and values follow the mapping contract described above. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectValuesByMessage = { message: { topics: [\"news\"] }, anotherMessage: { topics: [] } };"}</CodeBlock>
+
+Related types: [SelectValues](/docs/api/callbacks#selectvalues).
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## ReactionToggleHandler
+
+<CodeBlock language="ts">{"import type { ReactionToggleHandler } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Receives messageId then reactionId. Host updates both count and selected state and owns any persistence.
+
+<CodeBlock language="ts">{"export type ReactionToggleHandler = (messageId: string, reactionId: string) => void;"}</CodeBlock>
+
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ReactionToggleHandler = (messageId, reactionId) => { console.log(messageId, reactionId); };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/reactions)
+
+## SlashCommandHandler
+
+<CodeBlock language="ts">{"import type { SlashCommandHandler } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Receives one local SlashCommandInvocation. There is no transport, registration or automatic response generation.
+
+<CodeBlock language="ts">{"export type SlashCommandHandler = (invocation: SlashCommandInvocation) => void;"}</CodeBlock>
+
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SlashCommandHandler = invocation => { console.log(invocation.command.name, invocation.arguments); };"}</CodeBlock>
+
+Related types: [SlashCommandInvocation](/docs/api/models#slashcommandinvocation).
+
+[Usage guide and runnable example](/docs/guides/composer)
+
+</div>

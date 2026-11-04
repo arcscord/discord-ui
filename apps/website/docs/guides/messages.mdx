@@ -1,0 +1,76 @@
+---
+title: Messages and replies
+description: Practical usage and behavior of messages and replies in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Messages';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Messages.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Messages and replies
+
+Use `Message` with a resolved `MessageView` to render the author, timestamp and
+body together. Add replies, reactions or a thread summary to the same snapshot.
+
+## API reference
+
+[Button](/docs/api/interactive-components#button), [DiscordUI](/docs/api/display-components#discordui), [Message](/docs/api/display-components#message).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Messages.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Authors and message metadata
+
+`author.id` and `id` are strings. `author.displayName` is visible text; optional
+fields include `avatarUrl`, fallback colors/initial, `bot`, `verified` and `color`.
+The library does not fetch a user profile. A blocked or failed avatar falls back
+to its generated appearance. Supply an ISO 8601 `timestamp` with a time zone.
+
+Set `edited: true` to show the translated marker. No edit timestamp is required;
+`false` and omission both hide it. A text body escapes content as text, while a
+Markdown body uses the [Markdown renderer](./markdown.mdx).
+
+## Message replies and interaction replies
+
+A resolved message reply supplies `messageId`, `author` and plain-text `content`.
+The preview is a snapshot: it neither loads the original nor embeds its files.
+For an unavailable original, use `reply: { messageId: "original", unavailable: true }`;
+do not retain stale author/content fields in that variant.
+
+An interaction response uses `reply: { kind: "interaction", author, commandName }`.
+Supply the invoking user as `author` and a command name without the leading slash.
+This describes the response header; it does not invoke a command. Try the
+[interaction response example](/playground?example=interaction).
+
+A `reply` and a `thread` are distinct: the reply references an original or an
+invocation; the thread is a summary that can open a separate conversation.
+
+## Ephemeral messages
+
+`ephemeral: true` adds the visibility notice and appearance for classic and V2
+messages. `onEphemeralDismiss(messageId)` reports dismissal intent. The host must
+remove/hide that message, as the minimal example does, and manage focus after
+removing focused controls. Without a handler no dismissal button is shown.
+
+**Ephemeral is display metadata, not access control.** Filter private data before
+sending it to the browser and enforce authorization in your application.
+The [ephemeral example](/playground?example=ephemeral) also demonstrates restoring focus.
+
+## A realistic example
+
+[Inspect the messages and replies example](/components?example=message) or
+[edit the full catalogue module](/playground?example=message). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="message" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

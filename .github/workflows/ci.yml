@@ -78,6 +78,8 @@ jobs:
         run: pnpm build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
+      - name: Verify documentation acceptance
+        run: pnpm docs:check
       - name: Check TypeScript
         run: pnpm typecheck
       - name: Verify tarball in an isolated consumer

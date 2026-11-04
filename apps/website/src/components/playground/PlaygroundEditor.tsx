@@ -6,6 +6,7 @@ import { useHistory, useLocation } from "@docusaurus/router";
 import DocusaurusLiveProvider from "@docusaurus/theme-live-codeblock/lib/theme/Playground/Provider/index.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { componentExamples, exampleLayout, getExample } from "../../data/component-examples";
+import DocumentationLinks from "../docs/DocumentationLinks";
 import { ThemeControl } from "../ThemeControl";
 import { readDraft, sourceVersion, writeDraft } from "./draft-storage";
 import { changeModuleTheme, exportCode, readModuleTheme } from "./export-code";
@@ -111,6 +112,7 @@ function ExampleEditor({ example, initialTheme, width, onWidthChange, onExampleC
         <span>{example.family}</span>
         <h2>{example.title}</h2>
         <p>{example.description}</p>
+        <DocumentationLinks component={example.component ?? example.title} />
       </header>
       <div className="playground-toolbar">
         <label className="example-select">

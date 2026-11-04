@@ -1,0 +1,319 @@
+---
+title: Theme helpers and tokens
+description: Public signatures, fields, examples and behavior for theme helpers and tokens.
+---
+
+import CodeBlock from '@theme/CodeBlock';
+
+<div className="api-reference-page">
+
+# Theme helpers and tokens
+
+Signatures and field tables are extracted from the public TypeScript contracts. Behavior notes and examples are maintained alongside the generator. Model optionality does not imply a runtime default. Field tables scroll horizontally at narrow widths.
+
+[Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
+
+## defineTheme
+
+<CodeBlock language="ts">{"import { defineTheme } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Creates an immutable custom theme description. name is required; extends defaults to dark; tokens defaults to an empty override map; colorScheme inherits unless explicit. Parent tokens merge without mutating the parent. The preset base remains available to compiled CSS.
+
+<CodeBlock language="ts">{"export function defineTheme({ name, extends: parent, tokens, colorScheme }: { name: string; extends?: ThemeInput; tokens?: ThemeOverrides; colorScheme?: \"light\" | \"dark\"; }): DiscordTheme;"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import { defineTheme } from \"@arcscord/discord-ui\";\n\nconst preview = defineTheme({ name: \"violet\", extends: \"ash\", tokens: { accent: \"#a7a9ff\" } });"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+Related types: [DiscordTheme](/docs/api/themes#discordtheme).
+
+## themes
+
+<CodeBlock language="ts">{"import { themes } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Readonly preset descriptions: light uses colorScheme=light; ash and dark use colorScheme=dark. Preset token maps are empty because their palette is supplied by compiled CSS.
+
+<CodeBlock language="ts">{"export const themes: { readonly light: { readonly name: \"light\"; readonly base: \"light\"; readonly colorScheme: \"light\"; readonly tokens: {}; }; readonly ash: { readonly name: \"ash\"; readonly base: \"ash\"; readonly colorScheme: \"dark\"; readonly tokens: {}; }; readonly dark: { readonly name: \"dark\"; readonly base: \"dark\"; readonly colorScheme: \"dark\"; readonly tokens: {}; }; };"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import { themes } from \"@arcscord/discord-ui\";\n\nconst preview = themes.light;"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+Related types: [DiscordTheme](/docs/api/themes#discordtheme).
+
+## themeTokenProperties
+
+<CodeBlock language="ts">{"import { themeTokenProperties } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Readonly map from each typed semantic token key to its public CSS custom property. Consumers still import styles.css. Values are CSS strings, not contrast-validated colors.
+
+<CodeBlock language="ts">{"export const themeTokenProperties: { readonly selectChipBackground: \"--discord-ui-select-chip-background\"; readonly selectBackground: \"--discord-ui-select-background\"; readonly selectMenuBackground: \"--discord-ui-select-menu-background\"; readonly selectMuted: \"--discord-ui-select-muted\"; readonly channelHeaderDivider: \"--discord-ui-channel-header-divider\"; readonly channelInputBackground: \"--discord-ui-channel-input-background\"; readonly background: \"--discord-ui-background\"; readonly ephemeralBackground: \"--discord-ui-ephemeral-background\"; readonly ephemeralHover: \"--discord-ui-ephemeral-hover\"; readonly ephemeralBorder: \"--discord-ui-ephemeral-border\"; readonly focusBackground: \"--discord-ui-row-hover\"; readonly codeBackground: \"--discord-ui-code-background\"; readonly spoilerBackground: \"--discord-ui-spoiler-hidden\"; readonly quoteBorder: \"--discord-ui-quote-border\"; readonly text: \"--discord-ui-text\"; readonly muted: \"--discord-ui-muted\"; readonly strong: \"--discord-ui-strong\"; readonly link: \"--discord-ui-link\"; readonly accent: \"--discord-ui-accent\"; readonly warning: \"--discord-ui-warning\"; readonly border: \"--discord-ui-border\"; readonly surface: \"--discord-ui-surface\"; readonly embedBorder: \"--discord-ui-embed-border\"; readonly embedAccent: \"--discord-ui-embed-accent\"; readonly containerSurface: \"--discord-ui-container-surface\"; readonly containerOutline: \"--discord-ui-container-outline\"; readonly linkButtonBackground: \"--discord-ui-link-button-background\"; readonly linkButtonDisabledBackground: \"--discord-ui-link-button-disabled-background\"; readonly linkButtonText: \"--discord-ui-link-button-text\"; readonly linkButtonDisabledText: \"--discord-ui-link-button-disabled-text\"; readonly secondaryBackground: \"--discord-ui-secondary-bg\"; readonly secondaryHover: \"--discord-ui-secondary-hover\"; readonly secondaryActive: \"--discord-ui-secondary-active\"; readonly secondaryBorder: \"--discord-ui-secondary-border\"; readonly spoilerHover: \"--discord-ui-spoiler-hover\"; readonly spoilerRevealed: \"--discord-ui-spoiler-revealed\"; readonly mentionColor: \"--discord-ui-mention-color\"; readonly mentionBackground: \"--discord-ui-mention-fill\"; readonly mentionHover: \"--discord-ui-mention-fill-hover\"; readonly divider: \"--discord-ui-divider\"; readonly codeKeyword: \"--discord-ui-code-keyword\"; readonly codeString: \"--discord-ui-code-string\"; readonly codeNumber: \"--discord-ui-code-number\"; readonly codeTitle: \"--discord-ui-code-title\"; readonly codeComment: \"--discord-ui-code-comment\"; };"}</CodeBlock>
+
+| Token key | CSS variable | Value |
+| --- | --- | --- |
+| `selectChipBackground` | `--discord-ui-select-chip-background` | CSS string |
+| `selectBackground` | `--discord-ui-select-background` | CSS string |
+| `selectMenuBackground` | `--discord-ui-select-menu-background` | CSS string |
+| `selectMuted` | `--discord-ui-select-muted` | CSS string |
+| `channelHeaderDivider` | `--discord-ui-channel-header-divider` | CSS string |
+| `channelInputBackground` | `--discord-ui-channel-input-background` | CSS string |
+| `background` | `--discord-ui-background` | CSS string |
+| `ephemeralBackground` | `--discord-ui-ephemeral-background` | CSS string |
+| `ephemeralHover` | `--discord-ui-ephemeral-hover` | CSS string |
+| `ephemeralBorder` | `--discord-ui-ephemeral-border` | CSS string |
+| `focusBackground` | `--discord-ui-row-hover` | CSS string |
+| `codeBackground` | `--discord-ui-code-background` | CSS string |
+| `spoilerBackground` | `--discord-ui-spoiler-hidden` | CSS string |
+| `quoteBorder` | `--discord-ui-quote-border` | CSS string |
+| `text` | `--discord-ui-text` | CSS string |
+| `muted` | `--discord-ui-muted` | CSS string |
+| `strong` | `--discord-ui-strong` | CSS string |
+| `link` | `--discord-ui-link` | CSS string |
+| `accent` | `--discord-ui-accent` | CSS string |
+| `warning` | `--discord-ui-warning` | CSS string |
+| `border` | `--discord-ui-border` | CSS string |
+| `surface` | `--discord-ui-surface` | CSS string |
+| `embedBorder` | `--discord-ui-embed-border` | CSS string |
+| `embedAccent` | `--discord-ui-embed-accent` | CSS string |
+| `containerSurface` | `--discord-ui-container-surface` | CSS string |
+| `containerOutline` | `--discord-ui-container-outline` | CSS string |
+| `linkButtonBackground` | `--discord-ui-link-button-background` | CSS string |
+| `linkButtonDisabledBackground` | `--discord-ui-link-button-disabled-background` | CSS string |
+| `linkButtonText` | `--discord-ui-link-button-text` | CSS string |
+| `linkButtonDisabledText` | `--discord-ui-link-button-disabled-text` | CSS string |
+| `secondaryBackground` | `--discord-ui-secondary-bg` | CSS string |
+| `secondaryHover` | `--discord-ui-secondary-hover` | CSS string |
+| `secondaryActive` | `--discord-ui-secondary-active` | CSS string |
+| `secondaryBorder` | `--discord-ui-secondary-border` | CSS string |
+| `spoilerHover` | `--discord-ui-spoiler-hover` | CSS string |
+| `spoilerRevealed` | `--discord-ui-spoiler-revealed` | CSS string |
+| `mentionColor` | `--discord-ui-mention-color` | CSS string |
+| `mentionBackground` | `--discord-ui-mention-fill` | CSS string |
+| `mentionHover` | `--discord-ui-mention-fill-hover` | CSS string |
+| `divider` | `--discord-ui-divider` | CSS string |
+| `codeKeyword` | `--discord-ui-code-keyword` | CSS string |
+| `codeString` | `--discord-ui-code-string` | CSS string |
+| `codeNumber` | `--discord-ui-code-number` | CSS string |
+| `codeTitle` | `--discord-ui-code-title` | CSS string |
+| `codeComment` | `--discord-ui-code-comment` | CSS string |
+
+### Example
+
+<CodeBlock language="ts">{"import { themeTokenProperties } from \"@arcscord/discord-ui\";\n\nconst accentProperty = themeTokenProperties.accent;"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+## DiscordTheme
+
+<CodeBlock language="ts">{"import type { DiscordTheme } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Reusable theme description with name, retained CSS base, light/dark color scheme and readonly partial token overrides. Supply it to DiscordUI.theme.
+
+<CodeBlock language="ts">{"export type DiscordTheme = {\n  readonly name: string;\n  readonly base: string;\n  readonly colorScheme: \"light\" | \"dark\";\n  readonly tokens: Readonly<ThemeOverrides>;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `base` | Yes | `string` | — | Underlying CSS preset name retained through theme inheritance. |
+| `colorScheme` | Yes | `"light" \| "dark"` | — | Light/dark browser color scheme; inherited unless overridden. |
+| `tokens` | Yes | `Readonly<Partial<ThemeTokens>>` | — | Semantic token overrides applied over the selected/inherited theme. |
+
+### Example
+
+<CodeBlock language="ts">{"import type { DiscordTheme } from \"@arcscord/discord-ui\";\n\nconst preview: DiscordTheme = { name: \"violet\", base: \"ash\", colorScheme: \"dark\", tokens: { accent: \"#a7a9ff\" } };"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+Related types: [ThemeOverrides](/docs/api/themes#themeoverrides).
+
+## ThemeInput
+
+<CodeBlock language="ts">{"import type { ThemeInput } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+A preset ThemeName or a complete DiscordTheme object. Custom themes are passed directly rather than globally registered.
+
+<CodeBlock language="ts">{"export type ThemeInput = ThemeName | DiscordTheme;"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import type { ThemeInput } from \"@arcscord/discord-ui\";\n\nconst preview: ThemeInput = \"dark\";"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+Related types: [ThemeName](/docs/api/themes#themename), [DiscordTheme](/docs/api/themes#discordtheme).
+
+## ThemeName
+
+<CodeBlock language="ts">{"import type { ThemeName } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+The three supported preset names: light, ash and dark.
+
+<CodeBlock language="ts">{"export type ThemeName = keyof typeof themes;"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import type { ThemeName } from \"@arcscord/discord-ui\";\n\nconst preview: ThemeName = \"dark\";"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+## ThemeOverrides
+
+<CodeBlock language="ts">{"import type { ThemeOverrides } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Partial token map; omitted keys inherit the base CSS preset and parent overrides. Wrapper overrides win over selected-theme tokens.
+
+<CodeBlock language="ts">{"export type ThemeOverrides = Partial<ThemeTokens>;"}</CodeBlock>
+
+| Token key | CSS variable | Value |
+| --- | --- | --- |
+| `selectChipBackground` | `--discord-ui-select-chip-background` | CSS string |
+| `selectBackground` | `--discord-ui-select-background` | CSS string |
+| `selectMenuBackground` | `--discord-ui-select-menu-background` | CSS string |
+| `selectMuted` | `--discord-ui-select-muted` | CSS string |
+| `channelHeaderDivider` | `--discord-ui-channel-header-divider` | CSS string |
+| `channelInputBackground` | `--discord-ui-channel-input-background` | CSS string |
+| `background` | `--discord-ui-background` | CSS string |
+| `ephemeralBackground` | `--discord-ui-ephemeral-background` | CSS string |
+| `ephemeralHover` | `--discord-ui-ephemeral-hover` | CSS string |
+| `ephemeralBorder` | `--discord-ui-ephemeral-border` | CSS string |
+| `focusBackground` | `--discord-ui-row-hover` | CSS string |
+| `codeBackground` | `--discord-ui-code-background` | CSS string |
+| `spoilerBackground` | `--discord-ui-spoiler-hidden` | CSS string |
+| `quoteBorder` | `--discord-ui-quote-border` | CSS string |
+| `text` | `--discord-ui-text` | CSS string |
+| `muted` | `--discord-ui-muted` | CSS string |
+| `strong` | `--discord-ui-strong` | CSS string |
+| `link` | `--discord-ui-link` | CSS string |
+| `accent` | `--discord-ui-accent` | CSS string |
+| `warning` | `--discord-ui-warning` | CSS string |
+| `border` | `--discord-ui-border` | CSS string |
+| `surface` | `--discord-ui-surface` | CSS string |
+| `embedBorder` | `--discord-ui-embed-border` | CSS string |
+| `embedAccent` | `--discord-ui-embed-accent` | CSS string |
+| `containerSurface` | `--discord-ui-container-surface` | CSS string |
+| `containerOutline` | `--discord-ui-container-outline` | CSS string |
+| `linkButtonBackground` | `--discord-ui-link-button-background` | CSS string |
+| `linkButtonDisabledBackground` | `--discord-ui-link-button-disabled-background` | CSS string |
+| `linkButtonText` | `--discord-ui-link-button-text` | CSS string |
+| `linkButtonDisabledText` | `--discord-ui-link-button-disabled-text` | CSS string |
+| `secondaryBackground` | `--discord-ui-secondary-bg` | CSS string |
+| `secondaryHover` | `--discord-ui-secondary-hover` | CSS string |
+| `secondaryActive` | `--discord-ui-secondary-active` | CSS string |
+| `secondaryBorder` | `--discord-ui-secondary-border` | CSS string |
+| `spoilerHover` | `--discord-ui-spoiler-hover` | CSS string |
+| `spoilerRevealed` | `--discord-ui-spoiler-revealed` | CSS string |
+| `mentionColor` | `--discord-ui-mention-color` | CSS string |
+| `mentionBackground` | `--discord-ui-mention-fill` | CSS string |
+| `mentionHover` | `--discord-ui-mention-fill-hover` | CSS string |
+| `divider` | `--discord-ui-divider` | CSS string |
+| `codeKeyword` | `--discord-ui-code-keyword` | CSS string |
+| `codeString` | `--discord-ui-code-string` | CSS string |
+| `codeNumber` | `--discord-ui-code-number` | CSS string |
+| `codeTitle` | `--discord-ui-code-title` | CSS string |
+| `codeComment` | `--discord-ui-code-comment` | CSS string |
+
+### Example
+
+<CodeBlock language="ts">{"import type { ThemeOverrides } from \"@arcscord/discord-ui\";\n\nconst preview: ThemeOverrides = { accent: \"#5865f2\" };"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+Related types: [ThemeTokens](/docs/api/themes#themetokens).
+
+## ThemeTokens
+
+<CodeBlock language="ts">{"import type { ThemeTokens } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Complete map: every token key is required with a string CSS value. Prefer ThemeOverrides for a partial customization. The table below describes all accepted keys.
+
+<CodeBlock language="ts">{"export type ThemeTokens = { [Key in keyof typeof themeTokenProperties]: string };"}</CodeBlock>
+
+| Token key | CSS variable | Value |
+| --- | --- | --- |
+| `selectChipBackground` | `--discord-ui-select-chip-background` | CSS string |
+| `selectBackground` | `--discord-ui-select-background` | CSS string |
+| `selectMenuBackground` | `--discord-ui-select-menu-background` | CSS string |
+| `selectMuted` | `--discord-ui-select-muted` | CSS string |
+| `channelHeaderDivider` | `--discord-ui-channel-header-divider` | CSS string |
+| `channelInputBackground` | `--discord-ui-channel-input-background` | CSS string |
+| `background` | `--discord-ui-background` | CSS string |
+| `ephemeralBackground` | `--discord-ui-ephemeral-background` | CSS string |
+| `ephemeralHover` | `--discord-ui-ephemeral-hover` | CSS string |
+| `ephemeralBorder` | `--discord-ui-ephemeral-border` | CSS string |
+| `focusBackground` | `--discord-ui-row-hover` | CSS string |
+| `codeBackground` | `--discord-ui-code-background` | CSS string |
+| `spoilerBackground` | `--discord-ui-spoiler-hidden` | CSS string |
+| `quoteBorder` | `--discord-ui-quote-border` | CSS string |
+| `text` | `--discord-ui-text` | CSS string |
+| `muted` | `--discord-ui-muted` | CSS string |
+| `strong` | `--discord-ui-strong` | CSS string |
+| `link` | `--discord-ui-link` | CSS string |
+| `accent` | `--discord-ui-accent` | CSS string |
+| `warning` | `--discord-ui-warning` | CSS string |
+| `border` | `--discord-ui-border` | CSS string |
+| `surface` | `--discord-ui-surface` | CSS string |
+| `embedBorder` | `--discord-ui-embed-border` | CSS string |
+| `embedAccent` | `--discord-ui-embed-accent` | CSS string |
+| `containerSurface` | `--discord-ui-container-surface` | CSS string |
+| `containerOutline` | `--discord-ui-container-outline` | CSS string |
+| `linkButtonBackground` | `--discord-ui-link-button-background` | CSS string |
+| `linkButtonDisabledBackground` | `--discord-ui-link-button-disabled-background` | CSS string |
+| `linkButtonText` | `--discord-ui-link-button-text` | CSS string |
+| `linkButtonDisabledText` | `--discord-ui-link-button-disabled-text` | CSS string |
+| `secondaryBackground` | `--discord-ui-secondary-bg` | CSS string |
+| `secondaryHover` | `--discord-ui-secondary-hover` | CSS string |
+| `secondaryActive` | `--discord-ui-secondary-active` | CSS string |
+| `secondaryBorder` | `--discord-ui-secondary-border` | CSS string |
+| `spoilerHover` | `--discord-ui-spoiler-hover` | CSS string |
+| `spoilerRevealed` | `--discord-ui-spoiler-revealed` | CSS string |
+| `mentionColor` | `--discord-ui-mention-color` | CSS string |
+| `mentionBackground` | `--discord-ui-mention-fill` | CSS string |
+| `mentionHover` | `--discord-ui-mention-fill-hover` | CSS string |
+| `divider` | `--discord-ui-divider` | CSS string |
+| `codeKeyword` | `--discord-ui-code-keyword` | CSS string |
+| `codeString` | `--discord-ui-code-string` | CSS string |
+| `codeNumber` | `--discord-ui-code-number` | CSS string |
+| `codeTitle` | `--discord-ui-code-title` | CSS string |
+| `codeComment` | `--discord-ui-code-comment` | CSS string |
+
+### Example
+
+<CodeBlock language="ts">{"import type { ThemeTokens } from \"@arcscord/discord-ui\";\n\nfunction accentOf(tokens: ThemeTokens): string { return tokens.accent; }"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+## resolveTheme
+
+<CodeBlock language="ts">{"import { resolveTheme } from \"@arcscord/discord-ui/themes\";"}</CodeBlock>
+
+Available from /themes only. Resolves a preset name/custom object and merges per-scope overrides (default `{}`). Returns a new theme object; it does not register global state.
+
+<CodeBlock language="ts">{"export function resolveTheme(theme: ThemeInput, overrides?: ThemeOverrides): DiscordTheme;"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import { resolveTheme } from \"@arcscord/discord-ui/themes\";\n\nconst preview = resolveTheme(\"ash\", { accent: \"#5865f2\" });"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+Related types: [DiscordTheme](/docs/api/themes#discordtheme).
+
+## themeStyle
+
+<CodeBlock language="ts">{"import { themeStyle } from \"@arcscord/discord-ui/themes\";"}</CodeBlock>
+
+Available from /themes only. Converts supplied semantic token keys to their CSS custom-property names in a React CSSProperties object. It does not validate contrast or apply a stylesheet.
+
+<CodeBlock language="ts">{"export function themeStyle(tokens: Readonly<ThemeOverrides>): CSSProperties;"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import { themeStyle } from \"@arcscord/discord-ui/themes\";\n\nconst style = themeStyle({ accent: \"#5865f2\" });"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
+</div>

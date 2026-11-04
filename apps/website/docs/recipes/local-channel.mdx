@@ -1,0 +1,53 @@
+---
+title: Channel with local messages
+description: Add messages to a channel by turning send intent into new immutable display snapshots.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Channel with local messages
+
+Add messages to a channel by turning send intent into new immutable display snapshots.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-local-channel" initiallyOpen />
+
+## Own the conversation
+
+Initialize a `ChannelViewModel` in application state. `ChannelView` receives it and
+reports text through `onSend`. The handler creates a new message and replaces the
+messages array; no hidden message store is involved. The built-in composer clears
+its local draft after a handled send.
+
+The example uses deterministic IDs based on the current list and a fixed timestamp
+for every local send. These choices make the demo reproducible, not suitable as
+a persistent ID/time authority. In a real application, create authoritative IDs
+and timestamps at an event/data boundary and pass them into display snapshots.
+
+## Reset and scrolling
+
+Clear local messages restores the initial message array. It does not promise to
+clear an unfinished composer draft because channel identity remains unchanged.
+Restart demo remounts the example and clears all its local state. `autoScroll`
+defaults to true and a changed last-message ID scrolls to the bottom; use your own
+scrolling composition when a different unread/anchoring policy is required.
+
+## Connect a backend
+
+The host owns authorization, validation, send requests and error reconciliation.
+Do not treat a displayed local message as delivery confirmation. Add pending and
+failure feedback in your application's surrounding UI when needed. This recipe has
+no Discord transport, database or cross-tab persistence.
+
+## Related contracts and next steps
+
+[ChannelView](/docs/api/conversation-components#channelview), [ChannelViewModel](/docs/api/models#channelviewmodel).
+
+[Edit this recipe](/playground?example=recipe-local-channel) · [Compare all themes](/components?example=recipe-local-channel) · [All recipes](../recipes.md)

@@ -1,0 +1,75 @@
+---
+title: Composer and slash commands
+description: Practical usage and behavior of composer and slash commands in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Composer';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Composer.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Composer and slash commands
+
+`ChannelComposer` has a controlled text value. It reports ordinary sends and
+slash-command invocations through separate callbacks.
+
+## API reference
+
+[ChannelComposer](/docs/api/conversation-components#channelcomposer), [DiscordUI](/docs/api/display-components#discordui).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Composer.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Control text and sending
+
+Supply `channelName`, `value` and `onValueChange`. Ordinary text is sendable only
+when `onSend` is provided and the draft is not whitespace-only. Enter sends,
+Shift+Enter keeps a newline, and composition events are respected. A standalone
+composer does not clear an ordinary message itself; update the value in your
+handler, as above. `ChannelView` handles its built-in local draft for you.
+
+`disabled` blocks changes/sending. `leading` and `trailing` accept custom adornments.
+The send button appears only when the current mode has an applicable handler.
+
+## Define local commands
+
+A `SlashCommand` has `name` and `description`, optional `application`, and optional
+`arguments`. Names have no leading slash and may contain spaces for subcommands.
+Arguments have `name`, `description`, optional `required` and optional fixed
+`choices: [{ name, value }]`; omit choices for free text.
+
+Typing `/` shows matching supplied command names. Arrow keys change the active
+suggestion; Enter or Tab selects it; Escape hides suggestions. Choosing a command
+opens its argument editor and clears the text value. Users can add/remove argument
+chips and filter fixed choices. Required arguments must contain nonblank values;
+fixed-choice values must match a supplied choice before invocation is enabled.
+
+## Handle invocation and cancellation
+
+`onSlashCommand({ command, arguments })` receives the full selected command and a
+record from argument name to string value. Empty values are omitted. After a
+successful local invocation the command editor and value clear. Escape cancels
+the selected command, returns the value to `/` and restores text-input focus.
+
+Supply a handler to render a local result, or translate the invocation into an
+application request. This is not command registration, Discord interaction
+acknowledgment, payload validation or a bot transport. The realistic example
+builds a local response message; the landing arcade also simulates responses.
+
+## A realistic example
+
+[Inspect the composer and slash commands example](/components?example=slash-commands) or
+[edit the full catalogue module](/playground?example=slash-commands). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="slash-commands" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

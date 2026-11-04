@@ -24,7 +24,10 @@
     "build:website": "pnpm --filter @arcscord/discord-ui-website... build",
     "test:browser": "pnpm test:website",
     "test:website": "pnpm build:website && playwright test -c playwright.website.config.mts",
-    "generate:avatars": "node scripts/workspace/generate-avatars.mts"
+    "generate:avatars": "node scripts/workspace/generate-avatars.mts",
+    "docs:api": "pnpm build:lib && node scripts/docs/generate-api-reference.mts",
+    "docs:api:check": "node scripts/docs/generate-api-reference.mts --check",
+    "docs:check": "pnpm docs:api:check && node scripts/docs/check-docs.mts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",

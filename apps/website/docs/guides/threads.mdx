@@ -1,0 +1,77 @@
+---
+title: Threads
+description: Practical usage and behavior of threads in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Threads';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Threads.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Threads
+
+A summary, a loaded thread and a reply are different models. `ThreadPreview`
+displays the summary; `ThreadPanel` displays the loaded conversation.
+
+## API reference
+
+[ChannelView](/docs/api/conversation-components#channelview), [DiscordUI](/docs/api/display-components#discordui).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Threads.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Connect the models
+
+Put a `ThreadSummaryView` in the starter message's `thread` field. It contains
+`id`, `name`, `messageCount` and optional last-message author/content/timestamp.
+A `ThreadView` has the same thread ID, a `parentMessageId` and `messages` containing
+**replies only**. Keep the starter in the channel's messages, not in the replies.
+Thread message models cannot recursively contain another thread summary.
+
+For integrated navigation, include the loaded thread in `channel.threads`. A thread
+is available only when the matching parent message exists and its summary has the
+same thread ID. Unknown IDs do not fetch data or open a panel. Summary counts and
+last-message previews are supplied snapshots; update them when adding replies.
+
+## Local or controlled navigation
+
+Omit `activeThreadId` for local `ChannelView` navigation. Pass a string to open a
+loaded thread, or `null` to close it, when application state controls navigation.
+`onThreadOpen(threadId)` and `onThreadClose()` report intent. Update the controlled
+value in those callbacks; keeping it unchanged leaves navigation unchanged.
+
+The minimal example hides the channel composer and disables thread composition.
+Hiding the channel composer does not by itself remove the thread composer.
+Use `onThreadSend(threadId, content)` to handle integrated replies. It does not
+append a message or update summary counts automatically.
+
+## Standalone panels and focus
+
+Place `ThreadPanel` within `DiscordUI`, supply a `thread`, and optionally provide
+`parentMessage`, `onClose()` and `onSend(content)`. It prepends the supplied parent
+to the rendered history without adding it to the reply model. The default composer
+can be disabled; there is no standalone `composer={false}` prop.
+
+A panel with a close control focuses it on opening; Escape requests closing.
+Integrated channel navigation restores focus to its opener, falling back to history
+if the opener is gone. In a custom standalone layout, restore focus yourself.
+Changing `thread.id` resets standalone local draft/interaction state. Parent/summary
+text is escaped display content, not a recursive renderer of the original message.
+
+## A realistic example
+
+[Inspect the threads example](/components?example=thread-panel) or
+[edit the full catalogue module](/playground?example=thread-panel). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="thread-panel" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

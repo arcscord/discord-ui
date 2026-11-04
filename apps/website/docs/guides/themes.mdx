@@ -1,0 +1,69 @@
+---
+title: Themes and customization
+description: Practical usage and behavior of themes and customization in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Themes';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Themes.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Themes and customization
+
+Themes are scoped through `DiscordUI`. Light, Ash and Dark work independently
+from the documentation site's own dark shell.
+
+## API reference
+
+[defineTheme](/docs/api/themes#definetheme), [DiscordUI](/docs/api/display-components#discordui), [Message](/docs/api/display-components#message).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Themes.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Select a preset
+
+Use `theme="light"`, `theme="ash"` or `theme="dark"`. The default is Dark. Preset
+colors live in the compiled stylesheet, so importing JS theme helpers does not
+replace the CSS import. Ash and Dark use a dark color scheme; Light uses light.
+The select above changes only the first preview. The second uses a custom theme.
+
+## Extend and override
+
+`defineTheme({ name, extends, tokens, colorScheme })` returns a reusable theme
+object without registering global state. `extends` accepts a preset name or another
+custom theme; it defaults to Dark. Token overrides merge over the parent, and the
+original preset base/color scheme is inherited unless the color scheme is explicit.
+
+Pass the result as `DiscordUI.theme`. The wrapper's `tokens` prop applies final
+per-scope overrides over the selected theme. Prefer semantic tokens such as
+`text`, `muted`, `surface`, `accent`, `border`, `containerSurface` and
+`selectChipBackground` to styling internal elements directly.
+
+## Keep scopes independent
+
+Separate wrappers can use separate themes; no Tailwind setup or remote font is
+required. `themeTokenProperties` maps typed token keys to the public CSS variable
+names. Helpers and theme types are available from both the root and `/themes`;
+the `/themes` entry also exposes `resolveTheme` and `themeStyle`.
+
+Test custom foreground/background combinations, visible focus, disabled controls
+and spoilers in all relevant states. A theme name does not validate contrast.
+Site-only spacing and documentation layout belong outside library theme tokens.
+
+## A realistic example
+
+[Inspect the themes and customization example](/components?example=discord-ui) or
+[edit the full catalogue module](/playground?example=discord-ui). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="discord-ui" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

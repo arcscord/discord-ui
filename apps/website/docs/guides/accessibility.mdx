@@ -1,0 +1,79 @@
+---
+title: Accessibility
+description: Practical usage and behavior of accessibility in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Accessibility';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Accessibility.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Accessibility
+
+Preserve the semantics and focus behavior of the supplied controls when composing
+a custom interface. Accessibility also depends on your labels, content, layout
+and application behavior.
+
+## API reference
+
+[Button](/docs/api/interactive-components#button), [DiscordUI](/docs/api/display-components#discordui), [Spoiler](/docs/api/interactive-components#spoiler).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Accessibility.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Verify keyboard operation
+
+| Control | Expected interaction |
+| --- | --- |
+| Button/reaction/spoiler | Tab focus; Enter or Space activates |
+| Select menu | Arrows navigate, Enter selects, Escape dismisses; entity menus allow text search |
+| Composer | Enter sends; Shift+Enter adds a newline; IME composition is respected |
+| Command suggestions | Arrows navigate; Enter or Tab selects; Escape hides suggestions |
+| Thread panel | Close control and Escape request closing; integrated navigation restores opener focus |
+
+A focused control must remain visible and reachable in narrow layouts. Check open
+menus near viewport edges, scrolling histories, long labels and disabled states.
+Do not remove focus outlines in application CSS. Do not interpret screenshot-only
+inspection as proof of keyboard support.
+
+## Label content and state
+
+Provide meaningful image `alt` text and distinct button labels. Translate the
+labels of the controls actually used, including reveal/hide, unavailable media,
+selection removal and empty history. Reaction buttons expose `aria-pressed`;
+selects expose selection state; spoiler buttons expose `aria-expanded`.
+
+Hidden text spoiler content is inert, and media spoilers defer mounting content
+until reveal. When an application dismisses an ephemeral message or removes a
+focused control, place focus on a sensible remaining control. Standalone thread
+layouts also own focus restoration after closing.
+
+The minimal example announces a local review result through `role="status"`.
+Real applications must choose useful live announcements without making every
+message update noisy. Channel/thread histories already provide log semantics.
+
+## Application-level review
+
+Test realistic content in Light/Ash/Dark, narrow and zoomed layouts, and your target
+browser/assistive-technology combinations. Token overrides can reduce contrast;
+model validity does not validate contrast or accessibility. The repository's narrow
+Chromium checks are viewport tests, not real-device or screen-reader certification.
+Honor reduced-motion preferences in any animations your application adds.
+
+## A realistic example
+
+[Inspect the accessibility example](/components?example=button) or
+[edit the full catalogue module](/playground?example=button). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="button" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

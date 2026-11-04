@@ -1,0 +1,56 @@
+---
+title: Quick start
+description: Render your first Discord message in React with explicit author data, timestamps, compiled styles and a customizable Discord UI theme.
+---
+
+import FirstMessage from '@site/src/components/docs/FirstMessage';
+import firstMessageSource from '!!../plugins/documentation-source-loader.mjs!@site/src/components/docs/FirstMessage.tsx';
+import CodeBlock from '@theme/CodeBlock';
+
+# Render your first message
+
+Complete the [workspace installation](./installation.md) first. Then copy this
+entire module into a `.tsx` file in your React application and render its default
+export from your application's existing entry point.
+
+<FirstMessage />
+
+<CodeBlock language="tsx" title="FirstMessage.tsx">{firstMessageSource}</CodeBlock>
+
+The preview above renders the same module shown in the code block. It needs no
+external images or hidden fixture data. Reveal the spoiler with a click, or focus
+its button with Tab and press Enter or Space.
+
+## Understand the data
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Stable string identifying this message |
+| `author` | Resolved display data supplied by your application |
+| `timestamp` | Explicit ISO 8601 instant including a time zone |
+| `body.kind` | Selects text, Markdown or a Components V2 body |
+| `body.content` | Markdown source for this example |
+
+`MessageView` checks the display model while authoring TypeScript. It does not
+validate data at runtime or convert it into a Discord API payload. Use
+`body: { kind: "text", content: "Hello from React!" }` when formatting is unwanted.
+
+## Understand the wrapper
+
+`DiscordUI` scopes styles and shares display options. Set `theme` to `light`,
+`ash` or `dark`. `locale` and `timeZone` control formatting; the explicit
+`referenceTime` gives relative timestamp rendering a stable reference. Keep these
+values identical on the server and client when hydrating.
+
+The spoiler uses local UI state. Buttons, selections, reactions and sends can
+report interaction intent through callbacks; your application handles updates
+and persistence. This example makes no Discord requests.
+
+## Continue from here
+
+- [Choose a component](./choosing-components.md) for a transcript, channel or thread.
+- [Explore the message example](/components?example=message) in all three themes.
+- [Edit a full message example](/playground?example=message) in the playground.
+  This is a separate catalogue example with additional message features.
+- Read [display models and responsibilities](./concepts.md#display-models-and-application-responsibilities)
+  before connecting application data.

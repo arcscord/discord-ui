@@ -1,0 +1,82 @@
+---
+title: Localization and timestamps
+description: Practical usage and behavior of localization and timestamps in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Localization';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Localization.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Localization and timestamps
+
+Formatting and interface translation are separate settings. Set `locale` and
+`timeZone` for dates/counts, and override `labels` for interface text.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [Message](/docs/api/display-components#message).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Localization.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Translate labels
+
+`DiscordUI.labels` accepts partial overrides, merged with English defaults. It
+does not translate message content or automatically switch text based on locale.
+The example translates only edited/spoiler text; translate the other controls
+used by your application as well.
+
+| Placeholder | Used by |
+| --- | --- |
+| `{name}` | `removeSelection`, `downloadFile` |
+| `{channel}` | `messagePlaceholder` |
+| `{count}` | `threadMessageSingular`, `threadMessagePlural` |
+
+Retain the placeholder when translating. Thread counts use `Intl.PluralRules` to choose the singular string for `one` and
+the plural string otherwise; there are no separate labels for other plural categories.
+Also translate empty/error states, user statuses, menu search feedback and command
+labels. Read the exported `UILabels` type for the available keys.
+
+## Provide explicit instants
+
+Message and embed timestamps must include a time-zone suffix (`Z` or an offset).
+Invalid timestamps render `labels.invalidTimestamp`; the component does not
+silently substitute the current time. `MessageTimestamp` uses a medium date and
+short time in the wrapper locale/time zone. Date separators use the same time zone,
+and reaction counts use locale-aware number formatting.
+
+Discord Markdown timestamp tokens use Unix seconds and support `t`, `T`, `d`, `D`,
+`f`, `F` and relative `R` formatting. For example, `<t:1793528640:R>` renders relative
+to the supplied reference. Relative formatting chooses a unit and rounds it;
+it is not a timer and does not refresh itself as wall time passes.
+
+## Reference-time precedence
+
+`Message` uses the wrapper's `referenceTime`, otherwise its own `timestamp`, for
+its main Markdown/V2 body and embeds. A directly supplied renderer reference time,
+such as on `Markdown`, takes precedence over the wrapper. Standalone Markdown with
+neither uses `1970-01-01T00:00:00Z` as a deterministic fallback.
+
+Classic top-level action rows render their component content with the wrapper's
+reference options, rather than an additional message reference-time prop. Supply
+`DiscordUI.referenceTime` to align all nested timestamp content. Keep values equal
+between server and client; see [SSR and hydration](./ssr.mdx).
+
+## A realistic example
+
+[Inspect the localization and timestamps example](/components?example=message-timestamp) or
+[edit the full catalogue module](/playground?example=message-timestamp). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="message-timestamp" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

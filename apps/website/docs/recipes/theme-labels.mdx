@@ -1,0 +1,52 @@
+---
+title: Custom theme and translated labels
+description: Extend the selected theme and translate the controls used by a French preview while keeping formatting and access control explicit.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Custom theme and translated labels
+
+Extend the selected theme and translate the controls used by a French preview while keeping formatting and access control explicit.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-theme-labels" initiallyOpen />
+
+## Extend the selected preset
+
+`defineTheme` inherits the selected Light/Ash/Dark preset and adds an accent token.
+The resulting custom object is passed directly to `DiscordUI`; no global registry
+is involved. Theme toolbar changes update the visible `previewTheme` constant in
+the copied module, including the parent used by this recipe.
+
+## Translate text and formatting separately
+
+`locale="fr-CH"` and `timeZone="Europe/Zurich"` format the timestamp. Partial labels
+translate the edited marker, spoiler reveal/hide controls and ephemeral notice/
+dismissal. They do not translate message content or every possible UI label.
+Translate additional labels when adding controls. Placeholder tokens such as
+`{name}`, `{channel}` and `{count}` must be preserved in relevant translations.
+
+## Own dismissal and authorization
+
+The host's visible flag removes the message and exposes a restore action. Spoilers
+use their own local reveal state. Neither mechanism is an access boundary;
+`ephemeral` is supplied display metadata. A production host must filter private
+data, enforce authorization and decide where focus moves after removing a focused
+control. The larger catalogue ephemeral example demonstrates focus restoration.
+
+The preview is entirely local, with fixed data and no network requests. Custom
+token choices still need contrast/focus review in each selected theme.
+
+## Related contracts and next steps
+
+[DiscordUI](/docs/api/display-components#discordui), [defineTheme](/docs/api/themes#definetheme), [UILabels](/docs/api/display-components#uilabels).
+
+[Edit this recipe](/playground?example=recipe-theme-labels) · [Compare all themes](/components?example=recipe-theme-labels) · [All recipes](../recipes.md)

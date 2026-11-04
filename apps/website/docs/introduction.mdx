@@ -1,25 +1,46 @@
 ---
 title: Introduction
-hide_table_of_contents: true
-pagination_next: null
-pagination_prev: null
+description: Build Discord message interfaces with React, including Markdown, embeds, Components V2, channels, threads and customizable themes.
 ---
 
+import React from 'react';
 import { DiscordUI, Message } from '@arcscord/discord-ui';
 
 # Discord interfaces, composed with React
 
-Arcscord Discord UI renders dynamic Discord message examples without screenshots.
-Use messages, Markdown, embeds, Components V2, channels and threads in your React interfaces.
+Arcscord Discord UI renders Discord-style interfaces from your application's data.
+Use it for documentation, message builders, interactive previews and transcripts.
 
-<DiscordUI theme="dark" locale="en-US" timeZone="UTC">
+<DiscordUI theme="dark" locale="en-US" timeZone="UTC" referenceTime="2026-11-01T10:24:00Z">
   <Message message={{ id: 'intro', author: { id: 'bot', displayName: 'Welcome Bot', bot: true }, timestamp: '2026-11-01T10:24:00Z', body: { kind: 'markdown', content: '**Hello from React.** Try this spoiler: ||You found it!||' } }} />
 </DiscordUI>
 
-The library renders data supplied by your application. Channel messages and thread replies in
-the demos stay in the browser; they do not call Discord.
+## What you can build
 
-This website and the package are in development. Explore the [component catalogue](/components)
-or [edit the examples in React](/playground?example=message). The complete guides are planned for the next stage.
+- Individual messages with Markdown, mentions, emoji, replies, embeds and files.
+- Components V2 layouts with buttons, select menus, galleries and containers.
+- Channels with message history, a composer, slash commands and thread navigation.
+- Light, Ash and Dark previews with custom tokens and translated interface labels.
 
-[Read the installation status](./installation.md) or [explore the components](/components).
+The [component catalogue](/components?example=message) shows real package components.
+The [playground](/playground?example=message) lets you edit complete React examples.
+Channel sends and thread replies in these examples are local browser simulations.
+
+## What your application owns
+
+Supply resolved authors, entities, string IDs and explicit timestamps. Handle
+interaction callbacks, update the displayed data, and own persistence and network
+requests. Rendering a message does not send it to Discord. Display models are not
+Discord send payloads or a validator for those payloads. An ephemeral flag describes
+appearance; your application controls access to private data.
+
+## Start here
+
+1. Read [installation](./installation.md) for the current workspace setup and CSS import.
+2. Copy the complete module in [Quick start](./quick-start.mdx).
+3. Use [Choosing your components](./choosing-components.md) to find the right level of composition.
+4. Continue with [core concepts](./concepts.md) and the [guide directory](./guides.md).
+
+The package and site are in development. The repository declares version `0.0.0`
+and documents a workspace setup pending the first npm release. See
+[compatibility and limitations](./project.md#compatibility-and-limitations) before integrating.

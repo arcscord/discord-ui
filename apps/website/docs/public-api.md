@@ -5,7 +5,9 @@ title: Interaction state
 # Interaction state
 
 The application supplies resolved display data and handles persistence and Discord
-requests. Rendering a message does not send it to Discord.
+requests. Rendering a message does not send it to Discord. Read
+[core concepts](./concepts.md) for model boundaries and
+[buttons and select menus](./guides/interactions.mdx) for the five menu variants.
 
 ## Controlled selections
 
@@ -67,7 +69,9 @@ Handlers accepting only the original arguments continue to work.
 
 Changing `channel.id` on `ChannelView`, or `thread.id` on a standalone
 `ThreadPanel`, resets its draft and local interaction state. The application can
-provide a custom composer when drafts need to persist across conversations.
+provide a custom composer on `ChannelView` when drafts need to persist across
+conversations. Standalone `ThreadPanel` has no composer replacement prop.
+Application-owned controlled values are not cleared by these local remounts.
 
 `ChannelView` navigates threads locally by default. Pass `activeThreadId` to
 control navigation externally: a string opens a loaded thread, and `null` closes
@@ -90,3 +94,10 @@ options. Invalid, blocked or failed select avatars fall back to the user's initi
 Every public component exports its corresponding `*Props` type. Serializable
 model arrays accept `readonly` inputs, including `as const` fixtures. Applications
 should create updated snapshots instead of mutating model arrays in place.
+
+## Related guides
+
+[Channels](./guides/channels.mdx), [threads](./guides/threads.mdx),
+[reactions](./guides/reactions.mdx), [localization](./guides/localization.mdx) and
+[media policy](./guides/media.mdx#remote-media-policy) explain the corresponding
+application responsibilities and working examples.

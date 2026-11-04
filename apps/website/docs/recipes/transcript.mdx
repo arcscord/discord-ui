@@ -1,0 +1,54 @@
+---
+title: Read-only transcript
+description: Assemble a support transcript with resolved reply snapshots and a file. Keep message order and timestamps explicit, with no composer or sending callback.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Read-only transcript
+
+Assemble a support transcript with resolved reply snapshots and a file. Keep message order and timestamps explicit, with no composer or sending callback.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-transcript" initiallyOpen />
+
+## Prepare the data
+
+Supply an ordered message array. Each message has a stable string ID, resolved
+author, time-zone-qualified timestamp and a classic body. The second message's
+`reply` is a plain-text snapshot of the first; it does not fetch the original.
+Its attachment is a separate `FileView` with an explicit HTTP(S) download URL.
+
+## Assemble the interface
+
+`MessageList` renders the supplied order and date separators within `DiscordUI`.
+It supplies neither a composer nor a viewport. Place it in your application's own
+scrolling container if the transcript needs a fixed height. Without reaction or
+component handlers, these supplied messages have no mutation actions.
+
+## Replace the fixture file
+
+The example file is `apps/website/static/examples/welcome-config.json`. Copy it to
+your application's public `examples` directory, then replace the sample absolute
+URL with your own HTTP(S) endpoint. The sample URL targets the documentation host;
+it is not proof that the file has been deployed there. Image policy does not block
+file links. Do not place private attachments behind public URLs without access control.
+
+## Application responsibilities
+
+Fetch/normalize the transcript before rendering and filter it for the viewer.
+Persist the archive and authorize downloads in the host. Read-only here describes
+the provided controls, not content permissions or immutable storage.
+
+## Related contracts and next steps
+
+[MessageList](/docs/api/conversation-components#messagelist), [MessageView](/docs/api/models#messageview), [FileView](/docs/api/models#fileview).
+
+[Edit this recipe](/playground?example=recipe-transcript) · [Compare all themes](/components?example=recipe-transcript) · [All recipes](../recipes.md)

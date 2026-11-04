@@ -1,0 +1,88 @@
+---
+title: Media, galleries and files
+description: Practical usage and behavior of media, galleries and files in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Media';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Media.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Media, galleries and files
+
+Use `Media` for an image, `MediaGallery` for multiple image models and `File` for a
+file card. The component does not inspect MIME types or turn a file into a video player.
+
+## API reference
+
+[DiscordUI](/docs/api/display-components#discordui), [File](/docs/api/interactive-components#file), [MediaGallery](/docs/api/display-components#mediagallery).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Media.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Supply assets and dimensions
+
+A `MediaView` requires `id`, `url` and `alt`; `width` and `height` are optional.
+Dimensions reserve space and describe aspect ratio. Give every gallery item a
+stable ID. For a classic message, use `media` and `attachments`; in a V2 body use
+media-gallery and file nodes inside the component tree.
+
+The minimal example uses `/examples/landscape.svg`. Copy
+`apps/website/static/examples/landscape.svg` into your app's public `examples`
+directory, or replace the path with your own asset. The report link is an
+illustrative HTTP(S) URL, not a downloadable fixture provided by the library.
+`FileView.size` is already formatted text, such as `24 KB`, not a byte count.
+
+## Spoilers and failures
+
+Set `spoiler: true` on an image or file to hide it behind a reveal control.
+Spoiled media is not mounted until revealed. Width and height help the concealed
+image preserve its aspect ratio. A text spoiler conceals already-rendered text.
+
+Blocked, invalid or failed images show a localized unavailable state associated
+with the image alternative. Avatars and selected-user chips have their own initial
+fallbacks. Revealing content is local UI state, not authorization.
+
+## Remote media policy
+
+`DiscordUI.allowRemoteMedia` defaults to `true`. Setting it to `false` blocks
+explicit HTTP(S) image sources across avatars, custom emoji, galleries, embed
+images/icons, reply/thread avatars and select-menu avatars.
+
+Root-relative paths (a single leading slash without backslashes), HTTP(S) blob
+URLs, and supported base64 PNG/JPEG/GIF/WebP image data remain accepted. Protocol-
+relative URLs and executable schemes are rejected. Absolute HTTP(S) image URLs
+are blocked even when they point to your own host; use a root-relative asset path
+when appropriate. SVG data URLs are not an accepted image-data format.
+
+**This is not a network sandbox or a URL allowlist for the whole application.**
+File download links, ordinary Markdown links and link buttons still use their
+separate HTTP(S) link policy and remain usable. Root-relative URLs may also be
+served or redirected by your application. Apply application-level policies where
+needed.
+
+## File links
+
+Files expose a name link and a download control only for allowed HTTP(S) URLs.
+Unsafe file URLs leave the name as text. Relative file paths do not satisfy that
+link policy; resolve your file endpoint to an explicit HTTP(S) URL. The browser
+and remote server determine download behavior; a download attribute does not
+promise cross-origin downloading.
+
+## A realistic example
+
+[Inspect the media, galleries and files example](/components?example=media-gallery) or
+[edit the full catalogue module](/playground?example=media-gallery). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="media-gallery" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

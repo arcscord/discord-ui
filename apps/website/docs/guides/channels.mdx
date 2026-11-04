@@ -1,0 +1,82 @@
+---
+title: Channels and message history
+description: Practical usage and behavior of channels and message history in Arcscord Discord UI.
+---
+
+import Example from '@site/src/components/docs/guides/Channels';
+import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Channels.tsx';
+import CodeBlock from '@theme/CodeBlock';
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Channels and message history
+
+`ChannelView` combines a header, scrolling message list, composer and loaded
+thread navigation. `MessageList` renders just an ordered history in your own layout.
+
+## API reference
+
+[ChannelView](/docs/api/conversation-components#channelview), [DiscordUI](/docs/api/display-components#discordui).
+
+## Minimal example
+
+<Example />
+
+<CodeBlock language="tsx" title="Channels.tsx">{source}</CodeBlock>
+
+This is a complete React module. The preview renders the module whose source is
+shown above; copy it into a `.tsx` file after [installation](../installation.md).
+
+## Supply ordered snapshots
+
+A `ChannelViewModel` has `id`, `name`, optional `topic`, `messages` and optional
+`threads`. Array order is render order: there is no sorting, pagination, Discord
+fetch or virtualized history API. Add messages by returning a new snapshot.
+`MessageList` can add date separators using the wrapper time zone; invalid
+message timestamps do not create a date separator. An empty history shows the
+translated empty-channel label.
+
+The minimal example deliberately uses fixed timestamps and deterministic IDs
+within its local list. For an actual application, assign persistent IDs and
+authoritative timestamps when an event is received or created, outside rendering.
+
+## Composer and layout
+
+`onSend(content)` reports the text; append a message yourself. The built-in channel
+composer clears its local draft after a handled send. `composer={false}` hides it;
+`composerDisabled` disables it; `composer` and `header` accept custom React nodes.
+A `MessageList` has no composer or viewport and should live in your own container.
+
+`ChannelView` adds a default `DiscordUI` wrapper when used outside a scope. Supply
+an explicit wrapper to share the intended theme, locale, labels and entity maps.
+The default height is 560; the minimal example uses 320.
+
+## Scrolling behavior
+
+`autoScroll` defaults to `true`. Opening a conversation or changing the last message
+ID scrolls to the bottom and re-enables following. Therefore an appended message
+can move a reader who had scrolled upward. Size changes, such as an image loading,
+follow the bottom only while the reader remains within 24 pixels of it.
+
+Set `autoScroll={false}` to opt out of this automatic positioning. Use `MessageList`
+in your own scrolling layout when you need application-specific pagination,
+anchoring or unread behavior. The documentation website has its own page-scroll
+chaining override; it does not redefine library history defaults.
+
+## Conversation identity
+
+Changing `channel.id` remounts channel-local draft, selections and thread navigation.
+Controlled selections remain in the application. Use an external draft store and
+a custom composer if drafts must survive conversation switches. See
+[threads](./threads.mdx) for the parent/thread links needed to open loaded panels.
+
+## A realistic example
+
+[Inspect the channels and message history example](/components?example=channel-view) or
+[edit the full catalogue module](/playground?example=channel-view). The catalogue
+example is a separate scenario with additional content. Its interactions run
+locally in the browser; they do not connect to Discord.
+
+<ReferenceExample id="channel-view" />
+
+Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
+or the [public export directory](../api-reference.md).

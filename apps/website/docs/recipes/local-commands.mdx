@@ -1,0 +1,52 @@
+---
+title: Local slash-command demo
+description: Define a /greet command and append a local response carrying the invoking user and command context.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Local slash-command demo
+
+Define a /greet command and append a local response carrying the invoking user and command context.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-local-commands" initiallyOpen />
+
+## Define the command
+
+Supply a command name without the slash, description and required free-text `name`
+argument. Typing `/greet` selects the local definition. Choose the argument, enter
+a value and submit. The composer gates invocation until required arguments contain
+nonblank values; fixed choices could be supplied instead for an enumerated argument.
+
+## Generate the response
+
+`onSlashCommand` receives the full supplied command and a record of string argument
+values. The handler appends a response message with `reply.kind: "interaction"`,
+the invoking user's resolved metadata and command name. The message author is the
+responding application. This distinguishes invocation context from a normal reply
+snapshot and from a thread.
+
+The response body uses plain text so the entered name is not interpreted as
+Markdown. The example does not infer a viewer identity or register a command with
+Discord. The normal text-send handler is absent: this channel demonstrates commands.
+
+## Integrate responsibly
+
+In a real host, translate validated intent into an application request and handle
+its response, errors and any protocol acknowledgments there. Local validation is
+not Discord payload validation, authorization or bot transport. The deterministic
+IDs/timestamps in this recipe are not a persistent event log.
+
+## Related contracts and next steps
+
+[ChannelComposer](/docs/api/conversation-components#channelcomposer), [SlashCommand](/docs/api/models#slashcommand), [SlashCommandInvocation](/docs/api/models#slashcommandinvocation), [InteractionReplyView](/docs/api/models#interactionreplyview).
+
+[Edit this recipe](/playground?example=recipe-local-commands) · [Compare all themes](/components?example=recipe-local-commands) · [All recipes](../recipes.md)

@@ -1,0 +1,57 @@
+---
+title: Channel with threads
+description: Control thread navigation while keeping loaded replies and the parent summary synchronized.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Channel with threads
+
+Control thread navigation while keeping loaded replies and the parent summary synchronized.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-channel-threads" initiallyOpen />
+
+## Link the parent and thread
+
+The starter remains in `channel.messages` with a `thread` summary. The loaded thread
+in `channel.threads` has the matching ID and `parentMessageId`; its messages contain
+replies only. Unknown or mismatched thread IDs cannot open a loaded panel.
+
+## Control navigation
+
+A string `activeThreadId` opens a loaded thread and `null` closes the controlled
+panel. `onThreadOpen` and `onThreadClose` update that application state. Closing by
+Escape requests the same change and integrated navigation restores focus to the
+opener. Omitting the prop would instead enable local navigation.
+
+The channel composer is hidden, while the thread composer remains available.
+`composer={false}` does not hide the thread composer.
+
+## Add a reply and update the summary
+
+`onThreadSend(threadId, content)` appends a reply to the matching loaded thread.
+The same state update replaces the starter's `messageCount` and `lastMessage`
+snapshot. The summary is not derived automatically by the renderer. The example's
+fixed timestamp and local counter are demo choices; real IDs/times come from your
+application's event boundary.
+
+## Application responsibilities
+
+Fetch and authorize replies before supplying them, own pagination/persistence,
+and reconcile send failures. These callbacks do not fetch a thread or send a
+Discord reply. Server counts may differ from the number of replies currently
+loaded; preserve that distinction when replacing this fully loaded local example.
+
+## Related contracts and next steps
+
+[ChannelView](/docs/api/conversation-components#channelview), [ThreadView](/docs/api/models#threadview), [ThreadSummaryView](/docs/api/models#threadsummaryview).
+
+[Edit this recipe](/playground?example=recipe-channel-threads) · [Compare all themes](/components?example=recipe-channel-threads) · [All recipes](../recipes.md)

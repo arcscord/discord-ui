@@ -1,0 +1,37 @@
+---
+title: Public entry points
+description: ESM imports, compiled CSS and optional modules for the public package.
+---
+
+# Public entry points
+
+The package declares four entry points. Imports into internal `src` or `dist`
+subpaths are outside the public contract. The repository declares version `0.0.0`
+and documents workspace use pending a verified release; see [installation](../installation.md).
+
+| Import | Public contents | Reference |
+| --- | --- | --- |
+| `@arcscord/discord-ui` | React components and props, display models, callbacks, theme helpers/types | [Components](./display-components.mdx), [models](./models.mdx), [callbacks](./callbacks.mdx) |
+| `@arcscord/discord-ui/styles.css` | Precompiled scoped CSS | Styling below |
+| `@arcscord/discord-ui/themes` | `defineTheme`, `themes`, `themeTokenProperties`, all theme types, plus `resolveTheme` and `themeStyle` | [Themes](./themes.mdx) |
+| `@arcscord/discord-ui/highlight` | Optional `renderHighlightedCode` | [Highlighting](./highlight.mdx) |
+
+The stylesheet is scoped to `.arcscord-discord-ui` and `dui-` classes. Import it
+once through the application's supported global-CSS entry. No Tailwind setup,
+global reset or remote font is required. Theme helpers alone do not apply styles.
+
+```tsx
+import { DiscordUI, Message } from "@arcscord/discord-ui";
+import "@arcscord/discord-ui/styles.css";
+```
+
+The main component and highlighting builds carry client directives. The themes
+entry is separate and has no client directive. This does not establish universal
+framework/RSC compatibility; follow your framework's boundaries and the
+[SSR guide](../guides/ssr.mdx).
+
+React `^19.0.0` is the declared peer range. IDs are strings, model arrays accept
+readonly inputs, and callbacks remain in component props. Models are resolved
+display contracts, not Discord send payloads or a runtime JSON validator.
+
+[First complete React module](../quick-start.mdx) · [Compatibility and limitations](../project.md#compatibility-and-limitations)

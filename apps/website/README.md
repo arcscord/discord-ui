@@ -12,6 +12,10 @@ pnpm test:website
 Use the workspace's Node 26 and pnpm 12 versions. The library must be built before
 starting Docusaurus; `dev` (alias `dev:website`) and `build:website` handle this.
 
+The tab favicon in `static/img/favicon.png` is copied unchanged from Arcscord’s
+`website/static/img/favicon.png`. Keep this local copy independent of the sibling
+checkout; no remote image request is needed.
+
 The site uses Arcscord's palette and a locally served Inter variable font (see
 `static/fonts/OFL.txt`). Discord previews use the package's compiled CSS unchanged.
 The font comes from the [official Inter project](https://github.com/rsms/inter/blob/master/docs/font-files/InterVariable.woff2).
@@ -28,9 +32,9 @@ reply. Quiz buttons reveal and lock the answer. `/8ball` responses are ephemeral
 and can be dismissed locally. Reset clears the arcade
 history and unfinished commands. All responses are local simulations, with fixed
 fixture timestamps and no Discord connection. Channel sending and thread replies
-remain available in the catalogue and playground. Also included: initial Markdown/MDX
-documentation, `/components` and `/playground`. The explorer covers all 29 public
-components with 46 examples and compares Light/Ash/Dark. Deep links use `?example=channel-view`
+remain available in the catalogue and playground. Also included: structured Markdown/MDX
+documentation with a four-page getting-started path, `/components` and `/playground`. The explorer covers all 34 public
+components with 53 examples and compares Light/Ash/Dark. Deep links use `?example=channel-view`
 (or another ID in `src/data/component-examples.ts`).
 
 The editable source in `src/data/component-examples.ts` and
@@ -78,8 +82,21 @@ Embedded channel and thread histories use native scroll chaining: at their top o
 bottom boundary, scrolling continues on the page. This site-only override keeps
 the library defaults and dropdown scroll containment unchanged.
 
-The complete documentation, search and major-version snapshots remain subsequent
-stages. npm links point to installation status until
+The documentation sidebar covers Getting started, Core concepts, Guides, API
+reference, Recipes, Troubleshooting and Project. The getting-started path, core contracts and 14 feature guides are implemented.
+Each guide has a typed standalone module, live preview, exact copyable source and
+links to richer catalogue/playground examples. The API reference covers all public symbols with extracted signatures/field tables,
+authored behavior/default notes and validated examples. Guides and reference use
+the canonical catalogue modules for richer previews and link to the matching
+playground. Catalogue/editor headers link back to the guide, API and playground help.
+Seven complete canonical recipes and local documentation search are included.
+Compatibility, migration/versioning and maintenance policies describe the current
+verification boundaries. Major-version snapshots will be introduced only when
+multiple released major versions are maintained. The quick-start preview and
+its copyable source share `src/components/docs/FirstMessage.tsx`.
+Guide previews use `src/components/docs/guides/`; edit these modules to update both
+the rendered example and its displayed source. `documentation-map.md` records
+the topic coverage and remaining work. npm links point to installation status until
 the package is published.
 
 ## GitHub Pages deployment
@@ -143,3 +160,70 @@ and typed data. On mobile, the live preview precedes source code.
 
 `pnpm-workspace.yaml` upgrades Babel's legacy semver dependency to `7.8.5` so
 installation keeps `trustPolicy: no-downgrade` enabled without exceptions.
+
+## API reference maintenance
+
+Run `pnpm docs:api` after a public contract change. It builds the library, extracts
+public signatures and tables, compiles data/helper examples against the built
+public imports, and writes the reference pages and `documentation-api-map.md`.
+`pnpm docs:api:check` is read-only and requires a prior library build. Unit tests
+also verify checked-in pages and every component/example destination.
+
+Edit `scripts/docs/api-metadata.mts` and `scripts/docs/model-examples.mts` for authored
+behavior, field explanations and data examples. New public exports require explicit
+coverage. Keep canonical catalogue source in `src/data/component-examples.ts` and
+`src/data/scenarios/`; `ReferenceExample` renders the same generated preview and
+complete source. Do not edit generated API pages directly (the entry-points page
+is authored separately). `src/data/component-docs.ts` shares navigation targets.
+
+## Recipes and local search
+
+Recipe JSX modules live in `src/data/recipe-examples.ts`; their previews, catalogue
+source and playground source share the existing canonical generation pipeline.
+Dedicated pages under `docs/recipes` explain data preparation, interactions and
+application-owned responsibilities. Keep the old recipe directory fragments stable.
+
+The local search plugin consumes Docusaurus public document metadata and source
+sections during dev/build. Its index is loaded with `/search` or lazily when opening the search dialog,
+not placed in every page's global data. It excludes draft/unlisted documents, searches all query words,
+and ranks exact headings first. Lowercase API identifiers such as `selectmenu`
+and `selectvaluesbymessage` match their camelCase headings. The compact navbar button opens a native modal dialog, also on narrow screens.
+Desktop shortcuts use ⌘ K on macOS and Ctrl K on Windows/Linux; touch mobile
+devices show no keyboard hint and register no shortcut. Arrow keys focus actual
+result links, Enter opens them, and Escape/outside click closes the dialog and
+restores focus. The footer opens `/search?q=…` for the full result list. No third-party service or account is required.
+
+Validate search ranking/extraction with `apps/website/tests/search.test.ts` and
+actual routes, anchors, keyboard and recipe interactions with
+`tests/website/recipes-search.spec.ts` and `tests/website/search-dialog.spec.ts`. Public documentation is public index data;
+playground drafts are not indexed. Production builds validate every indexed page/anchor
+against generated HTML. Project policies live under `docs/project`.
+
+## Documentation acceptance
+
+`docs/project/documentation-quality.md` defines delivery batches and the completion
+criteria. After a production build, `pnpm docs:check` read-only checks generated API
+coverage, every internal HTML link/fragment, local asset references and catalogue/
+playground example IDs/themes. External availability and deployment are separate.
+The current local evidence and six-batch sign-off live in
+`documentation-completion.md`. Keep that record honest about checked commands and
+working-tree scope; it does not substitute for commit-specific remote CI.
+
+
+## SEO and sharing
+
+Docusaurus generates `sitemap.xml` for public pages, excluding `/search` and the
+404 route. `static/robots.txt` permits crawling and advertises the canonical
+sitemap. Search uses `noindex, follow` without disallowing crawling, so crawlers
+can read that directive and still discover documentation links.
+
+All pages inherit the local 1200×630 `static/img/social-card.png` with Open Graph
+and Twitter image descriptions. Its composition is specific to Discord UI and
+reuses the unchanged `static/img/brand-wordmark.webp` from Arcscord's website.
+Regenerate it with `pnpm exec node scripts/docs/generate-social-card.mts` (requires
+Playwright Chromium). The image and local font need no remote request.
+
+`tests/website/seo.spec.ts` checks every sitemap destination's canonical URL,
+unique title/description, sharing image and indexability, plus search's noindex
+behavior during client navigation. Local verification does not establish live
+Google indexing, Search Console ownership, server headers or field performance.

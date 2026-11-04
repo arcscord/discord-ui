@@ -1,0 +1,53 @@
+---
+title: Controlled selections
+description: Control selections in two messages that intentionally reuse the same select ID. Store their values under separate message IDs.
+---
+
+import ReferenceExample from '@site/src/components/docs/ReferenceExample';
+
+# Controlled selections
+
+Control selections in two messages that intentionally reuse the same select ID. Store their values under separate message IDs.
+
+## Complete working module
+
+The preview and copyable source below are the same canonical module used by the
+catalogue and playground. Start with [installation](../installation.md), then copy
+the full JSX module into your React application. The theme controls update both
+preview and source. These are local simulations; your application owns real data
+and any network/persistence integration.
+
+<ReferenceExample id="recipe-controlled-selections" initiallyOpen />
+
+## Scope controlled values
+
+Both messages use select ID `topics`, but their message IDs are `alpha` and `beta`.
+Initialize `selectValuesByMessage` with an explicit empty array for each menu. An
+empty array means a controlled empty selection; an omitted/undefined key would
+permit local menu state instead.
+
+## Update the correct message
+
+`onSelectChange(selectId, next, context)` supplies the originating message ID.
+Update only `values[context.messageId][selectId]` using a new object. Reusing a
+component ID across messages must not overwrite the other message's selection.
+The status displays both maps so this separation is visible.
+
+`minValues: 0` permits removing the final selection. The clear action supplies
+empty arrays rather than deleting keys. Keeping controlled values unchanged would
+reject a proposed selection.
+
+## Adapt the data source
+
+String menus receive complete fixed options. For user/role/channel menus, supply
+resolved entities, including those currently selected, when merging external search
+results. Unavailable IDs are filtered from the effective selection and callbacks;
+remote lookup, loading, validation and persistence belong to the application.
+Keep this mapping scoped to your conversation/application identity when using
+several independent message collections.
+
+## Related contracts and next steps
+
+[MessageList](/docs/api/conversation-components#messagelist), [SelectValuesByMessage](/docs/api/callbacks#selectvaluesbymessage), [ComponentInteractionContext](/docs/api/callbacks#componentinteractioncontext).
+
+[Edit this recipe](/playground?example=recipe-controlled-selections) · [Compare all themes](/components?example=recipe-controlled-selections) · [All recipes](../recipes.md)

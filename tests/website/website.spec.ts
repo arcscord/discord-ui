@@ -100,7 +100,9 @@ test("announcement dismissal, documentation MDX and mobile navigation", async ({
   }
   await expect(page).toHaveURL(/\/docs\/introduction$/);
   await expect(page.locator(".theme-doc-markdown .dui-message")).toBeVisible();
-  await expect(page.locator(".theme-doc-toc-desktop, .pagination-nav a, .theme-edit-this-page")).toHaveCount(0);
+  await expect(page.locator(".theme-edit-this-page")).toHaveCount(0);
+  await expect(page.locator(".pagination-nav a")).toHaveCount(1);
+  await expect(page.locator(".pagination-nav a")).toContainText("Installation");
   await page.reload();
   await expect(page.getByText("In development — preparing our first release.")).toHaveCount(0);
 });
