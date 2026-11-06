@@ -6,13 +6,13 @@ description: Practical usage and behavior of ssr and hydration in Arcscord Disco
 import Example from '@site/src/components/docs/guides/SSR';
 import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/SSR.tsx';
 import CodeBlock from '@theme/CodeBlock';
-import ReferenceExample from '@site/src/components/docs/ReferenceExample';
 
 # SSR and hydration
 
 The display components support deterministic server rendering when supplied the
-same data and display settings. The example above can be rendered on the server
-and hydrated by an application's existing React entry point.
+same data and display settings. The example below illustrates a shared snapshot and explicit display options;
+it does not perform server rendering or hydration itself. Use your application's
+existing React entry point to render and hydrate it.
 
 ## API reference
 
@@ -63,15 +63,6 @@ client boundaries and CSS-loading rules.
 The website validates static generation and browser hydration of its fixtures.
 Its playground evaluates local browser modules and is not an SSR harness or a
 TypeScript diagnostics service.
-
-## A realistic example
-
-[Inspect the ssr and hydration example](/components?example=message) or
-[edit the full catalogue module](/playground?example=message). The catalogue
-example is a separate scenario with additional content. Its interactions run
-locally in the browser; they do not connect to Discord.
-
-<ReferenceExample id="message" />
 
 Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
 or the [public export directory](../api-reference.md).

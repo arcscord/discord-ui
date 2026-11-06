@@ -134,6 +134,25 @@ export function File({ file }: FileProps) {
     </div>
   );
   return file.spoiler
-    ? <Spoiler inline={false}>{content}</Spoiler>
+    ? (
+        <div className="dui-file-spoiler">
+          <Spoiler
+            inline={false}
+            placeholder={(
+              <div className="dui-file dui-file-placeholder" aria-hidden="true">
+                <span className="dui-file-icon" />
+                <div className="dui-file-details">
+                  <span>&nbsp;</span>
+                  {file.size
+                    ? <small>&nbsp;</small>
+                    : null}
+                </div>
+              </div>
+            )}
+          >
+            {content}
+          </Spoiler>
+        </div>
+      )
     : content;
 }

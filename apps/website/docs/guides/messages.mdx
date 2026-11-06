@@ -6,7 +6,6 @@ description: Practical usage and behavior of messages and replies in Arcscord Di
 import Example from '@site/src/components/docs/guides/Messages';
 import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/components/docs/guides/Messages.tsx';
 import CodeBlock from '@theme/CodeBlock';
-import ReferenceExample from '@site/src/components/docs/ReferenceExample';
 
 # Messages and replies
 
@@ -62,15 +61,6 @@ removing focused controls. Without a handler no dismissal button is shown.
 **Ephemeral is display metadata, not access control.** Filter private data before
 sending it to the browser and enforce authorization in your application.
 The [ephemeral example](/playground?example=ephemeral) also demonstrates restoring focus.
-
-## A realistic example
-
-[Inspect the messages and replies example](/components?example=message) or
-[edit the full catalogue module](/playground?example=message). The catalogue
-example is a separate scenario with additional content. Its interactions run
-locally in the browser; they do not connect to Discord.
-
-<ReferenceExample id="message" />
 
 Continue with [core concepts](../concepts.md), [interaction state](../public-api.md)
 or the [public export directory](../api-reference.md).

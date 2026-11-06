@@ -207,6 +207,10 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-select-empty { padding: 12px; color: var(--discord-ui-muted); }
 .dui-select[data-kind="user-select"] .dui-select-option-label, .dui-select[data-kind="mentionable-select"] .dui-select-option-label, .dui-select[data-kind="channel-select"] .dui-select-option-label { font-weight: 400; color: var(--discord-ui-select-muted); }
 .dui-file { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; max-width: 432px; padding: 12px; margin-top: 8px; border: 1px solid var(--discord-ui-border); border-radius: 8px; background: var(--discord-ui-select-background); }
+.dui-file-spoiler { max-width: 432px; margin-top: 8px; }
+.dui-file-spoiler .dui-file { margin-top: 0; }
+.dui-file-placeholder { background: var(--discord-ui-spoiler-hidden); }
+.dui-file-placeholder .dui-file-icon { height: 40px; }
 .dui-file-icon { flex: 0 0 32px; color: var(--discord-ui-muted); }
 .dui-file-details { flex: 1 1 100px; min-width: 0; }
 .dui-file-details small { display: block; color: var(--discord-ui-muted); }

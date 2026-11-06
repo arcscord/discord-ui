@@ -37,7 +37,11 @@ message-rendered buttons call `onButtonClick(id, context)`.
 A `link-button` uses `url` instead of a button callback. It navigates only for an
 allowed HTTP(S) URL; disabled or unsafe links are inert. A `premium-button` supplies
 `skuId` and a resolved `label`; it calls `onPremiumClick(skuId, context)`. Product
-lookup, billing and purchase confirmation belong to the application. The primitive
+lookup, billing and purchase confirmation belong to the application. This callback
+is a local preview hook: real Discord premium buttons open Discord's purchase flow
+and do not send a button interaction to your application. The model's resolved
+`label` is display metadata, not a field to send in a Discord premium-button payload.
+The primitive
 `Button` also offers a premium visual style, without any purchase implementation.
 
 ## Choose one of five menu models

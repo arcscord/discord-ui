@@ -39,7 +39,9 @@ test("all feature guides hydrate with an exact copyable module and no page overf
     await block.getByRole("button", { name: /Copy code/ }).click({ force: true });
     const source = await readFile(new URL(`../../apps/website/src/components/docs/guides/${name}.tsx`, import.meta.url), "utf8");
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(source.trimEnd());
-    await expect(page.locator("article").getByRole("link", { name: "edit the full catalogue module", exact: true })).toHaveCount(1);
+    await expect(page.locator("article").getByRole("link", { name: "edit the full catalogue module", exact: true })).toHaveCount(["messages", "themes", "ssr"].includes(slug)
+      ? 0
+      : 1);
   }
   expect(errors).toEqual([]);
 });

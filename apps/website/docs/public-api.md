@@ -65,6 +65,11 @@ For standalone `MessageComponents`, pass `messageId` when that context is needed
 Component IDs must be unique within a message; different messages may reuse them.
 Handlers accepting only the original arguments continue to work.
 
+`onPremiumClick` reports local preview intent; it does not start a purchase. Real
+Discord premium buttons open Discord's purchase flow without sending a button
+interaction to your application. See [button variants](./guides/interactions.mdx#button-variants)
+for the distinction between display metadata and Discord payloads.
+
 ## Conversation identity and thread navigation
 
 Changing `channel.id` on `ChannelView`, or `thread.id` on a standalone

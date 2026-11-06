@@ -41,3 +41,32 @@ test("the local transcript attachment downloads through its outlined action", as
   expect(download.suggestedFilename()).toBe("welcome-config.json");
   expect(await download.failure()).toBeNull();
 });
+
+test("file spoilers retain card dimensions and reveal safe links by keyboard in all themes", async ({ page }, testInfo) => {
+  await page.goto("/playground?example=file");
+  const editor = page.getByRole("textbox", { name: "React JSX editor" });
+  await editor.fill((await editor.inputValue()).replace("size: \"2.4 MB\"", "size: \"2.4 MB\", spoiler: true"));
+  const preview = page.locator(".live-panel");
+  for (const theme of ["Light", "Ash", "Dark"]) {
+    await page.getByRole("button", { name: theme, exact: true }).click();
+    await expect(preview.locator(".arcscord-discord-ui")).toHaveAttribute("data-theme", theme.toLowerCase());
+    const reveal = preview.getByRole("button", { name: "Reveal spoiler", exact: true });
+    await expect(reveal).toBeVisible();
+    await expect(preview.getByRole("link")).toHaveCount(0);
+    const hidden = await preview.locator(".dui-file-spoiler").boundingBox();
+    expect(hidden).not.toBeNull();
+    expect(hidden!.width).toBeLessThanOrEqual(432);
+    expect(hidden!.height).toBeLessThan(100);
+    await preview.screenshot({ path: `/tmp/file-spoiler-hidden-${theme.toLowerCase()}-${testInfo.project.name}.png` });
+    await reveal.focus();
+    await reveal.press("Enter");
+    const shown = await preview.locator(".dui-file-spoiler").boundingBox();
+    expect(shown!.width).toBeCloseTo(hidden!.width, 0);
+    expect(shown!.height).toBeCloseTo(hidden!.height, 0);
+    await expect(preview.getByRole("link", { name: "Download guide.pdf", exact: true })).toBeVisible();
+    await preview.screenshot({ path: `/tmp/file-spoiler-${theme.toLowerCase()}-${testInfo.project.name}.png` });
+    await preview.getByRole("button", { name: "Hide spoiler", exact: true }).press("Enter");
+    await expect(reveal).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  }
+});
