@@ -1,452 +1,88 @@
 # @arcscord/discord-ui
 
-Composable React 19 primitives for Discord messages. Version `0.0.0`, unpublished.
+Composable React components and serializable TypeScript models for Discord message interfaces.
+
+[Documentation](https://ui.arcscord.dev/docs/introduction) ·
+[Components](https://ui.arcscord.dev/components) ·
+[Playground](https://ui.arcscord.dev/playground)
+
+## Installation
+
+In development (`0.0.0`), preparing the first npm release. Follow the
+[workspace installation guide](https://ui.arcscord.dev/docs/installation).
+
+Requires **React `^19.0.0`**, supplied by your application. The package ships ESM
+and precompiled, scoped CSS. No Tailwind setup, global reset or remote font is required.
+
+## First message
+
+Import the stylesheet once at your application's CSS entry point and wrap
+message components in `DiscordUI`:
 
 ```tsx
+import type { MessageView } from "@arcscord/discord-ui";
 import { DiscordUI, Message } from "@arcscord/discord-ui";
+import React from "react";
 import "@arcscord/discord-ui/styles.css";
 
-<DiscordUI theme="dark" locale="en-US" timeZone="UTC">
-  <Message message={{
-    id: "example",
-    author: { id: "author", displayName: "Example", bot: true },
-    timestamp: "2026-10-29T18:00:00Z",
-    body: { kind: "text", content: "Hello" },
-  }}
-  />
-</DiscordUI>;
+const message: MessageView = {
+  id: "hello",
+  author: { id: "bot", displayName: "Example Bot", bot: true },
+  timestamp: "2026-11-01T10:24:00Z",
+  body: { kind: "markdown", content: "Hello from **React**!" },
+};
+
+export default function App(): React.ReactElement {
+  return (
+    <DiscordUI theme="dark" locale="en-US" timeZone="UTC">
+      <Message message={message} />
+    </DiscordUI>
+  );
+}
 ```
 
-Compose `MessageFrame` using explicit `avatar`, `header`, `footer` and `children`
-props. Public primitives: `Avatar`, `Author`, `MessageHeader`, `MessageTimestamp`,
-`MessageContent`. They share the same implementation as `Message`.
+## What you can render
 
-`DiscordUI` controls theme, locale and timezone. Defaults are dark, en-US and UTC.
-Dates require an explicit timezone and are deterministic during SSR. Avatars use a
-fallback on invalid URLs or load failure. There are no Discord API calls.
+- Text and Discord Markdown, mentions, emoji, spoilers, embeds, images and files.
+- Classic messages and Components V2, including buttons and all five select menu kinds.
+- Channels and threads, reactions, replies, edited markers and ephemeral notices.
+- A composer with message submission and slash-command input callbacks.
 
-The React entry is a client boundary compatible with server prerendering; import
-models with `import type`. CSS is precompiled, with no Tailwind setup or global reset.
-
+Use `Message` and `ChannelView` for complete views, or compose primitives such as
+`MessageFrame`, `Avatar` and `MessageContent`. Your application supplies resolved
+display data and handles interaction callbacks, persistence and network requests.
+The library does not connect to Discord or validate Discord send payloads.
 
 ## Themes
 
-The presets are `light`, `ash` and `dark`. Preset colors have a single source in
-`src/styles/themes.css`; `src/themes.ts` defines the typed token mapping and preset
-registry. Layout and components do not branch on individual theme names.
+Choose `theme="light"`, `theme="ash"` or `theme="dark"` (the default).
+Override individual values with `DiscordUI.tokens`, or create a reusable theme
+with `defineTheme` from `@arcscord/discord-ui/themes`.
 
-```tsx
-<DiscordUI theme="ash" tokens={{ codeBackground: "#303348" }}>
-  <Message message={message} />
-</DiscordUI>;
-```
+See the [theme guide](https://ui.arcscord.dev/docs/guides/themes) for custom themes
+and the [token reference](https://ui.arcscord.dev/docs/api/themes) for available overrides.
 
-Create a reusable theme by extending a preset or another custom theme:
+## Display options
 
-```tsx
-import { defineTheme } from "@arcscord/discord-ui/themes";
+`DiscordUI` also accepts `locale`, `timeZone`, `referenceTime`, `entities` and
+customizable `labels`. Defaults use `en-US` and `UTC`; timestamps come from your
+data, with no implicit clock. Keep display options and initial data equal during
+server rendering and hydration.
 
-const brand = defineTheme({
-  name: "brand",
-  extends: "ash",
-  tokens: {
-    background: "#242630",
-    focusBackground: "#303340",
-    codeBackground: "#1c1e28",
-    spoilerBackground: "#747784",
-    quoteBorder: "#606577",
-    accent: "#8da4ff",
-  },
-});
+Use `allowRemoteMedia={false}` to block remote image resources, including avatars
+and emoji. Syntax highlighting is opt-in through
+`renderHighlightedCode` from `@arcscord/discord-ui/highlight`.
 
-<DiscordUI theme={brand}>{/* messages */}</DiscordUI>;
-```
+## Guides and reference
 
-`tokens` on a scope override the theme object's tokens. Extending a custom theme
-inherits its overrides without mutating the parent. A custom name retains its base
-palette and light/dark color scheme. The `/themes` entry contains pure helpers and
-can be imported in server configuration without a React client boundary.
+- [Quick start](https://ui.arcscord.dev/docs/quick-start) · [API reference](https://ui.arcscord.dev/docs/api-reference).
+- [Channels](https://ui.arcscord.dev/docs/guides/channels) · [Threads](https://ui.arcscord.dev/docs/guides/threads).
+- [Buttons and selects](https://ui.arcscord.dev/docs/guides/interactions) · [Interaction state](https://ui.arcscord.dev/docs/public-api).
+- [Recipes](https://ui.arcscord.dev/docs/recipes) · [Compatibility and limitations](https://ui.arcscord.dev/docs/project/compatibility).
+- [Source and contributions](https://github.com/arcscord/discord-ui).
 
-For CSS customization, give `DiscordUI` a `className` and override variables such as
-`--discord-ui-background`, `--discord-ui-code-background`, `--discord-ui-spoiler-hidden`
-and `--discord-ui-quote-border` on that class. `ThemeTokens` and
-`themeTokenProperties` expose the full typed list, including surfaces, text, buttons
-and highlighting. Each scope owns its palette; an inner scope can use another theme.
+## License
 
-| Token | Light | Ash | Dark |
-| --- | --- | --- | --- |
-| `background` | `#FBFBFB` | `#323339` | `#1A1A1E` |
-| `surface` (embeds/containers) | `#FFFFFF` | `#393A41` | `#242429` |
-| `focusBackground` | `#EEEEEF` | `#3E3F46` | `#29292E` |
-| `codeBackground` | `#E8E8EF` | `#343748` | `#1F202F` |
-| `spoilerBackground` | `#8E9097` | `#7D7E86` | `#666770` |
-| `quoteBorder` | `#C5C6CA` | `#595A63` | `#474850` |
-
-`containerSurface` inherits `surface` by default, so changing the shared surface
-updates both embeds and V2 containers. Override `containerSurface` only to give
-containers a distinct background.
-
-Link-button surfaces use separate customizable tokens:
-
-| Token | Light | Ash | Dark |
-| --- | --- | --- | --- |
-| `linkButtonBackground` | `#EEEEEF` | `#3E3F46` | `#29292E` |
-| `linkButtonDisabledBackground` | `#F4F4F5` | `#383940` | `#2F2F34` |
-
-`linkButtonText` and `linkButtonDisabledText` control foreground colors. Disabled
-buttons retain an opaque background and never navigate.
-
-Code backgrounds apply to inline and fenced code. The focus surface applies on
-message hover and keyboard focus within the message.
-
-## Rich content
-
-Use `body: { kind: "markdown", content: "**Hello**" }` for Discord Markdown.
-`text` remains literal. Optional `message.media` and `message.embeds` render images
-and embeds. Items and embed fields have stable string IDs. Public primitives also
-include `Markdown`, `Mention`, `Emoji`, `Spoiler`, `Media`, `MediaGallery` and `Embed`.
-
-`DiscordUI` accepts `entities`, `referenceTime`, `allowRemoteMedia`, `labels` and
-`renderCode`. Entity names and custom emoji URLs come from the caller. Media accepts
-HTTP(S), safe root-relative paths, HTTP(S)-origin blob URLs and base64 raster images.
-Setting `allowRemoteMedia={false}` blocks HTTP(S) image resources, including avatars
-and emoji. Links remain separately limited to HTTP(S). No HTML is injected.
-
-Spoilers support keyboard reveal/hide and leave hidden media unmounted. Failed
-images and emojis have fallbacks. Gallery images preserve natural proportions.
-Relative timestamps use the message timestamp unless an explicit reference clock
-is supplied. Standalone `Markdown` uses a fixed epoch when no clock is supplied.
-UI labels can be overridden separately from date locale.
-
-Syntax highlighting is optional:
-
-```tsx
-import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
-
-<DiscordUI renderCode={renderHighlightedCode}>{/* messages */}</DiscordUI>;
-```
-
-The optional entry includes JavaScript, TypeScript, JSON, CSS, Bash and Python.
-Unknown languages remain escaped plain text. The main renderer does not load these
-grammars. Consumers that omit this entry can omit highlighting entirely.
-
-Components V2 use `body: { kind: "components-v2", components: [...] }` with a typed,
-serializable view model. Supported primitives: `Container`, `Section`, `TextDisplay`,
-`Thumbnail`, `MediaGallery`, `Separator`, `ActionRow` and `LinkButton`.
-`MessageComponents` renders this model independently. A V2 body cannot include
-classic embeds or message-level media. This is a display model, not a Discord API
-payload adapter or validator. Disabled/unsafe link buttons never render an href.
-
-Styles preserve the adapted renderer’s original cascade
-and its local corrections. They are mapped to this package's classes and tokens and
-inlined into the distributed stylesheet; no source CSS imports remain. Text spoilers
-keep their natural dimensions under a mask. Hidden media remains unmounted.
-
-Current scope: messages, basic Markdown lists, image media, embeds and the V2 subset
-above. Nested lists, exact Discord gallery parity, video/audio, payload adapters,
-custom-id button interactions are not implemented. Next.js/Docusaurus integration builds remain pending.
-
-For Markdown/highlighting provenance, see `THIRD_PARTY_NOTICES`
-for the upstream BF-GO MIT notice and dependency licenses. Styles and the external-link icon also adapt the renderer. Example assets are new.
-
-MIT © 2026 Arcoz0308.
-
-
-## Channel view
-
-`ChannelView` composes `ChannelHeader`, `MessageList` and `ChannelComposer`. Its
-serializable `ChannelViewModel` contains `id`, `name`, optional `topic` and an
-ordered `messages` array using the existing `MessageView` contract.
-
-```tsx
-<DiscordUI theme="ash" locale="fr-FR" timeZone="Europe/Zurich">
-  <ChannelView channel={{ id: "example", name: "exemple", messages }} />
-</DiscordUI>;
-```
-
-The header and composer remain outside the scrollable history. Default height is
-560px; use `height` to adjust it. The channel opens at the bottom by default and
-follows the latest message, including subsequent media layout changes. Scrolling
-up stops following media resizes. Set `autoScroll={false}` to manage scrolling
-externally. Date separators respect the supplied locale and timezone and can be
-hidden with `showDateSeparators={false}`.
-
-Pass `onSend(content)` to receive composer submissions; the consumer owns and
-updates `channel.messages`. Enter submits, Shift+Enter inserts a newline, and IME
-composition does not submit. Without `onSend`, the prepared text area remains
-editable and no send action is shown. The library does not publish messages.
-
-Use `header` and `composer` slots to replace these regions, or `composer={false}`
-to hide input. `ChannelHeader.actions` and `ChannelComposer.leading`/`trailing`
-accept real application controls. `ChannelComposer` is controlled through `value`
-and `onValueChange`; `ChannelView` manages its default composer's draft locally.
-
-`channelHeaderDivider` and `channelInputBackground` theme tokens customize the
-header border and composer surface. The header border is 1 CSS pixel, corresponding
-to 2 physical pixels at Retina scale 2. The composer uses the header border color
-at rest and the container outline color on focus, without an additional outline.
-
-| Token | Light | Ash | Dark |
-| --- | --- | --- | --- |
-| `channelHeaderDivider` | `#DFDFE1` | `#3E3F45` | `#29292E` |
-| `channelInputBackground` | `#FFFFFF` | `#383A41` | `#222327` |
-
-The website's ChannelView playground example includes multiple authors and local
-simulated sending. Its React editor lets you edit the channel model and rendering.
-
-
-## Threads
-
-A message can carry an optional `thread: ThreadSummaryView` with `id`, `name`,
-`messageCount` and an optional `lastMessage` containing author, plain-text content
-and timestamp. `ThreadPreview` renders this card directly; `Message` adds it and
-its decorative avatar connector automatically. The card uses `containerSurface`
-and `containerOutline` and truncates the last-message text on a single line.
-
-Supply `onThreadOpen(id)` to `Message` or `MessageList` to make a summary interactive.
-Without a handler the summary is a read-only card. Relative time uses `referenceTime`
-from `DiscordUI`; without an explicit clock it defaults to the last-message timestamp
-for deterministic rendering.
-
-To open threads within `ChannelView`, add a `threads: ThreadView[]` array to the
-channel. Each entry contains `id`, `name`, `parentMessageId` and its reply `messages`.
-The parent remains in `channel.messages`, where its summary references the same
-thread ID. `messageCount` counts replies, not the starter. A summary without loaded
-thread contents remains read-only. `ThreadMessageView` excludes nested thread summaries.
-
-`ChannelView` displays one thread at a time beside the channel. Below 640px of
-available width, the panel replaces the main channel until closed. It shows the
-starter and replies, opens at the bottom, and reuses the channel header and composer.
-The close button and Escape return focus to the opener. Editing JSON does not steal
-focus when a thread is removed. The optional `onThreadSend(threadId, content)` callback
-reports submissions; the consumer owns reply data, summary counters and last-message
-metadata. The playground updates all of these for its local simulation.
-
-`ThreadPanel` can also be composed directly with `thread`, optional `parentMessage`,
-`onClose` and `onSend` inside `DiscordUI`. It does not open nested thread panels.
-No Discord API calls are made. UI labels and singular/plural count text are overridable
-through `DiscordUI.labels`.
-
-
-## Reactions and emoji
-
-Unicode emoji use `@twemoji/parser` and Twemoji SVG assets (version 17.0.3).
-Plain text, Markdown, button emoji and reactions share this rendering. Code stays
-literal. With `allowRemoteMedia={false}` or a failed image, Unicode characters remain
-visible. Custom emoji continue to use caller-supplied image URLs.
-
-Add `reactions: [{ id: "like", emoji: { name: "👍" }, count: 12, me: true }]` to
-any message, including V2 messages and thread replies. Custom emoji use
-`emoji: { name: "arc", image: "/arc.png" }`. Zero-count reactions are hidden.
-
-`Message`, `MessageList`, `ChannelView` and `ThreadPanel` accept
-`onReactionToggle(messageId, reactionId)`. The caller updates the count and `me`
-state; without a handler reactions are read-only. The standalone `Reactions`
-primitive accepts `reactions` and `onToggle(reactionId)`. The group label is
-customizable with `labels.reactions`.
-
-Fenced and inline code wrap long lines, including highlighted tokens, without
-internal scrollbars. Source whitespace and line breaks are preserved.
-
-
-## Generated avatars
-
-`Avatar` generates a single-letter avatar when no usable image is available.
-Its default background is selected deterministically from the author ID. Set
-`author.avatarFallback: { background: "#337c96", letter: "A", color: "#ffffff" }`
-to customize it. Colors accept six-digit hex values. The first grapheme of the
-letter (or display name) is used, including Unicode emoji. Image failures and
-blocked remote images use the same fallback. `avatarUrl` takes priority.
-The website's Avatar playground example includes live letter and color controls.
-
-## Interactive message components
-
-`Message` and `MessageComponents` accept `onButtonClick(id)`,
-`onSelectChange(id, values)` and `onPremiumClick(skuId)` callbacks. These are local
-UI events; the host handles its own actions or purchase flow.
-
-Action rows accept either `buttons` (existing link buttons, action buttons or
-premium buttons) or a single `select`. Sections also accept action buttons as
-accessories. Classic text/Markdown messages can include `components: ActionRowView[]`
-alongside their embeds and media. V2 messages keep these rows in `body.components`.
-
-```tsx
-const row: ActionRowView = {
-  id: "choices",
-  kind: "action-row",
-  select: {
-    id: "test-values",
-    kind: "string-select",
-    placeholder: "Choose test values",
-    minValues: 0,
-    maxValues: 2,
-    options: [
-      { value: "alpha", label: "Alpha", description: "First typed value" },
-      { value: "beta", label: "Beta", description: "Second typed value" },
-    ],
-  },
-};
-```
-
-Select kinds: `string-select`, `user-select`, `role-select`, `mentionable-select`,
-`channel-select`. String menus alone accept `options` with `value`, `label`,
-`description`, `emoji` and `default`. Entity menus accept resolved `entities`
-and typed `defaultValues: [{ id, type }]`; no Discord resources are fetched.
-User entities reuse `UserView` (author identity, avatar and app fields), roles
-reuse `RoleView` (`id`, `name`, `color`), and channels reuse `ChannelEntityView`.
-Mentionable menus accept users and roles only. Channel menus alone accept
-`channelTypes`, using Discord's numeric channel type IDs. Entity rows have no
-custom description or emoji. Usernames, presence and app badges belong to users;
-role colors belong to roles; channel type, rules and lock icons belong to channels.
-Entity menus provide search and removable selection chips. String menus keep
-Discord's label/description layout, with an optional emoji spanning both lines. `SelectMenu` can also be used directly with controlled
-`values` and `onChange`, or local state initialized from option defaults. Menus
-support arrow keys, Home/End, first-letter navigation, Enter/Space, Escape, and
-outside-click dismissal. Theme tokens `selectBackground`, `selectMenuBackground`
-and `selectMuted` control their opaque surfaces and placeholder text.
-
-`Button` supports primary, secondary, success, danger and premium styles.
-`File` renders a file name, optional display size, safe HTTP(S) link and spoiler.
-The website playground includes editable examples for each interactive component.
-
-## Replies, interactions, ephemeral messages, edits and attachments
-
-Messages and thread replies accept a non-recursive `reply` snapshot. Supply the
-original ID, author and plain-text preview, or `{ messageId, unavailable: true }`
-when the original cannot be displayed. The host resolves the original and supplies
-a preview appropriate for display (including any spoiler redaction). The preview
-does not fetch a message or navigate to it. `ReplyPreview` is also exported for
-composition, and `MessageFrame` accepts a `reply` slot.
-
-```tsx
-const message: MessageView = {
-  id: "reply",
-  author: { id: "bob", displayName: "Bob" },
-  timestamp: "2026-10-29T18:00:00Z",
-  reply: {
-    messageId: "original",
-    author: { id: "alice", displayName: "Alice" },
-    content: "Can you share the guide?",
-  },
-  edited: true,
-  body: { kind: "markdown", content: "Here is the **guide**." },
-  attachments: [
-    {
-      id: "guide",
-      kind: "file",
-      name: "guide.pdf",
-      url: "https://example.com/guide.pdf",
-      size: "24 KB",
-    }
-  ],
-};
-```
-
-An interaction response uses `reply: { kind: "interaction", author, commandName }`.
-`author` is the user who invoked the command, while `message.author` is the
-responding app. `commandName` omits the leading slash and may contain subcommands.
-It renders the invoking user's avatar/name, “used” and a command mention; no
-original message ID is required. Existing message replies remain valid; an
-explicit `kind: "message"` is also accepted.
-
-Set `ephemeral: true` on classic or Components V2 messages to show “Only you can
-see this”, with a tinted background and left border. The `ephemeralBackground`,
-`ephemeralHover` and `ephemeralBorder` theme tokens customize these surfaces
-(including keyboard focus within the message). Pass `onEphemeralDismiss(messageId)` to `Message`, `MessageList`,
-`ChannelView` or `ThreadPanel` to show “Dismiss message”. The callback reports
-intent; the host removes the message from its data. Without a handler, only the
-notice appears. This flag controls display, not authorization: the host must
-filter private messages before supplying them to the library.
-
-```tsx
-<Message
-  message={{
-    id: "private-response",
-    author: { id: "app", displayName: "Helper", bot: true },
-    timestamp: "2026-10-29T18:00:00Z",
-    reply: {
-      kind: "interaction",
-      author: { id: "alice", displayName: "Alice" },
-      commandName: "bot-info",
-    },
-    ephemeral: true,
-    body: { kind: "text", content: "Here are your settings." },
-  }}
-  onEphemeralDismiss={id => setMessages(current => current.filter(message => message.id !== id))}
-/>;
-```
-
-Localize this context with `labels.interactionReply`, `labels.interactionUsed`,
-`labels.ephemeralNotice` and `labels.dismissMessage`.
-
-`edited: true` shows the localized edited marker. Omit it or use `edited: false`
-to hide the marker. It carries no edit date and does not change the original
-message timestamp.
-
-Text and Markdown messages accept `attachments: FileView[]` alongside images,
-embeds and action rows. Files reuse `File`, including safe HTTP(S) links and
-keyboard-accessible spoilers. File names and sizes are supplied by the caller;
-no file metadata is fetched. V2 messages use file components in `body.components`
-instead of classic attachments.
-
-Override `labels.reply`, `labels.replyUnavailable`, `labels.edited` and
-`labels.downloadFile` (`{name}` placeholder for the icon-only download link and tooltip) to localize these elements. Edit
-markers are in the message header. Reply previews truncate to one line.
-
-### Slash commands
-
-Pass `commands` and `onSlashCommand` to `ChannelView` or `ChannelComposer`.
-Typing `/` opens a filtered name/description list. Use ↑/↓ then Enter or Tab,
-or click a command. Escape closes the list or cancels the selected command.
-Arguments accept free text unless `choices` is supplied; `required` defaults to
-false. Pick an argument from the Options list to add an inline name/value chip.
-The header follows the focused argument. Tab returns to the remaining options;
-fixed choices can be filtered and selected with the keyboard or mouse. The
-header's close button removes the focused argument. Backspace in an empty
-argument removes its chip; Backspace on the remaining-options hint returns to
-the last argument. With no argument chips left, Backspace removes the selected
-command and returns to the message input. The close button cancels the command
-when no argument is being edited. Submission calls `onSlashCommand` separately
-from `onSend`.
-
-In the website playground, select **Slash commands** and type
-`/config autoreact` to try free text (`word`, `emoji`) and fixed choices
-(`channel`). The submitted invocation appears below the preview.
-
-```tsx
-const commands: SlashCommand[] = [
-  {
-    name: "config threads",
-    description: "Manage automatic threads",
-    application: "Community Bot", // optional label in the list
-    arguments: [
-      { name: "name", description: "Configuration name", required: true },
-      {
-        name: "mode",
-        description: "Creation mode",
-        required: true,
-        choices: [
-          { name: "Every message", value: "every-message" }
-        ],
-      },
-    ],
-  }
-];
-
-<ChannelView
-  channel={channel}
-  commands={commands}
-  onSlashCommand={({ command, arguments: values }) => {
-    console.log(command.name, values); // { name: "Support", mode: "every-message" }
-  }}
-/>;
-```
-
-All argument values are strings. Empty optional values are omitted. Names must
-be unique within the command list, argument list and each choice list; choice
-values must be nonempty. This is a UI primitive: command execution belongs to
-the consuming application. Import the types `SlashCommand`,
-`SlashCommandArgument`, `SlashCommandInvocation` and `SlashCommandHandler` from
-`@arcscord/discord-ui`. Labels `slashCommands`, `chooseValue`, `cancelCommand`, `commandOptions`,
-`commandReady` and `removeArgument`
-can be customized through `DiscordUI`.
+[MIT](https://github.com/arcscord/discord-ui/blob/main/packages/discord-ui/LICENSE) © 2026 Arcoz0308.
+[Third-party notices](https://github.com/arcscord/discord-ui/blob/main/packages/discord-ui/THIRD_PARTY_NOTICES)
+cover adapted renderer code, styles and dependency licenses; both files ship with the package.
