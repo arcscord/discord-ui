@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { pnpm, root, run } from "../shared/cli.mts";
 
@@ -26,6 +26,8 @@ try {
     "THIRD_PARTY_NOTICES",
     "LICENSE",
     "README.md",
+    "AGENTS.md",
+    "docs/agent-guide.md",
   ]) {
     assert(entries.includes(`package/${file}`), `Missing packaged file: ${file}`);
   }
@@ -102,11 +104,37 @@ void components;
 void avatar;
 `);
   await pnpm(["install", "--ignore-scripts"], temporary);
+  const installedLibrary = join(temporary, "node_modules/@arcscord/discord-ui");
+  for (const file of ["AGENTS.md", "docs/agent-guide.md"]) {
+    const installed = await readFile(join(installedLibrary, file), "utf8");
+    assert.equal(installed, await readFile(join(library, file), "utf8"), `Installed agent documentation differs: ${file}`);
+    for (const link of installed.matchAll(/\]\((\.[^\s)]+)\)/g)) {
+      const target = link[1]!.split("#")[0]!;
+      await readFile(resolve(installedLibrary, dirname(file), target));
+    }
+  }
+  const guide = await readFile(join(installedLibrary, "docs/agent-guide.md"), "utf8");
+  const examples = [
+    ...guide.matchAll(/^```tsx\n([\s\S]*?)^```/gm),
+  ];
+  assert(examples.length > 0, "The agent guide must include compilable integration examples.");
+  const exampleFiles: string[] = [];
+  // Model the CSS module declaration normally supplied by the consumer's framework.
+  // The runtime smoke check above separately verifies the real packaged stylesheet.
+  await writeFile(join(temporary, "styles.d.ts"), "declare module \"@arcscord/discord-ui/styles.css\";\n");
+  for (const [index, example] of examples.entries()) {
+    const file = `agent-example-${index}.tsx`;
+    await writeFile(join(temporary, file), example[1]!);
+    exampleFiles.push(file);
+  }
   await pnpm([
     "exec",
     "tsc",
     "--noEmit",
     "--strict",
+    "--exactOptionalPropertyTypes",
+    "--jsx",
+    "react-jsx",
     "--module",
     "NodeNext",
     "--moduleResolution",
@@ -114,9 +142,11 @@ void avatar;
     "--target",
     "ES2022",
     "types.mts",
+    "styles.d.ts",
+    ...exampleFiles,
   ], temporary);
   await run(process.execPath, ["smoke.mjs"], temporary);
-  process.stdout.write("Package verified: tarball, ESM, declarations and scoped CSS.\n");
+  process.stdout.write("Package verified: tarball, ESM, declarations, scoped CSS and installed agent documentation/examples.\n");
 }
 finally {
   await rm(temporary, { recursive: true, force: true });

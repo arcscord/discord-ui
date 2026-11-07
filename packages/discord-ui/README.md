@@ -81,6 +81,30 @@ and emoji. Syntax highlighting is opt-in through
 - [Recipes](https://ui.arcscord.dev/docs/recipes) · [Compatibility and limitations](https://ui.arcscord.dev/docs/project/compatibility).
 - [Source and contributions](https://github.com/arcscord/discord-ui).
 
+## AI coding agents
+
+The package includes [agent instructions](./AGENTS.md), an offline
+[integration guide](./docs/agent-guide.md) and TypeScript declarations in `dist/`.
+They travel with the installed version, including when installing a local tarball.
+No additional download or installation script is needed.
+
+Dependency instructions are not automatically discovered by every agent. Add this
+block to your application's `AGENTS.md` (or equivalent agent instructions):
+
+```md
+<!-- BEGIN:arcscord-discord-ui -->
+Before working with @arcscord/discord-ui, read
+node_modules/@arcscord/discord-ui/AGENTS.md and follow its links to the local
+integration guide and declarations for the installed version.
+<!-- END:arcscord-discord-ui -->
+```
+
+In a monorepo, resolve this path relative to the workspace application that declares
+the dependency. With package managers that do not expose `node_modules`, locate
+the installed package using that application's package resolution tools.
+Installation does not create or overwrite project instruction files. These files
+are read as package documentation, not imported as JavaScript entry points.
+
 ## License
 
 [MIT](https://github.com/arcscord/discord-ui/blob/main/packages/discord-ui/LICENSE) © 2026 Arcoz0308.

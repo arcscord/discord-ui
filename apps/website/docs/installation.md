@@ -63,6 +63,30 @@ to apply scoped styles and display options.
 Syntax highlighting is opt-in through the separate entry point. A basic message
 needs only the root entry and stylesheet.
 
+## AI coding agents
+
+The installed package includes `AGENTS.md`, `docs/agent-guide.md` and the
+TypeScript declarations in `dist/`. The instructions and integration guide can be
+read offline and correspond to the installed version. No additional download or
+installation script is needed.
+
+Agents do not necessarily discover instructions inside dependencies automatically.
+Add this block to your application's `AGENTS.md` or equivalent instruction file:
+
+```md
+<!-- BEGIN:arcscord-discord-ui -->
+Before working with @arcscord/discord-ui, read
+node_modules/@arcscord/discord-ui/AGENTS.md and follow its links to the local
+integration guide and declarations for the installed version.
+<!-- END:arcscord-discord-ui -->
+```
+
+In a monorepo, resolve the path from the workspace application that declares the
+dependency. If your package manager does not expose `node_modules`, use its
+package resolution tools to locate the installed package. Installation does not
+modify your project's instruction files. Read these files directly; they are
+documentation, not JavaScript exports.
+
 Continue to [Quick start](./quick-start.mdx) for a complete module with data and a
 rendered preview. If the preview has no styling, check the
 [styling checklist](./troubleshooting.md#styling-and-media).

@@ -11,10 +11,12 @@
     "directory": "packages/discord-ui"
   },
   "files": [
+    "AGENTS.md",
     "LICENSE",
     "README.md",
     "THIRD_PARTY_NOTICES",
-    "dist"
+    "dist",
+    "docs"
   ],
   "exports": {
     ".": {
