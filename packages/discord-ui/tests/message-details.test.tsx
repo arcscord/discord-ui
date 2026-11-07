@@ -72,7 +72,7 @@ it("shows the localized edited marker only when edited is true, without an edit 
 
 it("renders classic attachments with safe links and leaves spoiler files unmounted", () => {
   const html = renderToStaticMarkup(
-    <DiscordUI labels={{ download: "Télécharger", downloadFile: "Télécharger {name}" }}>
+    <DiscordUI labels={{ downloadFile: "Télécharger {name}" }}>
       <Message message={{
         ...base,
         attachments: [

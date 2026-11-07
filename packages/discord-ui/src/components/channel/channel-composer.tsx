@@ -79,8 +79,7 @@ export function ChannelComposer({ channelName, value, onValueChange, onSend, com
       onValueChange("");
       return;
     }
-    if (!disabled && value.trim())
-      onSend?.(value);
+    onSend?.(value);
   }
   return (
     <form
@@ -186,7 +185,7 @@ export function ChannelComposer({ channelName, value, onValueChange, onSend, com
               return;
             }
           }
-          if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && onSend) {
+          if (event.key === "Enter" && !event.shiftKey && onSend) {
             event.preventDefault();
             send();
           }

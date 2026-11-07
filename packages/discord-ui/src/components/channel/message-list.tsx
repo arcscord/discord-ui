@@ -1,6 +1,7 @@
 import type { ComponentHandlers, SelectValuesByMessage } from "../../model/components";
 import type { MessageView } from "../../model/message";
 import type { ReactionToggleHandler } from "../../model/reaction";
+import { parseTimestamp } from "../../utils/timestamps";
 import { useDisplayOptions } from "../display-context";
 import { Message } from "../message/message";
 
@@ -31,19 +32,18 @@ export function MessageList({ selectValuesByMessage, onEphemeralDismiss, onButto
   return (
     <ol className="dui-message-list" aria-label={labels.messages}>
       {messages.map((message) => {
-        const date = new Date(message.timestamp);
-        const validDate = /T.*(?:Z|[+-]\d{2}:\d{2})$/u.test(message.timestamp) && Number.isFinite(date.valueOf());
-        const parts = validDate
+        const date = parseTimestamp(message.timestamp);
+        const parts = date
           ? keyFormat.formatToParts(date)
           : [];
-        const dateKey = validDate
+        const dateKey = date
           ? ["year", "month", "day"].map(type => parts.find(part => part.type === type)?.value).join("-")
           : undefined;
         const showDate = showDateSeparators && dateKey !== undefined && dateKey !== previousDate;
         previousDate = dateKey;
         return (
           <li key={message.id} className="dui-message-list-item">
-            {showDate
+            {showDate && date
               ? <div className="dui-date-separator"><time dateTime={dateKey}>{labelFormat.format(date)}</time></div>
               : null}
             <Message

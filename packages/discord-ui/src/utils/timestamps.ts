@@ -1,3 +1,11 @@
+/** Parse an explicit ISO instant with a time-zone suffix, without a clock fallback. */
+export function parseTimestamp(timestamp: string): Date | undefined {
+  const date = new Date(timestamp);
+  return /T.*(?:Z|[+-]\d{2}:\d{2})$/u.test(timestamp) && Number.isFinite(date.valueOf())
+    ? date
+    : undefined;
+}
+
 export function formatDiscordTimestamp(seconds: string, format: string, options: { locale: string; timeZone: string; referenceTime: string; relativeStyle?: "long" | "short" | "narrow" }): { dateTime: string; label: string } | undefined {
   const value = Number(seconds);
   const date = new Date(value * 1000);

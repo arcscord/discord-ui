@@ -1,7 +1,7 @@
 import type { ChannelViewModel } from "../src/index";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
-import { ChannelHeader, ChannelView, DiscordUI, MessageList } from "../src/index";
+import { ChannelHeader, ChannelView, DiscordUI, MessageList, MessageTimestamp } from "../src/index";
 
 const channel: ChannelViewModel = {
   id: "channel",
@@ -44,4 +44,24 @@ it("supports empty channels, custom header slots and hidden composers", () => {
   expect(html).toContain("No messages yet.");
   expect(html).toContain("Pinned");
   expect(html).not.toContain("<textarea");
+});
+
+it.each([
+  ["2026-10-29T10:00:00Z", true],
+  ["2026-10-29T12:00:00+02:00", true],
+  ["2026-10-29T10:00:00", false],
+  ["2026-10-29", false],
+  ["invalid", false],
+])("keeps timestamp labels and date separators consistent for %s", (timestamp, valid) => {
+  const html = renderToStaticMarkup(
+    <DiscordUI labels={{ invalidTimestamp: "Invalid instant" }}>
+      <MessageTimestamp timestamp={timestamp} />
+      <MessageList messages={[
+        { ...channel.messages[0]!, timestamp },
+      ]}
+      />
+    </DiscordUI>,
+  );
+  expect(html.includes("class=\"dui-date-separator\"")).toBe(valid);
+  expect(html.includes("Invalid instant")).toBe(!valid);
 });

@@ -1,5 +1,3 @@
-import * as DiscordComponents from "@arcscord/discord-ui";
-import React, { useEffect, useRef, useState } from "react";
 import { initialChannel, markdown, release, ticket, welcome } from "./examples";
 import { arcadeChannel, arcadeCommands, createAnnouncement, createTranscript, demoBot, demoTime, demoUser } from "./landing-demos";
 
@@ -16,12 +14,7 @@ export const previewEntities = {
   },
 };
 
-export const liveScope = {
-  ...DiscordComponents,
-  React,
-  useState,
-  useEffect,
-  useRef,
+export const exampleFixtures = {
   initialChannel,
   welcome,
   release,

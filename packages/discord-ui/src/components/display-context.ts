@@ -27,7 +27,6 @@ export type UILabels = {
   interactionUsed: string;
   ephemeralNotice: string;
   dismissMessage: string;
-  download: string;
   downloadFile: string;
   reactions: string;
   thread: string;
@@ -92,7 +91,6 @@ export const defaults: DisplayContextValue = {
     interactionUsed: "used",
     ephemeralNotice: "Only you can see this",
     dismissMessage: "Dismiss message",
-    download: "Download",
     downloadFile: "Download {name}",
     reactions: "Reactions",
     thread: "Thread",
