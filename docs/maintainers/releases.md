@@ -1,6 +1,6 @@
 # CI and npm releases
 
-Maintainer procedures for validating changes and publishing `@arcscord/discord-ui`.
+Maintainer procedures for validating, staging and approving releases of `@arcscord/discord-ui`.
 Commands run from the repository root. For local setup, see
 [Contributing](../../CONTRIBUTING.md).
 
@@ -69,30 +69,31 @@ pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
 
 `pnpm check` builds the website; browser tests reuse that build. Merge the
 validated version into `main` before creating its matching `v*` tag. The workflow
-builds and publishes its own verified tarball with provenance.
+builds and stages its own verified tarball with provenance. Publication requires
+a separate manual approval on npm.
 
-## Publish from GitHub
+## Stage from GitHub
 
-[The publication workflow](../../.github/workflows/publish.yml) publishes `@arcscord/discord-ui` to npm when a
-`v*` tag is pushed. It can also be started with **Actions → Publish npm package →
+[The staging workflow](../../.github/workflows/publish.yml) stages `@arcscord/discord-ui` on npm when a
+`v*` tag is pushed. It can also be started with **Actions → Stage npm package →
 Run workflow**, supplying an existing tag. The tag must match the committed
 `packages/discord-ui/package.json` version and point to a commit contained in
 `main`; the `0.0.0` placeholder is rejected. Stable versions use the npm `latest`
 tag; prereleases such as `v0.2.0-beta.1` use `next`.
 
-The workflow runs the full CI against the resolved release commit, then publishes
-the built tarball with provenance. Publication uses the `npm-publish` GitHub
+The workflow runs the full CI against the resolved release commit, then stages
+the built tarball with provenance using `npm stage publish`. Staging uses the
+`npm-publish` GitHub
 environment. Create this environment and configure reviewers or tag restrictions
-as desired before publishing.
+as desired before staging.
 
 Configure an npm [trusted publisher](https://docs.npmjs.com/trusted-publishers/)
 for `@arcscord/discord-ui` with organization **arcscord**, repository
 **discord-ui**, workflow filename **publish.yml**, environment **npm-publish**,
-and permission to publish directly. Subsequent releases authenticate through OIDC.
-For the first publication of a package that does not yet have a trusted publisher,
-the workflow also accepts an environment secret named `NPM_TOKEN`: use a granular
-token with permission to publish under `@arcscord` and bypass 2FA. After that first
-release, configure the trusted publisher and remove the token.
+and permission for **npm stage publish** only. Direct **npm publish** permission
+is not needed. Authentication uses OIDC; the workflow does not use `NPM_TOKEN`.
+Keep the workflow filename and environment name unchanged in the npm configuration.
+The pinned npm CLI `11.15.0` supports staged publishing.
 
 To prepare a release, update the library version in a PR and merge it into `main`.
 Then tag the merged commit, for example:
@@ -107,5 +108,28 @@ git push origin v0.1.0
 Creating a new version tag through the GitHub Release form also triggers the
 workflow. If the tag already exists, use the manual Actions run instead.
 Retrying a failed run or dispatching an existing tag reruns validation;
-npm rejects a version that has already been published. Configuration changes alone
-do not publish anything.
+npm rejects a version that already exists as a staged or published version.
+Configuration changes alone do not stage or publish anything.
+
+After changing this workflow, merge the correction into `main` and dispatch
+**Stage npm package** from `main`, supplying the existing version tag. Re-running
+an old failed run uses its original workflow revision.
+
+## Review and approve on npm
+
+A successful workflow leaves the version staged. It does not make that version
+public or update its dist-tag until a maintainer approves it. In npmjs.com, open
+**Staged Packages**, inspect the package and approve it with 2FA when ready.
+
+The CLI can also inspect staged versions with npm `11.15.0` or later:
+
+```sh
+npm stage list @arcscord/discord-ui
+npm stage view <stage-id>
+npm stage download <stage-id>
+```
+
+Approval is a separate maintainer action (`npm stage approve <stage-id>`), never
+part of this workflow. Keep CI limited to staging. A staged package retains its
+chosen `latest` or `next` tag; changing that choice requires rejecting and
+re-staging it. See [npm staged publishing](https://docs.npmjs.com/staged-publishing/).
