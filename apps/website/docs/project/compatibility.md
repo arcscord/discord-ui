@@ -6,7 +6,7 @@ description: Declared package requirements and the boundaries of local verificat
 # Compatibility and limitations
 
 Separate a declared contract from a tested environment. The repository currently
-uses a single documentation version for its in-development `0.0.0` package.
+uses a single documentation version for its stable `0.1.0` release.
 
 | Area | Repository contract / evidence | Limit |
 | --- | --- | --- |

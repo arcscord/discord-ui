@@ -87,10 +87,9 @@ test("channel sending, thread replies, Escape and restored focus", async ({ page
   await expect(opener).toContainText("4 messages");
 });
 
-test("announcement dismissal, documentation MDX and mobile navigation", async ({ page }) => {
+test("stable documentation MDX and mobile navigation", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Close", exact: true }).click();
-  await expect(page.getByText("In development — preparing our first release.")).toHaveCount(0);
+  await expect(page.locator(".theme-announcement-bar")).toHaveCount(0);
   if ((page.viewportSize()?.width ?? 0) < 997) {
     await page.getByRole("button", { name: /Toggle navigation bar/ }).click();
     await page.locator(".navbar-sidebar").getByRole("link", { name: "Docs", exact: true }).click();
@@ -104,5 +103,5 @@ test("announcement dismissal, documentation MDX and mobile navigation", async ({
   await expect(page.locator(".pagination-nav a")).toHaveCount(1);
   await expect(page.locator(".pagination-nav a")).toContainText("Installation");
   await page.reload();
-  await expect(page.getByText("In development — preparing our first release.")).toHaveCount(0);
+  await expect(page.locator(".theme-announcement-bar")).toHaveCount(0);
 });

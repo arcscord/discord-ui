@@ -5,11 +5,9 @@ description: Release notes, public contract changes and when to snapshot documen
 
 # Changelog and migration policy
 
-The repository declares `0.0.0` and keeps one current documentation tree. It does
-not contain historical version snapshots or a release-to-release migration guide.
-Use [repository releases](https://github.com/arcscord/discord-ui/releases) as the
-release-note destination when published releases are available; this page does not
-claim that a release has been published.
+Version `0.1.0` is the first stable release. Documentation uses one current tree,
+with no historical version snapshots or release-to-release migration guide.
+See [repository releases](https://github.com/arcscord/discord-ui/releases) for release notes.
 
 ## When a public contract changes
 
@@ -34,7 +32,7 @@ major versions are actively supported, snapshot the released documentation throu
 Docusaurus and label the current development tree clearly. Confirm versioned routes,
 sidebar, cross-links and search results before publishing the snapshot.
 
-Do not snapshot placeholder `0.0.0` as a supported release. Version snapshots are
+Do not snapshot an unverified prerelease as a supported stable release. Version snapshots are
 created from verified release content, not from unfinished working-tree changes.
 The local search plugin consumes Docusaurus document permalinks; each future
 version must still be checked for correct result destinations and version labels.

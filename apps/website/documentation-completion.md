@@ -67,8 +67,8 @@ remote CI, deployment, DNS/TLS, external-link availability or real Discord
 integration. Chromium desktop (1536×1024) and narrow (390×844) viewports do not
 prove other browsers, physical mobile devices or assistive technology support.
 
-The package remains at the repository's placeholder `0.0.0`; no release history,
-publication or migration between released versions is invented. One documentation
+The documentation covers stable `0.1.0`, the first release; there is no
+migration between stable releases to document. One documentation
 tree is retained until multiple released major versions are maintained.
 
 Library exports, declarations and package distribution were not changed by this

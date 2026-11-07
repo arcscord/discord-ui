@@ -9,8 +9,8 @@ description: Understand Discord UI compatibility, versioning, migration and docu
 
 [Read the compatibility and verification boundaries](./project/compatibility.md).
 
-The repository declares React `^19.0.0` as a peer and version `0.0.0` of the package.
-See [installation](./installation.md) for workspace consumption. The library uses
+The stable package version is `0.1.0`, with React `^19.0.0` as a peer dependency.
+See [installation](./installation.md) for npm and workspace setup. The library uses
 ESM and precompiled, scoped CSS. Syntax highlighting has its own opt-in entry point.
 
 Models are resolved display snapshots, not Discord API payloads. The application
@@ -24,8 +24,8 @@ framework integration.
 [Read the migration, versioning and URL-continuity policy](./project/migrations.md).
 
 Use the [repository releases](https://github.com/arcscord/discord-ui/releases)
-as the destination for release notes when releases are available. Version-specific migration guides and documentation snapshots
-will be introduced when maintained releases require them.
+for release notes. Version-specific migration guides and documentation snapshots
+are added when maintained releases require them.
 
 ## Contributing
 

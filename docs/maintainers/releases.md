@@ -28,6 +28,49 @@ production security updates only, grouped together, with `chore` commit prefixes
 and `dependencies`/`security` labels. Routine version-update PRs are disabled.
 Enable Dependabot alerts and security updates in the repository settings.
 
+## Current stable release: 0.1.0
+
+Version `0.1.0` is the first stable release. The manifest, package README and
+website documentation describe this version. The local bootstrap beta does not
+need a GitHub commit or tag.
+
+Inspect the published stable package independently of the workspace:
+
+```sh
+npm view @arcscord/discord-ui@0.1.0 version dist dist-tags --json
+mkdir -p .local/npm-review
+npm pack @arcscord/discord-ui@0.1.0 --ignore-scripts --pack-destination "$PWD/.local/npm-review"
+tar -tzf .local/npm-review/arcscord-discord-ui-0.1.0.tgz
+```
+
+Review README, LICENSE, THIRD_PARTY_NOTICES, package documentation, ESM entry
+points, declarations, source maps and compiled CSS. Sources, tests, workspace
+configuration and credentials must not be included. The packaged `AGENTS.md`
+is consumer documentation, separate from the ignored root contributor instructions.
+Test the registry version in a separate React 19 application with
+`pnpm add @arcscord/discord-ui@0.1.0`.
+
+The stable npm dist-tag is `latest`; `next` is reserved for prereleases. Verify
+`npm view @arcscord/discord-ui dist-tags --json` when checking registry state.
+Keep local archives in ignored `.local/` directories. Published npm versions
+are immutable; fixes require a new version.
+
+## Validate a release
+
+Run from the repository root with the version to release in the library manifest:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm check
+pnpm exec playwright test -c playwright.website.config.mts
+pnpm docs:check
+pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
+```
+
+`pnpm check` builds the website; browser tests reuse that build. Merge the
+validated version into `main` before creating its matching `v*` tag. The workflow
+builds and publishes its own verified tarball with provenance.
+
 ## Publish from GitHub
 
 [The publication workflow](../../.github/workflows/publish.yml) publishes `@arcscord/discord-ui` to npm when a
@@ -40,7 +83,7 @@ tag; prereleases such as `v0.2.0-beta.1` use `next`.
 The workflow runs the full CI against the resolved release commit, then publishes
 the built tarball with provenance. Publication uses the `npm-publish` GitHub
 environment. Create this environment and configure reviewers or tag restrictions
-as desired before the first release.
+as desired before publishing.
 
 Configure an npm [trusted publisher](https://docs.npmjs.com/trusted-publishers/)
 for `@arcscord/discord-ui` with organization **arcscord**, repository

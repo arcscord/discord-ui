@@ -79,7 +79,7 @@ commits, and commitlint checks Conventional Commits, such as
 
 ## Maintainer guides
 
-The package remains at `0.0.0` pending its first release. Automation is defined in
+The current stable package version is `0.1.0`. Release automation is defined in
 the repository; GitHub/npm account configuration must be checked separately.
 
 - [CI and npm releases](./docs/maintainers/releases.md).

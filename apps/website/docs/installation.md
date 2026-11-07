@@ -1,15 +1,17 @@
 ---
 title: Installation
-description: Install Arcscord Discord UI from a local package, import its stylesheet, and check React requirements and available entry points.
+description: Install Arcscord Discord UI, import its stylesheet, and check React requirements and available entry points.
 ---
 
 # Installation
 
 ## Current package status
 
-The repository declares `@arcscord/discord-ui` version `0.0.0` and currently
-documents workspace consumption pending its first npm release. Public registry
-installation instructions will follow a verified release.
+Version **0.1.0** is available on npm. Install it in your React application:
+
+```sh
+pnpm add @arcscord/discord-ui@0.1.0
+```
 
 The package declares **React `^19.0.0`** as its peer dependency. Your application
 provides React and its renderer. This declaration is not evidence that every React
@@ -37,6 +39,21 @@ pnpm build:lib
 Repository development uses **Node 26** (`>=26.0.0 <27`) and **pnpm 12.16.1**,
 as declared in the root manifest. These are workspace toolchain requirements.
 Rebuild the library after changing its source: the website consumes built exports.
+
+## Test a local release tarball
+
+After building and packing the library from the repository root:
+
+```sh
+pnpm build:lib
+pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
+```
+
+In a separate React 19 application, install the generated archive using its absolute path:
+
+```sh
+pnpm add /absolute/path/to/arcscord-discord-ui-0.1.0.tgz
+```
 
 ## Import components and compiled CSS
 

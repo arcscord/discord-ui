@@ -35,8 +35,8 @@ The shell uses Arcscord's palette and locally served Inter; preserve the font
 license in `static/fonts/OFL.txt`. Discord previews use the library's compiled CSS
 unchanged. Keep site-only layout and history scroll-chaining overrides out of the library.
 
-Shared destinations and the dismissible development notice live in
-`src/data/site.ts`. Set `site.inDevelopment` to `false` when removing that notice.
+Shared destinations live in `src/data/site.ts`. The stable site has no
+development announcement banner.
 
 ## Search and documentation checks
 

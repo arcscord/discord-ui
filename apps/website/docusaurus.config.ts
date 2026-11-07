@@ -50,15 +50,6 @@ const config: Config = {
       { name: "twitter:image:alt", content: "Arcscord Discord UI — React components for Discord messages" },
     ],
     colorMode: { defaultMode: "dark", disableSwitch: true, respectPrefersColorScheme: false },
-    announcementBar: site.inDevelopment
-      ? {
-          id: "development-v1",
-          content: "In development — preparing our first release.",
-          backgroundColor: "#141331",
-          textColor: "#e8eefb",
-          isCloseable: true,
-        }
-      : undefined,
     navbar: {
       title: "Arcscord Discord UI",
       items: [
@@ -66,7 +57,7 @@ const config: Config = {
         { to: "/docs/introduction", label: "Docs", position: "left" },
         { to: "/playground", label: "Playground", position: "left" },
         { href: site.github, label: "GitHub", position: "right" },
-        { to: "/docs/installation", label: "npm · upcoming", position: "right" },
+        { href: site.npm, label: "npm", position: "right" },
       ],
     },
     footer: {
@@ -77,7 +68,7 @@ const config: Config = {
           items: [
             { label: "Arcscord", href: site.arcscord },
             { label: "GitHub", href: site.github },
-            { label: "npm · upcoming", to: "/docs/installation" },
+            { label: "npm", href: site.npm },
             { label: "Discord", href: site.discord },
             { label: "Changelog", href: site.changelog },
           ],

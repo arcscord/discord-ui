@@ -8,8 +8,14 @@ Composable React components and serializable TypeScript models for Discord messa
 
 ## Installation
 
-In development (`0.0.0`), preparing the first npm release. Follow the
-[workspace installation guide](https://ui.arcscord.dev/docs/installation).
+Install the stable `0.1.0` release from npm:
+
+```sh
+pnpm add @arcscord/discord-ui@0.1.0
+```
+
+See the [installation guide](https://ui.arcscord.dev/docs/installation) for
+workspace and local package usage.
 
 Requires **React `^19.0.0`**, supplied by your application. The package ships ESM
 and precompiled, scoped CSS. No Tailwind setup, global reset or remote font is required.
