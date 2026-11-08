@@ -30,9 +30,14 @@ Enable Dependabot alerts and security updates in the repository settings.
 
 ## Current stable release: 0.1.0
 
-Version `0.1.0` is the first stable release. The manifest, package README and
-website documentation describe this version. The local bootstrap beta does not
+Version `0.1.0` is the first stable release. The local bootstrap beta does not
 need a GitHub commit or tag.
+
+The next release candidate is **0.2.0**, prepared in the library manifest. Its
+[release notes](../../packages/discord-ui/CHANGELOG.md) explain the Unicode emoji
+behavior change and migration. This preparation does not create a tag, stage a
+package or publish a version; the current registry state must be checked before
+staging.
 
 Inspect the published stable package independently of the workspace:
 
@@ -101,8 +106,8 @@ Then tag the merged commit, for example:
 ```sh
 git switch main
 git pull --ff-only
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
 
 Creating a new version tag through the GitHub Release form also triggers the

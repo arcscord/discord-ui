@@ -129,12 +129,17 @@ test("offline search offers a styled retry and recovers without reloading", asyn
   await expect(retry).toBeVisible();
   await expect(retry).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   const close = dialog.getByRole("button", { name: "Close search" });
-  const buttonBounds = await close.boundingBox();
-  const iconBounds = await close.locator("svg").boundingBox();
-  expect(buttonBounds).not.toBeNull();
-  expect(iconBounds).not.toBeNull();
-  expect(Math.abs(buttonBounds!.x + buttonBounds!.width / 2 - iconBounds!.x - iconBounds!.width / 2)).toBeLessThan(1);
-  expect(Math.abs(buttonBounds!.y + buttonBounds!.height / 2 - iconBounds!.y - iconBounds!.height / 2)).toBeLessThan(1);
+  // Read both rectangles in one browser frame while the dialog translates in.
+  await expect.poll(() => close.evaluate((element) => {
+    const button = element.getBoundingClientRect();
+    const icon = element.querySelector("svg")?.getBoundingClientRect();
+    if (!icon)
+      return Number.POSITIVE_INFINITY;
+    return Math.max(
+      Math.abs(button.x + button.width / 2 - icon.x - icon.width / 2),
+      Math.abs(button.y + button.height / 2 - icon.y - icon.height / 2),
+    );
+  })).toBeLessThan(1);
   await page.screenshot({ path: `/tmp/discord-ui-search-offline-${testInfo.project.name}.png` });
   await context.setOffline(false);
   await retry.click();

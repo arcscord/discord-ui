@@ -26,6 +26,7 @@ try {
     "THIRD_PARTY_NOTICES",
     "LICENSE",
     "README.md",
+    "CHANGELOG.md",
     "AGENTS.md",
     "docs/agent-guide.md",
   ]) {

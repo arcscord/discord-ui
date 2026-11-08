@@ -21,7 +21,8 @@ test("website playground exposes and runs the slash command example", async ({ p
   await expect(preview.getByRole("status", { name: "Command result" })).toHaveText("Command response added to the channel.");
   await expect(preview.locator(".dui-interaction-command")).toHaveText("/config autoreact");
   await expect(preview).toContainText("for “hello” in #support");
-  await expect(preview.getByAltText("✨", { exact: true })).toBeVisible();
+  await expect(preview.locator(".dui-message-text").last()).toContainText("Reaction preview: ✨");
+  await expect(preview.locator("img.dui-unicode-emoji")).toHaveCount(0);
   await expect(page.getByRole("alert")).toHaveCount(0);
   expect(errors).toEqual([]);
 });

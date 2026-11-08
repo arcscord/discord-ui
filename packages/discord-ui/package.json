@@ -1,6 +1,6 @@
 {
   "name": "@arcscord/discord-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React primitives and data models for Discord message interfaces.",
   "type": "module",
   "license": "MIT",
@@ -12,6 +12,7 @@
   },
   "files": [
     "AGENTS.md",
+    "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "THIRD_PARTY_NOTICES",

@@ -8,10 +8,11 @@ Composable React components and serializable TypeScript models for Discord messa
 
 ## Installation
 
-Install the stable `0.1.0` release from npm:
+This checkout prepares **0.2.0**. See the [release notes](./CHANGELOG.md) for the
+Unicode emoji migration. After publication, install it from npm:
 
 ```sh
-pnpm add @arcscord/discord-ui@0.1.0
+pnpm add @arcscord/discord-ui@0.2.0
 ```
 
 See the [installation guide](https://ui.arcscord.dev/docs/installation) for
