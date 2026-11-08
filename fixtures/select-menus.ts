@@ -1,4 +1,4 @@
-import type { SelectMenuView } from "../packages/discord-ui/src/model/components";
+import type { SelectMenuView } from "@arcscord/discord-ui-core";
 
 export type SelectMenuExample = {
   id: SelectMenuView["kind"];

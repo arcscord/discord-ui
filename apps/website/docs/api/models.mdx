@@ -19,7 +19,7 @@ Signatures and field tables are extracted from the public TypeScript contracts. 
 
 Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-relative sources work with allowRemoteMedia=false. HTTP(S) sources require remote media permission. Failed images preserve Unicode; no CDN is implicit.
 
-<CodeBlock language="ts">{"export type UnicodeEmojiOptions = { mode: \"native\" } | { mode: \"twemoji\"; baseUrl: string };"}</CodeBlock>
+<CodeBlock language="ts">{"type UnicodeEmojiOptions = {\n  mode: \"native\";\n} | {\n  mode: \"twemoji\";\n  baseUrl: string;\n};"}</CodeBlock>
 
 #### Variant 1
 
@@ -46,7 +46,7 @@ Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-
 
 Ordered loaded message/thread snapshot. No fetch cursor or transport state. Linked threads require a matching parentMessageId and starter.thread.id.
 
-<CodeBlock language="ts">{"export type ChannelViewModel = {\n  id: string;\n  name: string;\n  topic?: string;\n  messages: readonly MessageView[];\n  threads?: readonly ThreadView[];\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ChannelViewModel = {\n  id: string;\n  name: string;\n  topic?: string;\n  messages: readonly MessageView[];\n  threads?: readonly ThreadView[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -70,7 +70,7 @@ Related types: [MessageView](/docs/api/models#messageview), [ThreadView](/docs/a
 
 Exactly one branch: buttons array or one select. Supplying both is forbidden by the union.
 
-<CodeBlock language="ts">{"export type ActionRowView = { id: string; kind: \"action-row\" } & (\n  | { buttons: readonly MessageButtonView[]; select?: never }\n  | { select: SelectMenuView; buttons?: never }\n);"}</CodeBlock>
+<CodeBlock language="ts">{"type ActionRowView = {\n  id: string;\n  kind: \"action-row\";\n} & ({\n  buttons: readonly MessageButtonView[];\n  select?: never;\n} | {\n  select: SelectMenuView;\n  buttons?: never;\n});"}</CodeBlock>
 
 #### Variant 1
 
@@ -104,7 +104,7 @@ Related types: [MessageButtonView](/docs/api/models#messagebuttonview), [SelectM
 
 Normal action button. Allowed styles exclude premium, which is a separate model variant. Disabled prevents activation; callbacks are props rather than model fields.
 
-<CodeBlock language="ts">{"export type ButtonView = { id: string; kind: \"button\"; label: string; ariaLabel?: string; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\"; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
+<CodeBlock language="ts">{"type ButtonView = {\n  id: string;\n  kind: \"button\";\n  label: string;\n  ariaLabel?: string;\n  style?: \"primary\" | \"secondary\" | \"success\" | \"danger\";\n  disabled?: boolean;\n  emoji?: {\n    name: string;\n    image?: string;\n  };\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -128,7 +128,7 @@ Normal action button. Allowed styles exclude premium, which is a separate model 
 
 Uses resolved channels and channel defaults. channelTypes filters their numeric types; excluded IDs are unavailable selections.
 
-<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type ChannelSelectMenuView = SelectMenuBase & {\n  kind: \"channel-select\";\n  entities: readonly ChannelSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"channel\">[];\n  channelTypes?: readonly SelectChannelType[];\n  options?: never;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\ntype ChannelSelectMenuView = SelectMenuBase & {\n  kind: \"channel-select\";\n  entities: readonly ChannelSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"channel\">[];\n  channelTypes?: readonly SelectChannelType[];\n  options?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -157,7 +157,7 @@ Related types: [ChannelSelectOptionView](/docs/api/models#channelselectoptionvie
 
 Resolved channel identity/type plus entityType=channel. No string-option or user/role-only metadata.
 
-<CodeBlock language="ts">{"type NoStringFields = { description?: never; emoji?: never; default?: never };\n\ntype NoUserFields = { avatarUrl?: never; username?: never; status?: never; bot?: never; verified?: never };\n\nexport type ChannelSelectOptionView = ChannelEntityView & NoStringFields & NoUserFields & { entityType: \"channel\"; color?: never };"}</CodeBlock>
+<CodeBlock language="ts">{"type NoStringFields = {\n  description?: never;\n  emoji?: never;\n  default?: never;\n};\n\ntype NoUserFields = {\n  avatarUrl?: never;\n  username?: never;\n  status?: never;\n  bot?: never;\n  verified?: never;\n};\n\ntype ChannelSelectOptionView = ChannelEntityView & NoStringFields & NoUserFields & {\n  entityType: \"channel\";\n  color?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -191,7 +191,7 @@ Related types: [ChannelEntityView](/docs/api/models#channelentityview).
 
 V2 body containing a complete component tree. Classic extra fields belong to the other content family and are forbidden beside this body in MessageContentView.
 
-<CodeBlock language="ts">{"export type ComponentsV2Body = { kind: \"components-v2\"; components: readonly MessageComponent[] };"}</CodeBlock>
+<CodeBlock language="ts">{"type ComponentsV2Body = {\n  kind: \"components-v2\";\n  components: readonly MessageComponent[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -212,7 +212,7 @@ Related types: [MessageComponent](/docs/api/models#messagecomponent).
 
 Union of supported non-container nodes. Nested containers are deliberately excluded.
 
-<CodeBlock language="ts">{"export type ContainerChild = TextDisplayView | SectionView | GalleryView | SeparatorView | ActionRowView | FileView;"}</CodeBlock>
+<CodeBlock language="ts">{"type ContainerChild = TextDisplayView | SectionView | GalleryView | SeparatorView | ActionRowView | FileView;"}</CodeBlock>
 
 #### Variant 1
 
@@ -291,7 +291,7 @@ Related types: [TextDisplayView](/docs/api/models#textdisplayview), [SectionView
 
 Contains non-container children, optional six-digit hex accent and local spoiler. Nested containers are not accepted by this model.
 
-<CodeBlock language="ts">{"export type ContainerView = { id: string; kind: \"container\"; accentColor?: string; spoiler?: boolean; components: readonly ContainerChild[] };"}</CodeBlock>
+<CodeBlock language="ts">{"type ContainerView = {\n  id: string;\n  kind: \"container\";\n  accentColor?: string;\n  spoiler?: boolean;\n  components: readonly ContainerChild[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -315,7 +315,7 @@ Related types: [ContainerChild](/docs/api/models#containerchild).
 
 Resolved file metadata, with already-formatted size. HTTP(S) links only; spoofed MIME/remote contents are not inspected. Spoilers hide mounting, not access rights.
 
-<CodeBlock language="ts">{"export type FileView = { id: string; kind: \"file\"; name: string; url: string; size?: string; spoiler?: boolean };"}</CodeBlock>
+<CodeBlock language="ts">{"type FileView = {\n  id: string;\n  kind: \"file\";\n  name: string;\n  url: string;\n  size?: string;\n  spoiler?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -338,7 +338,7 @@ Resolved file metadata, with already-formatted size. HTTP(S) links only; spoofed
 
 Ordered media items in a V2 tree; each follows MediaView behavior.
 
-<CodeBlock language="ts">{"export type GalleryView = { id: string; kind: \"media-gallery\"; items: readonly MediaView[] };"}</CodeBlock>
+<CodeBlock language="ts">{"type GalleryView = {\n  id: string;\n  kind: \"media-gallery\";\n  items: readonly MediaView[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -360,7 +360,7 @@ Related types: [MediaView](/docs/api/models#mediaview).
 
 HTTP(S) navigation button, without action callback. Invalid/disabled URLs are inert.
 
-<CodeBlock language="ts">{"export type LinkButtonView = { id: string; kind: \"link-button\"; label: string; ariaLabel?: string; url: string; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
+<CodeBlock language="ts">{"type LinkButtonView = {\n  id: string;\n  kind: \"link-button\";\n  label: string;\n  ariaLabel?: string;\n  url: string;\n  disabled?: boolean;\n  emoji?: {\n    name: string;\n    image?: string;\n  };\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -384,7 +384,7 @@ HTTP(S) navigation button, without action callback. Invalid/disabled URLs are in
 
 Combines resolved users and roles with corresponding defaults; channel entities and string options are forbidden.
 
-<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type MentionableSelectMenuView = SelectMenuBase & {\n  kind: \"mentionable-select\";\n  entities: readonly (UserSelectOptionView | RoleSelectOptionView)[];\n  defaultValues?: readonly SelectDefaultValue<\"user\" | \"role\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\ntype MentionableSelectMenuView = SelectMenuBase & {\n  kind: \"mentionable-select\";\n  entities: readonly (UserSelectOptionView | RoleSelectOptionView)[];\n  defaultValues?: readonly SelectDefaultValue<\"user\" | \"role\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -413,7 +413,7 @@ Related types: [UserSelectOptionView](/docs/api/models#userselectoptionview), [R
 
 Discriminated normal, link and premium button union. Normal buttons report an ID, links navigate and premium buttons report a SKU.
 
-<CodeBlock language="ts">{"export type MessageButtonView = LinkButtonView | ButtonView | PremiumButtonView;"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageButtonView = LinkButtonView | ButtonView | PremiumButtonView;"}</CodeBlock>
 
 #### Variant 1
 
@@ -464,7 +464,7 @@ Related types: [LinkButtonView](/docs/api/models#linkbuttonview), [ButtonView](/
 
 Top-level V2 component union, including a container or supported non-container node.
 
-<CodeBlock language="ts">{"export type MessageComponent = ContainerChild | ContainerView;"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageComponent = ContainerChild | ContainerView;"}</CodeBlock>
 
 #### Variant 1
 
@@ -553,7 +553,7 @@ Related types: [ContainerChild](/docs/api/models#containerchild), [ContainerView
 
 Resolved premium label and product SKU. Premium callbacks report intent and perform no billing or product lookup.
 
-<CodeBlock language="ts">{"export type PremiumButtonView = { id: string; kind: \"premium-button\"; skuId: string; label: string; ariaLabel?: string; disabled?: boolean };"}</CodeBlock>
+<CodeBlock language="ts">{"type PremiumButtonView = {\n  id: string;\n  kind: \"premium-button\";\n  skuId: string;\n  label: string;\n  ariaLabel?: string;\n  disabled?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -576,7 +576,7 @@ Resolved premium label and product SKU. Premium callbacks report intent and perf
 
 Uses resolved role entities and role defaults. String options and channelTypes are forbidden.
 
-<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type RoleSelectMenuView = SelectMenuBase & {\n  kind: \"role-select\";\n  entities: readonly RoleSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"role\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\ntype RoleSelectMenuView = SelectMenuBase & {\n  kind: \"role-select\";\n  entities: readonly RoleSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"role\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -605,7 +605,7 @@ Related types: [RoleSelectOptionView](/docs/api/models#roleselectoptionview), [S
 
 Resolved role identity plus entityType=role, with optional color. No string-option or user/channel-only fields.
 
-<CodeBlock language="ts">{"type NoStringFields = { description?: never; emoji?: never; default?: never };\n\ntype NoUserFields = { avatarUrl?: never; username?: never; status?: never; bot?: never; verified?: never };\n\ntype NoChannelFields = { channelType?: never; locked?: never; rules?: never };\n\nexport type RoleSelectOptionView = RoleView & NoStringFields & NoUserFields & NoChannelFields & { entityType: \"role\" };"}</CodeBlock>
+<CodeBlock language="ts">{"type NoStringFields = {\n  description?: never;\n  emoji?: never;\n  default?: never;\n};\n\ntype NoUserFields = {\n  avatarUrl?: never;\n  username?: never;\n  status?: never;\n  bot?: never;\n  verified?: never;\n};\n\ntype NoChannelFields = {\n  channelType?: never;\n  locked?: never;\n  rules?: never;\n};\n\ntype RoleSelectOptionView = RoleView & NoStringFields & NoUserFields & NoChannelFields & {\n  entityType: \"role\";\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -639,7 +639,7 @@ Related types: [RoleView](/docs/api/models#roleview).
 
 Only text-display children plus a required thumbnail or message-button accessory. Other layout nodes cannot be inserted in its components list.
 
-<CodeBlock language="ts">{"export type SectionView = { id: string; kind: \"section\"; components: readonly TextDisplayView[]; accessory: ThumbnailView | MessageButtonView };"}</CodeBlock>
+<CodeBlock language="ts">{"type SectionView = {\n  id: string;\n  kind: \"section\";\n  components: readonly TextDisplayView[];\n  accessory: ThumbnailView | MessageButtonView;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -662,7 +662,7 @@ Related types: [TextDisplayView](/docs/api/models#textdisplayview), [ThumbnailVi
 
 Alias of the numeric ChannelType contract, used for channel-menu filtering.
 
-<CodeBlock language="ts">{"export type SelectChannelType = ChannelType;"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectChannelType = ChannelType;"}</CodeBlock>
 
 The declaration lists the permitted alternatives; no additional object fields apply.
 
@@ -680,7 +680,7 @@ Related types: [ChannelType](/docs/api/models#channeltype).
 
 Generic entity default constrained to user, role or channel. The discriminator must match the selected menu family. This example instantiates the user form.
 
-<CodeBlock language="ts">{"export type SelectDefaultValue<Type extends \"user\" | \"role\" | \"channel\"> = { id: string; type: Type };"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectDefaultValue<Type extends \"user\" | \"role\" | \"channel\"> = {\n  id: string;\n  type: Type;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -699,7 +699,7 @@ Generic entity default constrained to user, role or channel. The discriminator m
 
 Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; minValues defaults to 1 and is bounded to 0–maximum. Missing/duplicate/unavailable values are filtered. Defaults initialize local state, not later user state. The model is not a Discord payload validator.
 
-<CodeBlock language="ts">{"export type SelectMenuView = StringSelectMenuView | UserSelectMenuView | RoleSelectMenuView | MentionableSelectMenuView | ChannelSelectMenuView;"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectMenuView = StringSelectMenuView | UserSelectMenuView | RoleSelectMenuView | MentionableSelectMenuView | ChannelSelectMenuView;"}</CodeBlock>
 
 #### Variant 1
 
@@ -790,7 +790,7 @@ Related types: [StringSelectMenuView](/docs/api/models#stringselectmenuview), [U
 
 Union of fixed string options and resolved user/role/channel options. A specific menu narrows the permitted variant.
 
-<CodeBlock language="ts">{"export type SelectOptionView = StringSelectOptionView | UserSelectOptionView | RoleSelectOptionView | ChannelSelectOptionView;"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectOptionView = StringSelectOptionView | UserSelectOptionView | RoleSelectOptionView | ChannelSelectOptionView;"}</CodeBlock>
 
 #### Variant 1
 
@@ -886,7 +886,7 @@ Related types: [StringSelectOptionView](/docs/api/models#stringselectoptionview)
 
 Optional divider and small/large spacing; renderer defaults are divider=true, spacing=small.
 
-<CodeBlock language="ts">{"export type SeparatorView = { id: string; kind: \"separator\"; divider?: boolean; spacing?: \"small\" | \"large\" };"}</CodeBlock>
+<CodeBlock language="ts">{"type SeparatorView = {\n  id: string;\n  kind: \"separator\";\n  divider?: boolean;\n  spacing?: \"small\" | \"large\";\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -907,7 +907,7 @@ Optional divider and small/large spacing; renderer defaults are divider=true, sp
 
 Uses fixed options and option.default; entities, defaultValues and channelTypes are forbidden.
 
-<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type StringSelectMenuView = SelectMenuBase & {\n  kind: \"string-select\";\n  options: readonly StringSelectOptionView[];\n  entities?: never;\n  defaultValues?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\ntype StringSelectMenuView = SelectMenuBase & {\n  kind: \"string-select\";\n  options: readonly StringSelectOptionView[];\n  entities?: never;\n  defaultValues?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -936,7 +936,7 @@ Related types: [StringSelectOptionView](/docs/api/models#stringselectoptionview)
 
 Fixed value/label with optional description, emoji and initial default flag. Entity-only fields are forbidden.
 
-<CodeBlock language="ts">{"type SelectValue = { value: string; label: string };\n\ntype NoUserFields = { avatarUrl?: never; username?: never; status?: never; bot?: never; verified?: never };\n\ntype NoChannelFields = { channelType?: never; locked?: never; rules?: never };\n\nexport type StringSelectOptionView = SelectValue & NoUserFields & NoChannelFields & {\n  description?: string;\n  emoji?: { name: string; image?: string };\n  default?: boolean;\n  entityType?: never;\n  color?: never;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectValue = {\n  value: string;\n  label: string;\n};\n\ntype NoUserFields = {\n  avatarUrl?: never;\n  username?: never;\n  status?: never;\n  bot?: never;\n  verified?: never;\n};\n\ntype NoChannelFields = {\n  channelType?: never;\n  locked?: never;\n  rules?: never;\n};\n\ntype StringSelectOptionView = SelectValue & NoUserFields & NoChannelFields & {\n  description?: string;\n  emoji?: {\n    name: string;\n    image?: string;\n  };\n  default?: boolean;\n  entityType?: never;\n  color?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -968,7 +968,7 @@ Fixed value/label with optional description, emoji and initial default flag. Ent
 
 Markdown text block in a Components V2 tree.
 
-<CodeBlock language="ts">{"export type TextDisplayView = { id: string; kind: \"text-display\"; content: string };"}</CodeBlock>
+<CodeBlock language="ts">{"type TextDisplayView = {\n  id: string;\n  kind: \"text-display\";\n  content: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -988,7 +988,7 @@ Markdown text block in a Components V2 tree.
 
 Media model used as a section thumbnail accessory. Uses the same image URL/spoiler/failure policy.
 
-<CodeBlock language="ts">{"export type ThumbnailView = { id: string; kind: \"thumbnail\"; media: MediaView };"}</CodeBlock>
+<CodeBlock language="ts">{"type ThumbnailView = {\n  id: string;\n  kind: \"thumbnail\";\n  media: MediaView;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1010,7 +1010,7 @@ Related types: [MediaView](/docs/api/models#mediaview).
 
 Uses resolved user entities and user defaults. String options and channelTypes are forbidden. Include selected users in every supplied snapshot.
 
-<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\nexport type UserSelectMenuView = SelectMenuBase & {\n  kind: \"user-select\";\n  entities: readonly UserSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"user\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\ntype UserSelectMenuView = SelectMenuBase & {\n  kind: \"user-select\";\n  entities: readonly UserSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"user\">[];\n  options?: never;\n  channelTypes?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1039,7 +1039,7 @@ Related types: [UserSelectOptionView](/docs/api/models#userselectoptionview), [S
 
 Resolved user identity plus entityType=user. No string-option description/default/emoji or channel/role-only fields.
 
-<CodeBlock language="ts">{"type NoStringFields = { description?: never; emoji?: never; default?: never };\n\ntype NoChannelFields = { channelType?: never; locked?: never; rules?: never };\n\nexport type UserSelectOptionView = UserView & NoStringFields & NoChannelFields & { entityType: \"user\"; color?: never };"}</CodeBlock>
+<CodeBlock language="ts">{"type NoStringFields = {\n  description?: never;\n  emoji?: never;\n  default?: never;\n};\n\ntype NoChannelFields = {\n  channelType?: never;\n  locked?: never;\n  rules?: never;\n};\n\ntype UserSelectOptionView = UserView & NoStringFields & NoChannelFields & {\n  entityType: \"user\";\n  color?: never;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1073,7 +1073,7 @@ Related types: [UserView](/docs/api/models#userview).
 
 Resolved optional card fields. Only id is required. Description and field values use Markdown; title/author/footer/field names are text. Fields need stable IDs; inline is a responsive layout request. Six-digit hex accents only.
 
-<CodeBlock language="ts">{"export type EmbedView = {\n  id: string;\n  title?: string;\n  url?: string;\n  description?: string;\n  color?: string;\n  author?: { name: string; url?: string; iconUrl?: string };\n  thumbnail?: MediaView;\n  image?: MediaView;\n  fields?: readonly { id: string; name: string; value: string; inline?: boolean }[];\n  footer?: { text: string; iconUrl?: string };\n  timestamp?: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type EmbedView = {\n  id: string;\n  title?: string;\n  url?: string;\n  description?: string;\n  color?: string;\n  author?: {\n    name: string;\n    url?: string;\n    iconUrl?: string;\n  };\n  thumbnail?: MediaView;\n  image?: MediaView;\n  fields?: readonly {\n    id: string;\n    name: string;\n    value: string;\n    inline?: boolean;\n  }[];\n  footer?: {\n    text: string;\n    iconUrl?: string;\n  };\n  timestamp?: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1103,7 +1103,7 @@ Related types: [MediaView](/docs/api/models#mediaview).
 
 Resolved mention name and optional six-digit hex display color; no entity ID because the lookup key supplies it.
 
-<CodeBlock language="ts">{"export type EntityView = { name: string; color?: string };"}</CodeBlock>
+<CodeBlock language="ts">{"type EntityView = {\n  name: string;\n  color?: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1122,7 +1122,7 @@ Resolved mention name and optional six-digit hex display color; no entity ID bec
 
 Discord-oriented Markdown source. Entity maps and timestamp options come from the display wrapper.
 
-<CodeBlock language="ts">{"export type MarkdownMessageBody = { kind: \"markdown\"; content: string };"}</CodeBlock>
+<CodeBlock language="ts">{"type MarkdownMessageBody = {\n  kind: \"markdown\";\n  content: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1141,7 +1141,7 @@ Discord-oriented Markdown source. Entity maps and timestamp options come from th
 
 Image display data. Spoilers defer mounting until reveal, dimensions reserve space, and failed/blocked sources show a translated unavailable state. Copy the example landscape asset or replace its path.
 
-<CodeBlock language="ts">{"export type MediaView = {\n  id: string;\n  url: string;\n  alt: string;\n  spoiler?: boolean;\n  width?: number;\n  height?: number;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MediaView = {\n  id: string;\n  url: string;\n  alt: string;\n  spoiler?: boolean;\n  width?: number;\n  height?: number;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1164,7 +1164,7 @@ Image display data. Spoilers defer mounting until reveal, dimensions reserve spa
 
 Lookup maps resolve parsed tokens; the map key is the string ID and the value holds display metadata. Full Discord snowflake IDs are needed inside parsed mention syntax. These maps differ from select entities, which include their own id/entityType.
 
-<CodeBlock language="ts">{"export type MessageEntities = {\n  users?: Record<string, EntityView>;\n  channels?: Record<string, EntityView>;\n  roles?: Record<string, Omit<RoleView, \"id\">>;\n  emojis?: Record<string, { name: string; image: string }>;\n  commands?: Record<string, EntityView>;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageEntities = {\n  users?: Record<string, EntityView>;\n  channels?: Record<string, EntityView>;\n  roles?: Record<string, Omit<RoleView, \"id\">>;\n  emojis?: Record<string, {\n    name: string;\n    image: string;\n  }>;\n  commands?: Record<string, EntityView>;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1188,7 +1188,7 @@ Related types: [EntityView](/docs/api/models#entityview), [RoleView](/docs/api/m
 
 Resolved channel identity/type, with optional rules and lock indicators. Used by channel-select options after adding entityType=channel.
 
-<CodeBlock language="ts">{"export type ChannelEntityView = Pick<ChannelViewModel, \"id\" | \"name\"> & {\n  channelType: ChannelType;\n  locked?: boolean;\n  rules?: boolean;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ChannelEntityView = Pick<ChannelViewModel, \"id\" | \"name\"> & {\n  channelType: ChannelType;\n  locked?: boolean;\n  rules?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1212,7 +1212,7 @@ Related types: [ChannelViewModel](/docs/api/models#channelviewmodel), [ChannelTy
 
 Accepted numeric channel type IDs for display/icons/filtering. The type does not fetch a channel or validate server permissions.
 
-<CodeBlock language="ts">{"export type ChannelType = 0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16;"}</CodeBlock>
+<CodeBlock language="ts">{"type ChannelType = 0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16;"}</CodeBlock>
 
 The declaration lists the permitted alternatives; no additional object fields apply.
 
@@ -1228,7 +1228,7 @@ The declaration lists the permitted alternatives; no additional object fields ap
 
 Resolved role identity/name/color, reusable in display contexts. A select option adds entityType=role.
 
-<CodeBlock language="ts">{"export type RoleView = EntityView & { id: string };"}</CodeBlock>
+<CodeBlock language="ts">{"type RoleView = EntityView & {\n  id: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1250,7 +1250,7 @@ Related types: [EntityView](/docs/api/models#entityview).
 
 Resolved identity, avatar/application markers and optional username/presence. Presence is supplied, not live. User displayName differs from EntityView.name.
 
-<CodeBlock language="ts">{"export type UserView = Pick<MessageAuthor, \"id\" | \"displayName\" | \"avatarUrl\" | \"bot\" | \"verified\"> & {\n  username?: string;\n  status?: \"online\" | \"idle\" | \"dnd\" | \"offline\";\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type UserView = Pick<MessageAuthor, \"id\" | \"displayName\" | \"avatarUrl\" | \"bot\" | \"verified\"> & {\n  username?: string;\n  status?: \"online\" | \"idle\" | \"dnd\" | \"offline\";\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1276,7 +1276,7 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor).
 
 Colors require six-digit hex values. The first grapheme of letter or the author's display name is used; blank names fall back to a question mark. Missing colors are deterministic from author identity.
 
-<CodeBlock language="ts">{"export type AvatarFallback = {\n  background?: string;\n  letter?: string;\n  color?: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type AvatarFallback = {\n  background?: string;\n  letter?: string;\n  color?: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1296,7 +1296,7 @@ Colors require six-digit hex values. The first grapheme of letter or the author'
 
 Supplies the invoking user and command name above a response. The name has no leading slash and may include subcommands.
 
-<CodeBlock language="ts">{"export type InteractionReplyView = {\n  kind: \"interaction\";\n  author: MessageAuthor;\n  /** Command name without the leading slash; may include a subcommand. */\n  commandName: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type InteractionReplyView = {\n  kind: \"interaction\";\n  author: MessageAuthor;\n  /** Command name without the leading slash; may include a subcommand. */\n  commandName: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1318,7 +1318,7 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor).
 
 Resolved author metadata, including optional avatar fallback and application/verification markers. IDs stay strings and the host supplies display names.
 
-<CodeBlock language="ts">{"export type MessageAuthor = {\n  id: string;\n  displayName: string;\n  avatarUrl?: string;\n  avatarFallback?: AvatarFallback;\n  bot?: boolean;\n  verified?: boolean;\n  color?: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageAuthor = {\n  id: string;\n  displayName: string;\n  avatarUrl?: string;\n  avatarFallback?: AvatarFallback;\n  bot?: boolean;\n  verified?: boolean;\n  color?: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1344,7 +1344,7 @@ Related types: [AvatarFallback](/docs/api/models#avatarfallback).
 
 Classic text/Markdown permits top-level embeds, media, attachments and action rows. Components V2 forbids all four and contains its own body.components tree. Never mix both branches.
 
-<CodeBlock language="ts">{"export type MessageContentView = (\n  | { body: TextMessageBody | MarkdownMessageBody; media?: readonly MediaView[]; attachments?: readonly FileView[]; embeds?: readonly EmbedView[]; components?: readonly ActionRowView[] }\n  | { body: ComponentsV2Body; media?: never; attachments?: never; embeds?: never; components?: never }\n);"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageContentView = ({\n  body: TextMessageBody | MarkdownMessageBody;\n  media?: readonly MediaView[];\n  attachments?: readonly FileView[];\n  embeds?: readonly EmbedView[];\n  components?: readonly ActionRowView[];\n} | {\n  body: ComponentsV2Body;\n  media?: never;\n  attachments?: never;\n  embeds?: never;\n  components?: never;\n});"}</CodeBlock>
 
 #### Variant 1
 
@@ -1380,7 +1380,7 @@ Related types: [TextMessageBody](/docs/api/models#textmessagebody), [MarkdownMes
 
 Shared serializable metadata. edited is boolean; ephemeral is a display hint and the host controls access. No implicit clock or edit timestamp is introduced.
 
-<CodeBlock language="ts">{"export type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1406,7 +1406,7 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor), [ReactionView](/
 
 The resolved and unavailable-original branches are exclusive. unavailable=true forbids author/content. kind may be omitted or set to message; the preview does not fetch the original.
 
-<CodeBlock language="ts">{"export type MessageReplyView = { kind?: \"message\"; messageId: string } & (\n  | { unavailable: true; author?: never; content?: never }\n  | { unavailable?: false; author: MessageAuthor; content: string }\n);"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageReplyView = {\n  kind?: \"message\";\n  messageId: string;\n} & ({\n  unavailable: true;\n  author?: never;\n  content?: never;\n} | {\n  unavailable?: false;\n  author: MessageAuthor;\n  content: string;\n});"}</CodeBlock>
 
 #### Variant 1
 
@@ -1442,7 +1442,7 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor).
 
 Metadata plus exactly one valid content family and an optional nonrecursive thread summary. A display snapshot is not a Discord send payload or runtime validator.
 
-<CodeBlock language="ts">{"export type MessageView = MessageMetadata & MessageContentView & { thread?: ThreadSummaryView };"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageView = MessageMetadata & MessageContentView & {\n  thread?: ThreadSummaryView;\n};"}</CodeBlock>
 
 #### Variant 1
 
@@ -1494,7 +1494,7 @@ Related types: [MessageMetadata](/docs/api/models#messagemetadata), [MessageCont
 
 Union of original-message and interaction-reply snapshots; neither represents a thread conversation.
 
-<CodeBlock language="ts">{"export type ReplyView = MessageReplyView | InteractionReplyView;"}</CodeBlock>
+<CodeBlock language="ts">{"type ReplyView = MessageReplyView | InteractionReplyView;"}</CodeBlock>
 
 #### Variant 1
 
@@ -1538,7 +1538,7 @@ Related types: [MessageReplyView](/docs/api/models#messagereplyview), [Interacti
 
 Escaped text content. Use MarkdownMessageBody to enable formatting and entity tokens.
 
-<CodeBlock language="ts">{"export type TextMessageBody = {\n  kind: \"text\";\n  content: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type TextMessageBody = {\n  kind: \"text\";\n  content: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1557,7 +1557,7 @@ Escaped text content. Use MarkdownMessageBody to enable formatting and entity to
 
 Count and current-viewer selection are host-owned. Only positive safe-integer counts render. Unicode/custom emoji follow the shared media policy.
 
-<CodeBlock language="ts">{"export type ReactionView = {\n  id: string;\n  emoji: { name: string; image?: string };\n  count: number;\n  me?: boolean;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ReactionView = {\n  id: string;\n  emoji: {\n    name: string;\n    image?: string;\n  };\n  count: number;\n  me?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1578,7 +1578,7 @@ Count and current-viewer selection are host-owned. Only positive safe-integer co
 
 Supplied local command definition, not registration or a Discord interaction payload. Name omits the slash and can include subcommands.
 
-<CodeBlock language="ts">{"export type SlashCommand = {\n  name: string;\n  description: string;\n  application?: string;\n  arguments?: readonly SlashCommandArgument[];\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SlashCommand = {\n  name: string;\n  description: string;\n  application?: string;\n  arguments?: readonly SlashCommandArgument[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1601,7 +1601,7 @@ Related types: [SlashCommandArgument](/docs/api/models#slashcommandargument).
 
 Omit choices for free text; fixed choices use visible name and submitted value. Required arguments must be nonblank before local invocation.
 
-<CodeBlock language="ts">{"export type SlashCommandArgument = {\n  name: string;\n  description: string;\n  required?: boolean;\n  /** Omit choices to accept a free text value. */\n  choices?: readonly { name: string; value: string }[];\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SlashCommandArgument = {\n  name: string;\n  description: string;\n  required?: boolean;\n  /** Omit choices to accept a free text value. */\n  choices?: readonly {\n    name: string;\n    value: string;\n  }[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1622,7 +1622,7 @@ Omit choices for free text; fixed choices use visible name and submitted value. 
 
 Local callback data: the selected full command and nonblank string arguments keyed by argument name. Host owns transport and response generation.
 
-<CodeBlock language="ts">{"export type SlashCommandInvocation = {\n  command: SlashCommand;\n  arguments: Record<string, string>;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type SlashCommandInvocation = {\n  command: SlashCommand;\n  arguments: Record<string, string>;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1643,7 +1643,7 @@ Related types: [SlashCommand](/docs/api/models#slashcommand).
 
 A reply inside a thread. It has message metadata and one content family, but forbids thread to prevent nested thread summaries.
 
-<CodeBlock language="ts">{"export type ThreadMessageView = MessageMetadata & MessageContentView & { thread?: never };"}</CodeBlock>
+<CodeBlock language="ts">{"type ThreadMessageView = MessageMetadata & MessageContentView & {\n  thread?: never;\n};"}</CodeBlock>
 
 #### Variant 1
 
@@ -1695,7 +1695,7 @@ Related types: [MessageMetadata](/docs/api/models#messagemetadata), [MessageCont
 
 Nonrecursive thread summary. Counts and latest-reply metadata must be updated by the host; it does not embed loaded replies.
 
-<CodeBlock language="ts">{"export type ThreadSummaryView = {\n  id: string;\n  name: string;\n  messageCount: number;\n  lastMessage?: { author: MessageAuthor; content: string; timestamp: string };\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ThreadSummaryView = {\n  id: string;\n  name: string;\n  messageCount: number;\n  lastMessage?: {\n    author: MessageAuthor;\n    content: string;\n    timestamp: string;\n  };\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1718,7 +1718,7 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor).
 
 Loaded replies only. Keep the starter in channel.messages; parentMessageId links it. A standalone panel may receive the starter separately.
 
-<CodeBlock language="ts">{"export type ThreadView = {\n  id: string;\n  name: string;\n  parentMessageId: string;\n  /** Replies only; the starter remains in the channel's messages. */\n  messages: readonly ThreadMessageView[];\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ThreadView = {\n  id: string;\n  name: string;\n  parentMessageId: string;\n  /** Replies only; the starter remains in the channel's messages. */\n  messages: readonly ThreadMessageView[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |

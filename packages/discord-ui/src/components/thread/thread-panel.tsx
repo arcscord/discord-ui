@@ -1,7 +1,4 @@
-import type { ComponentHandlers, SelectValuesByMessage } from "../../model/components";
-import type { MessageView } from "../../model/message";
-import type { ReactionToggleHandler } from "../../model/reaction";
-import type { ThreadView } from "../../model/thread";
+import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage, ThreadView } from "@arcscord/discord-ui-core";
 import { useEffect, useRef, useState } from "react";
 import { ChannelComposer } from "../channel/channel-composer";
 import { ChannelHeader } from "../channel/channel-header";

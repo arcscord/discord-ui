@@ -1,7 +1,5 @@
-import type { ComponentHandlers, SelectValuesByMessage } from "../../model/components";
-import type { MessageView } from "../../model/message";
-import type { ReactionToggleHandler } from "../../model/reaction";
-import { parseTimestamp } from "../../utils/timestamps";
+import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage } from "@arcscord/discord-ui-core";
+import { parseTimestamp } from "@arcscord/discord-ui-core";
 import { useDisplayOptions } from "../display-context";
 import { Message } from "../message/message";
 

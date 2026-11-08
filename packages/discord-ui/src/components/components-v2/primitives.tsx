@@ -1,7 +1,6 @@
+import type { FileView, MediaView } from "@arcscord/discord-ui-core";
 import type { CSSProperties, ReactNode } from "react";
-import type { FileView } from "../../model/components";
-import type { MediaView } from "../../model/content";
-import { linkUrl } from "../../utils/urls";
+import { linkUrl } from "@arcscord/discord-ui-core";
 import { Markdown } from "../content/markdown";
 import { Spoiler } from "../content/spoiler";
 import { useDisplayOptions } from "../display-context";

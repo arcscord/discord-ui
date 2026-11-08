@@ -1,4 +1,4 @@
-import { parseTimestamp } from "../../utils/timestamps";
+import { parseTimestamp } from "@arcscord/discord-ui-core";
 import { useDisplayOptions } from "../display-context";
 
 export type MessageTimestampProps = { timestamp: string };

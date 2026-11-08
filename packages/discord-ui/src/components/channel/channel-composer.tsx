@@ -1,5 +1,5 @@
+import type { SlashCommand, SlashCommandHandler } from "@arcscord/discord-ui-core";
 import type { ReactNode } from "react";
-import type { SlashCommand, SlashCommandHandler } from "../../model/slash-command";
 import { useEffect, useId, useRef, useState } from "react";
 import { useDisplayOptions } from "../display-context";
 import { SlashCommandEditor } from "./slash-command-editor";

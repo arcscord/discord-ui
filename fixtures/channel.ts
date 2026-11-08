@@ -1,4 +1,4 @@
-import type { ChannelViewModel } from "@arcscord/discord-ui";
+import type { ChannelViewModel } from "@arcscord/discord-ui-core";
 
 export const demoChannel: ChannelViewModel = {
   id: "channel-exemple",

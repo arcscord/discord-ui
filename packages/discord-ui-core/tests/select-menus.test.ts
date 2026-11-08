@@ -1,6 +1,6 @@
 import type { ChannelSelectMenuView, RoleView } from "../src/index";
 import { expect, it } from "vitest";
-import { defaultSelectValues, selectOptions } from "../src/utils/select-menus";
+import { defaultSelectValues, selectOptions } from "../src/index";
 
 it("filters resolved channel types and normalizes shared entity identities", () => {
   const menu: ChannelSelectMenuView = {

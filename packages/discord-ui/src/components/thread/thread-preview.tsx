@@ -1,6 +1,6 @@
-import type { ThreadSummaryView } from "../../model/thread";
+import type { ThreadSummaryView } from "@arcscord/discord-ui-core";
+import { formatDiscordTimestamp } from "@arcscord/discord-ui-core";
 import { useId } from "react";
-import { formatDiscordTimestamp } from "../../utils/timestamps";
 import { Author } from "../author/author";
 import { Avatar } from "../author/avatar";
 import { useDisplayOptions } from "../display-context";

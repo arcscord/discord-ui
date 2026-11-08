@@ -8,6 +8,12 @@ Composable React components and TypeScript display models for Discord message in
 
 Version **0.1.0** is available on [npm](https://www.npmjs.com/package/@arcscord/discord-ui).
 This checkout prepares **0.2.0**; read the [release notes and migration guide](./packages/discord-ui/CHANGELOG.md).
+
+The framework-independent [core](./packages/discord-ui-core/README.md) supplies
+shared models, content processing, themes and styles. React remains
+`@arcscord/discord-ui`; its public imports are unchanged. Core and adapter
+versions are independent. Vue, Angular and Svelte adapters are future work.
+
 See [installation](https://ui.arcscord.dev/docs/installation) to get started.
 
 ## Features

@@ -1,16 +1,15 @@
+import type { MarkdownBlock, MarkdownNode } from "@arcscord/discord-ui-core/markdown";
 // AST rendering adapted from the AutoThreads renderer; see THIRD_PARTY_NOTICES.
 import type { ReactNode } from "react";
-import { parse } from "discord-markdown-parser";
+import { formatDiscordTimestamp, linkUrl } from "@arcscord/discord-ui-core";
+import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { Fragment } from "react";
-import { formatDiscordTimestamp } from "../../utils/timestamps";
-import { linkUrl } from "../../utils/urls";
 import { useDisplayOptions } from "../display-context";
 import { Emoji } from "./emoji";
 import { Mention } from "./mention";
 import { Spoiler } from "./spoiler";
 import { UnicodeEmoji } from "./unicode-emoji";
 
-type Node = Record<string, unknown> & { type?: string; content?: unknown };
 function string(value: unknown): string {
   return typeof value === "string" || typeof value === "number"
     ? String(value)
@@ -23,10 +22,10 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
   const options = useDisplayOptions();
   function children(value: unknown, key: string): ReactNode {
     return Array.isArray(value)
-      ? value.map((node: Node, index) => render(node, `${key}-${index}`))
+      ? value.map((node: MarkdownNode, index) => render(node, `${key}-${index}`))
       : string(value);
   }
-  function render(node: Node, key: string): ReactNode {
+  function render(node: MarkdownNode, key: string): ReactNode {
     const body = () => children(node.content, key);
     switch (node.type) {
       case "text": return <UnicodeEmoji key={key} content={string(node.content)} />;
@@ -83,83 +82,17 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
     }
   }
 
-  function inline(value: string, key: string): ReactNode {
-    const nodes = parse(value, "extended") as Node[];
-    const normalized: Node[] = [];
-    const isBreak = (node: Node | undefined) => node?.type === "br" || node?.type === "newline";
-    const isBlock = (node: Node | undefined) => [
-      "codeBlock",
-      "heading",
-      "blockQuote",
-      "subtext",
-    ].includes(node?.type ?? "");
-    for (let index = 0; index < nodes.length; index++) {
-      const node = nodes[index];
-      if (!node)
-        continue;
-      if (!isBreak(node)) {
-        normalized.push(node);
-        continue;
-      }
-      let end = index + 1;
-      while (isBreak(nodes[end])) end++;
-      // Block margins already represent one source newline; retain intentional blank lines.
-      const structural = isBlock(nodes[index - 1]) || isBlock(nodes[end])
-        ? 1
-        : 0;
-      for (let count = index + structural; count < end; count++) normalized.push(nodes[count]!);
-      index = end - 1;
-    }
-    return normalized.map((node, index) => render(node, `${key}-${index}`));
+  function inline(nodes: MarkdownNode[], key: string): ReactNode {
+    return nodes.map((node, index) => render(node, `${key}-${index}`));
+  }
+  function block(node: MarkdownBlock): ReactNode {
+    if (node.kind === "text")
+      return <Fragment key={`text-${node.line}`}>{inline(node.children, `text-${node.line}`)}</Fragment>;
+    const items = node.items.map(item => <li key={item.line}>{inline(item.children, `item-${item.line}`)}</li>);
+    return node.ordered
+      ? <ol key={`list-${node.line}`} start={node.start}>{items}</ol>
+      : <ul key={`list-${node.line}`}>{items}</ul>;
   }
 
-  // Recognize simple list blocks without touching fenced code or multiline spoilers/quotes.
-  function blocks(value: string): ReactNode {
-    const lines = value.split("\n");
-    const output: ReactNode[] = [];
-    let buffer: string[] = [];
-    let fenced = false;
-    let spoiler = false;
-    function flush(key: number): void {
-      if (buffer.length) {
-        output.push(<Fragment key={`text-${key}`}>{inline(buffer.join("\n"), `text-${key}`)}</Fragment>);
-        buffer = [];
-      }
-    }
-    for (let index = 0; index < lines.length; index++) {
-      const line = lines[index] ?? "";
-      if (/^\s*```/u.test(line))
-        fenced = !fenced;
-      const match = !fenced && !spoiler
-        ? /^\s*([-*]|\d+\.) (.+)$/u.exec(line)
-        : null;
-      if (match) {
-        flush(index);
-        const ordered = /^\d/u.test(match[1] ?? "");
-        const items: ReactNode[] = [];
-        const start = Number.parseInt(match[1] ?? "1", 10) || 1;
-        let next = index;
-        while (next < lines.length) {
-          const item = /^\s*([-*]|\d+\.) (.+)$/u.exec(lines[next] ?? "");
-          if (!item || /^\d/u.test(item[1] ?? "") !== ordered)
-            break;
-          items.push(<li key={next}>{inline(item[2] ?? "", `item-${next}`)}</li>);
-          next++;
-        }
-        output.push(ordered
-          ? <ol key={`list-${index}`} start={start}>{items}</ol>
-          : <ul key={`list-${index}`}>{items}</ul>);
-        index = next - 1;
-      }
-      else {
-        buffer.push(line);
-      }
-      if (!fenced && (line.match(/\|\|/gu)?.length ?? 0) % 2)
-        spoiler = !spoiler;
-    }
-    flush(lines.length);
-    return output;
-  }
-
-  return <div className="dui-markdown">{blocks(content)}</div>;
+  return <div className="dui-markdown">{parseMarkdown(content).map(block)}</div>;
 }

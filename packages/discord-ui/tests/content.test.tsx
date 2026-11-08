@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { renderHighlightedCode } from "../src/highlight";
 import { DiscordUI, Markdown, MediaGallery, Message } from "../src/index";
-import { linkUrl, mediaUrl } from "../src/utils/urls";
 
 it("renders Discord entities, formatting, lists and fenced code without injected HTML", () => {
   const html = renderToStaticMarkup(
@@ -108,19 +107,6 @@ it("keeps optional code highlighting escaped and falls back for unknown language
   expect(highlighted).toContain("&lt;script&gt;");
   expect(highlighted).not.toContain("<script>");
   expect(renderToStaticMarkup(<>{renderHighlightedCode("<script>", "not-a-language")}</>)).toBe("<code>&lt;script&gt;</code>");
-});
-
-it("rejects executable and protocol-relative URLs while allowing local fixture images", () => {
-  for (const url of [
-    "javascript:alert(1)",
-    "data:text/html,hello",
-    "//example.com/image.png",
-    "/\\example.com/a",
-    "/\n/image.png",
-  ]) expect(mediaUrl(url)).toBeUndefined();
-  expect(mediaUrl("/landscape.svg")).toBe("/landscape.svg");
-  expect(mediaUrl("https://example.com/a.png", false)).toBeUndefined();
-  expect(linkUrl("https://arcscord.dev")).toBe("https://arcscord.dev");
 });
 
 it("removes a structural line break after fenced code but preserves explicit empty lines", () => {

@@ -1,5 +1,5 @@
+import type { SlashCommand } from "@arcscord/discord-ui-core";
 import type { CSSProperties } from "react";
-import type { SlashCommand } from "../../model/slash-command";
 import { useEffect, useId, useRef, useState } from "react";
 import { useDisplayOptions } from "../display-context";
 

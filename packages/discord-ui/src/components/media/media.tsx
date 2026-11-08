@@ -1,6 +1,6 @@
-import type { MediaView } from "../../model/content";
+import type { MediaView } from "@arcscord/discord-ui-core";
+import { mediaUrl } from "@arcscord/discord-ui-core";
 import { useState } from "react";
-import { mediaUrl } from "../../utils/urls";
 import { Spoiler } from "../content/spoiler";
 import { useDisplayOptions } from "../display-context";
 

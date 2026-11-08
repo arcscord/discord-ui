@@ -1,5 +1,13 @@
 # @arcscord/discord-ui
 
+Shared models, content processing, themes and styles come from
+`@arcscord/discord-ui-core`, a framework-independent package with its own version.
+Existing React imports, including `themes`, `highlight` and `styles.css`, remain
+available. The React stylesheet is still complete and needs no extra CSS import.
+Compatible core corrections can be installed without an adapter release; update
+your lockfile resolution to receive them. Other framework adapters are future work.
+
+
 Composable React components and serializable TypeScript models for Discord message interfaces.
 
 [Documentation](https://ui.arcscord.dev/docs/introduction) ·

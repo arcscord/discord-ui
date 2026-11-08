@@ -1,4 +1,4 @@
-import type { ReplyView } from "../../model/message";
+import type { ReplyView } from "@arcscord/discord-ui-core";
 import { Author } from "../author/author";
 import { Avatar } from "../author/avatar";
 import { Mention } from "../content/mention";

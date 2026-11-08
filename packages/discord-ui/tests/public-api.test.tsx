@@ -140,3 +140,9 @@ it("treats inherited object keys as uncontrolled selects, not selection arrays",
   );
   expect(html).toContain("class=\"dui-select-value\">Alpha");
 });
+
+it("keeps shared model identities compatible across React and core imports", () => {
+  expectTypeOf<MessageView>().toEqualTypeOf<import("@arcscord/discord-ui-core").MessageView>();
+  expectTypeOf<ComponentHandlers>().toEqualTypeOf<import("@arcscord/discord-ui-core").ComponentHandlers>();
+  expectTypeOf<import("../src/index").DisplayOptions>().toExtend<import("@arcscord/discord-ui-core").BaseDisplayOptions>();
+});

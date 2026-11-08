@@ -1,6 +1,4 @@
-import type { ComponentHandlers, SelectValues } from "../../model/components";
-import type { MessageView } from "../../model/message";
-import type { ReactionToggleHandler } from "../../model/reaction";
+import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValues } from "@arcscord/discord-ui-core";
 import { Avatar } from "../author/avatar";
 import { MessageComponents } from "../components-v2/message-components";
 import { File } from "../components-v2/primitives";

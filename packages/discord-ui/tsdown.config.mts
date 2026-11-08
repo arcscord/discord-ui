@@ -1,4 +1,5 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { copyFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
@@ -18,11 +19,7 @@ export default defineConfig({
   outExtensions: () => ({ js: ".mjs", dts: ".d.mts" }),
   hooks: {
     "build:done": async () => {
-      const styles = await readFile("src/styles/styles.css", "utf8");
-      const imported = await readFile("src/styles/renderer.css", "utf8");
-      const themes = await readFile("src/styles/themes.css", "utf8");
-      // Ship one standalone stylesheet, with no unresolved source imports.
-      await writeFile("dist/styles.css", styles.replace("@import \"./renderer.css\";", imported).replace("@import \"./themes.css\";", themes));
+      await copyFile(fileURLToPath(import.meta.resolve("@arcscord/discord-ui-core/styles.css")), "dist/styles.css");
     },
   },
 });

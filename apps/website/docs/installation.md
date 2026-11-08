@@ -107,3 +107,17 @@ documentation, not JavaScript exports.
 Continue to [Quick start](./quick-start.mdx) for a complete module with data and a
 rendered preview. If the preview has no styling, check the
 [styling checklist](./troubleshooting.md#styling-and-media).
+
+## Shared core and framework adapters
+
+The React package uses `@arcscord/discord-ui-core` for display models, content
+processing, themes and styles. Existing React imports remain valid, and its CSS
+entry remains complete. React and core versions are independent; their dependency
+range expresses compatibility. Projects using a lockfile must update their
+resolved core dependency to receive a newer correction.
+
+This checkout prepares the core package. Vue, Angular and Svelte renderers are
+future work; their compatibility has not been validated. For architecture and
+core entry points, see the repository's core README. When installing unpublished
+local React tarballs, also provide the matching local core tarball through a
+package-manager override, since the registry may not contain that version yet.

@@ -1,4 +1,4 @@
-import type { MessageAuthor } from "../../model/message";
+import type { MessageAuthor } from "@arcscord/discord-ui-core";
 import { Author } from "../author/author";
 import { useDisplayOptions } from "../display-context";
 import { MessageTimestamp } from "./message-timestamp";

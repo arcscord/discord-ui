@@ -7,6 +7,7 @@ if (process.argv.length > 2)
   throw new Error("Usage: pnpm clean (no arguments).");
 for (const output of [
   "packages/discord-ui/dist",
+  "packages/discord-ui-core/dist",
   "apps/website/build",
   "apps/website/.docusaurus",
   "coverage",

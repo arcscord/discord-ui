@@ -1,4 +1,4 @@
-import type { ReactionView } from "../../model/reaction";
+import type { ReactionView } from "@arcscord/discord-ui-core";
 import { Emoji } from "../content/emoji";
 import { useDisplayOptions } from "../display-context";
 

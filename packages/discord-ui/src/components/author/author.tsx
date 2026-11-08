@@ -1,4 +1,4 @@
-import type { MessageAuthor } from "../../model/message";
+import type { MessageAuthor } from "@arcscord/discord-ui-core";
 
 export type AuthorProps = { author: MessageAuthor };
 

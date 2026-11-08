@@ -1,5 +1,5 @@
+import type { ComponentHandlers, ComponentInteractionContext, MessageButtonView, MessageComponent, SelectValues } from "@arcscord/discord-ui-core";
 import type { ReactNode } from "react";
-import type { ComponentHandlers, ComponentInteractionContext, MessageButtonView, MessageComponent, SelectValues } from "../../model/components";
 import { Emoji } from "../content/emoji";
 import { MediaGallery } from "../media/media-gallery";
 import { ActionRow, Button, Container, File, LinkButton, Section, Separator, TextDisplay, Thumbnail } from "./primitives";

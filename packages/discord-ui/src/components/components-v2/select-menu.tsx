@@ -1,9 +1,7 @@
+import type { ChannelSelectOptionView, ResolvedSelectOption, SelectMenuView } from "@arcscord/discord-ui-core";
 import type { CSSProperties, KeyboardEvent } from "react";
-import type { ChannelSelectOptionView, SelectMenuView } from "../../model/components";
-import type { ResolvedSelectOption } from "../../utils/select-menus";
+import { defaultSelectValues, mediaUrl, selectOptions } from "@arcscord/discord-ui-core";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { defaultSelectValues, selectOptions } from "../../utils/select-menus";
-import { mediaUrl } from "../../utils/urls";
 import { Emoji } from "../content/emoji";
 import { defaults, useDisplayOptions } from "../display-context";
 

@@ -19,7 +19,7 @@ Signatures and field tables are extracted from the public TypeScript contracts. 
 
 Callback props kept separate from serializable models. Buttons/selects/premium actions report intent; application handlers own requests and persistence.
 
-<CodeBlock language="ts">{"export type ComponentHandlers = {\n  onButtonClick?: ((id: string, context: ComponentInteractionContext) => void) | undefined;\n  onSelectChange?: ((id: string, values: string[], context: ComponentInteractionContext) => void) | undefined;\n  onPremiumClick?: ((skuId: string, context: ComponentInteractionContext) => void) | undefined;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ComponentHandlers = {\n  onButtonClick?: ((id: string, context: ComponentInteractionContext) => void) | undefined;\n  onSelectChange?: ((id: string, values: string[], context: ComponentInteractionContext) => void) | undefined;\n  onPremiumClick?: ((skuId: string, context: ComponentInteractionContext) => void) | undefined;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Related types: [ComponentInteractionContext](/docs/api/callbacks#componentintera
 
 Identifies origin even when IDs repeat in other messages. messageId is present through Message/conversation renderers; standalone MessageComponents supplies it explicitly when needed.
 
-<CodeBlock language="ts">{"export type ComponentInteractionContext = {\n  componentId: string;\n  /** Present when rendered through Message, MessageList, ChannelView or ThreadPanel. */\n  messageId?: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ComponentInteractionContext = {\n  componentId: string;\n  /** Present when rendered through Message, MessageList, ChannelView or ThreadPanel. */\n  messageId?: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -60,7 +60,7 @@ Identifies origin even when IDs repeat in other messages. messageId is present t
 
 Readonly map from select ID to controlled string IDs. Missing/undefined keys use local state; [] is explicitly empty. Reuse a new snapshot to accept proposed changes.
 
-<CodeBlock language="ts">{"export type SelectValues = Readonly<Record<string, readonly string[] | undefined>>;"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectValues = Readonly<Record<string, readonly string[] | undefined>>;"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -78,7 +78,7 @@ Readonly map from select ID to controlled string IDs. Missing/undefined keys use
 
 Readonly outer map by message ID, then select ID. This separates reused component IDs across messages.
 
-<CodeBlock language="ts">{"export type SelectValuesByMessage = Readonly<Record<string, SelectValues | undefined>>;"}</CodeBlock>
+<CodeBlock language="ts">{"type SelectValuesByMessage = Readonly<Record<string, SelectValues | undefined>>;"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -98,7 +98,7 @@ Related types: [SelectValues](/docs/api/callbacks#selectvalues).
 
 Receives messageId then reactionId. Host updates both count and selected state and owns any persistence.
 
-<CodeBlock language="ts">{"export type ReactionToggleHandler = (messageId: string, reactionId: string) => void;"}</CodeBlock>
+<CodeBlock language="ts">{"type ReactionToggleHandler = (messageId: string, reactionId: string) => void;"}</CodeBlock>
 
 
 ### Valid example
@@ -113,7 +113,7 @@ Receives messageId then reactionId. Host updates both count and selected state a
 
 Receives one local SlashCommandInvocation. There is no transport, registration or automatic response generation.
 
-<CodeBlock language="ts">{"export type SlashCommandHandler = (invocation: SlashCommandInvocation) => void;"}</CodeBlock>
+<CodeBlock language="ts">{"type SlashCommandHandler = (invocation: SlashCommandInvocation) => void;"}</CodeBlock>
 
 
 ### Valid example

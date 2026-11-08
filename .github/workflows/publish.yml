@@ -2,11 +2,11 @@ name: Stage npm package
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["v*", "core-v*"]
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing version tag to stage (for example v0.1.0 or v0.2.0-beta.1).
+        description: Existing version tag to stage (for example v0.2.0 or core-v0.2.0).
         required: true
         type: string
 
@@ -25,6 +25,7 @@ jobs:
     outputs:
       sha: ${{ steps.release.outputs.sha }}
       version: ${{ steps.release.outputs.version }}
+      package-name: ${{ steps.release.outputs.packageName }}
       dist-tag: ${{ steps.release.outputs.distTag }}
       tarball: ${{ steps.release.outputs.tarball }}
     steps:
@@ -80,6 +81,10 @@ jobs:
         with:
           name: npm-package
           path: release
+      - name: Verify published core dependency
+        env:
+          TARBALL: ${{ needs.validate.outputs.tarball }}
+        run: node scripts/release/check-dependencies.mts "./release/$TARBALL"
       - name: Stage on npm
         env:
           TARBALL: ${{ needs.validate.outputs.tarball }}
@@ -90,6 +95,7 @@ jobs:
       - name: Write staging summary
         env:
           VERSION: ${{ needs.validate.outputs.version }}
+          PACKAGE_NAME: ${{ needs.validate.outputs.package-name }}
           DIST_TAG: ${{ needs.validate.outputs.dist-tag }}
         run: |
-          echo "Staged @arcscord/discord-ui@$VERSION with npm tag $DIST_TAG. Review and approve it manually in npm Staged Packages to publish." >> "$GITHUB_STEP_SUMMARY"
+          echo "Staged $PACKAGE_NAME@$VERSION with npm tag $DIST_TAG. Review and approve it manually in npm Staged Packages to publish." >> "$GITHUB_STEP_SUMMARY"

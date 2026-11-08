@@ -1,8 +1,5 @@
+import type { ChannelViewModel, ComponentHandlers, ReactionToggleHandler, SelectValuesByMessage, SlashCommand, SlashCommandHandler } from "@arcscord/discord-ui-core";
 import type { CSSProperties, ReactNode } from "react";
-import type { ChannelViewModel } from "../../model/channel";
-import type { ComponentHandlers, SelectValuesByMessage } from "../../model/components";
-import type { ReactionToggleHandler } from "../../model/reaction";
-import type { SlashCommand, SlashCommandHandler } from "../../model/slash-command";
 import { useEffect, useRef, useState } from "react";
 import { DiscordUI } from "../discord-ui";
 import { useDisplayOptions } from "../display-context";

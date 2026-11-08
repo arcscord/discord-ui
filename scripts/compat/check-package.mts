@@ -5,11 +5,13 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { pnpm, root, run } from "../shared/cli.mts";
+import { checkCorePackage } from "./core-package.mts";
 
 if (process.argv.length > 2)
   throw new Error("Usage: pnpm pack:check (no arguments).");
 const temporary = await mkdtemp(join(tmpdir(), "discord-ui-consumer-"));
 try {
+  const coreArchive = await checkCorePackage(temporary);
   const library = join(root, "packages/discord-ui");
   await pnpm(["pack", "--pack-destination", temporary], library);
   const metadata = JSON.parse(await readFile(join(library, "package.json"), "utf8")) as { version: string };
@@ -33,23 +35,33 @@ try {
     assert(entries.includes(`package/${file}`), `Missing packaged file: ${file}`);
   }
   assert(!entries.some(entry => entry.startsWith("package/src/")), "Sources should not be required by consumers.");
+  const packedManifest = JSON.parse(execFileSync("tar", ["-xOf", archive, "package/package.json"], { encoding: "utf8" })) as { dependencies: Record<string, string> };
+  const coreManifest = JSON.parse(await readFile(join(root, "packages/discord-ui-core/package.json"), "utf8")) as { version: string };
+  assert.equal(packedManifest.dependencies["@arcscord/discord-ui-core"], `^${coreManifest.version}`, "Packed React dependency must use a compatible core range.");
   const typescript = JSON.parse(await readFile(join(root, "node_modules/typescript/package.json"), "utf8")) as { version: string };
   const reactTypes = JSON.parse(await readFile(join(root, "node_modules/@types/react/package.json"), "utf8")) as { version: string };
   const react = JSON.parse(await readFile(join(root, "node_modules/react/package.json"), "utf8")) as { version: string };
   await writeFile(join(temporary, "package.json"), JSON.stringify({
     private: true,
     type: "module",
-    dependencies: { "@arcscord/discord-ui": `file:${archive}`, "react": react.version, "react-dom": react.version },
+    dependencies: {
+      "@arcscord/discord-ui": `file:${archive}`,
+      "@arcscord/discord-ui-core": `file:${coreArchive}`,
+      "react": react.version,
+      "react-dom": react.version,
+    },
     devDependencies: { "typescript": typescript.version, "@types/react": reactTypes.version },
   }));
-  await writeFile(join(temporary, "pnpm-workspace.yaml"), "packages: []\n");
+  await writeFile(join(temporary, "pnpm-workspace.yaml"), `packages: []\noverrides:\n  "@arcscord/discord-ui-core": ${JSON.stringify(`file:${coreArchive}`)}\n`);
   await writeFile(join(temporary, "smoke.mjs"), `
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Message, DiscordUI, ChannelView, ThreadPreview, Emoji, MessageComponents } from "@arcscord/discord-ui";
+import { defineTheme as coreDefineTheme } from "@arcscord/discord-ui-core/themes";
 import { defineTheme } from "@arcscord/discord-ui/themes";
+assert.equal(coreDefineTheme, defineTheme, "React must re-export the shared theme implementation.");
 const custom = defineTheme({ name: "custom-light", extends: "light", tokens: { codeBackground: "#123456" } });
 const themed = renderToStaticMarkup(createElement(DiscordUI, { theme: custom }, "Custom"));
 assert(themed.includes('data-base-theme="light"'));
@@ -84,6 +96,7 @@ assert(css.includes('[data-theme="ash"]'));
 assert(css.includes(".dui-container"));
 assert(css.includes("--discord-ui-channel-input-background"));
 assert(!css.includes("@import"), "Published CSS must not reference source stylesheets.");
+assert.equal(css, await readFile(new URL(import.meta.resolve("@arcscord/discord-ui-core/styles.css")), "utf8"));
 `);
   await writeFile(join(temporary, "types.mts"), `
 import type { AvatarProps, ChannelViewProps, ComponentInteractionContext, MessageComponentsProps, MessageView, SelectValuesByMessage, UnicodeEmojiOptions, ButtonProps, LinkButtonView } from "@arcscord/discord-ui";
@@ -93,6 +106,8 @@ const missingSource: UnicodeEmojiOptions = { mode: "twemoji" };
 const emojiButton: ButtonProps = { label: "", ariaLabel: "Wave" };
 const emojiLink: LinkButtonView = { id: "docs", kind: "link-button", label: "", ariaLabel: "Docs", url: "https://example.com" };
 void emojiOptions; void missingSource; void emojiButton; void emojiLink;
+const coreMessage: import("@arcscord/discord-ui-core").MessageView = { id: "core", author: { id: "a", displayName: "A" }, timestamp: "2026-11-01T00:00:00Z", body: { kind: "text", content: "Core" } };
+const compatible: MessageView = coreMessage; void compatible;
 const message: MessageView = {
   id: "example", author: { id: "author", displayName: "Example" },
   timestamp: "2026-10-29T18:00:00Z", body: { kind: "text", content: "Hello" },

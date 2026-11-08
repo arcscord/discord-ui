@@ -9,6 +9,7 @@ import { componentNotes, defaultOverrides, propertyNotes } from "./api-metadata.
 import { modelExamples, modelNotes } from "./model-examples.mts";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
+const coreSourceRoot = path.join(root, "packages/discord-ui-core/src");
 const sourceRoot = path.join(root, "packages/discord-ui/src");
 const options: ts.CompilerOptions = {
   strict: true,
@@ -46,7 +47,11 @@ const slug = (value: string) => value.toLowerCase();
 const exampleId = (name: string) => name.replace(/([a-z\d])([A-Z])/gu, "$1-$2").toLowerCase();
 
 export async function buildReference() {
-  const program = ts.createProgram(entryFiles.map(file => path.join(sourceRoot, file)), options);
+  const program = ts.createProgram([
+    ...entryFiles.map(file => path.join(sourceRoot, file)),
+    path.join(coreSourceRoot, "themes.ts"),
+    path.join(coreSourceRoot, "display-options.ts"),
+  ], options);
   const checker = program.getTypeChecker();
   const symbols = new Map<string, { symbol: TSSymbol; entries: string[] }>();
   for (const [index, file] of entryFiles.entries()) {
@@ -67,8 +72,8 @@ export async function buildReference() {
       }
     }
   }
-  const defaultsSource = program.getSourceFile(path.join(sourceRoot, "components/display-context.ts"))!;
-  const defaultsVariable = defaultsSource.statements.filter(ts.isVariableStatement).flatMap(statement => statement.declarationList.declarations).find(declaration => declaration.name.getText() === "defaults")!;
+  const defaultsSource = program.getSourceFile(path.join(coreSourceRoot, "display-options.ts"))!;
+  const defaultsVariable = defaultsSource.statements.filter(ts.isVariableStatement).flatMap(statement => statement.declarationList.declarations).find(declaration => declaration.name.getText() === "defaultDisplayOptions")!;
   const defaultsObject = defaultsVariable.initializer as ts.ObjectLiteralExpression;
   const labelsObject = (defaultsObject.properties.find(property => property.name?.getText() === "labels") as ts.PropertyAssignment).initializer as ts.ObjectLiteralExpression;
   const labelDefaults = Object.fromEntries(labelsObject.properties.filter(ts.isPropertyAssignment).map(property => [
@@ -76,7 +81,7 @@ export async function buildReference() {
     property.initializer.getText(),
   ]));
   const labelsExample = `{ ${Object.entries(labelDefaults).map(([key, value]) => `${key}: ${value}`).join(", ")} }`;
-  const themeSource = program.getSourceFile(path.join(sourceRoot, "themes.ts"))!;
+  const themeSource = program.getSourceFile(path.join(coreSourceRoot, "themes.ts"))!;
   const tokenDeclaration = themeSource.statements.filter(ts.isVariableStatement).flatMap(statement => statement.declarationList.declarations).find(declaration => declaration.name.getText() === "themeTokenProperties")!;
   const tokens = (tokenDeclaration.initializer as ts.AsExpression).expression as ts.ObjectLiteralExpression;
   const tokenMap = Object.fromEntries(tokens.properties.filter(ts.isPropertyAssignment).map(property => [
@@ -84,22 +89,40 @@ export async function buildReference() {
     (property.initializer as ts.StringLiteral).text,
   ]));
   const destinations = new Map<string, string>();
-  for (const [name, { symbol }] of symbols) {
+  for (const name of symbols.keys()) {
     let page: string;
     const component = name.endsWith("Props")
       ? name.slice(0, -5)
       : name;
-    if (component in componentDocs)
+    if (component in componentDocs) {
       page = componentDocs[component as keyof typeof componentDocs][0];
-    else if (name === "DisplayOptions" || name === "UILabels")
+    }
+    else if (name === "DisplayOptions" || name === "UILabels") {
       page = "display-components";
-    else if (symbol.declarations?.[0]?.getSourceFile() === themeSource)
+    }
+    else if ([
+      "defineTheme",
+      "resolveTheme",
+      "themes",
+      "themeTokenProperties",
+      "DiscordTheme",
+      "ThemeInput",
+      "ThemeName",
+      "ThemeOverrides",
+      "ThemeTokens",
+      "themeStyle",
+    ].includes(name)) {
       page = "themes";
-    else if (name === "renderHighlightedCode")
+    }
+    else if (name === "renderHighlightedCode") {
       page = "highlight";
-    else if (callbackNames.has(name))
+    }
+    else if (callbackNames.has(name)) {
       page = "callbacks";
-    else page = "models";
+    }
+    else {
+      page = "models";
+    }
     destinations.set(name, page);
   }
   function format(type: Type, location: ts.Node): string {

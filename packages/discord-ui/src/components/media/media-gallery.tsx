@@ -1,4 +1,4 @@
-import type { MediaView } from "../../model/content";
+import type { MediaView } from "@arcscord/discord-ui-core";
 import { Media } from "./media";
 
 export type MediaGalleryProps = { items: readonly MediaView[] };

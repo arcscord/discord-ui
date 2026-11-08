@@ -1,6 +1,6 @@
-import type { MessageAuthor } from "../../model/message";
+import type { MessageAuthor } from "@arcscord/discord-ui-core";
+import { mediaUrl } from "@arcscord/discord-ui-core";
 import { useState } from "react";
-import { mediaUrl } from "../../utils/urls";
 import { useDisplayOptions } from "../display-context";
 
 const backgrounds = [

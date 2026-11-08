@@ -1,6 +1,6 @@
+import { mediaUrl } from "@arcscord/discord-ui-core";
 import { parse } from "@twemoji/parser";
 import { useState } from "react";
-import { mediaUrl } from "../../utils/urls";
 import { useDisplayOptions } from "../display-context";
 import { UnicodeEmoji } from "./unicode-emoji";
 

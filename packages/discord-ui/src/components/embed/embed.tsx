@@ -1,5 +1,5 @@
-import type { EmbedView } from "../../model/content";
-import { linkUrl, mediaUrl } from "../../utils/urls";
+import type { EmbedView } from "@arcscord/discord-ui-core";
+import { linkUrl, mediaUrl } from "@arcscord/discord-ui-core";
 import { Emoji } from "../content/emoji";
 import { Markdown } from "../content/markdown";
 import { useDisplayOptions } from "../display-context";

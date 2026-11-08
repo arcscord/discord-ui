@@ -1,0 +1,29 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { defineConfig } from "tsdown";
+
+export default defineConfig({
+  entry: [
+    "src/index.ts",
+    "src/themes.ts",
+    "src/markdown.ts",
+    "src/emoji.ts",
+    "src/highlight.ts",
+  ],
+  format: "esm",
+  platform: "browser",
+  target: "es2022",
+  dts: true,
+  sourcemap: true,
+  clean: true,
+  deps: { neverBundle: true },
+  outExtensions: () => ({ js: ".mjs", dts: ".d.mts" }),
+  hooks: {
+    "build:done": async () => {
+      const styles = await readFile("src/styles/styles.css", "utf8");
+      const imported = await readFile("src/styles/renderer.css", "utf8");
+      const themes = await readFile("src/styles/themes.css", "utf8");
+      // Ship one standalone stylesheet, with no unresolved source imports.
+      await writeFile("dist/styles.css", styles.replace("@import \"./renderer.css\";", imported).replace("@import \"./themes.css\";", themes));
+    },
+  },
+});

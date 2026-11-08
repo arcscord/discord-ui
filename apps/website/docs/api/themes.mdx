@@ -43,8 +43,6 @@ Readonly preset descriptions: light uses colorScheme=light; ash and dark use col
 
 [Theme guide and rendered example](/docs/guides/themes)
 
-Related types: [DiscordTheme](/docs/api/themes#discordtheme).
-
 ## themeTokenProperties
 
 <CodeBlock language="ts">{"import { themeTokenProperties } from \"@arcscord/discord-ui\";"}</CodeBlock>
@@ -113,7 +111,7 @@ Readonly map from each typed semantic token key to its public CSS custom propert
 
 Reusable theme description with name, retained CSS base, light/dark color scheme and readonly partial token overrides. Supply it to DiscordUI.theme.
 
-<CodeBlock language="ts">{"export type DiscordTheme = {\n  readonly name: string;\n  readonly base: string;\n  readonly colorScheme: \"light\" | \"dark\";\n  readonly tokens: Readonly<ThemeOverrides>;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type DiscordTheme = {\n  readonly name: string;\n  readonly base: string;\n  readonly colorScheme: \"light\" | \"dark\";\n  readonly tokens: Readonly<ThemeOverrides>;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -136,7 +134,7 @@ Related types: [ThemeOverrides](/docs/api/themes#themeoverrides).
 
 A preset ThemeName or a complete DiscordTheme object. Custom themes are passed directly rather than globally registered.
 
-<CodeBlock language="ts">{"export type ThemeInput = ThemeName | DiscordTheme;"}</CodeBlock>
+<CodeBlock language="ts">{"type ThemeInput = ThemeName | DiscordTheme;"}</CodeBlock>
 
 ### Example
 
@@ -152,7 +150,7 @@ Related types: [ThemeName](/docs/api/themes#themename), [DiscordTheme](/docs/api
 
 The three supported preset names: light, ash and dark.
 
-<CodeBlock language="ts">{"export type ThemeName = keyof typeof themes;"}</CodeBlock>
+<CodeBlock language="ts">{"type ThemeName = keyof typeof themes;"}</CodeBlock>
 
 ### Example
 
@@ -166,7 +164,7 @@ The three supported preset names: light, ash and dark.
 
 Partial token map; omitted keys inherit the base CSS preset and parent overrides. Wrapper overrides win over selected-theme tokens.
 
-<CodeBlock language="ts">{"export type ThemeOverrides = Partial<ThemeTokens>;"}</CodeBlock>
+<CodeBlock language="ts">{"type ThemeOverrides = Partial<ThemeTokens>;"}</CodeBlock>
 
 | Token key | CSS variable | Value |
 | --- | --- | --- |
@@ -230,7 +228,7 @@ Related types: [ThemeTokens](/docs/api/themes#themetokens).
 
 Complete map: every token key is required with a string CSS value. Prefer ThemeOverrides for a partial customization. The table below describes all accepted keys.
 
-<CodeBlock language="ts">{"export type ThemeTokens = { [Key in keyof typeof themeTokenProperties]: string };"}</CodeBlock>
+<CodeBlock language="ts">{"type ThemeTokens = { [Key in keyof typeof themeTokenProperties]: string; };"}</CodeBlock>
 
 | Token key | CSS variable | Value |
 | --- | --- | --- |
@@ -286,6 +284,20 @@ Complete map: every token key is required with a string CSS value. Prefer ThemeO
 
 [Theme guide and rendered example](/docs/guides/themes)
 
+## themeStyle
+
+<CodeBlock language="ts">{"import { themeStyle } from \"@arcscord/discord-ui/themes\";"}</CodeBlock>
+
+Available from /themes only. Converts supplied semantic token keys to their CSS custom-property names in a React CSSProperties object. It does not validate contrast or apply a stylesheet.
+
+<CodeBlock language="ts">{"export function themeStyle(tokens: Readonly<ThemeOverrides>): CSSProperties;"}</CodeBlock>
+
+### Example
+
+<CodeBlock language="ts">{"import { themeStyle } from \"@arcscord/discord-ui/themes\";\n\nconst style = themeStyle({ accent: \"#5865f2\" });"}</CodeBlock>
+
+[Theme guide and rendered example](/docs/guides/themes)
+
 ## resolveTheme
 
 <CodeBlock language="ts">{"import { resolveTheme } from \"@arcscord/discord-ui/themes\";"}</CodeBlock>
@@ -301,19 +313,5 @@ Available from /themes only. Resolves a preset name/custom object and merges per
 [Theme guide and rendered example](/docs/guides/themes)
 
 Related types: [DiscordTheme](/docs/api/themes#discordtheme).
-
-## themeStyle
-
-<CodeBlock language="ts">{"import { themeStyle } from \"@arcscord/discord-ui/themes\";"}</CodeBlock>
-
-Available from /themes only. Converts supplied semantic token keys to their CSS custom-property names in a React CSSProperties object. It does not validate contrast or apply a stylesheet.
-
-<CodeBlock language="ts">{"export function themeStyle(tokens: Readonly<ThemeOverrides>): CSSProperties;"}</CodeBlock>
-
-### Example
-
-<CodeBlock language="ts">{"import { themeStyle } from \"@arcscord/discord-ui/themes\";\n\nconst style = themeStyle({ accent: \"#5865f2\" });"}</CodeBlock>
-
-[Theme guide and rendered example](/docs/guides/themes)
 
 </div>

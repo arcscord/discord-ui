@@ -227,7 +227,7 @@ Related types: [DisplayOptions](/docs/api/display-components#displayoptions), [U
 
 Display configuration, not a serializable message model: renderCode is a callback. DiscordUI accepts a partial configuration, and partial labels, while this type describes the complete configuration.
 
-<CodeBlock language="ts">{"export type DisplayOptions = {\n  theme: ThemeInput;\n  tokens?: ThemeOverrides;\n  locale: string;\n  timeZone: string;\n  referenceTime?: string;\n  entities: MessageEntities;\n  allowRemoteMedia: boolean;\n  unicodeEmoji?: UnicodeEmojiOptions;\n  renderCode?: ((content: string, language: string) => ReactNode) | undefined;\n  labels: UILabels;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"export type DisplayOptions = BaseDisplayOptions & {\n  renderCode?: ((content: string, language: string) => ReactNode) | undefined;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -239,8 +239,8 @@ Display configuration, not a serializable message model: renderCode is a callbac
 | `entities` | Yes | `MessageEntities` | `{}` | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `allowRemoteMedia` | Yes | `boolean` | `true` | Allows HTTP(S) image sources. false preserves accepted local/blob/data images and does not disable outgoing links. |
 | `unicodeEmoji` | No | `UnicodeEmojiOptions` | — | Native Unicode by default; twemoji requires an explicit baseUrl serving codepoint SVG files. Local paths work with remote media disabled; failed images fall back to Unicode. |
-| `renderCode` | No | `((content: string, language: string) => ReactNode) \| undefined` | — | Optional code renderer receiving (content, language). Return React content; opt-in highlighter has a separate entry. |
 | `labels` | Yes | `UILabels` | `English defaults (partial merge)` | Interface-label configuration; DiscordUI accepts partial overrides merged with English defaults. |
+| `renderCode` | No | `((content: string, language: string) => ReactNode) \| undefined` | — | Optional code renderer receiving (content, language). Return React content; opt-in highlighter has a separate entry. |
 
 ### Example
 
@@ -254,7 +254,7 @@ Display configuration, not a serializable message model: renderCode is a callbac
 
 Complete interface-label schema. DiscordUI accepts `Partial<UILabels>` and merges English defaults. Keep `{name}`, `{channel}` and `{count}` placeholders where present; locale formatting is separate.
 
-<CodeBlock language="ts">{"export type UILabels = {\n  selectPlaceholder?: string;\n  channelSelectPlaceholder?: string;\n  removeSelection?: string;\n  selectNoResults?: string;\n  selectNoOptions?: string;\n  userOnline?: string;\n  userIdle?: string;\n  userDnd?: string;\n  userOffline?: string;\n  commandOptions: string;\n  commandReady: string;\n  removeArgument: string;\n  slashCommands: string;\n  cancelCommand: string;\n  chooseValue: string;\n  edited: string;\n  reply: string;\n  replyUnavailable: string;\n  interactionReply: string;\n  interactionUsed: string;\n  ephemeralNotice: string;\n  dismissMessage: string;\n  downloadFile: string;\n  reactions: string;\n  thread: string;\n  openThread: string;\n  closeThread: string;\n  threadMessageSingular: string;\n  threadMessagePlural: string;\n  threadNoRecentMessages: string;\n  messages: string;\n  emptyChannel: string;\n  messagePlaceholder: string;\n  sendMessage: string;\n  spoiler: string;\n  showSpoiler: string;\n  hideSpoiler: string;\n  mediaUnavailable: string;\n  invalidTimestamp: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type UILabels = {\n  selectPlaceholder?: string;\n  channelSelectPlaceholder?: string;\n  removeSelection?: string;\n  selectNoResults?: string;\n  selectNoOptions?: string;\n  userOnline?: string;\n  userIdle?: string;\n  userDnd?: string;\n  userOffline?: string;\n  commandOptions: string;\n  commandReady: string;\n  removeArgument: string;\n  slashCommands: string;\n  cancelCommand: string;\n  chooseValue: string;\n  edited: string;\n  reply: string;\n  replyUnavailable: string;\n  interactionReply: string;\n  interactionUsed: string;\n  ephemeralNotice: string;\n  dismissMessage: string;\n  downloadFile: string;\n  reactions: string;\n  thread: string;\n  openThread: string;\n  closeThread: string;\n  threadMessageSingular: string;\n  threadMessagePlural: string;\n  threadNoRecentMessages: string;\n  messages: string;\n  emptyChannel: string;\n  messagePlaceholder: string;\n  sendMessage: string;\n  spoiler: string;\n  showSpoiler: string;\n  hideSpoiler: string;\n  mediaUnavailable: string;\n  invalidTimestamp: string;\n};"}</CodeBlock>
 
 | Label | English default |
 | --- | --- |
