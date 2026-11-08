@@ -26,7 +26,7 @@ export { Spoiler } from "./components/content/spoiler";
 export type { SpoilerProps } from "./components/content/spoiler";
 export { DiscordUI } from "./components/discord-ui";
 export type { DiscordUIProps } from "./components/discord-ui";
-export type { DisplayOptions } from "./components/display-context";
+export type { DisplayOptions, UnicodeEmojiOptions } from "./components/display-context";
 export type { UILabels } from "./components/display-context";
 export { Embed } from "./components/embed/embed";
 export type { EmbedProps } from "./components/embed/embed";

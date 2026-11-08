@@ -160,7 +160,9 @@ loading/error state and subsequent model update. Other interaction contracts:
 - For highlighting, pass `renderCode={renderHighlightedCode}` to `DiscordUI`,
   importing the function from the optional highlight entry point.
 - `allowRemoteMedia={false}` blocks remote image resources, including avatars
-  and emoji. Preserve this setting when configured. It is not a general network
+  and emoji. Unicode defaults to native text; configure `unicodeEmoji` with
+  `{ mode: "twemoji", baseUrl: "/emojis" }` for local codepoint SVGs (no implicit
+  CDN). Local assets work with remote media disabled. Preserve this setting when configured. It is not a general network
   sandbox for the host application or every link.
 - Render content through the library's text/Markdown components. Do not turn
   message content into raw HTML injection.

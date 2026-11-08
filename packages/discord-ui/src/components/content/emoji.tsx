@@ -16,6 +16,11 @@ function EmojiImage({ name, source }: { name: string; source: string | undefined
             : ""}
           width={22}
           height={22}
+          ref={(node) => {
+            // Recover failures that occurred before hydration attached onError.
+            if (node?.complete && node.naturalWidth === 0)
+              setFailed(true);
+          }}
           onError={() => setFailed(true)}
         />
       )

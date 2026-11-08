@@ -76,7 +76,34 @@ data, with no implicit clock. Keep display options and initial data equal during
 server rendering and hydration.
 
 Use `allowRemoteMedia={false}` to block remote image resources, including avatars
-and emoji. Syntax highlighting is opt-in through
+and emoji, while allowing root-relative local assets. Unicode emoji default to
+native text; no CDN is implicit. To use self-hosted Twemoji SVG files:
+
+```tsx
+<DiscordUI
+  unicodeEmoji={{ mode: "twemoji", baseUrl: "/emojis/twemoji-16.0.1" }}
+  allowRemoteMedia={false}
+>
+  {children}
+</DiscordUI>;
+```
+
+Serve files directly under `baseUrl` (for example `2764.svg` for ❤️). The parser
+uses lowercase, hyphenated Twemoji code points. Missing, blocked or failed images
+fall back to Unicode. This applies to text, Markdown, reactions, buttons and
+selects; code remains literal. Use `{ mode: "native" }` for device emoji.
+An explicit HTTP(S) `baseUrl` also requires remote media to be allowed. Hosts own
+the asset version, coverage and Twemoji graphics attribution (CC-BY 4.0).
+
+This replaces the previous implicit jsDelivr rendering: consumers wanting images
+must now configure a source. Custom emoji still use `entities.emojis` or resolved
+`{ name, image }` metadata, including local GIFs and `:name:` fallbacks.
+
+Emoji-only button models accept `ariaLabel`, falling back to the emoji name.
+For primitive `Button`/`LinkButton` React slots, supply a meaningful `ariaLabel`;
+without a text label, the emoji slot remains exposed to assistive technology.
+
+Syntax highlighting is opt-in through
 `renderHighlightedCode` from `@arcscord/discord-ui/highlight`.
 
 ## Guides and reference

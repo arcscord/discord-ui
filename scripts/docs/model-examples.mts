@@ -1,5 +1,6 @@
 /** Typed by the reference generator's compiler check; these are display data, not send payloads. */
 export const modelExamples: Record<string, string[]> = {
+  UnicodeEmojiOptions: ["{ mode: \"native\" }", "{ mode: \"twemoji\", baseUrl: \"/emojis/twemoji-16.0.1\" }"],
   AvatarFallback: ["{ letter: \"S\", background: \"#5865f2\", color: \"#ffffff\" }"],
   MessageAuthor: ["{ id: \"sam\", displayName: \"Sam\", bot: false }"],
   TextMessageBody: ["{ kind: \"text\", content: \"Hello\" }"],
@@ -74,6 +75,7 @@ export const modelExamples: Record<string, string[]> = {
 };
 
 export const modelNotes: Record<string, string> = {
+  UnicodeEmojiOptions: "Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-relative sources work with allowRemoteMedia=false. HTTP(S) sources require remote media permission. Failed images preserve Unicode; no CDN is implicit.",
   AvatarFallback: "Colors require six-digit hex values. The first grapheme of letter or the author's display name is used; blank names fall back to a question mark. Missing colors are deterministic from author identity.",
   MessageAuthor: "Resolved author metadata, including optional avatar fallback and application/verification markers. IDs stay strings and the host supplies display names.",
   TextMessageBody: "Escaped text content. Use MarkdownMessageBody to enable formatting and entity tokens.",

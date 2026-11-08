@@ -411,4 +411,6 @@ THE SOFTWARE.
 Twemoji graphics by Twitter, Inc. and other contributors are licensed under
 CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
 Source: https://github.com/jdecked/twemoji
-Unmodified SVG assets are loaded from jsDelivr at version 17.0.3.
+No graphics are bundled in the library or loaded implicitly. Hosts configuring
+Twemoji supply assets and must retain the graphics attribution. The documentation
+uses an unmodified, locally served 1f44b.svg from Twemoji v17.0.3.

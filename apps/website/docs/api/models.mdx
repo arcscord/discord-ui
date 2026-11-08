@@ -13,6 +13,33 @@ Signatures and field tables are extracted from the public TypeScript contracts. 
 
 [Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
 
+## UnicodeEmojiOptions
+
+<CodeBlock language="ts">{"import type { UnicodeEmojiOptions } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-relative sources work with allowRemoteMedia=false. HTTP(S) sources require remote media permission. Failed images preserve Unicode; no CDN is implicit.
+
+<CodeBlock language="ts">{"export type UnicodeEmojiOptions = { mode: \"native\" } | { mode: \"twemoji\"; baseUrl: string };"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `mode` | Yes | `"native"` | — | Unicode emoji rendering mode: native text or explicitly sourced Twemoji SVGs. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `mode` | Yes | `"twemoji"` | — | Unicode emoji rendering mode: native text or explicitly sourced Twemoji SVGs. |
+| `baseUrl` | Yes | `string` | — | Root-relative directory or explicit HTTP(S) URL containing codepoint.svg files, subject to the shared media policy. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.UnicodeEmojiOptions = { mode: \"native\" };\nconst example2: API.UnicodeEmojiOptions = { mode: \"twemoji\", baseUrl: \"/emojis/twemoji-16.0.1\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
 ## ChannelViewModel
 
 <CodeBlock language="ts">{"import type { ChannelViewModel } from \"@arcscord/discord-ui\";"}</CodeBlock>
@@ -77,13 +104,14 @@ Related types: [MessageButtonView](/docs/api/models#messagebuttonview), [SelectM
 
 Normal action button. Allowed styles exclude premium, which is a separate model variant. Disabled prevents activation; callbacks are props rather than model fields.
 
-<CodeBlock language="ts">{"export type ButtonView = { id: string; kind: \"button\"; label: string; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\"; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
+<CodeBlock language="ts">{"export type ButtonView = { id: string; kind: \"button\"; label: string; ariaLabel?: string; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\"; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"button"` | — | Discriminator selecting this model variant. |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `style` | No | `"primary" \| "secondary" \| "success" \| "danger"` | — | Button visual variant; premium is appearance, not a billing integration. |
 | `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
 | `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
@@ -332,13 +360,14 @@ Related types: [MediaView](/docs/api/models#mediaview).
 
 HTTP(S) navigation button, without action callback. Invalid/disabled URLs are inert.
 
-<CodeBlock language="ts">{"export type LinkButtonView = { id: string; kind: \"link-button\"; label: string; url: string; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
+<CodeBlock language="ts">{"export type LinkButtonView = { id: string; kind: \"link-button\"; label: string; ariaLabel?: string; url: string; disabled?: boolean; emoji?: { name: string; image?: string } };"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"link-button"` | — | Discriminator selecting this model variant. |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
 | `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
 | `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
@@ -393,6 +422,7 @@ Discriminated normal, link and premium button union. Normal buttons report an ID
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"link-button"` | — | Discriminator selecting this model variant. |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
 | `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
 | `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
@@ -404,6 +434,7 @@ Discriminated normal, link and premium button union. Normal buttons report an ID
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"button"` | — | Discriminator selecting this model variant. |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `style` | No | `"primary" \| "secondary" \| "success" \| "danger"` | — | Button visual variant; premium is appearance, not a billing integration. |
 | `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
 | `emoji` | No | `{ name: string; image?: string; }` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
@@ -416,6 +447,7 @@ Discriminated normal, link and premium button union. Normal buttons report an ID
 | `kind` | Yes | `"premium-button"` | — | Discriminator selecting this model variant. |
 | `skuId` | Yes | `string` | — | Premium product identifier; host supplies details and handles purchase intent. |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
 
 ### Valid examples
@@ -521,7 +553,7 @@ Related types: [ContainerChild](/docs/api/models#containerchild), [ContainerView
 
 Resolved premium label and product SKU. Premium callbacks report intent and perform no billing or product lookup.
 
-<CodeBlock language="ts">{"export type PremiumButtonView = { id: string; kind: \"premium-button\"; skuId: string; label: string; disabled?: boolean };"}</CodeBlock>
+<CodeBlock language="ts">{"export type PremiumButtonView = { id: string; kind: \"premium-button\"; skuId: string; label: string; ariaLabel?: string; disabled?: boolean };"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -529,6 +561,7 @@ Resolved premium label and product SKU. Premium callbacks report intent and perf
 | `kind` | Yes | `"premium-button"` | — | Discriminator selecting this model variant. |
 | `skuId` | Yes | `string` | — | Premium product identifier; host supplies details and handles purchase intent. |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `disabled` | No | `boolean` | — | Prevents the rendered control from accepting activation or changes. |
 
 ### Valid example

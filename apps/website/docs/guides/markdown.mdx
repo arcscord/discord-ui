@@ -53,9 +53,25 @@ emoji uses its parsed name when no image is provided. Mentions are display token
 not live Discord navigation or permission checks. Use full Discord snowflake IDs
 in parsed mention tokens; short placeholder IDs such as `<@42>` remain plain text.
 
-Unicode emoji use Twemoji images when remote media is enabled, with native text
-as the failed-image fallback. Disabling remote media keeps Unicode as text. Custom
-image emoji also follow the shared media policy. See [media handling](./media.mdx#remote-media-policy).
+Unicode emoji default to native device text, without an implicit CDN. Configure
+`unicodeEmoji={{ mode: "twemoji", baseUrl: "/emojis/twemoji-16.0.1" }}` on
+`DiscordUI` to use local SVGs; for example, ❤️ loads `2764.svg` directly beneath
+that directory. Filenames use lowercase hyphenated Twemoji code points. The same
+configuration covers text, Markdown, reactions, button emoji and select options;
+inline/fenced code stays literal. The example above serves 👋 from a local asset.
+
+`allowRemoteMedia={false}` permits root-relative Twemoji files. An explicit
+HTTP(S) source requires remote media to be allowed. Missing, blocked or failed
+images fall back to Unicode. `{ mode: "native" }` always uses device emoji.
+Consumers previously relying on implicit jsDelivr images must configure a source.
+Host a compatible asset set and retain its Twemoji graphics CC-BY 4.0 attribution.
+Older sets can miss newer emoji; these fall back to native text.
+
+Custom emoji use `entities.emojis`, including local animated GIFs, with `:name:`
+as their fallback. Both custom and Unicode images follow the shared
+[media policy](./media.mdx#remote-media-policy). Emoji-only button models accept
+`ariaLabel` with the emoji name as fallback; provide `ariaLabel` for custom React
+slots in primitive `Button` and `LinkButton` components.
 
 ## Code and links
 

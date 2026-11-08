@@ -47,7 +47,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Message, DiscordUI, ChannelView, ThreadPreview } from "@arcscord/discord-ui";
+import { Message, DiscordUI, ChannelView, ThreadPreview, Emoji, MessageComponents } from "@arcscord/discord-ui";
 import { defineTheme } from "@arcscord/discord-ui/themes";
 const custom = defineTheme({ name: "custom-light", extends: "light", tokens: { codeBackground: "#123456" } });
 const themed = renderToStaticMarkup(createElement(DiscordUI, { theme: custom }, "Custom"));
@@ -63,6 +63,15 @@ const html = renderToStaticMarkup(createElement(Message, { message: {
 }}));
 assert(html.includes("Packed author"));
 assert(html.includes("Packed message"));
+const emojiHtml = renderToStaticMarkup(createElement(DiscordUI, {
+  allowRemoteMedia: false, unicodeEmoji: { mode: "twemoji", baseUrl: "/emoji" },
+}, createElement(Emoji, { name: "❤️" })));
+assert(emojiHtml.includes('src="/emoji/2764.svg"'));
+assert(!emojiHtml.includes("jsdelivr"));
+const buttonsHtml = renderToStaticMarkup(createElement(MessageComponents, { components: [{
+  id: "row", kind: "action-row", buttons: [{ id: "wave", kind: "button", label: "", ariaLabel: "Wave", emoji: { name: "👋" } }],
+}] }));
+assert(buttonsHtml.includes('aria-label="Wave"'));
 const channelHtml = renderToStaticMarkup(createElement(ChannelView, { channel: { id: "packed", name: "packed-channel", messages: [] } }));
 assert(channelHtml.includes("Message #packed-channel"));
 const threadHtml = renderToStaticMarkup(createElement(ThreadPreview, { thread: { id: "packed-thread", name: "Packed thread", messageCount: 0 } }));
@@ -76,7 +85,13 @@ assert(css.includes("--discord-ui-channel-input-background"));
 assert(!css.includes("@import"), "Published CSS must not reference source stylesheets.");
 `);
   await writeFile(join(temporary, "types.mts"), `
-import type { AvatarProps, ChannelViewProps, ComponentInteractionContext, MessageComponentsProps, MessageView, SelectValuesByMessage } from "@arcscord/discord-ui";
+import type { AvatarProps, ChannelViewProps, ComponentInteractionContext, MessageComponentsProps, MessageView, SelectValuesByMessage, UnicodeEmojiOptions, ButtonProps, LinkButtonView } from "@arcscord/discord-ui";
+const emojiOptions: UnicodeEmojiOptions = { mode: "twemoji", baseUrl: "/emoji" };
+// @ts-expect-error Twemoji requires an explicit source.
+const missingSource: UnicodeEmojiOptions = { mode: "twemoji" };
+const emojiButton: ButtonProps = { label: "", ariaLabel: "Wave" };
+const emojiLink: LinkButtonView = { id: "docs", kind: "link-button", label: "", ariaLabel: "Docs", url: "https://example.com" };
+void emojiOptions; void missingSource; void emojiButton; void emojiLink;
 const message: MessageView = {
   id: "example", author: { id: "author", displayName: "Example" },
   timestamp: "2026-10-29T18:00:00Z", body: { kind: "text", content: "Hello" },

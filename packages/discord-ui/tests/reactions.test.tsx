@@ -4,13 +4,13 @@ import { DiscordUI, Emoji, Markdown, Message, MessageContent, Reactions } from "
 
 it("renders complex Unicode emoji consistently while leaving code literal and text escaped", () => {
   const content = "Hello 👩🏽‍💻 ❤️ 🇨🇭 <script>";
-  const plain = renderToStaticMarkup(<MessageContent content={content} />);
+  const plain = renderToStaticMarkup(<DiscordUI unicodeEmoji={{ mode: "twemoji", baseUrl: "/emojis" }}><MessageContent content={content} /></DiscordUI>);
   expect(plain).toContain("1f469-1f3fd-200d-1f4bb.svg");
   expect(plain).toContain("2764.svg");
   expect(plain).toContain("1f1e8-1f1ed.svg");
   expect(plain).toContain("&lt;script&gt;");
   expect(plain).not.toContain("@latest");
-  const markdown = renderToStaticMarkup(<Markdown content={"**👩🏽‍💻** `❤️`\n```\n🇨🇭\n```"} />);
+  const markdown = renderToStaticMarkup(<DiscordUI unicodeEmoji={{ mode: "twemoji", baseUrl: "/emojis" }}><Markdown content={"**👩🏽‍💻** `❤️`\n```\n🇨🇭\n```"} /></DiscordUI>);
   expect(markdown).toContain("1f469-1f3fd-200d-1f4bb.svg");
   expect(markdown).toContain("<code class=\"dui-inline-code\">❤️</code>");
   expect(markdown).toContain("<code>🇨🇭</code>");

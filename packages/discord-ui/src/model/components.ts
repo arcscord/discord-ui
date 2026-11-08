@@ -2,10 +2,10 @@ import type { MediaView } from "./content";
 import type { ChannelEntityView, ChannelType, RoleView, UserView } from "./entities";
 
 export type TextDisplayView = { id: string; kind: "text-display"; content: string };
-export type LinkButtonView = { id: string; kind: "link-button"; label: string; url: string; disabled?: boolean; emoji?: { name: string; image?: string } };
-export type ButtonView = { id: string; kind: "button"; label: string; style?: "primary" | "secondary" | "success" | "danger"; disabled?: boolean; emoji?: { name: string; image?: string } };
+export type LinkButtonView = { id: string; kind: "link-button"; label: string; ariaLabel?: string; url: string; disabled?: boolean; emoji?: { name: string; image?: string } };
+export type ButtonView = { id: string; kind: "button"; label: string; ariaLabel?: string; style?: "primary" | "secondary" | "success" | "danger"; disabled?: boolean; emoji?: { name: string; image?: string } };
 /** Premium product details are supplied by the host application, without API calls. */
-export type PremiumButtonView = { id: string; kind: "premium-button"; skuId: string; label: string; disabled?: boolean };
+export type PremiumButtonView = { id: string; kind: "premium-button"; skuId: string; label: string; ariaLabel?: string; disabled?: boolean };
 export type MessageButtonView = LinkButtonView | ButtonView | PremiumButtonView;
 type SelectValue = { value: string; label: string };
 type NoStringFields = { description?: never; emoji?: never; default?: never };

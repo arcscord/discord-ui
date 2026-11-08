@@ -82,7 +82,7 @@ A native action button. onClick reports intent with no arguments; message-render
 
 [Usage guide](/docs/guides/interactions) · [Props type](#buttonprops)
 
-<CodeBlock language="ts">{"export function Button({ label, style, disabled, emoji, onClick }: ButtonProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Button({ label, ariaLabel, style, disabled, emoji, onClick }: ButtonProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -91,6 +91,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string \| undefined` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `style` | No | `"primary" \| "secondary" \| "success" \| "danger" \| "premium" \| undefined` | `"primary"` | Button visual variant; premium is appearance, not a billing integration. |
 | `disabled` | No | `boolean \| undefined` | `false` | Prevents the rendered control from accepting activation or changes. |
 | `emoji` | No | `ReactNode` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
@@ -150,7 +151,7 @@ Navigates to an allowed explicit HTTP(S) URL. Disabled or unsafe links render an
 
 [Usage guide](/docs/guides/interactions) · [Props type](#linkbuttonprops)
 
-<CodeBlock language="ts">{"export function LinkButton({ label, url, disabled, emoji }: LinkButtonProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function LinkButton({ label, ariaLabel, url, disabled, emoji }: LinkButtonProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -159,6 +160,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `label` | Yes | `string` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `ariaLabel` | No | `string \| undefined` | — | Accessible name override. Emoji-only model buttons fall back to the emoji name; supply this for custom primitive React slots. |
 | `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
 | `disabled` | No | `boolean \| undefined` | `false` | Prevents the rendered control from accepting activation or changes. |
 | `emoji` | No | `ReactNode` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
@@ -268,7 +270,7 @@ A native action button. onClick reports intent with no arguments; message-render
 
 [Usage guide](/docs/guides/interactions) · [Component](#button)
 
-<CodeBlock language="ts">{"export type ButtonProps = { label: string; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"premium\" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined };"}</CodeBlock>
+<CodeBlock language="ts">{"export type ButtonProps = { label: string; ariaLabel?: string | undefined; style?: \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"premium\" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined };"}</CodeBlock>
 
 ## ContainerProps
 
@@ -300,7 +302,7 @@ Navigates to an allowed explicit HTTP(S) URL. Disabled or unsafe links render an
 
 [Usage guide](/docs/guides/interactions) · [Component](#linkbutton)
 
-<CodeBlock language="ts">{"export type LinkButtonProps = { label: string; url: string; disabled?: boolean | undefined; emoji?: ReactNode };"}</CodeBlock>
+<CodeBlock language="ts">{"export type LinkButtonProps = { label: string; ariaLabel?: string | undefined; url: string; disabled?: boolean | undefined; emoji?: ReactNode };"}</CodeBlock>
 
 ## SectionProps
 

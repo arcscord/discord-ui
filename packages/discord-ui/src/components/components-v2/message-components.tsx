@@ -24,6 +24,7 @@ export function MessageComponents({ components, referenceTime, messageId, select
         <Button
           key={view.id}
           label={`◆ ${view.label}`}
+          ariaLabel={view.ariaLabel}
           style="premium"
           disabled={view.disabled}
           onClick={onPremiumClick
@@ -35,12 +36,16 @@ export function MessageComponents({ components, referenceTime, messageId, select
     const emoji = view.emoji
       ? <Emoji name={view.emoji.name} image={view.emoji.image} />
       : undefined;
+    const ariaLabel = view.ariaLabel?.trim() || (!view.label.trim()
+      ? view.emoji?.name
+      : undefined);
     return view.kind === "link-button"
-      ? <LinkButton key={view.id} label={view.label} url={view.url} disabled={view.disabled} emoji={emoji} />
+      ? <LinkButton key={view.id} label={view.label} ariaLabel={ariaLabel} url={view.url} disabled={view.disabled} emoji={emoji} />
       : (
           <Button
             key={view.id}
             label={view.label}
+            ariaLabel={ariaLabel}
             style={view.style}
             disabled={view.disabled}
             emoji={emoji}

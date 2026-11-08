@@ -64,9 +64,9 @@ export function ActionRow({ children }: ActionRowProps) {
 }
 
 /** Link buttons navigate only for allowed HTTP(S) URLs and never when disabled. */
-export type LinkButtonProps = { label: string; url: string; disabled?: boolean | undefined; emoji?: ReactNode };
+export type LinkButtonProps = { label: string; ariaLabel?: string | undefined; url: string; disabled?: boolean | undefined; emoji?: ReactNode };
 
-export function LinkButton({ label, url, disabled = false, emoji }: LinkButtonProps) {
+export function LinkButton({ label, ariaLabel, url, disabled = false, emoji }: LinkButtonProps) {
   const href = disabled
     ? undefined
     : linkUrl(url);
@@ -76,7 +76,7 @@ export function LinkButton({ label, url, disabled = false, emoji }: LinkButtonPr
   const content = (
     <>
       {emoji
-        ? <span className="dui-button-emoji" aria-hidden="true">{emoji}</span>
+        ? <span className="dui-button-emoji" aria-hidden={Boolean(ariaLabel?.trim() || label.trim()) || undefined}>{emoji}</span>
         : null}
       <span className="dui-button-label">{label}</span>
       <svg className="dui-button-external-icon" aria-hidden="true" width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -86,17 +86,17 @@ export function LinkButton({ label, url, disabled = false, emoji }: LinkButtonPr
     </>
   );
   return href
-    ? <a className={className} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
-    : <span className={className} role="link" aria-disabled="true">{content}</span>;
+    ? <a aria-label={ariaLabel?.trim() || undefined} className={className} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
+    : <span aria-label={ariaLabel?.trim() || undefined} className={className} role="link" aria-disabled="true">{content}</span>;
 }
 
-export type ButtonProps = { label: string; style?: "primary" | "secondary" | "success" | "danger" | "premium" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined };
+export type ButtonProps = { label: string; ariaLabel?: string | undefined; style?: "primary" | "secondary" | "success" | "danger" | "premium" | undefined; disabled?: boolean | undefined; emoji?: ReactNode; onClick?: (() => void) | undefined };
 
-export function Button({ label, style = "primary", disabled = false, emoji, onClick }: ButtonProps) {
+export function Button({ label, ariaLabel, style = "primary", disabled = false, emoji, onClick }: ButtonProps) {
   return (
-    <button type="button" className={`dui-component-button dui-button-${style}`} disabled={disabled} onClick={onClick}>
+    <button type="button" aria-label={ariaLabel?.trim() || undefined} className={`dui-component-button dui-button-${style}`} disabled={disabled} onClick={onClick}>
       {emoji
-        ? <span className="dui-button-emoji" aria-hidden="true">{emoji}</span>
+        ? <span className="dui-button-emoji" aria-hidden={Boolean(ariaLabel?.trim() || label.trim()) || undefined}>{emoji}</span>
         : null}
       <span className="dui-button-label">{label}</span>
     </button>

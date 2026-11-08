@@ -45,6 +45,9 @@ export type UILabels = {
   mediaUnavailable: string;
   invalidTimestamp: string;
 };
+/** Twemoji files are served as `${baseUrl}/${codepoints}.svg`; no CDN is implicit. */
+export type UnicodeEmojiOptions = { mode: "native" } | { mode: "twemoji"; baseUrl: string };
+
 export type DisplayOptions = {
   theme: ThemeInput;
   tokens?: ThemeOverrides;
@@ -53,6 +56,7 @@ export type DisplayOptions = {
   referenceTime?: string;
   entities: MessageEntities;
   allowRemoteMedia: boolean;
+  unicodeEmoji?: UnicodeEmojiOptions;
   renderCode?: ((content: string, language: string) => ReactNode) | undefined;
   labels: UILabels;
 };
@@ -68,6 +72,7 @@ export const defaults: DisplayContextValue = {
   // Standalone Markdown also has a deterministic fallback; Message uses its timestamp.
   entities: {},
   allowRemoteMedia: true,
+  unicodeEmoji: { mode: "native" },
   labels: {
     selectPlaceholder: "Make a selection",
     channelSelectPlaceholder: "Select a channel",
