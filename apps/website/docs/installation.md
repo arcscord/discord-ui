@@ -116,8 +116,8 @@ entry remains complete. React and core versions are independent; their dependenc
 range expresses compatibility. Projects using a lockfile must update their
 resolved core dependency to receive a newer correction.
 
-This checkout prepares the core package. Vue, Angular and Svelte renderers are
-future work; their compatibility has not been validated. For architecture and
+This checkout prepares the core package and the [native Vue adapter](/docs/vue).
+Angular and Svelte renderers remain future work. For architecture and
 core entry points, see the repository's core README. When installing unpublished
 local React tarballs, also provide the matching local core tarball through a
 package-manager override, since the registry may not contain that version yet.

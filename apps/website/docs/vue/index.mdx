@@ -1,0 +1,58 @@
+---
+title: Vue
+slug: /vue
+sidebar_label: Vue — getting started
+description: Use native Vue components, typed events and slots with the shared Discord display models.
+---
+
+import VueExample from '@site/src/components/docs/vue/VueExample';
+
+# Vue
+
+`@arcscord/discord-ui-vue` is the native Vue adapter. This checkout prepares version
+**0.1.0**; registry availability is separate from local package validation. It
+requires Vue 3.5 or later in the Vue 3 line. The core and adapters have independent versions.
+
+Once the prepared version is published, install it with `pnpm add @arcscord/discord-ui-vue`.
+For unpublished local tarballs, install the Vue archive and override
+`@arcscord/discord-ui-core` to its local archive in `pnpm-workspace.yaml`.
+Import `@arcscord/discord-ui-vue/styles.css` once. It is complete; no React, Tailwind,
+global reset, remote font or additional core CSS import is required.
+
+## First message
+
+The same serializable display models work with React and Vue. Timestamps and the
+reference clock are explicit. These examples simulate local interactions without
+calling Discord.
+
+<VueExample id="first-message" />
+
+## Events and controlled selections
+
+Callbacks become typed Vue events. `SelectMenu` uses `v-model:values`; absent
+values use local state, while an empty array is an explicitly controlled empty
+selection. The application updates message reactions and other persisted data.
+
+<VueExample id="interactions" />
+
+## Channels, commands and threads
+
+`ChannelComposer` uses `v-model`. `ChannelView` supports
+`v-model:active-thread-id`; omit the prop for local navigation or pass `null` to
+close a controlled thread. `send`, `thread-send` and `slash-command` report intent;
+the host updates channel data. An absent send listener preserves read-only behavior.
+
+<VueExample id="conversation" />
+
+## Slots and content
+
+Children become the default slot. Named slots replace the React content props.
+`Button.variant` selects its appearance; Vue's `style` and `class` remain ordinary
+attributes. Code highlighting is optional through the separate `./highlight` entry.
+
+<VueExample id="slots-and-content" />
+
+See the [complete Vue API](/docs/vue/api) for every component, prop, event and slot, and
+[SSR and hydration](/docs/vue/ssr) for server integration. All three themes, custom token
+inheritance, labels, locale/time zone, blocked remote media and image fallbacks
+use the shared core policies. Nuxt and other frameworks are not validated here.

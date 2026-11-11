@@ -15,6 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "exactOptionalPropertyTypes": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true
   }
 }

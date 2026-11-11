@@ -33,12 +33,12 @@ Enable Dependabot alerts and security updates in the repository settings.
 | Package | Manifest | Release tag |
 | --- | --- | --- |
 | React: `@arcscord/discord-ui` | `packages/discord-ui/package.json` | `vX.Y.Z` |
+| Vue: `@arcscord/discord-ui-vue` | `packages/discord-ui-vue/package.json` | `vue-vX.Y.Z` |
 | Core: `@arcscord/discord-ui-core` | `packages/discord-ui-core/package.json` | `core-vX.Y.Z` |
 
 Each package owns its version and changelog. The initial core version is `0.2.0`;
-it does not force React to keep the same version. Future adapters will use
-`@arcscord/discord-ui-vue`, `-angular` and `-svelte` names; those adapters and their
-release tags are not implemented yet.
+it does not force React to keep the same version. The Vue adapter starts independently at `0.1.0`. Angular and Svelte adapters
+and their release tags remain future work.
 
 A compatible feature increments only changed packages' minor versions. A core
 bug fix increments only the core patch. A Vue-only fix would increment only Vue's
@@ -111,7 +111,7 @@ a separate manual approval on npm.
 ## Stage from GitHub
 
 [The staging workflow](../../.github/workflows/publish.yml) stages the selected package on npm when a
-`v*` (React) or `core-v*` (core) tag is pushed. It can also be started with **Actions → Stage npm package →
+`v*` (React), `vue-v*` (Vue) or `core-v*` (core) tag is pushed. It can also be started with **Actions → Stage npm package →
 Run workflow**, supplying an existing tag. The tag must match the committed
 targeted package manifest version and point to a commit contained in
 `main`; the `0.0.0` placeholder is rejected. Stable versions use the npm `latest`
@@ -192,3 +192,8 @@ Approval is a separate maintainer action (`npm stage approve <stage-id>`), never
 part of this workflow. Keep CI limited to staging. A staged package retains its
 chosen `latest` or `next` tag; changing that choice requires rejecting and
 re-staging it. See [npm staged publishing](https://docs.npmjs.com/staged-publishing/).
+
+The Vue tarball check also requires Chromium (`pnpm exec playwright install chromium`)
+and validates SFC types, server/client builds and hydration without React at the
+minimum Vue peer version and locked development version. The build CI job installs
+Chromium before package verification.

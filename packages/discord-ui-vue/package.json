@@ -1,0 +1,57 @@
+{
+  "name": "@arcscord/discord-ui-vue",
+  "version": "0.1.0",
+  "description": "Vue components for Discord message interfaces, powered by the shared core.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Arcoz0308",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcscord/discord-ui.git",
+    "directory": "packages/discord-ui-vue"
+  },
+  "files": [
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "THIRD_PARTY_NOTICES",
+    "dist",
+    "docs"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./styles.css": {
+      "types": "./dist/styles.css.d.ts",
+      "default": "./dist/styles.css"
+    },
+    "./highlight": {
+      "types": "./dist/highlight.d.ts",
+      "import": "./dist/highlight.mjs"
+    },
+    "./themes": {
+      "types": "./dist/themes.d.ts",
+      "import": "./dist/themes.mjs"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "vite build && vue-tsc -p tsconfig.build.json && node ../../scripts/workspace/finalize-vue-declarations.mts",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@arcscord/discord-ui-core": "workspace:^"
+  }
+}

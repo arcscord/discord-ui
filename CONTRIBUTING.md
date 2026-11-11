@@ -21,6 +21,7 @@ The website consumes the built library. Run `pnpm build:lib` after library chang
 | Path | Purpose |
 | --- | --- |
 | `packages/discord-ui-core` | Framework-independent models, content processing, themes and source CSS |
+| `packages/discord-ui-vue` | Native Vue renderer, SFCs, typed events and slots |
 | `packages/discord-ui` | React components, shared contract re-exports and standalone compiled CSS |
 | `apps/website` | Docusaurus documentation, catalogue and integrated playground |
 | `fixtures` | Synthetic data shared by examples and tests |
@@ -52,7 +53,7 @@ Run commands from the repository root. Choose checks that cover the change:
 | `pnpm clean` | Remove build output and coverage |
 
 Tests importing the public package require `pnpm build:lib` first. Public API or
-packaging changes also need `pnpm pack:check` after a build. That check installs
+packaging changes also need `pnpm pack:check` after a build. That check requires installed Chromium for Vue hydration and installs
 pinned dependencies in temporary framework-free and React consumers, requires registry access and removes
 the temporary directory afterward. It does not publish a package.
 

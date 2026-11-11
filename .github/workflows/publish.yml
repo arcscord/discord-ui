@@ -2,7 +2,7 @@ name: Stage npm package
 
 on:
   push:
-    tags: ["v*", "core-v*"]
+    tags: ["v*", "core-v*", "vue-v*"]
   workflow_dispatch:
     inputs:
       tag:

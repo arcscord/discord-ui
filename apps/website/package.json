@@ -2,11 +2,12 @@
   "name": "@arcscord/discord-ui-website",
   "private": true,
   "scripts": {
-    "dev": "node ../../scripts/workspace/generate-avatars.mts website && docusaurus start --host 127.0.0.1",
-    "build": "node ../../scripts/workspace/generate-avatars.mts website && docusaurus build",
+    "dev": "pnpm generate:vue && node ../../scripts/workspace/generate-avatars.mts website && docusaurus start --host 127.0.0.1",
+    "build": "pnpm generate:vue && node ../../scripts/workspace/generate-avatars.mts website && docusaurus build",
     "preview": "docusaurus serve --host 127.0.0.1",
-    "typecheck": "node ../../scripts/workspace/generate-website-examples.mts && tsc --noEmit",
-    "generate:examples": "node ../../scripts/workspace/generate-website-examples.mts"
+    "typecheck": "vue-tsc -p tsconfig.vue.json --noEmit && pnpm generate:vue && node ../../scripts/workspace/generate-website-examples.mts && tsc --noEmit",
+    "generate:examples": "node ../../scripts/workspace/generate-website-examples.mts",
+    "generate:vue": "node ../../scripts/workspace/generate-vue-examples.mts"
   },
   "dependencies": {
     "@arcscord/discord-ui": "workspace:*",
@@ -20,7 +21,8 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-live": "4.1.8",
-    "sucrase": "3.35.1"
+    "sucrase": "3.35.1",
+    "@arcscord/discord-ui-vue": "workspace:^"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",

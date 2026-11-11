@@ -5,7 +5,7 @@ Shared models, content processing, themes and styles come from
 Existing React imports, including `themes`, `highlight` and `styles.css`, remain
 available. The React stylesheet is still complete and needs no extra CSS import.
 Compatible core corrections can be installed without an adapter release; update
-your lockfile resolution to receive them. Other framework adapters are future work.
+your lockfile resolution to receive them. The native Vue adapter is `@arcscord/discord-ui-vue`; Angular and Svelte remain future work.
 
 
 Composable React components and serializable TypeScript models for Discord message interfaces.

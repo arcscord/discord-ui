@@ -5,7 +5,7 @@ import { releaseMetadata, releasePackages } from "./metadata.mts";
 
 const tag = process.env.RELEASE_TAG ?? "";
 const versions = {} as Record<keyof typeof releasePackages, string>;
-for (const target of ["core", "react"] as const) {
+for (const target of ["core", "react", "vue"] as const) {
   const manifest = JSON.parse(await readFile(new URL(`../../${releasePackages[target].directory}/package.json`, import.meta.url), "utf8")) as { version: string };
   versions[target] = manifest.version;
 }

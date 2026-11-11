@@ -5,8 +5,8 @@ This checkout prepares the first core version, **0.2.0**. Registry availability 
 separate from local build and tarball validation.
 
 The core does not render components or depend on React, Vue, Angular or Svelte.
-Use `@arcscord/discord-ui` for the existing React renderer. Other framework
-adapters are future work and have not been validated.
+Use `@arcscord/discord-ui` for the existing React renderer. The native Vue adapter is `@arcscord/discord-ui-vue`. Angular and Svelte
+adapters remain future work.
 
 ## Public entries
 

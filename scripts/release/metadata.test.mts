@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { coreMinimumVersion, releaseMetadata, releaseTarget, verifyPublishedCoreDependency } from "./metadata.mts";
 
-const versions = { react: "1.2.3", core: "0.2.4" };
+const versions = { react: "1.2.3", core: "0.2.4", vue: "0.1.0" };
 describe("independent release metadata", () => {
   it("selects React while allowing a different core version", () => {
     expect(releaseMetadata("v1.2.3", versions)).toEqual({
@@ -35,7 +35,7 @@ describe("independent release metadata", () => {
     "v1.2.3\n",
     "v1.2.3;echo bad",
     "core-v01.2.3",
-    "vue-v1.2.3",
+    "angular-v1.2.3",
   ])("rejects invalid tag %j", (tag) => {
     expect(() => releaseTarget(tag)).toThrow();
   });
@@ -92,4 +92,8 @@ describe("published core requirement before adapter staging", () => {
     ])
       expect(() => verifyPublishedCoreDependency("^0.2.0", lookup)).toThrow("Publish and approve @arcscord/discord-ui-core@0.2.0");
   });
+});
+
+it("selects the Vue artifact independently from React and core", () => {
+  expect(releaseMetadata("vue-v0.1.0", versions)).toMatchObject({ packageName: "@arcscord/discord-ui-vue", version: "0.1.0", tarball: "arcscord-discord-ui-vue-0.1.0.tgz" });
 });

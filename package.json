@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "pnpm -r --if-present run build",
-    "build:lib": "pnpm --filter @arcscord/discord-ui... run build",
+    "build:lib": "pnpm --filter @arcscord/discord-ui... --filter @arcscord/discord-ui-vue... run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p scripts/tsconfig.json && pnpm -r --if-present run typecheck",
@@ -25,12 +25,13 @@
     "test:browser": "pnpm test:website",
     "test:website": "pnpm build:website && playwright test -c playwright.website.config.mts",
     "generate:avatars": "node scripts/workspace/generate-avatars.mts",
-    "docs:api": "pnpm build:lib && node scripts/docs/generate-api-reference.mts",
-    "docs:api:check": "node scripts/docs/generate-api-reference.mts --check",
+    "docs:api": "pnpm build:lib && node scripts/docs/generate-api-reference.mts && node scripts/docs/generate-vue-reference.mts",
+    "docs:api:check": "node scripts/docs/generate-api-reference.mts --check && node scripts/docs/generate-vue-reference.mts --check",
     "docs:check": "pnpm docs:api:check && node scripts/docs/check-docs.mts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",
+    "@arcscord/discord-ui-core": "workspace:^",
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "@eslint-react/eslint-plugin": "5.28.8",
@@ -38,6 +39,9 @@
     "@types/node": "26.6.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-vue": "6.0.10",
+    "@vitejs/plugin-vue-jsx": "5.1.6",
+    "@vue/server-renderer": "3.5.44",
     "eslint": "10.13.0",
     "eslint-plugin-react-refresh": "0.5.7",
     "husky": "9.1.7",
@@ -48,7 +52,10 @@
     "typescript": "6.0.3",
     "vite": "8.3.5",
     "vitest": "5.0.5",
-    "@arcscord/discord-ui-core": "workspace:^"
+    "vue": "3.5.44",
+    "vue-tsc": "3.3.14",
+    "@arcscord/discord-ui-vue": "workspace:^",
+    "@arcscord/discord-ui": "workspace:^"
   },
   "commitlint": {
     "extends": [

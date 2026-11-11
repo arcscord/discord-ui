@@ -1,6 +1,6 @@
 import type { MessageView, SelectMenuView } from "@arcscord/discord-ui-core";
 import { singleSelectMenu } from "@arcscord/discord-ui-core";
-import { selectMenuExamples } from "./select-menus";
+import { selectMenuExamples } from "./select-menus.ts";
 
 export const basicMessage: MessageView = {
   id: "message-welcome",

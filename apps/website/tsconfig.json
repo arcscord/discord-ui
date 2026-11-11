@@ -7,8 +7,27 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "types": ["node", "@docusaurus/theme-live-codeblock"],
-    "paths": { "@site/*": ["./*"], "@theme/*": ["./node_modules/@docusaurus/theme-classic/lib/theme/*"] }
+    "types": [
+      "node",
+      "@docusaurus/theme-live-codeblock"
+    ],
+    "paths": {
+      "@site/*": [
+        "./*"
+      ],
+      "@theme/*": [
+        "./node_modules/@docusaurus/theme-classic/lib/theme/*"
+      ]
+    },
+    "allowImportingTsExtensions": true
   },
-  "include": ["docusaurus.config.ts", "sidebars.ts", "plugins", "src"]
+  "include": [
+    "docusaurus.config.ts",
+    "sidebars.ts",
+    "plugins",
+    "src"
+  ],
+  "exclude": [
+    "src/examples/vue"
+  ]
 }

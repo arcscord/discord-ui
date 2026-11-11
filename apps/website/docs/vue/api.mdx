@@ -1,0 +1,454 @@
+---
+title: Vue API reference
+---
+
+# Vue API reference
+
+Generated from the built public Vue declarations. Each component below corresponds
+to the React component of the same name and uses the shared display models.
+Import components and types from `@arcscord/discord-ui-vue`. Models are re-exported
+from the core; their constraints are unchanged.
+
+Content props become named slots; events use kebab-case. Listener signatures appear
+below as Vue's typed `on…` props. `class` and `style` are native Vue attributes.
+
+## Author
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `author` | Yes | `MessageAuthor` |
+
+Slots: none.
+
+Events: none.
+
+## Avatar
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `author` | Yes | `MessageAuthor` |
+
+Slots: none.
+
+Events: none.
+
+## ChannelComposer
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `channelName` | Yes | `string` |
+| `modelValue` | Yes | `string` |
+| `onUpdate:modelValue` | No | `(value: string) => void` |
+| `onSend` | No | `((content: string) => void) \| undefined` |
+| `commands` | No | `readonly SlashCommand[] \| undefined` |
+| `onSlashCommand` | No | `SlashCommandHandler \| undefined` |
+| `disabled` | No | `boolean` |
+
+Slots: `leading`, `trailing`.
+
+Events: `update:modelValue`, `send`, `slash-command`.
+
+## ChannelHeader
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `name` | Yes | `string` |
+| `topic` | No | `string \| undefined` |
+
+Slots: `actions`.
+
+Events: none.
+
+## ChannelView
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `onSend` | No | `((content: string) => void) \| undefined` |
+| `commands` | No | `readonly SlashCommand[]` |
+| `onSlashCommand` | No | `SlashCommandHandler` |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onUpdate:activeThreadId` | No | `((id: string \| null) => void) \| undefined` |
+| `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` |
+| `channel` | Yes | `ChannelViewModel` |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` |
+| `height` | No | `Property.Height<string \| number> \| undefined` |
+| `activeThreadId` | No | `string \| null \| undefined` |
+| `onThreadOpen` | No | `((threadId: string) => void) \| undefined` |
+| `onThreadClose` | No | `(() => void) \| undefined` |
+| `onThreadSend` | No | `((threadId: string, content: string) => void) \| undefined` |
+| `composerDisabled` | No | `boolean` |
+| `autoScroll` | No | `boolean` |
+| `showDateSeparators` | No | `boolean` |
+| `composer` | No | `false` |
+
+Slots: `header`, `composer`.
+
+Events: `update:activeThreadId`, `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `send`, `thread-open`, `thread-close`, `thread-send`, `slash-command`.
+
+## MessageList
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` |
+| `messages` | Yes | `readonly MessageView[]` |
+| `showDateSeparators` | No | `boolean` |
+| `showThreadPreviews` | No | `boolean \| undefined` |
+| `onThreadOpen` | No | `((id: string) => void) \| undefined` |
+| `activeThreadId` | No | `string \| undefined` |
+| `availableThreadIds` | No | `readonly string[] \| undefined` |
+
+Slots: none.
+
+Events: `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `thread-open`.
+
+## MessageComponents
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `components` | Yes | `readonly MessageComponent[]` |
+| `referenceTime` | No | `string \| undefined` |
+| `messageId` | No | `string \| undefined` |
+| `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` |
+
+Slots: none.
+
+Events: `button-click`, `select-change`, `premium-click`.
+
+## ActionRow
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+
+Slots: `default`.
+
+Events: none.
+
+## Button
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `disabled` | No | `boolean \| undefined` |
+| `label` | Yes | `string` |
+| `ariaLabel` | No | `string \| undefined` |
+| `variant` | No | `"primary" \| "secondary" \| "success" \| "danger" \| "premium" \| undefined` |
+| `onClick` | No | `(() => void) \| undefined` |
+
+Slots: `emoji`.
+
+Events: `click`.
+
+## Container
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `accentColor` | No | `string \| undefined` |
+| `spoiler` | No | `boolean \| undefined` |
+
+Slots: `default`.
+
+Events: none.
+
+## File
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `file` | Yes | `FileView` |
+
+Slots: none.
+
+Events: none.
+
+## LinkButton
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `disabled` | No | `boolean \| undefined` |
+| `label` | Yes | `string` |
+| `ariaLabel` | No | `string \| undefined` |
+| `url` | Yes | `string` |
+
+Slots: `emoji`.
+
+Events: none.
+
+## Section
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+
+Slots: `default`, `accessory`.
+
+Events: none.
+
+## Separator
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `divider` | No | `boolean \| undefined` |
+| `spacing` | No | `"small" \| "large" \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## TextDisplay
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `content` | Yes | `string` |
+| `referenceTime` | No | `string \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## Thumbnail
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `media` | Yes | `MediaView` |
+
+Slots: none.
+
+Events: none.
+
+## SelectMenu
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `menu` | Yes | `SelectMenuView` |
+| `values` | No | `readonly string[] \| undefined` |
+| `onUpdate:values` | No | `((values: string[]) => void) \| undefined` |
+
+Slots: none.
+
+Events: `update:values`.
+
+## Emoji
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `name` | Yes | `string` |
+| `image` | No | `string \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## Markdown
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `content` | Yes | `string` |
+| `referenceTime` | No | `string \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## Mention
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `name` | Yes | `string` |
+| `kind` | No | `"channel" \| "user" \| "role" \| "command"` |
+| `color` | No | `string \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## Spoiler
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `inline` | No | `boolean` |
+
+Slots: `default`, `placeholder`.
+
+Events: none.
+
+## DiscordUI
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `theme` | No | `ThemeInput` |
+| `tokens` | No | `Partial<o>` |
+| `locale` | No | `string` |
+| `timeZone` | No | `string` |
+| `referenceTime` | No | `string` |
+| `entities` | No | `MessageEntities` |
+| `allowRemoteMedia` | No | `boolean` |
+| `unicodeEmoji` | No | `UnicodeEmojiOptions` |
+| `renderCode` | No | `((content: string, language: string) => VNodeChild) \| undefined` |
+| `labels` | No | `Partial<UILabels>` |
+
+Slots: `default`.
+
+Events: none.
+
+## Embed
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `embed` | Yes | `EmbedView` |
+| `referenceTime` | No | `string \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## Media
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `media` | Yes | `MediaView` |
+
+Slots: none.
+
+Events: none.
+
+## MediaGallery
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `items` | Yes | `readonly MediaView[]` |
+
+Slots: none.
+
+Events: none.
+
+## Message
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
+| `message` | Yes | `MessageView` |
+| `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` |
+| `onThreadOpen` | No | `((id: string) => void) \| undefined` |
+| `activeThreadId` | No | `string \| undefined` |
+| `showThreadPreview` | No | `boolean \| undefined` |
+
+Slots: none.
+
+Events: `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `thread-open`.
+
+## MessageContent
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `content` | Yes | `string` |
+
+Slots: none.
+
+Events: none.
+
+## MessageFrame
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `hasThread` | No | `boolean` |
+| `ephemeral` | No | `boolean` |
+
+Slots: `default`, `avatar`, `reply`, `header`, `footer`.
+
+Events: none.
+
+## MessageHeader
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `author` | Yes | `MessageAuthor` |
+| `timestamp` | Yes | `string` |
+| `edited` | No | `boolean \| undefined` |
+
+Slots: none.
+
+Events: none.
+
+## MessageTimestamp
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `timestamp` | Yes | `string` |
+
+Slots: none.
+
+Events: none.
+
+## Reactions
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `reactions` | Yes | `readonly ReactionView[]` |
+| `onToggle` | No | `((reactionId: string) => void) \| undefined` |
+
+Slots: none.
+
+Events: `toggle`.
+
+## ReplyPreview
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `reply` | Yes | `ReplyView` |
+
+Slots: none.
+
+Events: none.
+
+## ThreadPanel
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
+| `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` |
+| `thread` | Yes | `ThreadView` |
+| `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
+| `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` |
+| `parentMessage` | No | `MessageView \| undefined` |
+| `onClose` | No | `(() => void) \| undefined` |
+| `onSend` | No | `((content: string) => void) \| undefined` |
+| `composerDisabled` | No | `boolean \| undefined` |
+| `autoScroll` | No | `boolean \| undefined` |
+
+Slots: none.
+
+Events: `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `close`, `send`.
+
+## ThreadPreview
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `thread` | Yes | `ThreadSummaryView` |
+| `onOpen` | No | `((id: string) => void) \| undefined` |
+| `active` | No | `boolean \| undefined` |
+
+Slots: none.
+
+Events: `open`.
+
+## Themes and highlighting
+
+`./themes` re-exports the core presets, token types, `defineTheme`,
+`resolveTheme` and `themeStyle`. `./highlight` exports
+`renderHighlightedCode(content, language)`, returning Vue nodes for
+`DiscordUI.renderCode`. Unknown languages fall back to escaped plain text.
+Highlighting grammars do not enter the ordinary component bundle.

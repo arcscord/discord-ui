@@ -12,7 +12,8 @@ This checkout prepares **0.2.0**; read the [release notes and migration guide](.
 The framework-independent [core](./packages/discord-ui-core/README.md) supplies
 shared models, content processing, themes and styles. React remains
 `@arcscord/discord-ui`; its public imports are unchanged. Core and adapter
-versions are independent. Vue, Angular and Svelte adapters are future work.
+versions are independent. The [Vue adapter](./packages/discord-ui-vue/README.md) is prepared at `0.1.0`;
+Angular and Svelte adapters are future work.
 
 See [installation](https://ui.arcscord.dev/docs/installation) to get started.
 

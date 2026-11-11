@@ -1,5 +1,6 @@
 export const releasePackages = {
   react: { name: "@arcscord/discord-ui", directory: "packages/discord-ui", prefix: "v" },
+  vue: { name: "@arcscord/discord-ui-vue", directory: "packages/discord-ui-vue", prefix: "vue-v" },
   core: { name: "@arcscord/discord-ui-core", directory: "packages/discord-ui-core", prefix: "core-v" },
 } as const;
 export type ReleasePackage = keyof typeof releasePackages;
@@ -10,13 +11,13 @@ const identifier = "(?:0|[1-9]\\d*|\\d*[a-z-][0-9a-z-]*)";
 const versionPattern = `${numeric}\\.${numeric}\\.${numeric}(?:-${identifier}(?:\\.${identifier})*)?`;
 
 export function releaseTarget(tag: string): ReleasePackage {
-  for (const target of ["core", "react"] as const) {
+  for (const target of ["core", "react", "vue"] as const) {
     const { prefix } = releasePackages[target];
     const match = new RegExp(`^${prefix}(${versionPattern})$`, "i").exec(tag);
     if (match && tag === `${prefix}${match[1]}`)
       return target;
   }
-  throw new Error("Expected a version tag such as v1.2.3 or core-v0.2.0-beta.1.");
+  throw new Error("Expected a version tag such as v1.2.3 core-v0.2.0-beta.1 or vue-v0.1.0.");
 }
 
 export function releaseMetadata(tag: string, versions: Record<ReleasePackage, string>): {
