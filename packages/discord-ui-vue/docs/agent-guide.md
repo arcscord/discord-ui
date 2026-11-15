@@ -1,9 +1,9 @@
 # Vue integration guide
 
 Use named imports from `@arcscord/discord-ui-vue` and its compiled CSS entry.
-Vue is a peer; the core is a compatible runtime dependency. No React runtime or
-React types are required. An unpublished local core must be supplied with a
-pnpm-workspace.yaml override when testing tarballs before registry publication.
+Vue is a peer and the core is a compatible runtime dependency. No React runtime or
+React types are required. To test a Vue tarball with a local Core build, point a
+`pnpm-workspace.yaml` override at the matching Core tarball.
 
 | React pattern | Vue contract |
 | --- | --- |

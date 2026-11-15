@@ -9,15 +9,24 @@ import VueExample from '@site/src/components/docs/vue/VueExample';
 
 # Vue
 
-`@arcscord/discord-ui-vue` is the native Vue adapter. This checkout prepares version
-**0.1.0**; registry availability is separate from local package validation. It
-requires Vue 3.5 or later in the Vue 3 line. The core and adapters have independent versions.
+`@arcscord/discord-ui-vue` is the native Vue adapter. It requires Vue 3.5 or later
+in the Vue 3 line. The core and adapters have independent versions.
 
-Once the prepared version is published, install it with `pnpm add @arcscord/discord-ui-vue`.
-For unpublished local tarballs, install the Vue archive and override
-`@arcscord/discord-ui-core` to its local archive in `pnpm-workspace.yaml`.
+## Installation
+
+Use the package name to install the version selected by npm's `latest` tag.
+Check [npm versions](https://www.npmjs.com/package/@arcscord/discord-ui-vue?activeTab=versions)
+to choose a specific release.
+
+```sh
+pnpm add @arcscord/discord-ui-vue
+```
+
 Import `@arcscord/discord-ui-vue/styles.css` once. It is complete; no React, Tailwind,
 global reset, remote font or additional core CSS import is required.
+
+To test local builds, install the Vue tarball and point a `pnpm-workspace.yaml`
+override for `@arcscord/discord-ui-core` at the matching Core tarball.
 
 ## Examples
 

@@ -1,8 +1,16 @@
 # @arcscord/discord-ui-vue
 
 Native Vue components for Discord message interfaces, powered by
-`@arcscord/discord-ui-core`. This checkout prepares **0.1.0**; no publication is
-implied. Vue 3.5+ in the Vue 3 line is required. React is not a dependency.
+`@arcscord/discord-ui-core`. Vue 3.5+ in the Vue 3 line is required.
+
+## Installation
+
+For a registry install, choose a [version on npm](https://www.npmjs.com/package/@arcscord/discord-ui-vue?activeTab=versions)
+or use the default `latest` tag.
+
+```sh
+pnpm add @arcscord/discord-ui-vue
+```
 
 ## Usage
 

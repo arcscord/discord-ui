@@ -9,9 +9,10 @@ description: Understand Discord UI compatibility, versioning, migration and docu
 
 [Read the compatibility and verification boundaries](./project/compatibility.md).
 
-The stable package version is `0.1.0`, with React `^19.0.0` as a peer dependency.
-See [installation](./installation.md) for npm and workspace setup. The library uses
-ESM and precompiled, scoped CSS. Syntax highlighting has its own opt-in entry point.
+The React adapter requires React `^19.0.0` and the Vue adapter requires Vue
+`^3.5.0`. See the [React](./installation.md) and [Vue](/docs/vue#installation)
+installation guides. Both adapters ship ESM and precompiled, scoped CSS.
+Syntax highlighting has its own opt-in entry point.
 
 Models are resolved display snapshots, not Discord API payloads. The application
 owns network access, persistence and authorization. Playground and landing

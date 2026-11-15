@@ -1,12 +1,21 @@
 # @arcscord/discord-ui-core
 
 Framework-independent Discord display models, content processing, themes and styles.
-This checkout prepares the first core version, **0.2.0**. Registry availability is
-separate from local build and tarball validation.
 
 The core does not render components or depend on React, Vue, Angular or Svelte.
-Use `@arcscord/discord-ui` for the existing React renderer. The native Vue adapter is `@arcscord/discord-ui-vue`. Angular and Svelte
-adapters remain future work.
+Use `@arcscord/discord-ui` for React and `@arcscord/discord-ui-vue` for Vue.
+
+## Installation
+
+Install the core directly to use its framework-independent APIs. The React and
+Vue adapters install the core as a dependency.
+
+```sh
+pnpm add @arcscord/discord-ui-core
+```
+
+Check the [npm versions](https://www.npmjs.com/package/@arcscord/discord-ui-core?activeTab=versions)
+to see which release the `latest` tag selects.
 
 ## Public entries
 

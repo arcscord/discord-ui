@@ -5,9 +5,9 @@ description: Release notes, public contract changes and when to snapshot documen
 
 # Changelog and migration policy
 
-Version `0.1.0` is the first stable release. Documentation uses one current tree,
-with no historical version snapshots or release-to-release migration guide.
-See [repository releases](https://github.com/arcscord/discord-ui/releases) for release notes.
+Documentation uses one current tree. The Core, React and Vue packages have
+independent versions and changelogs. See
+[repository releases](https://github.com/arcscord/discord-ui/releases) for release notes.
 
 ## When a public contract changes
 

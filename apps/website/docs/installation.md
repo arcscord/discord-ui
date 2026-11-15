@@ -5,17 +5,21 @@ description: Install Arcscord Discord UI, import its stylesheet, and check React
 
 # Installation
 
-## Current package status
+## Install from npm {#current-package-status}
 
-Version **0.2.0** is available on npm. Install it in your React application:
+Install the React package in your application. For Vue, follow the
+[Vue installation guide](/docs/vue#installation).
 
 ```sh
-pnpm add @arcscord/discord-ui@0.2.0
+pnpm add @arcscord/discord-ui
 ```
 
 The package declares **React `^19.0.0`** as its peer dependency. Your application
 provides React and its renderer. This declaration is not evidence that every React
 version or framework has been tested.
+
+The command uses npm's default `latest` tag. To choose a specific release, check
+the [versions on npm](https://www.npmjs.com/package/@arcscord/discord-ui?activeTab=versions).
 
 ## Use the package in this monorepo
 
@@ -51,15 +55,16 @@ pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
 ```
 
 In a separate React 19 application, point pnpm to the local core archive in
-`pnpm-workspace.yaml`, then install the React archive:
+`pnpm-workspace.yaml`, then install the React archive. Replace each `X.Y.Z`
+with the version in its archive filename.
 
 ```yaml
 overrides:
-  "@arcscord/discord-ui-core": "file:/absolute/path/to/arcscord-discord-ui-core-0.2.0.tgz"
+  "@arcscord/discord-ui-core": "file:/absolute/path/to/arcscord-discord-ui-core-X.Y.Z.tgz"
 ```
 
 ```sh
-pnpm add /absolute/path/to/arcscord-discord-ui-0.2.1.tgz
+pnpm add /absolute/path/to/arcscord-discord-ui-X.Y.Z.tgz
 ```
 
 ## Import components and compiled CSS
@@ -124,8 +129,6 @@ range expresses compatibility. Projects using a lockfile must update their
 resolved core dependency to receive compatible JavaScript fixes. To receive a
 fix to the bundled stylesheet, install an adapter release built with the updated core.
 
-This checkout prepares the core package and the [native Vue adapter](/docs/vue).
-Angular and Svelte renderers remain future work. For architecture and
-core entry points, see the repository's core README. When installing unpublished
-local React tarballs, also provide the matching local core tarball through a
-package-manager override, since the registry may not contain that version yet.
+Vue applications can use the [native Vue adapter](/docs/vue). For architecture
+and framework-independent entry points, see the
+[Core README](https://github.com/arcscord/discord-ui/tree/main/packages/discord-ui-core#readme).

@@ -67,9 +67,9 @@ remote CI, deployment, DNS/TLS, external-link availability or real Discord
 integration. Chromium desktop (1536×1024) and narrow (390×844) viewports do not
 prove other browsers, physical mobile devices or assistive technology support.
 
-The documentation covers stable `0.1.0`, the first release; there is no
-migration between stable releases to document. One documentation
-tree is retained until multiple released major versions are maintained.
+This acceptance run covered the documentation for the first stable React release,
+`0.1.0`. The [migration policy](./docs/project/migrations.md) describes when to
+introduce versioned documentation.
 
 Library exports, declarations and package distribution were not changed by this
 documentation work. Packed-consumer verification is required for such changes;

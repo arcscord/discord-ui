@@ -5,8 +5,8 @@ description: Declared package requirements and the boundaries of local verificat
 
 # Compatibility and limitations
 
-Separate a declared contract from a tested environment. The repository currently
-uses a single documentation version for its stable `0.1.0` release.
+Separate a declared contract from a tested environment. This site documents the
+current repository, including changes ahead of the stable npm releases.
 
 | Area | Repository contract / evidence | Limit |
 | --- | --- | --- |

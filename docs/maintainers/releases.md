@@ -53,23 +53,21 @@ accepts compatible `1.x` releases. When an adapter needs a newer core API, raise
 its dependency minimum with its next release. Consumers with lockfiles must
 update their resolved core version to receive compatible JavaScript fixes.
 
-The isolated package check packs all three packages and installs the local core
-archive using an override, so it also works before the first core publication.
+The isolated package check packs all three packages and uses an override to
+test the adapters against the matching local core archive.
 The React consumer disables dependency hoisting. The Vue consumer checks both
 Bundler and NodeNext types. The core is checked without framework dependencies.
 
-## Published React version
+## Check a published package
 
-React **0.2.0** is available on npm. This branch prepares **0.2.1** with the
-shared core. See the [React changelog](../../packages/discord-ui/CHANGELOG.md).
-
-Inspect the published stable package independently of the workspace:
+Inspect the package selected by npm's `latest` tag independently of the workspace.
+This example uses the React package.
 
 ```sh
-npm view @arcscord/discord-ui@0.2.0 version dist dist-tags --json
+npm view @arcscord/discord-ui dist-tags --json
 mkdir -p .local/npm-review
-npm pack @arcscord/discord-ui@0.2.0 --ignore-scripts --pack-destination "$PWD/.local/npm-review"
-tar -tzf .local/npm-review/arcscord-discord-ui-0.2.0.tgz
+archive=$(npm pack @arcscord/discord-ui@latest --silent --ignore-scripts --pack-destination "$PWD/.local/npm-review") &&
+tar -tzf ".local/npm-review/$archive"
 ```
 
 Review README, LICENSE, THIRD_PARTY_NOTICES, package documentation, ESM entry
@@ -77,12 +75,12 @@ points, declarations, source maps and compiled CSS. Sources, tests, workspace
 configuration and credentials must not be included. The packaged `AGENTS.md`
 is consumer documentation, separate from the ignored root contributor instructions.
 Test the registry version in a separate React 19 application with
-`pnpm add @arcscord/discord-ui@0.2.0`.
+`pnpm add @arcscord/discord-ui`.
 
-The stable npm dist-tag is `latest`; `next` is reserved for prereleases. Verify
-`npm view @arcscord/discord-ui dist-tags --json` when checking registry state.
-Keep local archives in ignored `.local/` directories. Published npm versions
-are immutable; fixes require a new version.
+The release workflow targets `latest` for stable releases and `next` for
+prereleases. Check both tags during a first publication because npm can also
+point `latest` at a beta when the package has no stable release. Keep local
+archives in ignored `.local/` directories. Published npm versions are immutable.
 
 ## Validate a release
 
@@ -132,8 +130,8 @@ Then tag the merged commit, for example:
 ```sh
 git switch main
 git pull --ff-only
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
 Creating a new version tag through the GitHub Release form also triggers the
@@ -161,12 +159,6 @@ Before staging an adapter, the workflow verifies that the minimum core version
 from its packed dependency range is public. CI validates all three tarballs for
 every release.
 
-For the first Core and Vue publications, provision each scoped npm package and
-configure its trusted publisher for the same repository, workflow, environment and staging
-permissions. If npm requires an authenticated first-publication bootstrap, a
-maintainer must complete it using the organization's approved process before
-relying on OIDC staging; do not add credentials to the repository. The workflow
-has no token-based fallback and must not bypass manual npm approval.
 
 ## Review and approve on npm
 

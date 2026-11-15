@@ -81,8 +81,8 @@ commits, and commitlint checks Conventional Commits, such as
 
 ## Maintainer guides
 
-The current stable React package version is `0.2.0`. Release automation is defined in
-the repository; GitHub/npm account configuration must be checked separately.
+The Core, React and Vue packages have independent releases. The repository defines
+release automation, and GitHub and npm hold the publishing configuration.
 
 - [CI and npm releases](./docs/maintainers/releases.md).
 - [Website deployment](./docs/maintainers/deployment.md).
