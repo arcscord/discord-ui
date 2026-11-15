@@ -217,6 +217,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: 0.5.7
         version: 0.5.7(eslint@10.13.0(jiti@2.7.0)(supports-color@8.1.1))
+      htmlparser2:
+        specifier: 8.0.2
+        version: 8.0.2
       husky:
         specifier: 9.1.7
         version: 9.1.7

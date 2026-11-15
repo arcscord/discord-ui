@@ -2,6 +2,7 @@ import type { MessageView } from "@arcscord/discord-ui-core";
 import { readFileSync } from "node:fs";
 import * as ReactUI from "@arcscord/discord-ui";
 import { renderToString } from "@vue/server-renderer";
+import { DomUtils, parseDocument } from "htmlparser2";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, expectTypeOf, it } from "vitest";
@@ -17,6 +18,10 @@ async function render(component: Parameters<typeof h>[0], props: Record<string, 
       default: () => h(component, props),
     }),
   }));
+}
+
+function normalizedText(html: string): string {
+  return DomUtils.textContent(parseDocument(html)).replace(/\s+/gu, "");
 }
 
 it("exports every public React component and its shared model identity", () => {
@@ -53,8 +58,7 @@ describe("shared fixture SSR parity", () => {
           entities: demoEntities,
           children: createElement(ReactUI.Message, { message }),
         }));
-        const text = (value: string): string => value.replace(/<!--[\s\S]*?-->/gu, "").replace(/<[^>]*>/gu, "").replace(/&#(?:x27|39);/gu, "'").replace(/\s+/gu, "");
-        expect(text(html)).toBe(text(react));
+        expect(normalizedText(html)).toBe(normalizedText(react));
         expect(await render(VueUI.Message, { message }, theme)).toBe(html);
       });
     }
@@ -77,12 +81,15 @@ it("renders Markdown, code, slots and custom inherited themes without HTML injec
       ],
     }),
   }));
-  const markup = html.replace(/<!--[\s\S]*?-->/gu, "");
-  expect(markup).toContain("<strong>bold</strong>");
-  expect(markup).toContain("<li>item</li>");
+  const { children } = parseDocument(html);
+  const bold = DomUtils.findOne(element => element.name === "strong", children);
+  const item = DomUtils.findOne(element => element.name === "li", children);
+  expect(DomUtils.textContent(bold ?? [])).toBe("bold");
+  expect(DomUtils.textContent(item ?? [])).toBe("item");
   expect(html).toContain("hljs-keyword");
   expect(html).toContain("&lt;script&gt;");
-  expect(markup).toContain("dui-section-accessory\">accessory");
+  const accessory = DomUtils.findOne(element => element.attribs.class === "dui-section-accessory", children);
+  expect(DomUtils.textContent(accessory ?? [])).toBe("accessory");
   expect(html).toContain("--discord-ui-accent:#123456");
   expect(html).toContain("data-base-theme=\"light\"");
 });

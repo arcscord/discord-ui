@@ -22,7 +22,10 @@ export function segmentUnicodeEmoji(content: string, { unicodeEmoji = { mode: "n
       { kind: "text", text: content, start: 0 },
     ];
   }
-  const baseUrl = unicodeEmoji.baseUrl.replace(/\/+$/u, "");
+  let baseUrlEnd = unicodeEmoji.baseUrl.length;
+  while (baseUrlEnd > 0 && unicodeEmoji.baseUrl[baseUrlEnd - 1] === "/")
+    baseUrlEnd--;
+  const baseUrl = unicodeEmoji.baseUrl.slice(0, baseUrlEnd);
   const entities = parse(content, {
     buildUrl: codepoints => `${baseUrl}/${codepoints}.svg`,
   });
