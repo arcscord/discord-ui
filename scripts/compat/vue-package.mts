@@ -112,6 +112,28 @@ void checkRef;
         "-p",
         "tsconfig.json",
       ], consumer);
+      await writeFile(join(consumer, "types.mts"), `
+import { Message } from "@arcscord/discord-ui-vue";
+import type { MessageProps } from "@arcscord/discord-ui-vue";
+import { defineTheme } from "@arcscord/discord-ui-vue/themes";
+import { renderHighlightedCode } from "@arcscord/discord-ui-vue/highlight";
+import "@arcscord/discord-ui-vue/styles.css";
+const props: MessageProps = { message: { id: "m", author: { id: "a", displayName: "Author" }, timestamp: "2026-11-01T00:00:00Z", body: { kind: "text", content: "Hello" } } };
+void [Message, props, defineTheme, renderHighlightedCode];
+`);
+      await pnpm([
+        "exec",
+        "tsc",
+        "--ignoreConfig",
+        "--noEmit",
+        "--strict",
+        "--noUncheckedSideEffectImports",
+        "--module",
+        "NodeNext",
+        "--target",
+        "ES2022",
+        "types.mts",
+      ], consumer);
       await run(process.execPath, ["smoke.mjs"], consumer);
       await pnpm(["exec", "vite", "build"], consumer);
       await pnpm([

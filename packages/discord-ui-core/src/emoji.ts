@@ -6,6 +6,12 @@ export type UnicodeEmojiSegment
   = | { kind: "text"; text: string; start: number }
     | { kind: "emoji"; text: string; start: number; source: string | undefined };
 
+/** Check whether the entire string is a single Unicode emoji. */
+export function isUnicodeEmoji(content: string): boolean {
+  const entities = parse(content);
+  return entities.length === 1 && entities[0]?.text === content;
+}
+
 /** Resolve data only: image loading and failure fallback belong to the renderer. */
 export function segmentUnicodeEmoji(content: string, { unicodeEmoji = { mode: "native" }, allowRemoteMedia = true }: {
   unicodeEmoji?: UnicodeEmojiOptions;

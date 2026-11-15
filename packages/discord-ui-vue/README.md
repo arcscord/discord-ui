@@ -55,14 +55,16 @@ are not implied by the Vue SSR and Chromium acceptance checks.
 
 The package has an independent version and `vue-vX.Y.Z` release tags. Its compatible
 core range is expanded from `workspace:^` when packed; projects with lockfiles
-must update their resolved core to receive corrections. Publish and approve the
-required core before staging an adapter release.
+must update their resolved core to receive compatible JavaScript fixes. For
+fixes to the bundled stylesheet, install a Vue release built with the updated
+core. Publish and approve the required core before staging an adapter release.
 
 ## Development validation
 
 From the repository root: `pnpm build:lib`, `pnpm check`, `pnpm docs:check`,
 `pnpm test:website`. The package check installs both minimum Vue 3.5.0 and the
-locked development version in isolated consumers without React, checks SFC types,
+locked development version in isolated consumers without React, checks SFC and
+NodeNext types,
 builds server/client code and hydrates it in Chromium. It requires npm registry
 access and an installed Chromium browser.
 

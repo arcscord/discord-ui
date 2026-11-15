@@ -81,7 +81,7 @@ commits, and commitlint checks Conventional Commits, such as
 
 ## Maintainer guides
 
-The current stable package version is `0.1.0`. Release automation is defined in
+The current stable React package version is `0.2.0`. Release automation is defined in
 the repository; GitHub/npm account configuration must be checked separately.
 
 - [CI and npm releases](./docs/maintainers/releases.md).

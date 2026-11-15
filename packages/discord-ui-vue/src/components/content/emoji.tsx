@@ -1,6 +1,6 @@
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import { mediaUrl } from "@arcscord/discord-ui-core";
-import { segmentUnicodeEmoji } from "@arcscord/discord-ui-core/emoji";
+import { isUnicodeEmoji } from "@arcscord/discord-ui-core/emoji";
 import { defineRenderer, elementRef, state } from "../../rendering";
 import { UnicodeEmoji } from "./unicode-emoji";
 
@@ -52,12 +52,7 @@ export const Emoji = defineRenderer<EmojiProps, EmojiPropsInput, EmojiSlots>("Em
   return () => {
     const { name, image } = input(true);
     const { allowRemoteMedia } = display;
-    const unicode = !image
-      ? segmentUnicodeEmoji(name, {
-          unicodeEmoji: { mode: "twemoji", baseUrl: "/emoji" },
-        }).filter(segment => segment.kind === "emoji")
-      : [];
-    if (unicode.length === 1 && unicode[0]?.text === name)
+    if (!image && isUnicodeEmoji(name))
       return <UnicodeEmoji content={name} />;
     const source = mediaUrl(image, allowRemoteMedia);
     return <EmojiImage key={source ?? ""} name={name} source={source} />;

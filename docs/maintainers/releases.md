@@ -1,6 +1,6 @@
 # CI and npm releases
 
-Maintainer procedures for validating, staging and approving releases of `@arcscord/discord-ui` and `@arcscord/discord-ui-core`.
+Maintainer procedures for validating, staging and approving releases of the Core, React and Vue packages.
 Commands run from the repository root. For local setup, see
 [Contributing](../../CONTRIBUTING.md).
 
@@ -40,42 +40,36 @@ Each package owns its version and changelog. The initial core version is `0.2.0`
 it does not force React to keep the same version. The Vue adapter starts independently at `0.1.0`. Angular and Svelte adapters
 and their release tags remain future work.
 
-A compatible feature increments only changed packages' minor versions. A core
-bug fix increments only the core patch. A Vue-only fix would increment only Vue's
-patch. Breaking changes increment the major after `1.0`, or the minor before
+A compatible feature increments the affected packages' minor versions. A core
+JavaScript fix only needs a core patch. Each adapter copies the shared CSS at
+build time, so a shared CSS fix also needs releases of the rebuilt adapters. A
+Vue-only fix increments Vue's patch. Breaking changes increment the major after `1.0`, or the minor before
 `1.0`, with a migration note. Shared changes can be prepared together but are
 published in dependency order.
 
-React declares `workspace:^` for the core. Packing replaces it with a caret range
+Both adapters declare `workspace:^` for the core. Packing replaces it with a caret range
 based on the current core manifest. `^0.2.0` accepts `0.2.x`, not `0.3.0`; `^1.4.0`
 accepts compatible `1.x` releases. When an adapter needs a newer core API, raise
 its dependency minimum with its next release. Consumers with lockfiles must
-update their resolved core version to receive fixes; existing installs do not
-change automatically.
+update their resolved core version to receive compatible JavaScript fixes.
 
-The isolated package check packs both packages and installs the local core
+The isolated package check packs all three packages and installs the local core
 archive using an override, so it also works before the first core publication.
-It separately checks the real caret range in the packed React manifest. It also
-checks the core alone without any framework or framework type dependencies.
+The React consumer disables dependency hoisting. The Vue consumer checks both
+Bundler and NodeNext types. The core is checked without framework dependencies.
 
-## Current stable release: 0.1.0
+## Published React version
 
-Version `0.1.0` is the first stable release. The local bootstrap beta does not
-need a GitHub commit or tag.
-
-The next release candidate is **0.2.0**, prepared in the library manifest. Its
-[release notes](../../packages/discord-ui/CHANGELOG.md) explain the Unicode emoji
-behavior change and migration. This preparation does not create a tag, stage a
-package or publish a version; the current registry state must be checked before
-staging.
+React **0.2.0** is available on npm. This branch prepares **0.2.1** with the
+shared core. See the [React changelog](../../packages/discord-ui/CHANGELOG.md).
 
 Inspect the published stable package independently of the workspace:
 
 ```sh
-npm view @arcscord/discord-ui@0.1.0 version dist dist-tags --json
+npm view @arcscord/discord-ui@0.2.0 version dist dist-tags --json
 mkdir -p .local/npm-review
-npm pack @arcscord/discord-ui@0.1.0 --ignore-scripts --pack-destination "$PWD/.local/npm-review"
-tar -tzf .local/npm-review/arcscord-discord-ui-0.1.0.tgz
+npm pack @arcscord/discord-ui@0.2.0 --ignore-scripts --pack-destination "$PWD/.local/npm-review"
+tar -tzf .local/npm-review/arcscord-discord-ui-0.2.0.tgz
 ```
 
 Review README, LICENSE, THIRD_PARTY_NOTICES, package documentation, ESM entry
@@ -83,7 +77,7 @@ points, declarations, source maps and compiled CSS. Sources, tests, workspace
 configuration and credentials must not be included. The packaged `AGENTS.md`
 is consumer documentation, separate from the ignored root contributor instructions.
 Test the registry version in a separate React 19 application with
-`pnpm add @arcscord/discord-ui@0.1.0`.
+`pnpm add @arcscord/discord-ui@0.2.0`.
 
 The stable npm dist-tag is `latest`; `next` is reserved for prereleases. Verify
 `npm view @arcscord/discord-ui dist-tags --json` when checking registry state.
@@ -101,6 +95,7 @@ pnpm exec playwright test -c playwright.website.config.mts
 pnpm docs:check
 pnpm --filter @arcscord/discord-ui-core pack --pack-destination "$PWD/.local/package"
 pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
+pnpm --filter @arcscord/discord-ui-vue pack --pack-destination "$PWD/.local/package"
 ```
 
 `pnpm check` builds the website; browser tests reuse that build. Merge the
@@ -137,8 +132,8 @@ Then tag the merged commit, for example:
 ```sh
 git switch main
 git pull --ff-only
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.2.1
+git push origin v0.2.1
 ```
 
 Creating a new version tag through the GitHub Release form also triggers the
@@ -153,22 +148,21 @@ an old failed run uses its original workflow revision.
 
 ## Core-first releases and first publication
 
-For a release involving both packages:
+For a release involving the core and one or both adapters:
 
-1. Validate both tarballs locally and merge the changes into `main`.
+1. Validate the tarballs locally and merge the changes into `main`.
 2. Create the core's matching `core-vX.Y.Z` tag and stage the core.
 3. Review and approve the core on npm; confirm its exact version is public.
-4. Create the adapter's matching `vX.Y.Z` tag and stage React.
-5. Review and approve React independently.
+4. Tag and stage each adapter being released using `vue-vX.Y.Z` for Vue and
+   `vX.Y.Z` for React.
+5. Review and approve each adapter independently.
 
-Before staging React, the workflow reads its packed dependency range and checks
-that the exact minimum core version is public on the npm registry. A staged,
-unapproved core does not satisfy this check. A core-only fix requires no React
-tag or staging. Both package tarballs are validated in CI, regardless of which
-package is selected for release.
+Before staging an adapter, the workflow verifies that the minimum core version
+from its packed dependency range is public. CI validates all three tarballs for
+every release.
 
-For the first core publication, provision the scoped npm package and configure
-its trusted publisher for the same repository, workflow, environment and staging
+For the first Core and Vue publications, provision each scoped npm package and
+configure its trusted publisher for the same repository, workflow, environment and staging
 permissions. If npm requires an authenticated first-publication bootstrap, a
 maintainer must complete it using the organization's approved process before
 relying on OIDC staging; do not add credentials to the repository. The workflow

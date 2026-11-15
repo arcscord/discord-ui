@@ -4,8 +4,9 @@ Shared models, content processing, themes and styles come from
 `@arcscord/discord-ui-core`, a framework-independent package with its own version.
 Existing React imports, including `themes`, `highlight` and `styles.css`, remain
 available. The React stylesheet is still complete and needs no extra CSS import.
-Compatible core corrections can be installed without an adapter release; update
-your lockfile resolution to receive them. The native Vue adapter is `@arcscord/discord-ui-vue`; Angular and Svelte remain future work.
+Update your lockfile to receive compatible core JavaScript fixes. For fixes to
+the bundled stylesheet, install a React release built with the updated core.
+The native Vue adapter is `@arcscord/discord-ui-vue`.
 
 
 Composable React components and serializable TypeScript models for Discord message interfaces.
@@ -16,8 +17,8 @@ Composable React components and serializable TypeScript models for Discord messa
 
 ## Installation
 
-This checkout prepares **0.2.0**. See the [release notes](./CHANGELOG.md) for the
-Unicode emoji migration. After publication, install it from npm:
+This checkout prepares **0.2.1** with the shared core. See the
+[release notes](./CHANGELOG.md). Install the published **0.2.0** from npm:
 
 ```sh
 pnpm add @arcscord/discord-ui@0.2.0

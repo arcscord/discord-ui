@@ -1,5 +1,5 @@
 import { mediaUrl } from "@arcscord/discord-ui-core";
-import { parse } from "@twemoji/parser";
+import { isUnicodeEmoji } from "@arcscord/discord-ui-core/emoji";
 import { useState } from "react";
 import { useDisplayOptions } from "../display-context";
 import { UnicodeEmoji } from "./unicode-emoji";
@@ -37,10 +37,7 @@ export type EmojiProps = { name: string; image?: string | undefined };
 
 export function Emoji({ name, image }: EmojiProps) {
   const { allowRemoteMedia } = useDisplayOptions();
-  const unicode = !image
-    ? parse(name)
-    : [];
-  if (unicode.length === 1 && unicode[0]?.text === name)
+  if (!image && isUnicodeEmoji(name))
     return <UnicodeEmoji content={name} />;
   const source = mediaUrl(image, allowRemoteMedia);
   return <EmojiImage key={source} name={name} source={source} />;

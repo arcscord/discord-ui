@@ -7,10 +7,10 @@ description: Install Arcscord Discord UI, import its stylesheet, and check React
 
 ## Current package status
 
-Version **0.1.0** is available on npm. Install it in your React application:
+Version **0.2.0** is available on npm. Install it in your React application:
 
 ```sh
-pnpm add @arcscord/discord-ui@0.1.0
+pnpm add @arcscord/discord-ui@0.2.0
 ```
 
 The package declares **React `^19.0.0`** as its peer dependency. Your application
@@ -46,13 +46,20 @@ After building and packing the library from the repository root:
 
 ```sh
 pnpm build:lib
+pnpm --filter @arcscord/discord-ui-core pack --pack-destination "$PWD/.local/package"
 pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
 ```
 
-In a separate React 19 application, install the generated archive using its absolute path:
+In a separate React 19 application, point pnpm to the local core archive in
+`pnpm-workspace.yaml`, then install the React archive:
+
+```yaml
+overrides:
+  "@arcscord/discord-ui-core": "file:/absolute/path/to/arcscord-discord-ui-core-0.2.0.tgz"
+```
 
 ```sh
-pnpm add /absolute/path/to/arcscord-discord-ui-0.1.0.tgz
+pnpm add /absolute/path/to/arcscord-discord-ui-0.2.1.tgz
 ```
 
 ## Import components and compiled CSS
@@ -114,7 +121,8 @@ The React package uses `@arcscord/discord-ui-core` for display models, content
 processing, themes and styles. Existing React imports remain valid, and its CSS
 entry remains complete. React and core versions are independent; their dependency
 range expresses compatibility. Projects using a lockfile must update their
-resolved core dependency to receive a newer correction.
+resolved core dependency to receive compatible JavaScript fixes. To receive a
+fix to the bundled stylesheet, install an adapter release built with the updated core.
 
 This checkout prepares the core package and the [native Vue adapter](/docs/vue).
 Angular and Svelte renderers remain future work. For architecture and

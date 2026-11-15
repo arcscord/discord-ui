@@ -15,7 +15,7 @@ adapters remain future work.
 | `@arcscord/discord-ui-core` | Display models, callback contracts, `BaseDisplayOptions`, `defaultDisplayOptions`, themes, URL/date/select helpers |
 | `@arcscord/discord-ui-core/themes` | Presets, `defineTheme`, `resolveTheme`, `themeStyle`, token mapping and types |
 | `@arcscord/discord-ui-core/markdown` | `parseMarkdown` and serializable block/node types |
-| `@arcscord/discord-ui-core/emoji` | `segmentUnicodeEmoji` and text/emoji segment types |
+| `@arcscord/discord-ui-core/emoji` | `isUnicodeEmoji`, `segmentUnicodeEmoji` and text/emoji segment types |
 | `@arcscord/discord-ui-core/highlight` | Optional `highlightCode` and token types |
 | `@arcscord/discord-ui-core/styles.css` | Complete, scoped stylesheet with Light/Ash/Dark presets |
 
@@ -79,11 +79,13 @@ Use the shared URL helpers and preserve `allowRemoteMedia: false` in renderers.
 The core and each adapter have independent versions. Adapter dependencies declare
 a compatible core range. `^0.2.0` accepts `0.2.x` fixes, not `0.3.0`; after `1.0`,
 caret ranges accept compatible minor releases as well. A project with a lockfile
-must update its resolved core dependency to receive a newer fix.
+must update its resolved core dependency to receive compatible JavaScript fixes.
+Each adapter copies the core stylesheet at build time. When the shared CSS
+changes, rebuild and release the adapters so their CSS entry points include the fix.
 
-A core patch does not require publishing unchanged adapters. An adapter requiring
-a new core feature raises its minimum dependency in its own release. Publish and
-approve that core version before staging the adapter. See the repository's
+An adapter requiring a new core feature raises its minimum dependency in its
+own release. Publish and approve that core version before staging the adapter.
+See the repository's
 `docs/maintainers/releases.md` for the package-specific release process.
 
 ## Attribution

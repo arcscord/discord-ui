@@ -53,7 +53,7 @@ try {
     },
     devDependencies: { "typescript": typescript.version, "@types/react": reactTypes.version },
   }));
-  await writeFile(join(temporary, "pnpm-workspace.yaml"), `packages: []\noverrides:\n  "@arcscord/discord-ui-core": ${JSON.stringify(`file:${coreArchive}`)}\n`);
+  await writeFile(join(temporary, "pnpm-workspace.yaml"), `packages: []\nhoist: false\noverrides:\n  "@arcscord/discord-ui-core": ${JSON.stringify(`file:${coreArchive}`)}\n`);
   await writeFile(join(temporary, "smoke.mjs"), `
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";

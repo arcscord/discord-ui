@@ -1,11 +1,12 @@
 # Changelog
 
-## 0.2.0
+## 0.2.1 (unreleased)
 
 - Extract shared models, themes, styles and content processing into
   `@arcscord/discord-ui-core`, with independent versions and a compatible dependency.
   Existing React imports and behavior are preserved; no consumer migration is required.
 
+## 0.2.0
 
 Configure Unicode emoji rendering without consumer patches, serve Twemoji locally
 and give emoji-only buttons accessible names.
