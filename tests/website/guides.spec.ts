@@ -34,7 +34,9 @@ test("all feature guides hydrate with an exact copyable module and no page overf
     await expect(page.locator("html")).toHaveAttribute("data-has-hydrated", "true");
     await expect(page.locator("article .arcscord-discord-ui").first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
-    const block = page.locator("article div[class*='codeBlockContainer']");
+    const block = page.locator("article div[class*='codeBlockContainer']").filter({
+      has: page.getByText(`${name}.tsx`, { exact: true }),
+    });
     await block.hover();
     await block.getByRole("button", { name: /Copy code/ }).click({ force: true });
     const source = await readFile(new URL(`../../apps/website/src/components/docs/guides/${name}.tsx`, import.meta.url), "utf8");

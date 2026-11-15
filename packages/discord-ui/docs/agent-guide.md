@@ -159,11 +159,11 @@ loading/error state and subsequent model update. Other interaction contracts:
   explicit data; message-relative rendering falls back to the message timestamp.
 - For highlighting, pass `renderCode={renderHighlightedCode}` to `DiscordUI`,
   importing the function from the optional highlight entry point.
-- `allowRemoteMedia={false}` blocks remote image resources, including avatars
-  and emoji. Unicode defaults to native text; configure `unicodeEmoji` with
-  `{ mode: "twemoji", baseUrl: "/emojis" }` for local codepoint SVGs (no implicit
-  CDN). Local assets work with remote media disabled. Preserve this setting when configured. It is not a general network
-  sandbox for the host application or every link.
+- `allowRemoteMedia={false}` blocks remote image URLs outside
+  `remoteMediaAllowlist`. Use `["https://cdn.discordapp.com/emojis/"]` to permit
+  the Discord CDN emoji directory for resolved custom emoji. Unicode defaults
+  to native text. Configure `unicodeEmoji` with
+  `{ mode: "twemoji", baseUrl: "/emojis" }` for local codepoint SVGs.
 - Render content through the library's text/Markdown components. Do not turn
   message content into raw HTML injection.
 - The component and highlight bundles carry client entry banners; the themes

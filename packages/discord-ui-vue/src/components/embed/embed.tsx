@@ -16,14 +16,14 @@ export type EmbedSlots = Record<string, never>;
 export const Embed = defineRenderer<EmbedProps, EmbedPropsInput, EmbedSlots>("Embed", ["embed", "referenceTime"], [], (input, display) => {
   return () => {
     const { embed, referenceTime } = input(true);
-    const { allowRemoteMedia } = display;
+    const { allowRemoteMedia, remoteMediaAllowlist } = display;
     const url = linkUrl(embed.url);
     const authorUrl = linkUrl(embed.author?.url);
     const color = /^#[a-f\d]{6}$/iu.test(embed.color ?? "")
       ? embed.color
       : undefined;
-    const footerImage = mediaUrl(embed.footer?.iconUrl, allowRemoteMedia);
-    const authorImage = mediaUrl(embed.author?.iconUrl, allowRemoteMedia);
+    const footerImage = mediaUrl(embed.footer?.iconUrl, allowRemoteMedia, remoteMediaAllowlist);
+    const authorImage = mediaUrl(embed.author?.iconUrl, allowRemoteMedia, remoteMediaAllowlist);
     return (
       <section
         class="dui-embed"

@@ -40,6 +40,12 @@ Every component exports `…Props`, `…Slots` and `…Emits` types where applic
 See [the integration guide](./docs/agent-guide.md) and
 [the parity matrix](./docs/parity.md) for the complete surface.
 
+Use `:allow-remote-media="false"` with
+`:remote-media-allowlist="['https://cdn.discordapp.com/emojis/']"` on `DiscordUI`
+to allow image URLs from the Discord emoji directory supplied in your display
+data. The shared policy accepts absolute HTTP(S) origins, directories ending in
+`/`, and exact paths.
+
 `ChannelComposer` uses `v-model`; `SelectMenu` uses `v-model:values`.
 `ChannelView` supports `v-model:active-thread-id`. Missing selections use local
 state, `[]` is controlled empty state, and `null` explicitly closes a controlled

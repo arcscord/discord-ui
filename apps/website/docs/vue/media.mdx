@@ -1,0 +1,53 @@
+---
+title: Vue media and emoji
+description: Render resolved Discord emoji in Vue with a scoped image allowlist and predictable fallbacks.
+---
+
+import VueExample from '@site/src/components/docs/vue/VueExample';
+
+# Media and emoji in Vue
+
+Set `:allow-remote-media="false"` on `DiscordUI` to restrict HTTP(S) images.
+Use `:remote-media-allowlist` for the image sources you trust. To allow custom
+emoji from Discord, supply resolved image URLs in `entities.emojis` and use
+`https://cdn.discordapp.com/emojis/` as the allowlist entry.
+
+```vue
+<DiscordUI
+  :allow-remote-media="false"
+  :remote-media-allowlist="['https://cdn.discordapp.com/emojis/']"
+  :entities="entities"
+>
+  <Markdown :content="messageContent" />
+</DiscordUI>
+```
+
+For a token like `<:wave:456789012345678901>`, give
+`entities.emojis["456789012345678901"]` the corresponding `{ name, image }`.
+Use the URL supplied by your application for that emoji. For direct use,
+`Emoji` accepts the same `name` and `image` inputs.
+
+## Try the allowlist
+
+The demo includes the Discord emoji directory and uses an absolute
+same-origin URL for the sample emoji. This exercises the image policy with
+a local asset. Toggle the allowlist to switch between the image and
+`:arc:`. The avatar uses a path outside the list and displays its initial.
+Copy the full SFC and serve `/examples/emoji.svg`, or substitute your own
+asset and directory.
+
+<VueExample id="media-policy" />
+
+## Choose a source and fallback
+
+- Allow an entire HTTP(S) origin, a directory URL ending in `/`, or an exact
+  path on that origin. Scheme, hostname and port must match. Put image
+  query parameters such as `?size=48` on the image URL.
+- Root-relative assets work with remote media disabled. Use `:unicode-emoji`
+  with `{ mode: "twemoji", baseUrl: "/emojis" }` to serve local Twemoji SVGs.
+  Unicode emoji render as text by default and fall back to that text on failure.
+- Use `Media` or `MediaGallery` for images. Supply alternative text and
+  optional dimensions. Spoiled media mounts after reveal. File cards and
+  Markdown links follow the separate outgoing-link policy.
+
+[Vue display options](./api.mdx#discordui) · [Shared media policy](../guides/media.mdx#remote-media-policy)

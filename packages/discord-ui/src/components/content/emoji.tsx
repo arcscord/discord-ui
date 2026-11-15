@@ -36,9 +36,9 @@ function EmojiImage({ name, source }: { name: string; source: string | undefined
 export type EmojiProps = { name: string; image?: string | undefined };
 
 export function Emoji({ name, image }: EmojiProps) {
-  const { allowRemoteMedia } = useDisplayOptions();
+  const { allowRemoteMedia, remoteMediaAllowlist } = useDisplayOptions();
   if (!image && isUnicodeEmoji(name))
     return <UnicodeEmoji content={name} />;
-  const source = mediaUrl(image, allowRemoteMedia);
+  const source = mediaUrl(image, allowRemoteMedia, remoteMediaAllowlist);
   return <EmojiImage key={source} name={name} source={source} />;
 }

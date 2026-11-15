@@ -198,7 +198,8 @@ Optional props without a listed default remain absent; the behavior note describ
 | `timeZone` | No | `string` | `"UTC"` | Explicit Intl time zone for date/time formatting and date separators. |
 | `referenceTime` | No | `string` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
 | `entities` | No | `MessageEntities` | `{}` | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
-| `allowRemoteMedia` | No | `boolean` | `true` | Allows HTTP(S) image sources. false preserves accepted local/blob/data images and does not disable outgoing links. |
+| `allowRemoteMedia` | No | `boolean` | `true` | Allows HTTP(S) image sources. false limits them to remoteMediaAllowlist and preserves accepted local/blob/data images. Outgoing links use a separate policy. |
+| `remoteMediaAllowlist` | No | `readonly string[]` | — | Exceptions for HTTP(S) image sources when allowRemoteMedia is false. Use an exact origin, directory URL ending in / or exact path URL. |
 | `unicodeEmoji` | No | `UnicodeEmojiOptions` | — | Native Unicode by default; twemoji requires an explicit baseUrl serving codepoint SVG files. Local paths work with remote media disabled; failed images fall back to Unicode. |
 | `renderCode` | No | `((content: string, language: string) => ReactNode) \| undefined` | — | Optional code renderer receiving (content, language). Return React content; opt-in highlighter has a separate entry. |
 | `labels` | No | `Partial<UILabels>` | `English defaults (partial merge)` | Interface-label configuration; DiscordUI accepts partial overrides merged with English defaults. |
@@ -237,7 +238,8 @@ Display configuration, not a serializable message model: renderCode is a callbac
 | `timeZone` | Yes | `string` | `"UTC"` | Explicit Intl time zone for date/time formatting and date separators. |
 | `referenceTime` | No | `string` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
 | `entities` | Yes | `MessageEntities` | `{}` | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
-| `allowRemoteMedia` | Yes | `boolean` | `true` | Allows HTTP(S) image sources. false preserves accepted local/blob/data images and does not disable outgoing links. |
+| `allowRemoteMedia` | Yes | `boolean` | `true` | Allows HTTP(S) image sources. false limits them to remoteMediaAllowlist and preserves accepted local/blob/data images. Outgoing links use a separate policy. |
+| `remoteMediaAllowlist` | No | `readonly string[]` | — | Exceptions for HTTP(S) image sources when allowRemoteMedia is false. Use an exact origin, directory URL ending in / or exact path URL. |
 | `unicodeEmoji` | No | `UnicodeEmojiOptions` | — | Native Unicode by default; twemoji requires an explicit baseUrl serving codepoint SVG files. Local paths work with remote media disabled; failed images fall back to Unicode. |
 | `labels` | Yes | `UILabels` | `English defaults (partial merge)` | Interface-label configuration; DiscordUI accepts partial overrides merged with English defaults. |
 | `renderCode` | No | `((content: string, language: string) => ReactNode) \| undefined` | — | Optional code renderer receiving (content, language). Return React content; opt-in highlighter has a separate entry. |

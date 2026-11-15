@@ -9,14 +9,10 @@ export function useMessageScroll(conversationId: () => string, lastId: () => str
     following = element.scrollHeight - element.scrollTop - element.clientHeight < 24;
   }
   onMounted(() => {
-    stop = watch(() => [
-      autoScroll(),
-      conversationId(),
-      lastId(),
-    ], () => {
+    stop = watch([autoScroll, conversationId, lastId], ([enabled]) => {
       observer?.disconnect();
       const history = historyRef.value;
-      if (!autoScroll() || !history)
+      if (!enabled || !history)
         return;
       following = true;
       const scrollToBottom = (): void => {

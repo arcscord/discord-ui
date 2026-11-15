@@ -17,7 +17,7 @@ Signatures and field tables are extracted from the public TypeScript contracts. 
 
 <CodeBlock language="ts">{"import type { UnicodeEmojiOptions } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-relative sources work with allowRemoteMedia=false. HTTP(S) sources require remote media permission. Failed images preserve Unicode; no CDN is implicit.
+Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-relative sources work with allowRemoteMedia=false. HTTP(S) sources use allowRemoteMedia and remoteMediaAllowlist. Failed images preserve Unicode; no CDN is implicit.
 
 <CodeBlock language="ts">{"type UnicodeEmojiOptions = {\n  mode: \"native\";\n} | {\n  mode: \"twemoji\";\n  baseUrl: string;\n};"}</CodeBlock>
 

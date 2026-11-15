@@ -53,6 +53,8 @@ export type BaseDisplayOptions = {
   referenceTime?: string;
   entities: MessageEntities;
   allowRemoteMedia: boolean;
+  /** HTTP(S) origins, directories or exact paths allowed when remote media is disabled. */
+  remoteMediaAllowlist?: readonly string[];
   unicodeEmoji?: UnicodeEmojiOptions;
   labels: UILabels;
 };

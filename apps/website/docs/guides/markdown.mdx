@@ -61,7 +61,7 @@ configuration covers text, Markdown, reactions, button emoji and select options;
 inline/fenced code stays literal. The example above serves 👋 from a local asset.
 
 `allowRemoteMedia={false}` permits root-relative Twemoji files. An explicit
-HTTP(S) source requires remote media to be allowed. Missing, blocked or failed
+HTTP(S) source can be permitted through [the media allowlist](./media.mdx#remote-media-policy). Missing, blocked or failed
 images fall back to Unicode. `{ mode: "native" }` always uses device emoji.
 Consumers previously relying on implicit jsDelivr images must configure a source.
 Host a compatible asset set and retain its Twemoji graphics CC-BY 4.0 attribution.

@@ -19,6 +19,18 @@ For unpublished local tarballs, install the Vue archive and override
 Import `@arcscord/discord-ui-vue/styles.css` once. It is complete; no React, Tailwind,
 global reset, remote font or additional core CSS import is required.
 
+## Examples
+
+Each preview mounts the Vue component from the copyable SFC below it. Copy
+the example into a Vue application to edit its data, template and event handlers.
+
+- [Messages and display models](#first-message)
+- [Button events, selections and reactions](#events-and-controlled-selections)
+- [Channels, composers, slash commands and threads](#channels-commands-and-threads)
+- [Slots, embeds, galleries and Components V2](#slots-and-content)
+- [Media and emoji](./media.mdx)
+- [Themes, locale and interface labels](./themes.mdx)
+
 ## First message
 
 The same serializable display models work with React and Vue. Timestamps and the
@@ -32,6 +44,9 @@ calling Discord.
 Callbacks become typed Vue events. `SelectMenu` uses `v-model:values`; absent
 values use local state, while an empty array is an explicitly controlled empty
 selection. The application updates message reactions and other persisted data.
+On `Message`, use `:select-values` for a map keyed by component ID.
+`@select-change` reports the component ID, selected values and message
+context so the host can update that map.
 
 <VueExample id="interactions" />
 
@@ -47,8 +62,10 @@ the host updates channel data. An absent send listener preserves read-only behav
 ## Slots and content
 
 Children become the default slot. Named slots replace the React content props.
-`Button.variant` selects its appearance; Vue's `style` and `class` remain ordinary
-attributes. Code highlighting is optional through the separate `./highlight` entry.
+`Button.variant` selects its appearance. Vue's `style` and `class` remain ordinary
+attributes. Give buttons with only an emoji an accessible `aria-label`.
+Use `:render-code="renderHighlightedCode"` to opt into syntax highlighting
+through the separate `./highlight` entry.
 
 <VueExample id="slots-and-content" />
 

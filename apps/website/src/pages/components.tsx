@@ -105,6 +105,7 @@ export default function Components() {
             <h2>{example.title}</h2>
             <p>{example.description}</p>
             <DocumentationLinks component={example.component ?? example.title} />
+            <p className="scope-note"><Link to="/docs/vue#examples">Browse Vue examples</Link></p>
           </header>
           <div className="explorer-toolbar">
             {compare

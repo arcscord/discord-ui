@@ -32,8 +32,8 @@ export type MediaSlots = Record<string, never>;
 export const Media = defineRenderer<MediaProps, MediaPropsInput, MediaSlots>("Media", ["media"], [], (input, display) => {
   return () => {
     const { media } = input(true);
-    const { allowRemoteMedia } = display;
-    const source = mediaUrl(media.url, allowRemoteMedia);
+    const { allowRemoteMedia, remoteMediaAllowlist } = display;
+    const source = mediaUrl(media.url, allowRemoteMedia, remoteMediaAllowlist);
     const image = <MediaImage key={source ?? ""} media={media} source={source} />;
     return media.spoiler
       ? (

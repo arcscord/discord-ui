@@ -73,8 +73,8 @@ export type AvatarSlots = Record<string, never>;
 export const Avatar = defineRenderer<AvatarProps, AvatarPropsInput, AvatarSlots>("Avatar", ["author"], [], (input, display) => {
   return () => {
     const { author } = input(true);
-    const { allowRemoteMedia } = display;
-    const source = mediaUrl(author.avatarUrl, allowRemoteMedia);
+    const { allowRemoteMedia, remoteMediaAllowlist } = display;
+    const source = mediaUrl(author.avatarUrl, allowRemoteMedia, remoteMediaAllowlist);
     return <AvatarImage key={source ?? ""} author={author} source={source} />;
   };
 });

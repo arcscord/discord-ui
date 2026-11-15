@@ -9,14 +9,14 @@ import { MessageTimestamp } from "../message/message-timestamp";
 export type EmbedProps = { embed: EmbedView; referenceTime?: string | undefined };
 
 export function Embed({ embed, referenceTime }: EmbedProps) {
-  const { allowRemoteMedia } = useDisplayOptions();
+  const { allowRemoteMedia, remoteMediaAllowlist } = useDisplayOptions();
   const url = linkUrl(embed.url);
   const authorUrl = linkUrl(embed.author?.url);
   const color = /^#[a-f\d]{6}$/iu.test(embed.color ?? "")
     ? embed.color
     : undefined;
-  const footerImage = mediaUrl(embed.footer?.iconUrl, allowRemoteMedia);
-  const authorImage = mediaUrl(embed.author?.iconUrl, allowRemoteMedia);
+  const footerImage = mediaUrl(embed.footer?.iconUrl, allowRemoteMedia, remoteMediaAllowlist);
+  const authorImage = mediaUrl(embed.author?.iconUrl, allowRemoteMedia, remoteMediaAllowlist);
   return (
     <section
       className="dui-embed"

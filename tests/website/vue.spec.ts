@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
 async function fixture(page: import("@playwright/test").Page): Promise<string[]> {
@@ -123,6 +124,24 @@ test("Vue channel sends, controlled threads, Escape focus and slash arguments wo
   expect(errors).toEqual([]);
 });
 
+test("Vue keeps the reading position on updates with the same messages", async ({ page }) => {
+  await fixture(page);
+  const channel = page.getByRole("region", { name: "Controlled conversation", exact: true });
+  const history = channel.getByRole("log", { name: "Messages", exact: true }).first();
+  await expect.poll(() => history.evaluate(node => node.scrollTop)).toBeGreaterThan(30);
+  const position = await history.evaluate(async (node) => {
+    node.scrollTop = 30;
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    return node.scrollTop;
+  });
+  expect(position).toBe(30);
+
+  await page.getByRole("button", { name: "Toggle disabled", exact: true }).click();
+  const menus = page.getByRole("region", { name: "All menu kinds", exact: true });
+  await expect(menus.getByRole("combobox").first()).toBeDisabled();
+  await expect.poll(() => history.evaluate(node => node.scrollTop)).toBe(position);
+});
+
 test("Vue docs mount real examples and preserve their public SFC source", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -139,6 +158,48 @@ test("Vue docs mount real examples and preserve their public SFC source", async 
   await expect(source).toHaveCount(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
+});
+
+test("Vue examples are discoverable and the media allowlist toggles a local image", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/playground");
+  await expect(page.getByRole("link", { name: "browse interactive Vue examples" })).toHaveAttribute("href", "/docs/vue#examples");
+  await page.goto("/components");
+  await page.getByRole("link", { name: "Browse Vue examples" }).click();
+  await page.getByRole("link", { name: "Media and emoji", exact: true }).click();
+
+  const preview = page.locator("[data-vue-demo=\"media-policy\"]");
+  const image = preview.getByRole("img", { name: ":arc:", exact: true });
+  const toggle = preview.getByRole("checkbox", { name: "Enable the image allowlist" });
+  await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBeGreaterThan(0);
+  await expect(preview.locator(".dui-avatar")).toHaveText("B");
+  await toggle.uncheck();
+  await expect(image).toHaveCount(0);
+  await expect(preview.locator(".dui-emoji-fallback")).toHaveText(":arc:");
+  await toggle.check();
+  await expect(image).toBeVisible();
+  const block = page.locator("article div[class*='codeBlockContainer']").filter({
+    has: page.getByText("media-policy.vue", { exact: true }),
+  });
+  await block.hover();
+  await block.getByRole("button", { name: /Copy code/ }).click({ force: true });
+  const source = await readFile(new URL("../../apps/website/src/examples/vue/media-policy.vue", import.meta.url), "utf8");
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(source.trimEnd());
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("Vue themes example changes the inherited preset and locale", async ({ page }) => {
+  await page.goto("/docs/vue/themes");
+  const preview = page.locator("[data-vue-demo=\"themes-and-localization\"]");
+  const root = preview.locator(".arcscord-discord-ui");
+  await expect(root).toHaveAttribute("data-base-theme", "ash");
+  await preview.getByLabel("Base theme").selectOption("light");
+  await expect(root).toHaveAttribute("data-base-theme", "light");
+  await preview.getByLabel("Base theme").selectOption("dark");
+  await expect(root).toHaveAttribute("data-base-theme", "dark");
+  await preview.getByLabel("Locale").selectOption("fr-CH");
+  await expect(preview.getByText("(modifié)", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test("Vue local emoji recover failures before hydration and spoilers reveal locally", async ({ page }) => {

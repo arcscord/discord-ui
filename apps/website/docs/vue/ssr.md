@@ -38,7 +38,8 @@ server/client pair.
 The package performs DOM work after mounting and cleans up observers and event
 listeners when unmounted. Spoiled media stays unmounted until reveal. Unicode
 emoji fall back to text if loading fails, including failures before hydration.
-`allowRemoteMedia: false` remains enforced by the shared URL policy.
+`allowRemoteMedia: false` and any [configured exceptions](./media.mdx) use
+the same URL policy on server and client.
 
 The browser acceptance fixture renders the shared message, menu and channel data
 on the server, then hydrates it and tests updates, keyboard interactions, commands

@@ -146,3 +146,32 @@ export default function Preview() {
   await expect(panel.locator(".dui-select-chip .dui-select-avatar")).toHaveText("U");
   await expect(panel.locator(".dui-select-chip .dui-select-avatar img")).toHaveCount(0);
 });
+
+test("loads allowlisted Discord emoji while blocking other CDN images", async ({ page }) => {
+  const origin = "https://cdn.discordapp.com";
+  const emoji = `${origin}/emojis/456789012345678901.png?size=48`;
+  const avatar = `${origin}/avatars/456789012345678901.png`;
+  const requests: string[] = [];
+  await page.route(`${origin}/**`, (route) => {
+    requests.push(route.request().url());
+    return route.fulfill({
+      contentType: "image/svg+xml",
+      body: "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\"/>",
+    });
+  });
+  const panel = await preview(page, `import React from "react";
+import { DiscordUI, Emoji, Markdown } from "@arcscord/discord-ui";
+export default function Preview() {
+ return <DiscordUI allowRemoteMedia={false} remoteMediaAllowlist={["${origin}/emojis/"]}
+   entities={{ emojis: { "456789012345678901": { name: "wave", image: "${emoji}" } } }}>
+   <p>API regression</p>
+   <Markdown content="<:wave:456789012345678901>" />
+   <Emoji name="blocked" image="${avatar}" />
+ </DiscordUI>;
+}`);
+  const image = panel.getByRole("img", { name: ":wave:" });
+  await expect(image).toHaveAttribute("src", emoji);
+  await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBe(22);
+  await expect(panel.getByText(":blocked:", { exact: true })).toBeVisible();
+  expect(requests).toEqual([emoji]);
+});

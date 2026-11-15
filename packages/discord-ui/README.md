@@ -86,8 +86,12 @@ data, with no implicit clock. Keep display options and initial data equal during
 server rendering and hydration.
 
 Use `allowRemoteMedia={false}` to block remote image resources, including avatars
-and emoji, while allowing root-relative local assets. Unicode emoji default to
-native text; no CDN is implicit. To use self-hosted Twemoji SVG files:
+and emoji, while allowing root-relative local assets. Set
+`remoteMediaAllowlist={["https://cdn.discordapp.com/emojis/"]}` to permit custom
+emoji images from this CDN directory. Supply image URLs in `entities.emojis` or
+resolved emoji models. Entries accept a full HTTP(S) origin, a directory ending
+in `/`, or an exact path. Unicode emoji default to native text. To use
+self-hosted Twemoji SVG files, configure the base URL.
 
 ```tsx
 <DiscordUI
@@ -102,7 +106,8 @@ Serve files directly under `baseUrl` (for example `2764.svg` for ❤️). The pa
 uses lowercase, hyphenated Twemoji code points. Missing, blocked or failed images
 fall back to Unicode. This applies to text, Markdown, reactions, buttons and
 selects; code remains literal. Use `{ mode: "native" }` for device emoji.
-An explicit HTTP(S) `baseUrl` also requires remote media to be allowed. Hosts own
+For an HTTP(S) `baseUrl`, allow remote media or add the SVG directory to
+`remoteMediaAllowlist`. Hosts own
 the asset version, coverage and Twemoji graphics attribution (CC-BY 4.0).
 
 This replaces the previous implicit jsDelivr rendering: consumers wanting images

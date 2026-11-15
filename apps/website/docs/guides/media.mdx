@@ -51,21 +51,46 @@ fallbacks. Revealing content is local UI state, not authorization.
 
 ## Remote media policy
 
-`DiscordUI.allowRemoteMedia` defaults to `true`. Setting it to `false` blocks
-explicit HTTP(S) image sources across avatars, custom emoji, galleries, embed
-images/icons, reply/thread avatars and select-menu avatars.
+`DiscordUI.allowRemoteMedia` defaults to `true`. Set it to `false` to block
+explicit HTTP(S) image sources across avatars, emoji, galleries, embed images
+and icons, reply and thread avatars, and select-menu avatars. Use
+`remoteMediaAllowlist` to make exceptions. For example, allow the Discord
+emoji directory while leaving Discord avatars and attachments blocked.
+
+```tsx
+<DiscordUI
+  allowRemoteMedia={false}
+  remoteMediaAllowlist={["https://cdn.discordapp.com/emojis/"]}
+  entities={{
+    emojis: {
+      "456789012345678901": {
+        name: "dance",
+        image: "https://cdn.discordapp.com/emojis/456789012345678901.gif",
+      },
+    },
+  }}
+>
+  <Markdown content="<a:dance:456789012345678901>" />
+</DiscordUI>
+```
+
+Each entry is an absolute HTTP(S) origin, a directory ending in `/`, or an
+exact path on that origin. The scheme, hostname and port must match. Omit
+queries and fragments from the entries. An image URL can still include a
+query such as `?size=48`. Custom emoji images come from the host's display
+data. The [Vue media guide](../vue/media.mdx) demonstrates this policy with
+an interactive Vue example.
 
 Root-relative paths (a single leading slash without backslashes), HTTP(S) blob
 URLs, and supported base64 PNG/JPEG/GIF/WebP image data remain accepted. Protocol-
-relative URLs and executable schemes are rejected. Absolute HTTP(S) image URLs
-are blocked even when they point to your own host; use a root-relative asset path
-when appropriate. SVG data URLs are not an accepted image-data format.
+relative URLs and executable schemes are rejected. Absolute same-origin image
+URLs also require remote media permission. Use root-relative paths for local
+assets. Supported image data formats exclude SVG.
 
-**This is not a network sandbox or a URL allowlist for the whole application.**
 File download links, ordinary Markdown links and link buttons still use their
-separate HTTP(S) link policy and remain usable. Root-relative URLs may also be
-served or redirected by your application. Apply application-level policies where
-needed.
+separate HTTP(S) link policy. The image policy checks the initial source URL.
+Redirects and other network requests are governed by the browser and the
+host application.
 
 ## File links
 

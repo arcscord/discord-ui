@@ -1,4 +1,4 @@
-import type { UnicodeEmojiOptions } from "./display-options";
+import type { BaseDisplayOptions } from "./display-options";
 import { parse } from "@twemoji/parser";
 import { mediaUrl } from "./utils/urls";
 
@@ -13,10 +13,12 @@ export function isUnicodeEmoji(content: string): boolean {
 }
 
 /** Resolve data only: image loading and failure fallback belong to the renderer. */
-export function segmentUnicodeEmoji(content: string, { unicodeEmoji = { mode: "native" }, allowRemoteMedia = true }: {
-  unicodeEmoji?: UnicodeEmojiOptions;
-  allowRemoteMedia?: boolean;
-} = {}): UnicodeEmojiSegment[] {
+export function segmentUnicodeEmoji(
+  content: string,
+  { unicodeEmoji = { mode: "native" }, allowRemoteMedia, remoteMediaAllowlist }: Partial<
+    Pick<BaseDisplayOptions, "unicodeEmoji" | "allowRemoteMedia" | "remoteMediaAllowlist">
+  > = {},
+): UnicodeEmojiSegment[] {
   if (unicodeEmoji.mode === "native") {
     return [
       { kind: "text", text: content, start: 0 },
@@ -43,7 +45,7 @@ export function segmentUnicodeEmoji(content: string, { unicodeEmoji = { mode: "n
       text: entity.text,
       start,
       source: unicodeEmoji.baseUrl
-        ? mediaUrl(entity.url, allowRemoteMedia)
+        ? mediaUrl(entity.url, allowRemoteMedia, remoteMediaAllowlist)
         : undefined,
     });
     offset = end;

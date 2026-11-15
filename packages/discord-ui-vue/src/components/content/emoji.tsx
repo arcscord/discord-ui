@@ -51,10 +51,10 @@ export type EmojiSlots = Record<string, never>;
 export const Emoji = defineRenderer<EmojiProps, EmojiPropsInput, EmojiSlots>("Emoji", ["name", "image"], [], (input, display) => {
   return () => {
     const { name, image } = input(true);
-    const { allowRemoteMedia } = display;
+    const { allowRemoteMedia, remoteMediaAllowlist } = display;
     if (!image && isUnicodeEmoji(name))
       return <UnicodeEmoji content={name} />;
-    const source = mediaUrl(image, allowRemoteMedia);
+    const source = mediaUrl(image, allowRemoteMedia, remoteMediaAllowlist);
     return <EmojiImage key={source ?? ""} name={name} source={source} />;
   };
 });

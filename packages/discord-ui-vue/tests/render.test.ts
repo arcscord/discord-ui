@@ -114,6 +114,28 @@ it("blocks remote media and preserves emoji and unavailable-media fallbacks", as
   }));
   expect(emoji).toContain("src=\"/emoji/2764.svg\"");
 });
+it("renders an allowlisted Discord emoji while blocking other paths on the same CDN", async () => {
+  const source = "https://cdn.discordapp.com/emojis/456789012345678901.png";
+  const html = await renderToString(createSSRApp({
+    render: () => h(VueUI.DiscordUI, {
+      allowRemoteMedia: false,
+      remoteMediaAllowlist: ["https://cdn.discordapp.com/emojis/"],
+      entities: {
+        emojis: {
+          "456789012345678901": { name: "wave", image: source },
+        },
+      },
+    }, {
+      default: () => [
+        h(VueUI.Markdown, { content: "<:wave:456789012345678901>" }),
+        h(VueUI.Emoji, { name: "blocked", image: "https://cdn.discordapp.com/avatars/123.png" }),
+      ],
+    }),
+  }));
+  expect(html).toContain(`src="${source}"`);
+  expect(html).toContain(":blocked:");
+  expect(html).not.toContain("/avatars/123.png");
+});
 it("renders controlled selections, channels and local thread navigation on the server", async () => {
   const menu = {
     id: "pick",

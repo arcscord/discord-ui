@@ -91,6 +91,30 @@ it("preserves local animated custom entities and falls back to their name when u
   expect(html).toContain("missing");
 });
 
+it("renders allowlisted Discord emoji and Twemoji while blocking other remote sources", () => {
+  const discordEmoji = "https://cdn.discordapp.com/emojis/456789012345678901.gif?size=48";
+  const html = renderToStaticMarkup(
+    <DiscordUI
+      allowRemoteMedia={false}
+      remoteMediaAllowlist={["https://cdn.discordapp.com/emojis/", "https://example.com/twemoji/"]}
+      unicodeEmoji={{ mode: "twemoji", baseUrl: "https://example.com/twemoji" }}
+      entities={{
+        emojis: {
+          "456789012345678901": { name: "dance", image: discordEmoji },
+        },
+      }}
+    >
+      <Markdown content="<a:dance:456789012345678901> 👋 [Open](https://example.com)" />
+      <Emoji name="blocked" image="https://cdn.discordapp.com/avatars/123.png" />
+    </DiscordUI>,
+  );
+  expect(html).toContain(`src="${discordEmoji}"`);
+  expect(html).toContain("src=\"https://example.com/twemoji/1f44b.svg\"");
+  expect(html).toContain("href=\"https://example.com\"");
+  expect(html).toContain(":blocked:");
+  expect(html).not.toContain("/avatars/123.png");
+});
+
 it("labels model buttons from explicit ariaLabel or the emoji name, including inert links", () => {
   const html = renderToStaticMarkup(
     <MessageComponents components={[

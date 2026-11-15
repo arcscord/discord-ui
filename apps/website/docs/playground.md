@@ -10,6 +10,10 @@ canonical source modules. The [playground](/playground?example=message) evaluate
 editable copies of those modules in the browser. Guides explain usage; the
 [API reference](./api-reference.md) describes signatures and behavior.
 
+If your application uses Vue, the [Vue examples](/docs/vue#examples) include
+interactive previews and copyable `.vue` files. Edit the copied SFC in your Vue
+application to try different data, slots and event handlers.
+
 ## Choose and edit an example
 
 Use `?example=<id>` links to open a specific catalogue example. A valid `theme`

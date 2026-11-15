@@ -1,0 +1,27 @@
+---
+title: Vue themes and localization
+description: Switch Vue theme presets and localize timestamps and accessible labels through DiscordUI.
+---
+
+import VueExample from '@site/src/components/docs/vue/VueExample';
+
+# Themes and localization in Vue
+
+Bind `:theme` on `DiscordUI` to `light`, `ash` or `dark`. Use
+`defineTheme` from `@arcscord/discord-ui-vue/themes` to inherit a preset and
+override semantic tokens. Bind `:tokens` for overrides specific to one
+preview. Each `DiscordUI` provides display options to its descendants.
+
+Bind `:locale` and `:time-zone` for timestamp formatting. Pass `:labels`
+to translate interface text, including accessible labels such as
+`closeThread` and `showSpoiler`. A partial label object inherits defaults
+for the other keys.
+
+<VueExample id="themes-and-localization" />
+
+Supply explicit timestamps with a time-zone offset or UTC. For relative
+times, pass a stable `reference-time`. Use the same values for the initial
+server and client renders. Check keyboard operation and visible focus
+when adding slot content or overriding theme tokens.
+
+[Vue display options](./api.mdx#discordui) · [SSR and hydration](./ssr.md) · [Theme tokens](../api/themes.mdx)

@@ -52,7 +52,7 @@ function AvatarImage({ author, source }: { author: MessageAuthor; source: string
 export type AvatarProps = { author: MessageAuthor };
 
 export function Avatar({ author }: AvatarProps) {
-  const { allowRemoteMedia } = useDisplayOptions();
-  const source = mediaUrl(author.avatarUrl, allowRemoteMedia);
+  const { allowRemoteMedia, remoteMediaAllowlist } = useDisplayOptions();
+  const source = mediaUrl(author.avatarUrl, allowRemoteMedia, remoteMediaAllowlist);
   return <AvatarImage key={source} author={author} source={source} />;
 }

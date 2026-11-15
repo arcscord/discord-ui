@@ -31,7 +31,9 @@ Event listeners govern read-only affordances as in the React implementation.
 `DiscordUI` supplies reactive display configuration. Named slots replace renderer
 content and accept Vue nodes. `renderCode` accepts a function returning Vue nodes;
 use `renderHighlightedCode` from the optional entry when desired. Never inject
-message strings as HTML. Keep custom media blocked when `allowRemoteMedia` is false.
+message strings as HTML. With `allowRemoteMedia: false`, supply
+`remoteMediaAllowlist` for exceptions such as `["https://cdn.discordapp.com/emojis/"]`
+when your data includes resolved Discord emoji images.
 
 For SSR, use createSSRApp on both server/client with the same initial data and
 idPrefix. Allocate state per request. The package starts observers and DOM listeners

@@ -79,7 +79,7 @@ type OptionIconInput = { option: ResolvedSelectOption; chip?: boolean };
 const OptionIcon = defineRenderer<OptionIconInput, OptionIconInput, Record<string, never>>("OptionIcon", ["option", "chip"], [], (input, display) => {
   return () => {
     const { option, chip = false } = input(true);
-    const { allowRemoteMedia, labels } = display;
+    const { allowRemoteMedia, remoteMediaAllowlist, labels } = display;
     const statuses = {
       online: labels.userOnline,
       idle: labels.userIdle,
@@ -87,7 +87,7 @@ const OptionIcon = defineRenderer<OptionIconInput, OptionIconInput, Record<strin
       offline: labels.userOffline,
     };
     if (option.entityType === "user") {
-      const avatar = mediaUrl(option.avatarUrl, allowRemoteMedia);
+      const avatar = mediaUrl(option.avatarUrl, allowRemoteMedia, remoteMediaAllowlist);
       return (
         <span class="dui-select-avatar">
           <SelectAvatar key={avatar ?? ""} source={avatar} label={option.label} />

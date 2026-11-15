@@ -26,12 +26,13 @@ function UnicodeEmojiImage({ text, url }: { text: string; url: string }) {
 
 /** Render Unicode emoji as React nodes, without injecting or mutating HTML. */
 export function UnicodeEmoji({ content }: { content: string }) {
-  const { allowRemoteMedia, unicodeEmoji = { mode: "native" } } = useDisplayOptions();
-  if (unicodeEmoji.mode === "native")
+  const display = useDisplayOptions();
+  const { unicodeEmoji } = display;
+  if (!unicodeEmoji || unicodeEmoji.mode === "native")
     return <>{content}</>;
   return (
     <>
-      {segmentUnicodeEmoji(content, { unicodeEmoji, allowRemoteMedia }).map(segment => segment.kind === "emoji" && segment.source
+      {segmentUnicodeEmoji(content, display).map(segment => segment.kind === "emoji" && segment.source
         ? <UnicodeEmojiImage key={`${segment.start}-${segment.source}`} text={segment.text} url={segment.source} />
         : <Fragment key={`${segment.kind}-${segment.start}`}>{segment.text}</Fragment>)}
     </>

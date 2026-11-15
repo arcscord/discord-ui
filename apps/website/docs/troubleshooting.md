@@ -22,8 +22,9 @@ before overriding internal classes. See [installation](./installation.md).
 ### An image or avatar is missing
 
 Check the actual URL, network response, supplied dimensions and meaningful `alt`.
-`allowRemoteMedia={false}` blocks explicit HTTP(S) image sources even on your own
-host; accepted root-relative assets remain available. Failed/blocked images show
+`allowRemoteMedia={false}` blocks explicit HTTP(S) image sources outside
+`remoteMediaAllowlist`, including on your own host. Accepted root-relative assets
+remain available. Failed/blocked images show
 an unavailable state and avatars use initials. Custom/Unicode emoji follow the
 shared media behavior. A spoiled image is not mounted until it is revealed.
 

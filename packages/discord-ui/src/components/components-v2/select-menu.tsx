@@ -55,7 +55,7 @@ function SelectAvatar({ source, label }: { source: string | undefined; label: st
 }
 
 function OptionIcon({ option, chip = false }: { option: ResolvedSelectOption; chip?: boolean }) {
-  const { allowRemoteMedia, labels } = useDisplayOptions();
+  const { allowRemoteMedia, remoteMediaAllowlist, labels } = useDisplayOptions();
   const statuses = {
     online: labels.userOnline,
     idle: labels.userIdle,
@@ -63,7 +63,7 @@ function OptionIcon({ option, chip = false }: { option: ResolvedSelectOption; ch
     offline: labels.userOffline,
   };
   if (option.entityType === "user") {
-    const avatar = mediaUrl(option.avatarUrl, allowRemoteMedia);
+    const avatar = mediaUrl(option.avatarUrl, allowRemoteMedia, remoteMediaAllowlist);
     return (
       <span className="dui-select-avatar">
         <SelectAvatar key={avatar} source={avatar} label={option.label} />
