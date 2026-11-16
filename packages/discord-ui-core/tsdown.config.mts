@@ -7,6 +7,7 @@ export default defineConfig({
     "src/themes.ts",
     "src/markdown.ts",
     "src/emoji.ts",
+    "src/discord-api.ts",
     "src/highlight.ts",
   ],
   format: "esm",

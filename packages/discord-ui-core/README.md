@@ -25,6 +25,7 @@ to see which release the `latest` tag selects.
 | `@arcscord/discord-ui-core/themes` | Presets, `defineTheme`, `resolveTheme`, `themeStyle`, token mapping and types |
 | `@arcscord/discord-ui-core/markdown` | `parseMarkdown` and serializable block/node types |
 | `@arcscord/discord-ui-core/emoji` | `isUnicodeEmoji`, `segmentUnicodeEmoji` and text/emoji segment types |
+| `@arcscord/discord-ui-core/discord-api` | Convert received Discord API v10 data into display models |
 | `@arcscord/discord-ui-core/highlight` | Optional `highlightCode` and token types |
 | `@arcscord/discord-ui-core/styles.css` | Complete, scoped stylesheet with Light/Ash/Dark presets |
 
@@ -52,6 +53,89 @@ const cssVariables = themeStyle(brand.tokens);
 void blocks;
 void cssVariables;
 ```
+
+## Convert received Discord data
+
+`fromDiscordMessage` converts complete Discord API v10 message objects into
+`MessageView` for React or Vue. Use `fromDiscordMessageComponents` for a component
+array on its own and pass `{ attachments }` to resolve `attachment://` URLs.
+`fromDiscordUser`, `fromDiscordRole` and `fromDiscordChannel` convert entity
+identities. Unnamed channels and unknown channel types return `undefined`.
+
+Both message helpers accept `selectEntities`, keyed by the menu's Discord
+`custom_id`. Each entry can provide `users`, `roles` and `channels` as display
+models. Entity menus start with an empty list when those choices are absent.
+The host authorizes access, supplies mention lookups and handles interactions.
+The message helper uses available data and omits unsupported nodes, including
+media references it cannot resolve. The renderer supports images and file links.
+
+### With discord.js v14
+
+If you already have a discord.js `Message`, each component's `toJSON()` returns
+API-shaped data. It works directly for a component preview. For `attachment://`
+references, also supply the raw message's `attachments` array. If you only need
+a user preview, use the `User` display properties directly. Both paths use the
+objects you already have.
+
+```ts
+import type { UserView } from "@arcscord/discord-ui-core";
+import type { Message, User } from "discord.js";
+import { fromDiscordMessageComponents } from "@arcscord/discord-ui-core/discord-api";
+import { UserFlags } from "discord.js";
+
+export function messageComponents(message: Message) {
+  return fromDiscordMessageComponents(message.components.map(component => component.toJSON()));
+}
+
+export function userView(user: User): UserView {
+  return {
+    id: user.id,
+    username: user.username,
+    displayName: user.displayName,
+    avatarUrl: user.displayAvatarURL(),
+    bot: user.bot,
+    verified: user.flags?.has(UserFlags.VerifiedBot) ?? false,
+  };
+}
+```
+
+For full message previews, use raw `MESSAGE_CREATE` packets or REST.
+`Message#toJSON()` returns discord.js fields such as `authorId` and
+`createdTimestamp`, and `User#toJSON()` uses `globalName` and `flags`.
+The raw converters expect Discord API fields such as `author` and `timestamp`.
+If you already have a `Message`, pass its `channelId` and `id` to `readMessage`
+below to retrieve the raw response. The REST method returns `unknown`, so the
+example types responses from those known routes. Reconstruct a full message
+before converting a partial update. Only the bot needs discord.js.
+
+```ts
+import type { MessageView } from "@arcscord/discord-ui-core";
+import type { GatewayDispatchPayload, RESTGetAPIChannelMessageResult, RESTGetAPIUserResult } from "discord-api-types/v10";
+import type { Client } from "discord.js";
+import { fromDiscordMessage, fromDiscordUser } from "@arcscord/discord-ui-core/discord-api";
+import { Events, Routes } from "discord.js";
+
+export function watchMessages(client: Client, onMessage: (message: MessageView) => void) {
+  client.on(Events.Raw, (packet: GatewayDispatchPayload) => {
+    if (packet.t === "MESSAGE_CREATE")
+      onMessage(fromDiscordMessage(packet.d));
+  });
+}
+
+export async function readMessage(client: Client, channelId: string, messageId: string) {
+  const data = await client.rest.get(Routes.channelMessage(channelId, messageId)) as RESTGetAPIChannelMessageResult;
+  return fromDiscordMessage(data);
+}
+
+export async function readUser(client: Client, userId: string) {
+  const data = await client.rest.get(Routes.user(userId)) as RESTGetAPIUserResult;
+  return fromDiscordUser(data);
+}
+```
+
+The payload reflects the bot's permissions and Gateway intents. For example,
+Discord can withhold message content, attachments, embeds and components. See
+the [Discord message resource](https://docs.discord.com/developers/resources/message).
 
 ## Renderer boundary
 

@@ -26,13 +26,85 @@ count. See [channels](./guides/channels.mdx) and [reactions](./guides/reactions.
 
 Display models are **not Discord send payloads**. They may contain resolved display
 names, avatar URLs, reply snapshots, reaction counts and loaded thread context that
-a send payload does not provide. The library exports no send-payload adapter or
-Discord client. Normalize data at your own boundary and validate untrusted input
-there; TypeScript types do not validate JSON at runtime.
+a send payload does not provide. Validate untrusted input in your application
+before converting it into a display model.
 
 `ephemeral` describes appearance. Spoilers conceal UI. Neither feature authorizes
 access to the underlying data. Filter private content before returning it to a
 viewer and enforce authorization in your application.
+
+## Convert received Discord data
+
+The shared `@arcscord/discord-ui-core/discord-api` entry converts Discord API v10
+responses into models for React and Vue. Add `@arcscord/discord-ui-core` as a direct
+dependency to import this entry. Use `fromDiscordMessage` with a complete
+message, or `fromDiscordMessageComponents` with the component array and its
+`{ attachments }`. The same entry exports `fromDiscordUser`, `fromDiscordRole`
+and `fromDiscordChannel`. Unnamed channels and unknown channel types return
+`undefined`. For entity selects, pass choices as `users`, `roles` and `channels`
+in `options.selectEntities[custom_id]`. The default is an empty list.
+
+### With discord.js v14
+
+If you already have a discord.js `Message`, each component's `toJSON()` returns
+API-shaped data. For `attachment://` references, also supply the raw message's
+`attachments` array. An existing `User` has display properties you can use
+directly. Both paths use the objects you already have.
+
+```ts
+import type { UserView } from "@arcscord/discord-ui-core";
+import type { Message, User } from "discord.js";
+import { fromDiscordMessageComponents } from "@arcscord/discord-ui-core/discord-api";
+import { UserFlags } from "discord.js";
+
+export function messageComponents(message: Message) {
+  return fromDiscordMessageComponents(message.components.map(component => component.toJSON()));
+}
+
+export function userView(user: User): UserView {
+  return {
+    id: user.id,
+    username: user.username,
+    displayName: user.displayName,
+    avatarUrl: user.displayAvatarURL(),
+    bot: user.bot,
+    verified: user.flags?.has(UserFlags.VerifiedBot) ?? false,
+  };
+}
+```
+
+`Message#toJSON()` and `User#toJSON()` serialize discord.js fields such as
+`authorId`, `createdTimestamp` and `globalName`. For full raw conversion, use
+`Events.Raw` with `MESSAGE_CREATE` for live messages or `client.rest.get` for
+on-demand messages or users. The REST method returns `unknown`. The example
+types responses from known routes. Merge partial updates into a complete message
+before converting them. The bot keeps control of authorization, mention lookup
+data and interaction state.
+
+```ts
+import type { MessageView } from "@arcscord/discord-ui-core";
+import type { GatewayDispatchPayload, RESTGetAPIChannelMessageResult, RESTGetAPIUserResult } from "discord-api-types/v10";
+import type { Client } from "discord.js";
+import { fromDiscordMessage, fromDiscordUser } from "@arcscord/discord-ui-core/discord-api";
+import { Events, Routes } from "discord.js";
+
+export function watchMessages(client: Client, onMessage: (message: MessageView) => void) {
+  client.on(Events.Raw, (packet: GatewayDispatchPayload) => {
+    if (packet.t === "MESSAGE_CREATE")
+      onMessage(fromDiscordMessage(packet.d));
+  });
+}
+
+export async function readMessage(client: Client, channelId: string, messageId: string) {
+  const data = await client.rest.get(Routes.channelMessage(channelId, messageId)) as RESTGetAPIChannelMessageResult;
+  return fromDiscordMessage(data);
+}
+
+export async function readUser(client: Client, userId: string) {
+  const data = await client.rest.get(Routes.user(userId)) as RESTGetAPIUserResult;
+  return fromDiscordUser(data);
+}
+```
 
 ## Classic messages and Components V2
 

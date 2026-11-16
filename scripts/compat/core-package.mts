@@ -16,6 +16,7 @@ export async function checkCorePackage(temporary: string): Promise<string> {
     "themes",
     "markdown",
     "emoji",
+    "discord-api",
     "highlight",
   ]) {
     for (const extension of ["mjs", "d.mts"])
@@ -60,6 +61,7 @@ import { defaultDisplayOptions, linkUrl, selectOptions } from "@arcscord/discord
 import { defineTheme, themeStyle } from "@arcscord/discord-ui-core/themes";
 import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { segmentUnicodeEmoji } from "@arcscord/discord-ui-core/emoji";
+import { fromDiscordUser } from "@arcscord/discord-ui-core/discord-api";
 import { highlightCode } from "@arcscord/discord-ui-core/highlight";
 const message: MessageView = { id: "m", author: { id: "a", displayName: "A" }, timestamp: "2026-11-01T00:00:00Z", body: { kind: "text", content: "Hello" } };
 // @ts-expect-error IDs remain strings.
@@ -72,6 +74,8 @@ const options: BaseDisplayOptions = defaultDisplayOptions;
 const variables = themeStyle(defineTheme({ name: "brand", tokens: { text: "#fff" } }).tokens);
 void variables; void invalid; void invalidEmoji; void options;
 void linkUrl; void selectOptions; void parseMarkdown("Hello"); void segmentUnicodeEmoji("👋"); void highlightCode("const n = 1", "ts");
+const user = fromDiscordUser({ id: "4194304", username: "example", global_name: null, discriminator: "0", avatar: null });
+void user;
 `);
   await writeFile(join(consumer, "smoke.mjs"), `
 import assert from "node:assert/strict";
@@ -81,10 +85,12 @@ import { defaultDisplayOptions, linkUrl, mediaUrl, formatDiscordTimestamp } from
 import { defineTheme, themeStyle } from "@arcscord/discord-ui-core/themes";
 import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { segmentUnicodeEmoji } from "@arcscord/discord-ui-core/emoji";
+import { fromDiscordUser } from "@arcscord/discord-ui-core/discord-api";
 import { highlightCode } from "@arcscord/discord-ui-core/highlight";
 const require = createRequire(import.meta.url);
-for (const dependency of ["react", "@types/react/package.json", "vue", "svelte", "@angular/core"])
+for (const dependency of ["react", "@types/react/package.json", "vue", "svelte", "@angular/core", "discord.js"])
   assert.throws(() => require.resolve(dependency), undefined, "Core must work without " + dependency);
+assert.equal(fromDiscordUser({ id: "4194304", username: "example", global_name: null, discriminator: "0", avatar: null }).avatarUrl, "https://cdn.discordapp.com/embed/avatars/1.png");
 assert.equal(defaultDisplayOptions.timeZone, "UTC");
 assert.equal(linkUrl("javascript:alert(1)"), undefined);
 assert.equal(mediaUrl("https://example.com/a.png", false), undefined);
@@ -116,7 +122,7 @@ assert(!stylesheet.includes("@import"));
       return;
     visited.add(file);
     const contents = await readFile(join(dist, file), "utf8");
-    assert(!/lowlight|highlight\.js|discord-markdown-parser|@twemoji\/parser/u.test(contents), `Optional parser or grammar in ordinary core graph: ${file}`);
+    assert(!/lowlight|highlight\.js|discord-markdown-parser|@twemoji\/parser|discord-api-types/u.test(contents), `Optional content or API dependency in ordinary core graph: ${file}`);
     for (const match of contents.matchAll(/(?:from\s*|import\s*)["']\.\/([^"']+)["']/gu))
       await checkOrdinaryGraph(match[1]!);
   }
