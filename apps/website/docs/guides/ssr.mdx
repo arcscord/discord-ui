@@ -47,9 +47,9 @@ locale/time-zone configurations can cause `Intl` errors; validate application
 configuration before rendering. Do not mask a data mismatch with hydration-warning
 suppression.
 
-TypeScript verifies authored examples, not untrusted runtime JSON. Normalize and
-validate incoming data in the host. Models are display contracts, not a Discord
-send-payload validator or an implemented payload adapter.
+Validate incoming JSON in the host. For complete Discord API v10 messages, use
+the [shared conversion helpers](../concepts.md#convert-received-discord-data) on
+the server and pass the resulting display snapshot to your renderer.
 
 ## Interactive boundaries and styles
 
