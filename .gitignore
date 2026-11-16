@@ -8,6 +8,7 @@ coverage/
 /AGENTS.md
 /.agents/skills/
 **/.docusaurus/
+**/.svelte-kit/
 apps/website/build/
 .DS_Store
 .env

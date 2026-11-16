@@ -82,7 +82,7 @@ jobs:
         run: pnpm docs:check
       - name: Check TypeScript
         run: pnpm typecheck
-      - name: Install Chromium for packaged Vue hydration
+      - name: Install Chromium for packed adapter hydration
         run: pnpm exec playwright install --with-deps chromium
       - name: Verify tarball in an isolated consumer
         run: pnpm pack:check
@@ -92,6 +92,8 @@ jobs:
         run: pnpm --filter @arcscord/discord-ui-core pack --pack-destination "$GITHUB_WORKSPACE/.local/package"
       - name: Pack Vue release candidate
         run: pnpm --filter @arcscord/discord-ui-vue pack --pack-destination "$GITHUB_WORKSPACE/.local/package"
+      - name: Pack Svelte release candidate
+        run: pnpm --filter @arcscord/discord-ui-svelte pack --pack-destination "$GITHUB_WORKSPACE/.local/package"
       - name: Upload package
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -108,6 +110,7 @@ jobs:
             packages/discord-ui/dist
             packages/discord-ui-core/dist
             packages/discord-ui-vue/dist
+            packages/discord-ui-svelte/dist
           if-no-files-found: error
           retention-days: 1
 
