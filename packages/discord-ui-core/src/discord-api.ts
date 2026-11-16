@@ -107,6 +107,11 @@ function convertEmbed(embed: APIEmbed, id: string, attachments: readonly APIAtta
   return view;
 }
 
+function attachmentUrlKey(url: string): string {
+  // Discord's direct and resized URLs can have different hosts and query strings.
+  return /^https:\/\/(?:cdn\.discordapp\.com|media\.discordapp\.net)(\/(?:ephemeral-)?attachments\/\d+\/\d+)\//u.exec(url)?.[1] ?? url;
+}
+
 /** Convert a complete REST message or Gateway MESSAGE_CREATE payload to a display snapshot. */
 export function fromDiscordMessage(message: DiscordMessageInput, options: DiscordMessageConversionOptions = {}): MessageView {
   const flags = message.flags ?? 0;
@@ -120,7 +125,7 @@ export function fromDiscordMessage(message: DiscordMessageInput, options: Discor
             id: reaction.emoji.id ?? emoji.name,
             emoji,
             count: reaction.count,
-            me: reaction.me,
+            me: reaction.me || reaction.me_burst === true,
           },
         ]
       : [];
@@ -149,9 +154,22 @@ export function fromDiscordMessage(message: DiscordMessageInput, options: Discor
     };
   }
 
+  const embeds = flags & MessageFlags.SuppressEmbeds
+    ? []
+    : message.embeds.map((embed, index) => convertEmbed(embed, `embed:${index}`, message.attachments));
+  const embeddedMedia = new Set(embeds.flatMap(embed => [
+    embed.image?.url,
+    embed.thumbnail?.url,
+    embed.author?.iconUrl,
+    embed.footer?.iconUrl,
+  ]
+    .filter(url => url !== undefined)
+    .map(attachmentUrlKey)));
   const media: MediaView[] = [];
   const files: FileView[] = [];
   for (const attachment of message.attachments) {
+    if (embeddedMedia.has(attachmentUrlKey(attachment.url)) || embeddedMedia.has(attachmentUrlKey(attachment.proxy_url)))
+      continue;
     if (isImageAttachment(attachment)) {
       const image = mediaView(attachment.id, attachment, [], attachment.description ?? attachment.filename, attachment.filename.startsWith("SPOILER_"));
       if (image)
@@ -163,9 +181,6 @@ export function fromDiscordMessage(message: DiscordMessageInput, options: Discor
         files.push(fileView(attachment.id, url, attachment.filename, attachment.size));
     }
   }
-  const embeds = flags & MessageFlags.SuppressEmbeds
-    ? []
-    : message.embeds.map((embed, index) => convertEmbed(embed, `embed:${index}`, message.attachments));
   const components = message.components?.flatMap((component, index) => {
     const row = component.type === ComponentType.ActionRow && convertActionRow(component, String(index), options);
     return row

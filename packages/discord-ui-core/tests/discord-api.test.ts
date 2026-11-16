@@ -114,10 +114,10 @@ describe("discord API message conversion", () => {
         {
           emoji: { id: null, name: "👍" },
           count: 1,
-          count_details: { normal: 1, burst: 0 },
+          count_details: { normal: 0, burst: 1 },
           burst_colors: [],
           me: false,
-          me_burst: false,
+          me_burst: true,
         },
       ],
       thread: {
@@ -181,20 +181,10 @@ describe("discord API message conversion", () => {
           id: "👍",
           count: 1,
           emoji: { name: "👍" },
-          me: false,
+          me: true,
         },
       ],
       thread: { id: "29", name: "Discussion", messageCount: 0 },
-      media: [
-        {
-          id: image.id,
-          url: image.url,
-          alt: image.description,
-          spoiler: true,
-          width: 640,
-          height: 480,
-        },
-      ],
       attachments: [
         {
           id: archive.id,
@@ -238,7 +228,40 @@ describe("discord API message conversion", () => {
         },
       ],
     });
-    expect(fromDiscordMessage({ ...source, flags: MessageFlags.SuppressEmbeds }).embeds).toBeUndefined();
+    expect(view.media).toBeUndefined();
+    const suppressed = fromDiscordMessage({ ...source, flags: MessageFlags.SuppressEmbeds });
+    expect(suppressed.embeds).toBeUndefined();
+    expect(suppressed.media).toEqual([
+      {
+        id: image.id,
+        url: image.url,
+        alt: image.description,
+        spoiler: true,
+        width: 640,
+        height: 480,
+      },
+    ]);
+  });
+
+  it("matches an embedded attachment across CDN and proxy URL variants", () => {
+    const standalone = {
+      ...image,
+      id: "32",
+      url: "https://cdn.discordapp.com/attachments/13/32/chart.png",
+      proxy_url: "https://media.discordapp.net/attachments/13/32/chart.png",
+    };
+    const thumbnailUrl = `${image.proxy_url}?width=320`;
+    const view = fromDiscordMessage({
+      ...message,
+      attachments: [image, standalone],
+      embeds: [
+        {
+          thumbnail: { url: thumbnailUrl },
+        },
+      ],
+    });
+    expect(view.embeds?.[0]?.thumbnail?.url).toBe(thumbnailUrl);
+    expect(view.media?.map(item => item.id)).toEqual([standalone.id]);
   });
 
   it("distinguishes resolved, deleted and unknown reply references", () => {
