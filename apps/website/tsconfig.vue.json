@@ -13,6 +13,7 @@
     "jsxImportSource": "vue"
   },
   "include": [
-    "src/examples/vue"
+    "src/examples/vue",
+    "src/comparison/vue"
   ]
 }

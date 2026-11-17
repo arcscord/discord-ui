@@ -28,6 +28,8 @@
     "src"
   ],
   "exclude": [
-    "src/examples/vue"
+    "src/examples/vue",
+    "src/comparison/vue",
+    "src/comparison/svelte"
   ]
 }
