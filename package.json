@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "pnpm -r --if-present run build",
-    "build:lib": "pnpm --filter @arcscord/discord-ui... --filter @arcscord/discord-ui-vue... run build",
+    "build:lib": "pnpm --filter @arcscord/discord-ui... --filter @arcscord/discord-ui-vue... --filter @arcscord/discord-ui-svelte... run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p scripts/tsconfig.json && pnpm -r --if-present run typecheck",
@@ -25,8 +25,8 @@
     "test:browser": "pnpm test:website",
     "test:website": "pnpm build:website && playwright test -c playwright.website.config.mts",
     "generate:avatars": "node scripts/workspace/generate-avatars.mts",
-    "docs:api": "pnpm build:lib && node scripts/docs/generate-api-reference.mts && node scripts/docs/generate-vue-reference.mts",
-    "docs:api:check": "node scripts/docs/generate-api-reference.mts --check && node scripts/docs/generate-vue-reference.mts --check",
+    "docs:api": "pnpm build:lib && node scripts/docs/generate-api-reference.mts && node scripts/docs/generate-vue-reference.mts && node scripts/docs/generate-svelte-reference.mts",
+    "docs:api:check": "node scripts/docs/generate-api-reference.mts --check && node scripts/docs/generate-vue-reference.mts --check && node scripts/docs/generate-svelte-reference.mts --check",
     "docs:check": "pnpm docs:api:check && node scripts/docs/check-docs.mts"
   },
   "devDependencies": {
@@ -56,7 +56,14 @@
     "vue": "3.5.44",
     "vue-tsc": "3.3.14",
     "@arcscord/discord-ui-vue": "workspace:^",
-    "@arcscord/discord-ui": "workspace:^"
+    "@arcscord/discord-ui": "workspace:^",
+    "@arcscord/discord-ui-svelte": "workspace:^",
+    "@sveltejs/package": "3.0.2",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "eslint-plugin-svelte": "3.24.1",
+    "svelte": "5.57.3",
+    "svelte-check": "4.7.8",
+    "svelte-eslint-parser": "1.10.1"
   },
   "commitlint": {
     "extends": [

@@ -6,6 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { pnpm, root, run } from "../shared/cli.mts";
 import { checkCorePackage } from "./core-package.mts";
+import { checkSveltePackage } from "./svelte-package.mts";
 import { checkVuePackage } from "./vue-package.mts";
 
 if (process.argv.length > 2)
@@ -179,6 +180,7 @@ void avatar;
   ], temporary);
   await run(process.execPath, ["smoke.mjs"], temporary);
   await checkVuePackage(temporary, coreArchive);
+  await checkSveltePackage(temporary, coreArchive);
   process.stdout.write("Package verified: tarball, ESM, declarations, scoped CSS and installed agent documentation/examples.\n");
 }
 finally {

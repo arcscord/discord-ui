@@ -12,6 +12,7 @@ current repository, including changes ahead of the stable npm releases.
 | --- | --- | --- |
 | React | Peer range `^19.0.0`; local website uses the installed React 19 dependency | No claim that every peer-range patch or framework is tested |
 | Vue | Peer range `^3.5.0`; packed consumers are tested with Vue 3.5.0 and the workspace Vue version | Standalone Vue SSR and Chromium hydration coverage. Nuxt and additional Vue versions require separate validation. |
+| Svelte | Peer range `^5.46.4`; packed consumers cover Svelte 5.46.4 and the workspace Svelte version under Vite 8, plus SvelteKit 3 with `adapter-node` | Server HTML and Chromium hydration with synthetic data |
 | Modules | ESM output targeting ES2022; root, themes, highlight and CSS exports | No CommonJS export |
 | Styles | Compiled scoped CSS; Light/Ash/Dark and semantic tokens | Hosts must import CSS and review custom contrast/layout |
 | SSR | Deterministic fixture rendering with explicit locale, time zone and reference time | Not proof of universal framework or React Server Components integration |

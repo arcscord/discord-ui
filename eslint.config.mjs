@@ -6,10 +6,12 @@ export default antfu({
   typescript: true,
   react: true,
   vue: true,
+  svelte: true,
   stylistic: { quotes: "double", semi: true },
   ignores: [
     "**/dist/**",
     "**/.docusaurus/**",
+    "**/.svelte-kit/**",
     "apps/website/build/**",
     "apps/website/src/generated/**",
     "coverage/**",

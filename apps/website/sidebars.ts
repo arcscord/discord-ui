@@ -83,6 +83,15 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Svelte",
+      items: [
+        "svelte/index",
+        "svelte/ssr",
+        "svelte/api",
+      ],
+    },
+    {
+      type: "category",
       label: "API reference",
       link: {
         type: "doc",

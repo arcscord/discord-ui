@@ -1,0 +1,58 @@
+{
+  "name": "@arcscord/discord-ui-svelte",
+  "version": "0.1.0",
+  "description": "Svelte components for Discord message interfaces, powered by the shared core.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Arcoz0308",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcscord/discord-ui.git",
+    "directory": "packages/discord-ui-svelte"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "THIRD_PARTY_NOTICES",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js"
+    },
+    "./styles.css": {
+      "types": "./dist/styles.css.d.ts",
+      "default": "./dist/styles.css"
+    },
+    "./themes": {
+      "types": "./dist/themes.d.ts",
+      "default": "./dist/themes.js"
+    },
+    "./highlight": {
+      "types": "./dist/highlight.d.ts",
+      "svelte": "./dist/highlight.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "svelte-package --input src && node ../../scripts/workspace/finalize-svelte-package.mts",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+  },
+  "dependencies": {
+    "@arcscord/discord-ui-core": "workspace:^"
+  },
+  "peerDependencies": {
+    "svelte": "^5.46.4"
+  },
+  "devDependencies": {
+    "svelte": "5.57.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

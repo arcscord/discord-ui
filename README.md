@@ -7,10 +7,10 @@ Composable React components and TypeScript display models for Discord message in
 [Playground](https://ui.arcscord.dev/playground)
 
 The framework-independent [core](./packages/discord-ui-core/README.md) supplies
-shared models, content processing, themes and styles. The [React package](./packages/discord-ui/README.md)
-and [Vue adapter](./packages/discord-ui-vue/README.md) have independent versions.
-See the installation guides for [React](https://ui.arcscord.dev/docs/installation)
-and [Vue](https://ui.arcscord.dev/docs/vue) to get started.
+shared models, content processing, themes and styles. The [React package](./packages/discord-ui/README.md),
+[Vue adapter](./packages/discord-ui-vue/README.md) and [Svelte adapter](./packages/discord-ui-svelte/README.md) have independent versions.
+See the installation guides for [React](https://ui.arcscord.dev/docs/installation),
+[Vue](https://ui.arcscord.dev/docs/vue) and [Svelte](https://ui.arcscord.dev/docs/svelte) to get started.
 
 ## Features
 
@@ -20,8 +20,8 @@ and [Vue](https://ui.arcscord.dev/docs/vue) to get started.
 - Light, Ash and Dark themes with scoped CSS and customizable tokens.
 - Serializable display data and intent callbacks; your application owns network calls and persistence.
 
-Independent of the Arcscord bot framework. Requires **React 19**; no Tailwind setup,
-global reset or remote fonts are needed.
+The React adapter requires **React 19**. The adapters run independently of the
+Arcscord bot framework and use scoped CSS without Tailwind, a global reset or remote fonts.
 
 ## First message
 
