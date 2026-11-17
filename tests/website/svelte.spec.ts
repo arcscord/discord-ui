@@ -12,6 +12,15 @@ function browserErrors(page: Page): string[] {
   return errors;
 }
 
+test.beforeEach(async ({ page }) => {
+  await page.route("https://ui.arcscord.dev/examples/landscape.svg", async (route) => {
+    await route.fulfill({
+      contentType: "image/svg+xml",
+      path: new URL("../../apps/website/static/examples/landscape.svg", import.meta.url).pathname,
+    });
+  });
+});
+
 test("discovers the four native examples and copies the source that runs", async ({ page, context }) => {
   const errors = browserErrors(page);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -115,29 +124,26 @@ test("sends messages, preserves history position and restores thread and compose
   expect(errors).toEqual([]);
 });
 
-test("switches all three themes and applies a reactive media policy", async ({ page }) => {
+test("shows remote media by default while switching all three themes", async ({ page }) => {
+  const errors = browserErrors(page);
   let requests = 0;
-  await page.route("https://ui.arcscord.dev/examples/landscape.svg", async (route) => {
-    requests++;
-    await route.fulfill({
-      contentType: "image/svg+xml",
-      path: new URL("../../apps/website/static/examples/landscape.svg", import.meta.url).pathname,
-    });
+  page.on("request", (request) => {
+    if (request.url() === "https://ui.arcscord.dev/examples/landscape.svg")
+      requests++;
   });
   await page.goto("/docs/svelte#themes-and-media-policy");
   const demo = page.getByRole("region", { name: "Svelte example: themes-and-media" });
   const wrapper = demo.locator(".arcscord-discord-ui").first();
-  await expect(demo.getByRole("img", { name: "Média indisponible: Remote mountain illustration" })).toBeVisible();
-  expect(requests).toBe(0);
+  const image = demo.getByRole("img", { name: "Remote mountain illustration", exact: true });
+  await expect(image).toBeVisible();
+  await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
+  await expect(demo.getByRole("checkbox", { name: "Allow remote media" })).toHaveCount(0);
   for (const base of ["light", "dark", "ash"]) {
     await demo.getByLabel("Base theme").selectOption(base);
     await expect(wrapper).toHaveAttribute("data-theme", "ridge");
     await expect(wrapper).toHaveAttribute("data-base-theme", base);
+    await expect(image).toBeVisible();
   }
-  await demo.getByLabel("Allow remote media").check();
-  await expect(demo.locator("img[alt='Remote mountain illustration']")).toBeVisible();
-  await expect.poll(() => requests).toBe(1);
-  await demo.getByLabel("Allow remote media").uncheck();
-  await expect(demo.getByRole("img", { name: "Média indisponible: Remote mountain illustration" })).toBeVisible();
-  await expect(demo.locator("img[alt='Remote mountain illustration']")).toHaveCount(0);
+  expect(requests).toBe(1);
+  expect(errors).toEqual([]);
 });

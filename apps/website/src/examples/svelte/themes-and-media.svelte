@@ -5,7 +5,6 @@
   import "@arcscord/discord-ui-svelte/styles.css";
 
   let base = $state<ThemeName>("ash");
-  let allowRemoteMedia = $state(false);
   const theme = $derived(defineTheme({
     name: "ridge",
     extends: base,
@@ -36,8 +35,7 @@
       <option value="dark">Dark</option>
     </select>
   </label>
-  <label><input type="checkbox" bind:checked={allowRemoteMedia} /> Allow remote media</label>
 </p>
-<DiscordUI {theme} {allowRemoteMedia} locale="fr-FR" timeZone="Europe/Zurich" labels={{ mediaUnavailable: "Média indisponible" }}>
+<DiscordUI {theme} locale="fr-FR" timeZone="Europe/Zurich" labels={{ mediaUnavailable: "Média indisponible" }}>
   <Message {message} />
 </DiscordUI>
