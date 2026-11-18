@@ -16,6 +16,10 @@ for (const output of [
   "apps/website/src/generated/vue-demos",
   "apps/website/static/generated/vue-ssr",
   "apps/website/build",
+  "apps/website/static/generated/comparison",
+  "apps/comparison/dist",
+  "apps/comparison/public/fonts",
+  "apps/comparison/public/generated",
   "apps/website/.docusaurus",
   "coverage",
 ]) {

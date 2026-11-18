@@ -67,6 +67,7 @@ The site starts at [localhost:3000](http://127.0.0.1:3000). Rebuild with
 
 - [Contributing](./CONTRIBUTING.md): setup, repository layout and validation commands.
 - [Website development](./apps/website/README.md): documentation and example sources.
+- [Framework comparison](./apps/comparison/README.md): standalone native previews with `pnpm dev:comparison` and `pnpm build:comparison`.
 - [CI and npm releases](./docs/maintainers/releases.md) · [Website deployment](./docs/maintainers/deployment.md).
 
 ## License

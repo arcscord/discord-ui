@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en-US" data-status="loading">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>svelte comparison fixture</title>
+    <link rel="stylesheet" href="/src/previews/frame.css">
+  </head>
+  <body>
+    <main id="capture" aria-label="Comparison fixture"><div id="app"></div></main>
+    <aside class="frame-diagnostics" aria-label="Local diagnostics">
+      <p id="status" role="status">Loading native preview…</p>
+      <h2>Observable state</h2><pre id="state"></pre>
+      <h2>Native events</h2><pre id="events"></pre>
+    </aside>
+    <script type="module" src="/src/previews/svelte/entry.ts"></script>
+  </body>
+</html>

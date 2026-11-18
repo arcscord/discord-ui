@@ -107,6 +107,7 @@ jobs:
           name: browser-builds
           path: |
             apps/website/build
+            apps/comparison/dist
             packages/discord-ui/dist
             packages/discord-ui-core/dist
             packages/discord-ui-vue/dist
@@ -126,6 +127,9 @@ jobs:
           - suite: website
             config: playwright.website.config.mts
             results: .local/website-results
+          - suite: comparison
+            config: playwright.comparison.config.mts
+            results: .local/comparison-results
     steps:
       - name: Checkout source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

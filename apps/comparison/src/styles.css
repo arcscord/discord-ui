@@ -1,3 +1,34 @@
+@font-face {
+  font-family: Inter;
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --comparison-page: #05010f;
+  --comparison-surface: #090116;
+  --comparison-border: #24264a;
+  --comparison-control-border: #55576d;
+  --comparison-text: #e8eefb;
+  --comparison-accent: #69a9ef;
+  --comparison-muted: #b5bdd4;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--comparison-text);
+  background: var(--comparison-page);
+  color-scheme: dark;
+  line-height: 1.6;
+  font-optical-sizing: auto;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, h3 { line-height: 1.2; margin: 0 0 1rem; }
+p { margin: 0 0 1rem; }
+pre { margin: 0; padding: 12px; background: var(--comparison-surface); overflow: auto; border-radius: 6px; }
+summary { margin-bottom: 8px; }
+
 .comparison-shell {
   width: 100%;
   box-sizing: border-box;
@@ -17,7 +48,7 @@
 }
 
 .comparison-eyebrow {
-  color: var(--ifm-color-primary);
+  color: var(--comparison-accent);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.8rem;
@@ -29,7 +60,7 @@
   align-items: end;
   gap: 16px;
   padding: 20px;
-  border: 1px solid var(--ifm-color-emphasis-300);
+  border: 1px solid var(--comparison-border);
   border-radius: 12px;
 }
 
@@ -44,11 +75,11 @@
 }
 
 .comparison-shell input[type="search"], .comparison-shell select, .comparison-shell button {
-  border: 1px solid var(--ifm-color-emphasis-400);
+  border: 1px solid var(--comparison-control-border);
   border-radius: 6px;
   padding: 8px 12px;
-  color: var(--ifm-font-color-base);
-  background: var(--ifm-background-surface-color);
+  color: var(--comparison-text);
+  background: var(--comparison-surface);
 }
 
 .comparison-shell input[type="search"] {
@@ -61,11 +92,11 @@
 }
 
 .comparison-shell button:hover {
-  border-color: var(--ifm-color-primary);
+  border-color: var(--comparison-accent);
 }
 
 .comparison-shell :focus-visible {
-  outline: 2px solid var(--ifm-color-primary);
+  outline: 2px solid var(--comparison-accent);
   outline-offset: 3px;
 }
 
@@ -127,7 +158,7 @@
 
 .comparison-panel-heading span, .comparison-panel > p {
   font-size: 0.75rem;
-  color: var(--ifm-color-emphasis-700);
+  color: var(--comparison-muted);
 }
 
 .comparison-panel-heading button {
@@ -145,7 +176,7 @@
 .comparison-diagnostics {
   margin-top: 16px;
   padding: 12px;
-  border: 1px solid var(--ifm-color-emphasis-300);
+  border: 1px solid var(--comparison-border);
   border-radius: 8px;
   font-size: 0.8rem;
 }
@@ -168,7 +199,7 @@
 
 .comparison-footnote {
   font-size: 0.8rem;
-  color: var(--ifm-color-emphasis-700);
+  color: var(--comparison-muted);
   margin-top: 20px;
 }
 

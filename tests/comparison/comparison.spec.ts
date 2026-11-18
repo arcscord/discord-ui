@@ -24,7 +24,7 @@ test("loads identical classic fixtures, local events, themes and locale without 
     if (message.type() === "error")
       errors.push(message.text());
   });
-  await page.goto("/compare");
+  await page.goto("/");
   await expect(page).toHaveTitle(/Framework comparison/);
   await expect(page.getByRole("heading", { name: "Framework comparison", exact: true })).toBeVisible();
   await ready(page);
@@ -72,7 +72,7 @@ test("loads identical classic fixtures, local events, themes and locale without 
 });
 
 test("keeps native selection and document identity through expansion and reloads URL settings", async ({ page }) => {
-  await page.goto("/compare?scenario=interactions&theme=light&locale=en-US");
+  await page.goto("/?scenario=interactions&theme=light&locale=en-US");
   await ready(page);
   for (const framework of frameworks) {
     const frame = fixture(page, framework);
@@ -116,7 +116,7 @@ test("keeps native selection and document identity through expansion and reloads
 });
 
 test("sends channel messages and thread replies and remounts cleanly on scenario changes", async ({ page }) => {
-  await page.goto("/compare?scenario=channel");
+  await page.goto("/?scenario=channel");
   await ready(page);
   for (const framework of frameworks) {
     const frame = fixture(page, framework);
@@ -156,7 +156,7 @@ test("sends channel messages and thread replies and remounts cleanly on scenario
 });
 
 test("falls back clearly, filters the catalogue and ignores invalid frame messages", async ({ page }) => {
-  await page.goto("/compare?scenario=missing&theme=unknown&locale=none&focus=invalid&width=42&media=bad");
+  await page.goto("/?scenario=missing&theme=unknown&locale=none&focus=invalid&width=42&media=bad");
   await ready(page);
   await expect(page.getByText(/Unknown configuration value/)).toBeVisible();
   await expect(page.getByRole("combobox", { name: "Scenario", exact: true })).toHaveValue("classic");
@@ -191,7 +191,7 @@ for (const framework of frameworks) {
   test(`${framework} fixture loads directly with native settings`, async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(error.message));
-    await page.goto(`/generated/comparison/${framework}?scenario=interactions&theme=light&locale=fr-FR&media=block`);
+    await page.goto(`/previews/${framework}/?scenario=interactions&theme=light&locale=fr-FR&media=block`);
     await expect(page.locator("html")).toHaveAttribute("data-status", "ready");
     await expect(page.locator("html")).toHaveAttribute("lang", "fr-FR");
     await expect(page.locator(".arcscord-discord-ui")).toHaveAttribute("data-theme", "light");

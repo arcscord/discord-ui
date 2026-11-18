@@ -1,9 +1,9 @@
 import type { ComparisonConfig, Framework } from "../../../../fixtures/comparison/scenarios";
-import type { ConfigureMessage, NativeEvent, Snapshot } from "../comparison/protocol";
+import type { ConfigureMessage, NativeEvent, Snapshot } from "../previews/protocol";
 import { useEffect, useRef, useState } from "react";
-import { frameworkNames, isFrameMessage, protocol } from "../comparison/protocol";
+import { frameworkNames, isFrameMessage, protocol } from "../previews/protocol";
 
-type FrameState = { status: "loading" | "ready" | "error"; error?: string; state?: Snapshot; events: NativeEvent[] };
+type FrameState = { status: "loading" | "ready" | "error"; error?: string | undefined; state?: Snapshot; events: NativeEvent[] };
 
 export function ComparisonFrame({ framework, config, resetToken, expanded, hidden, onExpand, triggerRef }: {
   framework: Framework;
@@ -124,7 +124,7 @@ export function ComparisonFrame({ framework, config, resetToken, expanded, hidde
       {result.error
         ? <p role="alert">{result.error}</p>
         : null}
-      <iframe id={`${framework}-viewport`} ref={frameRef} title={`${name} comparison fixture`} src={`/generated/comparison/${framework}`} width={width} height={844} onLoad={() => sendRef.current()} />
+      <iframe id={`${framework}-viewport`} ref={frameRef} title={`${name} comparison fixture`} src={`/previews/${framework}/`} width={width} height={844} onLoad={() => sendRef.current()} />
       <details className="comparison-diagnostics" open>
         <summary>
           Local state and native events (

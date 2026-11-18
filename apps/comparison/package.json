@@ -1,0 +1,26 @@
+{
+  "name": "@arcscord/discord-ui-comparison",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate:assets": "node ../../scripts/workspace/generate-comparison-assets.mts",
+    "dev": "pnpm generate:assets && vite --host 127.0.0.1 --port 4175 --strictPort",
+    "build": "pnpm generate:assets && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4175 --strictPort",
+    "typecheck": "tsc --noEmit && vue-tsc -p tsconfig.vue.json --noEmit && svelte-check --tsconfig tsconfig.svelte.json --fail-on-warnings"
+  },
+  "dependencies": {
+    "@arcscord/discord-ui": "workspace:^",
+    "@arcscord/discord-ui-vue": "workspace:^",
+    "@arcscord/discord-ui-svelte": "workspace:^",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vue": "3.5.44",
+    "svelte": "5.57.3"
+  },
+  "devDependencies": {
+    "vite": "8.3.5",
+    "@vitejs/plugin-vue": "6.0.10",
+    "@sveltejs/vite-plugin-svelte": "7.3.1"
+  }
+}

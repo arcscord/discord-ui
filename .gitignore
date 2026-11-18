@@ -20,3 +20,7 @@ apps/website/static/generated/
 
 # Precompiled previews generated from the editable website examples.
 apps/website/src/generated/
+
+# Prepared shared assets for the standalone comparison app.
+apps/comparison/public/fonts/
+apps/comparison/public/generated/

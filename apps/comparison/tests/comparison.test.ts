@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { appendMessage, classicMessage, createLocalState, defaultConfig, initialChannel, interactionMessage, parseConfig, scenarios } from "../../../fixtures/comparison/scenarios";
-import { isConfigureMessage, isFrameMessage, protocol, snapshot } from "../src/comparison/protocol";
+import { isConfigureMessage, isFrameMessage, protocol, snapshot } from "../src/previews/protocol";
 
 describe("comparison fixtures and transport", () => {
   it("keeps fixtures serializable, resettable and independent between native hosts", () => {
@@ -13,7 +13,10 @@ describe("comparison fixtures and transport", () => {
     expect(JSON.parse(JSON.stringify(fixtures))).toEqual(fixtures);
     const first = createLocalState();
     const second = createLocalState();
-    first.selectValues.topics = ["maps"];
+    first.selectValues = {
+      ...first.selectValues,
+      topics: ["maps"],
+    };
     first.channel = appendMessage(first.channel, "Hello");
     first.channel = appendMessage(first.channel, "Reply", "discussion");
     expect(snapshot(first)).toMatchObject({ messageCount: 2, replyCount: 1 });

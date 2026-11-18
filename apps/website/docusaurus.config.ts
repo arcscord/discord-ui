@@ -56,7 +56,6 @@ const config: Config = {
         { to: "/components", label: "Components", position: "left" },
         { to: "/docs/introduction", label: "Docs", position: "left" },
         { to: "/playground", label: "Playground", position: "left" },
-        { to: "/compare", label: "Compare", position: "left" },
         { href: site.github, label: "GitHub", position: "right" },
         { href: site.npm, label: "npm", position: "right" },
       ],

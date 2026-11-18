@@ -27,7 +27,10 @@
     "generate:avatars": "node scripts/workspace/generate-avatars.mts",
     "docs:api": "pnpm build:lib && node scripts/docs/generate-api-reference.mts && node scripts/docs/generate-vue-reference.mts && node scripts/docs/generate-svelte-reference.mts",
     "docs:api:check": "node scripts/docs/generate-api-reference.mts --check && node scripts/docs/generate-vue-reference.mts --check && node scripts/docs/generate-svelte-reference.mts --check",
-    "docs:check": "pnpm docs:api:check && node scripts/docs/check-docs.mts"
+    "docs:check": "pnpm docs:api:check && node scripts/docs/check-docs.mts",
+    "dev:comparison": "pnpm build:lib && pnpm --filter @arcscord/discord-ui-comparison dev",
+    "build:comparison": "pnpm --filter @arcscord/discord-ui-comparison... build",
+    "test:comparison": "pnpm build:comparison && playwright test -c playwright.comparison.config.mts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",
