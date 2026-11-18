@@ -127,9 +127,11 @@ jobs:
           - suite: website
             config: playwright.website.config.mts
             results: .local/website-results
+            report: .local/playwright-report-website
           - suite: comparison
             config: playwright.comparison.config.mts
-            results: .local/comparison-results
+            results: .local/comparison-docker/comparison-results
+            report: .local/comparison-docker/comparison-report
     steps:
       - name: Checkout source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -144,18 +146,23 @@ jobs:
           name: browser-builds
           path: .
       - name: Install Chromium
+        if: matrix.suite == 'website'
         run: pnpm exec playwright install --with-deps chromium
       - name: Test desktop and mobile
+        if: matrix.suite == 'website'
         run: pnpm exec playwright test --config "${{ matrix.config }}"
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: .local/playwright-report-${{ matrix.suite }}
+      - name: Compare native variants in pinned Linux container
+        if: matrix.suite == 'comparison'
+        run: pnpm test:comparison:docker --use-built
       - name: Upload report and failure traces
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: browser-results-${{ matrix.suite }}
           path: |
-            .local/playwright-report-${{ matrix.suite }}
+            ${{ matrix.report }}
             ${{ matrix.results }}
           retention-days: 7
 

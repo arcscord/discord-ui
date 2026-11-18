@@ -5,6 +5,6 @@
     "types": ["vite/client"],
     "jsx": "react-jsx"
   },
-  "include": ["src", "tests", "vite.config.mts"],
+  "include": ["src", "tests", "../../tests/comparison", "vite.config.mts"],
   "exclude": ["src/previews/vue", "src/previews/svelte"]
 }

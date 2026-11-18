@@ -24,3 +24,7 @@ apps/website/src/generated/
 # Prepared shared assets for the standalone comparison app.
 apps/comparison/public/fonts/
 apps/comparison/public/generated/
+
+# Browser artifacts, including accidental default output directories.
+playwright-report/
+test-results/

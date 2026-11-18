@@ -30,7 +30,8 @@
     "docs:check": "pnpm docs:api:check && node scripts/docs/check-docs.mts",
     "dev:comparison": "pnpm build:lib && pnpm --filter @arcscord/discord-ui-comparison dev",
     "build:comparison": "pnpm --filter @arcscord/discord-ui-comparison... build",
-    "test:comparison": "pnpm build:comparison && playwright test -c playwright.comparison.config.mts"
+    "test:comparison": "pnpm build:comparison && playwright test -c playwright.comparison.config.mts",
+    "test:comparison:docker": "node scripts/comparison/docker.mts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",
@@ -66,7 +67,10 @@
     "eslint-plugin-svelte": "3.24.1",
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
-    "svelte-eslint-parser": "1.10.1"
+    "svelte-eslint-parser": "1.10.1",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0",
+    "@types/pngjs": "6.0.5"
   },
   "commitlint": {
     "extends": [

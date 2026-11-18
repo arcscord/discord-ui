@@ -60,7 +60,7 @@ export default function Comparison() {
         <p className="comparison-eyebrow">React · Vue · Svelte</p>
         <h1>Framework comparison</h1>
         <p>Explore identical fixtures in three independent native previews. Settings apply to all three. Interactions stay local to each preview.</p>
-        <p>Manual exploration · Automated comparison pending.</p>
+        <p>Manual exploration · Automated results are available in the Playwright report.</p>
       </header>
       {fallback || invalidLayout
         ? <p role="status">Unknown configuration value. Supported defaults are shown below. Changing a control updates the shareable URL.</p>

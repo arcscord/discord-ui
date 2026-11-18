@@ -15,15 +15,22 @@ export default defineConfig({
           { open: "never" },
         ],
       ]
-    : "list",
+    : [
+        ["list"],
+        [
+          "html",
+          { open: "never", outputFolder: ".local/comparison-report" },
+        ],
+      ],
   use: {
-    baseURL: "http://127.0.0.1:4175",
+    baseURL: "http://127.0.0.1:4177",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
   projects: [
     {
       name: "desktop",
+      testIgnore: "**/differential.spec.ts",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1536, height: 1024 },
@@ -31,15 +38,30 @@ export default defineConfig({
     },
     {
       name: "mobile",
+      testIgnore: "**/differential.spec.ts",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 390, height: 844 },
       },
     },
+    {
+      name: "differential",
+      testMatch: "**/differential.spec.ts",
+      timeout: 90_000,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1536, height: 1024 },
+        deviceScaleFactor: 1,
+        locale: "en-US",
+        timezoneId: "UTC",
+        colorScheme: "dark",
+        reducedMotion: "reduce",
+      },
+    },
   ],
   webServer: {
-    command: "pnpm --filter @arcscord/discord-ui-comparison preview",
-    url: "http://127.0.0.1:4175",
-    reuseExistingServer: !process.env.CI,
+    command: "pnpm --filter @arcscord/discord-ui-comparison preview --port 4177",
+    url: "http://127.0.0.1:4177",
+    reuseExistingServer: false,
   },
 });

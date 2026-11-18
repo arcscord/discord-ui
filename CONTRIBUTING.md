@@ -42,7 +42,8 @@ Run commands from the repository root. Choose checks that cover the change:
 | `pnpm build:website` | Build the library and production website |
 | `pnpm dev:comparison` | Build the libraries and start the comparison app on port 4175 |
 | `pnpm build:comparison` | Build the libraries and standalone comparison in `apps/comparison/dist` |
-| `pnpm test:comparison` | Build and run comparison Chromium checks |
+| `pnpm test:comparison` | Build and run exploration and differential Chromium checks |
+| `pnpm test:comparison:docker` | Compare variants in the pinned Linux/amd64 browser environment |
 | `pnpm build` | Build all workspace packages |
 | `pnpm lint` | Check lint and formatting without editing |
 | `pnpm lint:fix` | Apply ESLint fixes |
