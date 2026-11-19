@@ -51,7 +51,7 @@ it.each([
   const directory = mkdtempSync(join(tmpdir(), "preview-protection-"));
   try {
     const bootstrap = join(directory, "fetch.mjs");
-    writeFileSync(bootstrap, `globalThis.fetch = async () => new Response(${JSON.stringify(JSON.stringify(environment))}, {status: 200});`);
+    writeFileSync(bootstrap, "globalThis.fetch = async () => new Response(process.env.TEST_ENVIRONMENT_JSON, {status: 200});");
     const result = spawnSync(process.execPath, [
       "--import",
       bootstrap,
@@ -60,6 +60,7 @@ it.each([
       encoding: "utf8",
       env: {
         ...process.env,
+        TEST_ENVIRONMENT_JSON: JSON.stringify(environment),
         GH_TOKEN: "fixture",
         GITHUB_API_URL: "https://api.github.com",
         GITHUB_REPOSITORY: "owner/repo",
