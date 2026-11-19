@@ -65,8 +65,11 @@ const fork = { id: 2, full_name: 'fork/repo' };
 let pullChecks = 0;
 globalThis.fetch = async (input, options = {}) => {
   const url = new URL(String(input));
-  appendFileSync(process.env.TEST_LOG, JSON.stringify({ url: url.href, method: options.method || 'GET', body: options.body ? JSON.parse(options.body) : null }) + '\\n');
-  if (url.hostname === 'abcd.project.pages.dev') return new Response(url.pathname === '/preview-metadata.json' ? JSON.stringify(${JSON.stringify(metadata)}) : (${mismatch} && url.pathname === '/report.html' ? 'wrong' : 'ok'), { headers: { 'x-robots-tag': 'noindex, nofollow' } });
+  appendFileSync(process.env.TEST_LOG, JSON.stringify({ url: url.href, method: options.method || 'GET', redirect: options.redirect, body: options.body ? JSON.parse(options.body) : null }) + '\\n');
+  if (url.hostname === 'abcd.project.pages.dev') {
+    if (url.pathname.endsWith('.html')) throw new TypeError('fetch failed: unexpected redirect');
+    return new Response(url.pathname === '/preview-metadata.json' ? JSON.stringify(${JSON.stringify(metadata)}) : (${mismatch} && url.pathname === '/report' ? 'wrong' : 'ok'), { headers: { 'x-robots-tag': 'noindex, nofollow' } });
+  }
   const path = url.pathname.replace('/repos/owner/repo', '');
   const pull = { number: 7, state: 'open', head: { sha, repo: fork }, base: { repo: base } };
   let data;
@@ -136,13 +139,27 @@ describe("preview upload", () => {
     expect(posts.slice(1).map((request: { body: { state: string } }) => request.body.state)).toEqual(["in_progress", "success"]);
     expect(posts[2].body.environment_url).toBe("https://abcd.project.pages.dev/");
     expect(args).toContain(`${root}/site\n--project-name\nproject\n--branch\npr-7\n--commit-hash\n${tested}`);
-    expect(requests.filter((request: { url: string }) => request.url.startsWith("https://abcd.project.pages.dev/")).length).toBe(10);
+    const smokeRequests = requests.filter((request: { url: string }) => request.url.startsWith("https://abcd.project.pages.dev/"));
+    expect(smokeRequests.map((request: { url: string }) => new URL(request.url).pathname)).toEqual([
+      "/",
+      "/previews/react/",
+      "/previews/vue/",
+      "/previews/svelte/",
+      "/report",
+      "/preview-metadata.json",
+      "/assets/app.js",
+      "/assets/app.css",
+      "/fonts/font.woff2",
+      "/generated/avatars/user.svg",
+    ]);
+    expect(smokeRequests.every((request: { redirect: string }) => request.redirect === "error")).toBe(true);
     expect(readFileSync(output, "utf8")).toContain("url=https://abcd.project.pages.dev/");
     expect(readFileSync(summary, "utf8")).toContain(tested);
   });
   it("rejects a published response with different bytes", () => {
     const { result, requests } = invoke(false, true);
     expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("Published content mismatch for report.html");
     const states = requests.filter((request: { method: string; url: string }) => request.method === "POST" && request.url.endsWith("/statuses")).map((request: { body: { state: string } }) => request.body.state);
     expect(states).toEqual(["in_progress", "failure"]);
   });

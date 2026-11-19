@@ -115,7 +115,10 @@ try {
     checkedPaths.push(`${directory}/${sample}`);
   }
   for (const path of checkedPaths) {
-    const response = await fetch(new URL(path, immutable), {
+    // Pages canonicalizes HTML URLs while the byte check still reads the original file.
+    const url = new URL(path.replace(/index\.html$/u, "").replace(/\.html$/u, ""), immutable);
+    process.stdout.write(`[preview] Verifying ${url.pathname}\n`);
+    const response = await fetch(url, {
       redirect: "error",
       signal: AbortSignal.timeout(30_000),
     });
@@ -130,7 +133,7 @@ try {
   await eligibility(settings);
   await status("success", immutable.href);
   await appendFile(process.env.GITHUB_OUTPUT!, `url=${immutable.href}\nalias=${alias.href}\n`);
-  await appendFile(process.env.GITHUB_STEP_SUMMARY!, `## Published comparison preview\n\n[Revision preview](${immutable.href}) · [PR alias](${alias.href}) · [Evidence](${new URL("report.html", immutable).href})\n\nHead \`${identity.headSha}\`\n\nTested checkout \`${metadata.testedCheckoutSha}\`\n`);
+  await appendFile(process.env.GITHUB_STEP_SUMMARY!, `## Published comparison preview\n\n[Revision preview](${immutable.href}) · [PR alias](${alias.href}) · [Evidence](${new URL("report", immutable).href})\n\nHead \`${identity.headSha}\`\n\nTested checkout \`${metadata.testedCheckoutSha}\`\n`);
 }
 catch (error) {
   await status("failure");
