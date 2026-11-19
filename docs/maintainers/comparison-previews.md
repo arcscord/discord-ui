@@ -65,13 +65,26 @@ outside the downloaded build and repository configuration directories.
    preview itself. PR code controls its own CI execution and report content.
    Metadata validation establishes provenance and association with the successful
    run. The human approval covers the proposed content and test changes.
-4. Use **Review deployments → Approve and deploy**, or reject the deployment.
+4. The publisher creates or updates one **Comparison preview** bot comment on
+   the PR. Select **Approve deployment** to open that publisher run, then use
+   **Review deployments → Approve and deploy**, or reject the deployment.
 5. The upload rechecks the current open PR, CI result and approved artifact
    identities. It downloads and validates the archives again. Expired archives,
    stale heads and ambiguous artifacts fail publication.
 6. The resulting summary links the immutable preview, the stable PR alias and
    `/report.html`. The report exposes verified build identity, comparison test
    count and a link to full GitHub diagnostics. Large traces stay in GitHub.
+
+After the protected job finishes, the same PR comment links the verified preview,
+PR alias and report. Its final notification job records publication failure,
+rejection or cancellation and retains the last verified immutable URL with its published head and tested
+checkout. Outdated PR heads, closed PRs and superseded CI attempts skip comment
+updates. Comment jobs use the workflow's `GITHUB_TOKEN` with `pull-requests: write`
+and receive the trusted publisher's source and validated identity metadata.
+Forced workflow cancellation can interrupt that notification job. The linked
+publication run retains the definitive outcome. A failed or pending publication
+shows the last verified immutable URL. The mutable alias is included after a
+successful upload of the current build.
 
 Only the protected upload step receives the Cloudflare token. Downloaded scripts
 are never executed on the runner. The static policy rejects server entry points,
@@ -88,8 +101,10 @@ records remain active when another publication fails.
 - A partial CI rerun can omit previously successful jobs from its attempt. This
   publisher fails closed in that situation. Use **Re-run all jobs** to produce a
   complete successful attempt and consistent fresh artifacts.
-- Publications for the same source PR/branch are queued without interrupting an
-  active upload. Cancel obsolete waiting publisher runs in Actions to let a newer
+- Publications for the same source PR/branch run one at a time. The default
+  concurrency group retains one active and one pending run. Another incoming run
+  can replace the pending run. Cancel obsolete waiting publisher runs in Actions
+  to let a newer
   revision proceed. A stale approval fails the revision check before upload.
 - A PR can change or close during a provider request. The publisher rechecks after
   the request and refuses to record success. Pages may already have changed the

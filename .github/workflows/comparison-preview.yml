@@ -26,10 +26,16 @@ jobs:
     name: Validate preview and prepare review
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      deployments: read
+      pull-requests: write
     outputs:
       eligible: ${{ steps.identity.outputs.eligible }}
       pr: ${{ steps.identity.outputs.pr }}
       identity: ${{ steps.identity.outputs.identity }}
+      tested_sha: ${{ steps.prepare.outputs.tested_sha }}
     steps:
       - name: Checkout trusted publisher
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -46,6 +52,7 @@ jobs:
         id: identity
         run: node scripts/preview/eligibility.mts
       - name: Validate archive, static policy and tested checkout before review
+        id: prepare
         if: steps.identity.outputs.eligible == 'true'
         run: node scripts/preview/publish.mts
         env:
@@ -61,6 +68,13 @@ jobs:
           const data = JSON.parse(readFileSync(path, 'utf8'));
           appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\nTested checkout \`${data.testedCheckoutSha}\`\n\n${data.testCount} comparison tests passed. Full diagnostics are attached to the CI run above.\n`);
           NODE
+      - name: Link protected approval from the pull request
+        if: steps.identity.outputs.eligible == 'true'
+        run: node scripts/preview/pr-comment.mts
+        env:
+          EXPECTED_IDENTITY: ${{ steps.identity.outputs.identity }}
+          TESTED_CHECKOUT_SHA: ${{ steps.prepare.outputs.tested_sha }}
+          PREVIEW_PHASE: pending
 
   upload:
     name: Approve and upload comparison preview
@@ -68,6 +82,8 @@ jobs:
     if: needs.eligibility.outputs.eligible == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    outputs:
+      url: ${{ steps.upload.outputs.url }}
     permissions:
       contents: read
       actions: read
@@ -108,3 +124,31 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
           WRANGLER_SEND_METRICS: false
+
+  notify-result:
+    name: Update pull request preview link
+    needs: [eligibility, upload]
+    if: always() && needs.eligibility.result == 'success' && needs.eligibility.outputs.eligible == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      deployments: read
+      pull-requests: write
+    steps:
+      - name: Checkout trusted publisher
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up trusted Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+      - name: Update the approval comment with the publication outcome
+        run: node scripts/preview/pr-comment.mts
+        env:
+          EXPECTED_IDENTITY: ${{ needs.eligibility.outputs.identity }}
+          TESTED_CHECKOUT_SHA: ${{ needs.eligibility.outputs.tested_sha }}
+          PREVIEW_PHASE: ${{ needs.upload.result == 'success' && needs.upload.outputs.url == '' && 'skipped' || needs.upload.result }}
