@@ -40,9 +40,9 @@ the libraries and sources in this repository. Prepared fonts and avatar assets
 are ignored. The font and its license share their canonical source with the
 documentation under `apps/website/static/fonts/`.
 
-The initial catalogue covers classic messages, Components V2 and a channel with
-a thread. Events and state describe local simulations. The differential runner
-compares all three native renderers at explicit checkpoints.
+The catalogue covers twelve scenario families. Events and state describe local
+simulations. The differential runner compares all three native renderers at
+explicit checkpoints.
 
 ## Automated comparison
 
@@ -51,10 +51,17 @@ pnpm test:comparison
 pnpm exec playwright show-report .local/comparison-report
 ```
 
-The dedicated `differential` project runs 3 scenarios × 3 themes × 2 inner widths,
-covering 18 cases. The host viewport is 1536 × 1024 at scale 1; the native
-viewports are explicitly 390 × 844 or 1280 × 844. Existing exploration tests also
-exercise the narrow host viewport. The production preview server uses port 4177.
+The dedicated `differential` project runs 12 scenarios × 3 themes × 2 inner widths,
+covering 72 base cases and 216 native renders before interaction checkpoints.
+Additional cases exercise embeds at 480/481 px, thread layout at 640/641 px,
+French spoiler labels and inherited custom-theme overrides. The host viewport is
+1536 × 1024 at scale 1. Native base viewports are explicitly 390 × 844 or
+1280 × 844. Existing exploration tests also exercise the narrow host viewport.
+The production preview server uses port 4177.
+
+The manual interface's **Inner viewport width** control selects 390, 480, 481,
+640, 641 or 1280 px independently of the host viewport. Width, locale and custom
+theme settings survive URL reloads. Expand still selects one 1280 px preview.
 
 One complete native journey runs per framework, preserving native focus between
 checkpoints. Captures from matching checkpoints are compared React/Vue,
@@ -62,17 +69,39 @@ React/Svelte and Vue/Svelte. Each framework also receives independent assertions
 for expected state, exact callback parameters/order/count, keyboard focus,
 accessible roles/names/descriptions and reading position.
 
-| Scenario | Checkpoints |
-| --- | --- |
-| Classic | Initial, spoiler revealed, spoiler hidden, reaction enabled, reaction disabled |
-| Components V2 | Initial, menu open, Maps selected, menu closed, Wave callback |
-| Channel | Initial, 20 messages added, reading position preserved on send, thread open, reply sent, thread closed with focus restored |
+### Coverage
 
-A complete pass captures 96 checkpoints × 3 renderers and performs 288 pairwise
-image comparisons. There are zero allowed changed pixels after pixelmatch's
+All families use the same independent expected-state and callback assertions in
+[`differential.spec.ts`](../../tests/comparison/differential.spec.ts). Every
+checkpoint also compares pixels, accessible state, focus and ID relationships.
+
+| Family / scenario | Independent assertions | Supported checkpoints |
+| --- | --- | --- |
+| Classic messages / `classic` | Edited marker, author metadata, unavailable reply, ephemeral dismissal, spoiler reveal/hide and controlled reaction | `initial`, `spoiler-visible`, `spoiler-hidden`, `reaction-on`, `reaction-off`, `ephemeral-dismissed` |
+| Markdown / `markdown` | Whitespace, nested emphasis, quote/list, mentions, timestamp, links and opt-in code highlighting | `formatted` |
+| Embeds / `embeds` | Inline fields, long text, local thumbnail, overflow and 480/481 px layout boundary | `fields-and-wrapping` |
+| Media and files / `media` | Local gallery, blocked image, allowlisted absolute URL, failed decode, attachment metadata and fallback labels | `media-policy` |
+| Spoilers / `spoilers` | Pointer reveal, keyboard hide/reveal, focus and French labels | `hidden`, `pointer-reveal`, `keyboard-hide`, `keyboard-reveal` |
+| Components V2 / `interactions` | Container, section/accessory, separator, action rows, controlled multi-select and button context | `initial`, `menu-open`, `selected`, `menu-closed`, `wave`, `section-accessory` |
+| Buttons / `buttons` | Disabled, link and premium variants, exact callback message/component context | `variants`, `action-context`, `premium-context` |
+| Select menus / `selects` | Five kinds, keyboard, filtering, Escape, min/max and host disabling | `{string,user,role,mention,channel}-{open,selected}`, `selection-maximum`, `disabled-update` |
+| Selection ownership / `selection-ownership` | Defaults, controlled empty values, external values and identity changes | `default`, `local-selection`, `empty`, `external`, `defaults`, `identity` |
+| Reactions / `reactions` | Count, pressed state, pointer/keyboard toggling and host updates | `off`, `on`, `off-again`, `host-update` |
+| Channel composer / `channel` | Empty/whitespace, Enter/Shift+Enter, composition guard, send and reading position | `initial`, `composer-empty`, `composer-newline`, `composer-composition`, `history-full`, `history-preserved`, `thread-open`, `thread-reply`, `thread-closed` |
+| Threads and commands / `threads-commands` | Focus return, 640/641 px layout, arguments, filtered choices and submission | `thread-open`, `focus-return`, `command-list`, `command-arguments`, `command-submit` |
+
+The composition check dispatches a keyboard event with `isComposing` set. This
+checks the component guard with a synthetic browser event.
+The media fixture uses local assets. Its allowlisted image uses an absolute
+same-origin URL, while the blocked URL remains outside the allowlist. The asset
+generator writes an undecodable image served with HTTP 200 to exercise the
+fallback deterministically in manual previews and browser tests.
+
+There are zero allowed changed pixels after pixelmatch's
 0.1 color threshold and anti-alias detection. Dimensions must match exactly.
 Captures wait for applied configuration, fonts, decoded images and animation
-frames. Animations and carets are disabled only during screenshots. The outer
+frames. The comparison host eagerly loads fixture images so offscreen previews
+can acknowledge configuration before expansion. Animations and carets are disabled only during screenshots. The outer
 iframe is aligned to whole CSS pixels to avoid fractional screenshot clipping.
 
 Fixtures provide fixed dates, reference time, locale and UTC. A controlled browser
@@ -135,11 +164,17 @@ Update the Dockerfile digest, pnpm pin and image label together when updating th
 workspace toolchain. Keep the Playwright image version equal to `@playwright/test`.
 The Docker runner checks Node and Playwright compatibility during image creation.
 
+The expanded command journey also exposed different argument-description markup
+in Svelte. All adapters now preserve the descriptions through `aria-description`.
+React and Vue render the command name as one text node, matching Svelte's glyph
+positioning. The comparison host uses the same text-node convention for ownership
+controls.
+
 The channel journey exposed a React/Vue history-following defect. Those renderers
 now preserve the reading position when a message arrives while the user is reading
 earlier messages, matching the expected behavior and Svelte.
 
-### Calibration evidence
+### Initial calibration evidence
 
 On 2026-11-18, all 32 exploration/differential tests passed on native macOS arm64
 and in the pinned Linux/amd64 container. Both runs classified all 18 differential
@@ -160,6 +195,32 @@ Visual grouping checks ran inside Docker. Callback and focus mutations ran on
 native Chromium and retained captures from all three variants. All temporary
 changes were restored after these checks. Calibration reports stay in ignored
 local output directories.
+
+### Catalogue expansion evidence
+
+On 2026-11-18, the expanded suite passed against the same application build in
+both environments. All 78 differential cases classified all three variants as
+identical, with zero changed pixels, zero runtime/console errors and no retries.
+Each run exercised 370 checkpoints, 1,110 native captures and 1,110 pairwise
+comparisons. The 72-case base matrix contributes 216 initial native renders;
+the six targeted variations add 18 more.
+
+| Environment | Exploration + differential tests | Browser-suite duration | Results + HTML report size |
+| --- | --- | --- | --- |
+| Native macOS arm64 | 94 passed | 3.8 minutes | 17.0 MiB |
+| Pinned Linux/amd64 Docker on the same ARM host | 94 passed | 9.7 minutes | 17.3 MiB |
+
+Durations exclude image creation and measure local hardware, including amd64
+emulation for Docker. The container run used `--use-built`; both evidence sets
+record the same asset digest. The complete suite fits the current 20-minute
+browser-job timeout in this local measurement. CI runtime still needs its own
+measurement. The differential spec remains serial within its file; measured
+runtime provides the starting point for future batching.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm docs:check`, `pnpm build:comparison` and all
+303 unit tests also passed. Browser checks use Chromium at explicit viewport
+sizes, fixed timestamps and locally simulated interactions. Captures, reports,
+decode-failure assets and generated avatar/font output remain ignored.
 
 ## Cloudflare Pages build contract
 

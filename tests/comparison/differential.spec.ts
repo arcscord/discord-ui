@@ -33,6 +33,9 @@ type Runner = ReturnType<typeof createRunner>;
 async function classic(runner: Runner): Promise<void> {
   await runner.checkpoint("initial", initial, [], async (document) => {
     await expect(document.getByText("Trail notes", { exact: true })).toBeVisible();
+    await expect(document.getByText("Route Bot", { exact: true })).toBeVisible();
+    await expect(document.getByText("The original message is unavailable.", { exact: true })).toBeVisible();
+    await expect(document.getByText("Only you can see this message.", { exact: true })).toBeVisible();
     await expect(document.getByText("(edited)", { exact: true })).toBeVisible();
     await expect(document.getByRole("button", { name: "👋: 1", exact: true })).toHaveAttribute("aria-pressed", "false");
   });
@@ -57,10 +60,25 @@ async function classic(runner: Runner): Promise<void> {
     await document.getByRole("button", { name: "👋: 2", exact: true }).click();
     await expect(document.getByRole("button", { name: "👋: 1", exact: true })).toHaveAttribute("aria-pressed", "false");
   });
+  await runner.checkpoint("ephemeral-dismissed", initial, [
+    reaction,
+    reaction,
+    {
+      name: "ephemeral-dismiss",
+      args: ["classic-private"],
+    },
+  ], async (document) => {
+    await document.getByRole("button", { name: "Dismiss message", exact: true }).press("Enter");
+    await expect(document.getByText("Only you can see this message.", { exact: true })).toHaveCount(0);
+  });
 }
 async function interactions(runner: Runner): Promise<void> {
   await runner.checkpoint("initial", initial, [], async (document) => {
     await expect(document.getByRole("combobox", { name: "Choose topics" })).toHaveText("Choose topics");
+    await expect(document.getByText("Explore the route", { exact: true })).toBeVisible();
+    await expect(document.getByRole("button", { name: "Details", exact: true })).toBeVisible();
+    await expect(document.locator(".dui-container")).toHaveCount(1);
+    await expect(document.locator(".dui-separator")).toHaveCount(1);
     await expect(document.getByRole("button", { name: "Unavailable", exact: true })).toBeDisabled();
   });
   await runner.checkpoint("menu-open", initial, [], async (document) => {
@@ -95,6 +113,19 @@ async function interactions(runner: Runner): Promise<void> {
   await runner.checkpoint("wave", { ...selected, waves: 1 }, [selection, wave], async (document) => {
     await document.getByRole("button", { name: "Wave", exact: true }).click();
   });
+  await runner.checkpoint("section-accessory", { ...selected, waves: 2 }, [
+    selection,
+    wave,
+    {
+      name: "button-click",
+      args: [
+        "section-button",
+        { messageId: "poll", componentId: "section-button" },
+      ],
+    },
+  ], async (document) => {
+    await document.getByRole("button", { name: "Details", exact: true }).press("Enter");
+  });
 }
 function history(document: FrameLocator) {
   return document.getByRole("log", { name: "Messages", exact: true }).first();
@@ -103,6 +134,32 @@ async function channel(runner: Runner): Promise<void> {
   await runner.checkpoint("initial", initial, [], async (document) => {
     await expect(document.getByRole("textbox", { name: "Message #trail", exact: true })).toBeEmpty();
     await expect(document.getByRole("complementary", { name: "Thread : Route planning", exact: true })).toHaveCount(0);
+  });
+  await runner.checkpoint("composer-empty", initial, [], async (document) => {
+    const composer = document.getByRole("textbox", { name: "Message #trail", exact: true });
+    await expect(document.getByRole("button", { name: "Send message", exact: true })).toBeDisabled();
+    await composer.press("Enter");
+    await composer.fill("   ");
+    await composer.press("Enter");
+    await expect(document.getByRole("button", { name: "Send message", exact: true })).toBeDisabled();
+    await composer.fill("");
+  });
+  await runner.checkpoint("composer-newline", initial, [], async (document) => {
+    const composer = document.getByRole("textbox", { name: "Message #trail", exact: true });
+    await composer.fill("First line");
+    await composer.press("End");
+    await composer.press("Shift+Enter");
+    await composer.press("a");
+    await expect(composer).toHaveValue("First line\na");
+    await composer.fill("");
+  });
+  await runner.checkpoint("composer-composition", initial, [], async (document) => {
+    const composer = document.getByRole("textbox", { name: "Message #trail", exact: true });
+    await composer.fill("Composing text");
+    // Playwright cannot drive a platform IME. Exercise its native keyboard event guard.
+    await composer.dispatchEvent("keydown", { key: "Enter", code: "Enter", isComposing: true });
+    await expect(composer).toHaveValue("Composing text");
+    await composer.fill("");
   });
   const events: NativeEvent[] = Array.from({ length: 20 }, (_, index) => ({
     name: "send",
@@ -169,19 +226,441 @@ async function channel(runner: Runner): Promise<void> {
     await expect.poll(() => history(document).evaluate(element => element.scrollTop)).toBe(0);
   });
 }
-const journeys = { classic, interactions, channel };
-for (const scenario of ["classic", "interactions", "channel"] as const) {
-  for (const theme of ["light", "ash", "dark"] as const) {
-    for (const width of [390, 1280] as const) {
-      test(`${scenario} ${theme} ${width}`, async ({ page }, info) => {
-        const runner = createRunner(page, info, { scenario, theme, width });
-        try {
-          await runner.load();
-          for (const framework of frameworks)
-            await runner.runFramework(framework, () => journeys[scenario](runner));
-        }
-        finally { await runner.finish(); }
-      });
+async function markdown(runner: Runner): Promise<void> {
+  await runner.checkpoint("formatted", initial, [], async (document) => {
+    await expect(document.getByText("nested italic", { exact: true })).toBeVisible();
+    await expect(document.locator("blockquote")).toContainText("A quoted trail");
+    await expect(document.getByRole("listitem")).toHaveText(["First stop", "Second stop"]);
+    await expect(document.locator("code").first()).toHaveText("inline code");
+    await expect(document.locator(".dui-code-block")).toContainText("const route = 12;");
+    await expect(document.locator(".dui-code-block span").first()).toBeVisible();
+    await expect(document.getByRole("link", { name: "map", exact: true })).toHaveAttribute("href", "https://example.com/map");
+    await expect(document.locator("time").last()).toBeVisible();
+    await expect(document.locator(".dui-mention")).toHaveText("@Ari");
+  });
+}
+async function embeds(runner: Runner, width = 390): Promise<void> {
+  await runner.checkpoint("fields-and-wrapping", initial, [], async (document) => {
+    await expect(document.getByText("Route details", { exact: true })).toBeVisible();
+    await expect(document.getByText("Distance", { exact: true })).toBeVisible();
+    await expect(document.getByText("12 kilometers", { exact: true })).toBeVisible();
+    await expect(document.getByText("Terrain", { exact: true })).toBeVisible();
+    await expect(document.getByText("A long description that wraps naturally across narrower previews.", { exact: true })).toBeVisible();
+    const thumbnail = document.getByRole("img", { name: "Route thumbnail", exact: true });
+    await expect(thumbnail).toBeVisible();
+    expect(await thumbnail.evaluate(element => element.getBoundingClientRect().width)).toBe(width <= 480
+      ? 52
+      : 88);
+    const fields = await document.locator(".dui-embed-field-inline").evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top));
+    expect(fields).toHaveLength(2);
+    if (width <= 480)
+      expect(fields[1]).toBeGreaterThan(fields[0]!);
+    expect(await document.locator("#capture").evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+  });
+}
+async function media(runner: Runner): Promise<void> {
+  await runner.checkpoint("media-policy", initial, [], async (document) => {
+    await expect(document.getByText("Media and files", { exact: true })).toBeVisible();
+    await expect(document.getByRole("img", { name: "Local image", exact: true })).toBeVisible();
+    await expect(document.getByRole("img", { name: "Allowlisted image", exact: true })).toBeVisible();
+    await expect(document.getByRole("img", { name: "Media unavailable: Missing image", exact: true })).toBeVisible();
+    await expect(document.locator("img[src=\"https://example.com/blocked.png\"]")).toHaveCount(0);
+    await expect(document.getByRole("img", { name: "Media unavailable: Remote image", exact: true })).toBeVisible();
+    await expect(document.getByText("route.txt", { exact: true })).toBeVisible();
+    await expect(document.getByText("2 KB", { exact: true })).toBeVisible();
+  });
+}
+async function spoilers(runner: Runner, french = false): Promise<void> {
+  const reveal = french ? "Révéler le spoiler" : "Reveal spoiler";
+  const hide = french ? "Masquer le spoiler" : "Hide spoiler";
+  await runner.checkpoint("hidden", initial, [], async (document) => {
+    await expect(document.getByRole("button", { name: reveal, exact: true })).toHaveCount(2);
+  });
+  await runner.checkpoint("pointer-reveal", initial, [], async (document) => {
+    await document.getByRole("button", { name: reveal, exact: true }).first().click();
+    await expect(document.getByRole("button", { name: hide, exact: true })).toBeFocused();
+    await expect(document.getByText("the meeting point", { exact: true })).toBeVisible();
+  });
+  await runner.checkpoint("keyboard-hide", initial, [], async (document) => {
+    await document.getByRole("button", { name: hide, exact: true }).press("Enter");
+    await expect(document.getByRole("button", { name: reveal, exact: true }).first()).toBeFocused();
+  });
+  await runner.checkpoint("keyboard-reveal", initial, [], async (document) => {
+    await document.getByRole("button", { name: reveal, exact: true }).last().press("Space");
+    await expect(document.getByRole("button", { name: hide, exact: true })).toBeFocused();
+    await expect(document.getByText("the hidden route", { exact: true })).toBeVisible();
+  });
+}
+async function buttons(runner: Runner): Promise<void> {
+  await runner.checkpoint("variants", initial, [], async (document) => {
+    await expect(document.getByRole("button", { name: "Unavailable", exact: true })).toBeDisabled();
+    await expect(document.getByRole("link", { name: "Open map", exact: true })).toHaveAttribute("href", "https://example.com/map");
+  });
+  const action: NativeEvent = {
+    name: "button-click",
+    args: [
+      "action",
+      { messageId: "buttons", componentId: "action" },
+    ],
+  };
+  await runner.checkpoint("action-context", { ...initial, waves: 1 }, [action], async (document) => {
+    await document.getByRole("button", { name: "Take action", exact: true }).press("Enter");
+  });
+  await runner.checkpoint("premium-context", { ...initial, waves: 1 }, [
+    action,
+    {
+      name: "premium-click",
+      args: [
+        "sku-1",
+        { messageId: "buttons", componentId: "premium" },
+      ],
+    },
+  ], async (document) => {
+    await document.getByRole("button", { name: "◆ Upgrade", exact: true }).click();
+  });
+}
+async function selects(runner: Runner): Promise<void> {
+  const events: NativeEvent[] = [];
+  const values: Record<string, string[]> = { topics: [] };
+  for (const [id, placeholder, label, value] of [
+    [
+      "string",
+      "Choose trail",
+      "Maps",
+      "maps",
+    ],
+    ["user", "Choose user", "Ari", "user-1"],
+    [
+      "role",
+      "Choose role",
+      "Guides",
+      "role-1",
+    ],
+    [
+      "mention",
+      "Choose mention",
+      "Ari",
+      "user-1",
+    ],
+    [
+      "channel",
+      "Choose channel",
+      "routes",
+      "channel-1",
+    ],
+  ]) {
+    await runner.checkpoint(`${id}-open`, {
+      ...initial,
+      selectValues: { ...values },
+    }, [...events], async (document) => {
+      const combo = document.getByRole("combobox", { name: placeholder, exact: true });
+      await combo.press("ArrowDown");
+      await expect(combo).toHaveAttribute("aria-expanded", "true");
+      await expect(document.getByRole("option", { name: label, exact: true })).toBeVisible();
+      if (id === "user") {
+        await combo.fill("No matching person");
+        await expect(document.getByRole("option")).toHaveCount(0);
+        await combo.fill("Ar");
+        await expect(document.getByRole("option", { name: "Ari", exact: true })).toBeVisible();
+        await combo.press("ArrowDown");
+      }
+    });
+    values[id!] = [value!];
+    events.push({
+      name: "select-change",
+      args: [
+        id,
+        [value],
+        { messageId: "selects", componentId: id },
+      ],
+    });
+    await runner.checkpoint(`${id}-selected`, {
+      ...initial,
+      selectValues: { ...values },
+    }, [...events], async (document) => {
+      const combo = document.getByRole("combobox", { name: placeholder, exact: true });
+      await combo.press("Enter");
+      if (id === "string") {
+        await expect(combo).toContainText(label!);
+      }
+      else {
+        await expect(document.locator(`.dui-select[data-kind="${id === "mention"
+          ? "mentionable"
+          : id}-select"] .dui-select-chip`)).toContainText(label!);
+      }
+      await combo.press("Escape");
+      await expect(combo).toBeFocused();
+      await expect(combo).toHaveAttribute("aria-expanded", "false");
+    });
+  }
+  values.string = ["maps", "gear"];
+  events.push({
+    name: "select-change",
+    args: [
+      "string",
+      ["maps", "gear"],
+      { messageId: "selects", componentId: "string" },
+    ],
+  });
+  await runner.checkpoint("selection-maximum", {
+    ...initial,
+    selectValues: { ...values },
+  }, [...events], async (document) => {
+    const combo = document.getByRole("combobox", { name: "Choose trail", exact: true });
+    await combo.press("ArrowDown");
+    await document.getByRole("option", { name: "Gear", exact: true }).click();
+    await expect(document.getByRole("option", { name: "Water", exact: true })).toHaveAttribute("aria-disabled", "true");
+    await document.getByRole("option", { name: "Water", exact: true }).click({ force: true });
+    await expect(combo).toContainText("Maps");
+    await expect(combo).toContainText("Gear");
+    await combo.press("Escape");
+    await expect(document.getByRole("button", { name: "Remove Ari", exact: true }).first()).toBeDisabled();
+  });
+  events.push({
+    name: "host-update",
+    args: ["selects", true],
+  });
+  await runner.checkpoint("disabled-update", {
+    ...initial,
+    selectValues: { ...values },
+  }, [...events], async (document) => {
+    await document.getByRole("combobox", { name: "Choose trail", exact: true }).press("ArrowDown");
+    await document.getByRole("button", { name: "Disable selects", exact: true }).click();
+    for (const placeholder of [
+      "Choose trail",
+      "Choose user",
+      "Choose role",
+      "Choose mention",
+      "Choose channel",
+    ]) {
+      const combo = document.getByRole("combobox", { name: placeholder, exact: true });
+      await expect(combo).toBeDisabled();
+      await expect(combo).toHaveAttribute("aria-expanded", "false");
     }
+    await expect(document.getByRole("listbox")).toHaveCount(0);
+  });
+}
+async function reactions(runner: Runner): Promise<void> {
+  const event: NativeEvent = {
+    name: "reaction-toggle",
+    args: ["reactions", "wave"],
+  };
+  await runner.checkpoint("off", initial, [], async (document) => {
+    await expect(document.getByRole("button", { name: "👋: 1", exact: true })).toHaveAttribute("aria-pressed", "false");
+  });
+  await runner.checkpoint("on", { ...initial, reacted: true }, [event], async (document) => {
+    await document.getByRole("button", { name: "👋: 1", exact: true }).press("Space");
+    await expect(document.getByRole("button", { name: "👋: 2", exact: true })).toHaveAttribute("aria-pressed", "true");
+  });
+  await runner.checkpoint("off-again", initial, [event, event], async (document) => {
+    await document.getByRole("button", { name: "👋: 2", exact: true }).press("Enter");
+    await expect(document.getByRole("button", { name: "👋: 1", exact: true })).toHaveAttribute("aria-pressed", "false");
+  });
+  await runner.checkpoint("host-update", { ...initial, reacted: true }, [
+    event,
+    event,
+    {
+      name: "host-update",
+      args: ["reaction", true],
+    },
+  ], async (document) => {
+    await document.getByRole("button", { name: "Update reactions", exact: true }).click();
+    await expect(document.getByRole("button", { name: "👋: 2", exact: true })).toHaveAttribute("aria-pressed", "true");
+  });
+}
+
+async function ownership(runner: Runner): Promise<void> {
+  await runner.checkpoint("default", initial, [], async (document) => {
+    await expect(document.getByRole("combobox", { name: "Choose ownership", exact: true })).toHaveText("Maps");
+  });
+  const selected: NativeEvent = {
+    name: "select-change",
+    args: [
+      "ownership",
+      ["maps", "gear"],
+      { messageId: "selection-ownership", componentId: "ownership" },
+    ],
+  };
+  await runner.checkpoint("local-selection", {
+    ...initial,
+    selectValues: {
+      topics: [],
+      ownership: ["maps", "gear"],
+    },
+  }, [selected], async (document) => {
+    const combo = document.getByRole("combobox", { name: "Choose ownership", exact: true });
+    await combo.press("ArrowDown");
+    await document.getByRole("option", { name: "Gear", exact: true }).click();
+    await combo.press("Escape");
+    await expect(combo).toHaveText("Maps, Gear");
+  });
+  const events: NativeEvent[] = [selected];
+  for (const [mode, label, values] of [
+    ["empty", "Choose ownership", []],
+    [
+      "external",
+      "Gear",
+      ["gear"],
+    ],
+    ["defaults", "Maps, Gear", undefined],
+    ["identity", "Maps", undefined],
+  ] as const) {
+    events.push({
+      name: "host-update",
+      args: [mode],
+    });
+    const expected = values === undefined
+      ? initial
+      : {
+          ...initial,
+          selectValues: {
+            topics: [],
+            ownership: [...values],
+          },
+        };
+    await runner.checkpoint(mode, expected, [...events], async (document) => {
+      await document.getByRole("button", { name: `Ownership ${mode}`, exact: true }).click();
+      await expect(document.getByRole("combobox", { name: "Choose ownership", exact: true })).toHaveText(label);
+    });
   }
 }
+async function threadsCommands(runner: Runner, width = 390): Promise<void> {
+  await runner.checkpoint("thread-open", { ...initial, activeThreadId: "discussion" }, [
+    {
+      name: "thread-open",
+      args: ["discussion"],
+    },
+  ], async (document) => {
+    await document.getByRole("button", { name: /Open thread Route planning/ }).press("Enter");
+    await expect(document.getByRole("button", { name: "Close thread", exact: true })).toBeFocused();
+    if (width <= 640)
+      await expect(document.locator(".dui-channel-main")).toBeHidden();
+    else
+      await expect(document.locator(".dui-channel-main")).toBeVisible();
+  });
+  const closed: NativeEvent[] = [
+    {
+      name: "thread-open",
+      args: ["discussion"],
+    },
+    { name: "thread-close", args: [] },
+  ];
+  await runner.checkpoint("focus-return", initial, closed, async (document) => {
+    await document.getByRole("button", { name: "Close thread", exact: true }).press("Escape");
+    await expect(document.getByRole("button", { name: /Open thread Route planning/ })).toBeFocused();
+  });
+  await runner.checkpoint("command-list", initial, closed, async (document) => {
+    await document.getByRole("textbox", { name: "Message #trail", exact: true }).fill("/rou");
+    await expect(document.getByRole("option", { name: /route.*Plan a route/ })).toBeVisible();
+  });
+  await runner.checkpoint("command-arguments", initial, closed, async (document) => {
+    await document.getByRole("textbox", { name: "Message #trail", exact: true }).press("Enter");
+    await expect(document.getByRole("button", { name: "Options", exact: true })).toBeFocused();
+    await expect(document.getByRole("button", { name: "Send message", exact: true })).toBeDisabled();
+    await document.getByRole("option", { name: /destination.*Destination/ }).click();
+    await expect(document.getByRole("textbox", { name: "destination", exact: true })).toBeFocused();
+    await document.getByRole("button", { name: "Remove argument", exact: true }).click();
+    await expect(document.getByRole("textbox", { name: "destination", exact: true })).toHaveCount(0);
+    await document.getByRole("option", { name: /destination.*Destination/ }).click();
+    await document.getByRole("textbox", { name: "destination", exact: true }).fill("Summit");
+    await document.getByRole("button", { name: "Options", exact: true }).click();
+    const pace = document.getByRole("combobox", { name: "pace", exact: true });
+    await expect(document.getByRole("textbox", { name: "destination", exact: true })).toHaveAccessibleDescription("Destination");
+    await expect(pace).toHaveAccessibleDescription("Walking pace");
+    await pace.fill("Fa");
+    await expect(document.getByRole("option", { name: "Easy", exact: true })).toHaveCount(0);
+    await expect(document.getByRole("option", { name: "Fast", exact: true })).toBeVisible();
+    await pace.press("Enter");
+    await expect(pace).toHaveValue("Fast");
+  });
+  const command: NativeEvent = {
+    name: "slash-command",
+    args: [
+      {
+        command: {
+          name: "route",
+          description: "Plan a route",
+          arguments: [
+            { name: "destination", description: "Destination", required: true },
+            {
+              name: "pace",
+              description: "Walking pace",
+              choices: [
+                { name: "Easy", value: "easy" },
+                { name: "Fast", value: "fast" },
+              ],
+            },
+          ],
+        },
+        arguments: { destination: "Summit", pace: "fast" },
+      },
+    ],
+  };
+  await runner.checkpoint("command-submit", initial, [...closed, command], async (document) => {
+    await document.getByRole("button", { name: "Send message", exact: true }).click();
+    const composer = document.getByRole("textbox", { name: "Message #trail", exact: true });
+    await expect(composer).toBeFocused();
+    await expect(composer).toBeEmpty();
+    await expect(document.getByRole("textbox", { name: "destination", exact: true })).toHaveCount(0);
+  });
+}
+
+const journeys = {
+  classic,
+  interactions,
+  channel,
+  markdown,
+  embeds,
+  media,
+  spoilers,
+  buttons,
+  selects,
+  "selection-ownership": ownership,
+  reactions,
+  "threads-commands": threadsCommands,
+};
+
+function registerCase(matrix: Parameters<typeof createRunner>[2]): void {
+  test(`${matrix.scenario} ${matrix.theme} ${matrix.width}${matrix.locale
+    ? ` ${matrix.locale}`
+    : ""}${matrix.customTheme ? " custom" : ""}`, async ({ page }, info) => {
+    const runner = createRunner(page, info, matrix);
+    try {
+      await runner.load();
+      for (const framework of frameworks) {
+        await runner.runFramework(framework, () => {
+          if (matrix.scenario === "threads-commands")
+            return threadsCommands(runner, matrix.width);
+          if (matrix.scenario === "embeds")
+            return embeds(runner, matrix.width);
+          if (matrix.scenario === "spoilers")
+            return spoilers(runner, matrix.locale === "fr-FR");
+          return journeys[matrix.scenario](runner);
+        });
+      }
+    }
+    finally { await runner.finish(); }
+  });
+}
+for (const scenario of Object.keys(journeys) as (keyof typeof journeys)[]) {
+  for (const theme of ["light", "ash", "dark"] as const) {
+    for (const width of [390, 1280])
+      registerCase({ scenario, theme, width });
+  }
+}
+for (const width of [480, 481])
+  registerCase({ scenario: "embeds", theme: "ash", width });
+for (const width of [640, 641])
+  registerCase({ scenario: "threads-commands", theme: "ash", width });
+registerCase({
+  scenario: "spoilers",
+  theme: "light",
+  width: 390,
+  locale: "fr-FR",
+});
+registerCase({
+  scenario: "interactions",
+  theme: "dark",
+  width: 1280,
+  customTheme: true,
+});

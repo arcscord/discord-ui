@@ -3,7 +3,8 @@
   import type { ComparisonConfig } from "../../../../../fixtures/comparison/scenarios";
   import type { NativeEvent, Snapshot } from "../protocol";
   import { ChannelView, DiscordUI, Message } from "@arcscord/discord-ui-svelte";
-  import { appendMessage, classicMessage, createLocalState, displayOptions, interactionMessage } from "../../../../../fixtures/comparison/scenarios";
+  import { HighlightedCode } from "@arcscord/discord-ui-svelte/highlight";
+  import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages } from "../../../../../fixtures/comparison/scenarios";
   import { snapshot } from "../protocol";
   import "@arcscord/discord-ui-svelte/styles.css";
 
@@ -11,7 +12,9 @@
   const localState = $state(createLocalState());
   $effect(() => report(snapshot(localState)));
   const message = $derived({
-    ...classicMessage,
+    ...(config.scenario === "reactions"
+      ? scenarioMessages.reactions
+      : classicMessage),
     reactions: [
       {
         id: "wave",
@@ -42,6 +45,45 @@
       args: [messageId, reactionId],
     }, snapshot(localState));
   }
+  function hostUpdate(mode: string): void {
+    if (mode === "selects") {
+      localState.selectsDisabled = !localState.selectsDisabled;
+    }
+    else if (mode === "reaction") {
+      localState.reacted = !localState.reacted;
+    }
+    else {
+      localState.ownershipMode = [
+        "defaults",
+        "empty",
+        "external",
+        "identity",
+      ].indexOf(mode);
+      localState.selectValues = {
+        ...localState.selectValues,
+        ownership: mode === "empty"
+          ? []
+          : mode === "external"
+          ? ["gear"]
+          : undefined,
+      };
+    }
+    event({
+      name: "host-update",
+      args: mode === "selects"
+        ? [mode, localState.selectsDisabled]
+        : mode === "reaction"
+        ? [mode, localState.reacted]
+        : [mode],
+    }, snapshot(localState));
+  }
+  function dismiss(id: string): void {
+    localState.dismissed = true;
+    event({
+      name: "ephemeral-dismiss",
+      args: [id],
+    }, snapshot(localState));
+  }
   function thread(id: string | null): void {
     localState.activeThreadId = id;
     event({
@@ -64,12 +106,32 @@
   }
 </script>
 
-<DiscordUI {...displayOptions(config)}>
-  {#if config.scenario === "channel"}
-    <ChannelView channel={localState.channel} height={844} activeThreadId={localState.activeThreadId} onThreadOpen={thread} onThreadClose={() => thread(null)} onSend={content => send(content)} onThreadSend={(id, content) => send(content, id)} />
+{#snippet highlighted(content: string, language: string)}<HighlightedCode {content} {language} />{/snippet}
+<DiscordUI {...displayOptions(config, window.location.origin)} renderCode={config.scenario === "markdown"
+  ? highlighted
+  : undefined}>
+  {#if config.scenario === "channel" || config.scenario === "threads-commands"}
+    <ChannelView channel={localState.channel} height={844} activeThreadId={localState.activeThreadId} onThreadOpen={thread} onThreadClose={() => thread(null)} onSend={content => send(content)} onThreadSend={(id, content) => send(content, id)} {commands} onSlashCommand={invocation => event({
+      name: "slash-command",
+      args: [invocation],
+    }, snapshot(localState))} />
   {:else if config.scenario === "interactions"}
     <Message message={interactionMessage} selectValues={localState.selectValues} onSelectChange={select} onButtonClick={button} />
-  {:else}
+  {:else if config.scenario === "classic" || config.scenario === "reactions"}
+    {#if config.scenario === "reactions"}<button type="button" onclick={() => hostUpdate("reaction")}>Update reactions</button>{/if}
     <Message {message} onReactionToggle={react} />
+    {#if config.scenario === "classic"}{#each classicExtras.filter(item => !localState.dismissed || !item.ephemeral) as extra (extra.id)}<Message message={extra} onEphemeralDismiss={dismiss} />{/each}{/if}
+  {:else}
+    {#if config.scenario === "selection-ownership"}{#each [
+      "defaults",
+      "empty",
+      "external",
+      "identity",
+    ] as mode (mode)}<button type="button" onclick={() => hostUpdate(mode)}>Ownership {mode}</button>{/each}{/if}
+    {#if config.scenario === "selects"}<button type="button" onclick={() => hostUpdate("selects")}>Disable selects</button>{/if}
+    <Message message={scenarioMessage(config.scenario, localState, window.location.origin)} selectValues={localState.selectValues} onSelectChange={select} onButtonClick={button} onPremiumClick={(sku, context) => event({
+      name: "premium-click",
+      args: [sku, context],
+    }, snapshot(localState))} />
   {/if}
 </DiscordUI>

@@ -200,3 +200,22 @@ for (const framework of frameworks) {
     expect(errors).toEqual([]);
   });
 }
+
+test("restores explicit inner widths and custom theme settings from shareable URLs", async ({ page }) => {
+  await page.goto("/?scenario=classic&width=481&customTheme=true&locale=fr-FR");
+  await ready(page);
+  await expect(page.getByRole("combobox", { name: "Inner viewport width", exact: true })).toHaveValue("481");
+  await expect(page.getByLabel("Custom theme overrides", { exact: true })).toBeChecked();
+  for (const framework of frameworks)
+    await expect(page.locator(`#${framework}-viewport`)).toHaveJSProperty("clientWidth", 481);
+  await page.getByRole("combobox", { name: "Inner viewport width", exact: true }).selectOption("641");
+  await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("dark");
+  await page.reload();
+  await ready(page);
+  await expect(page.getByRole("combobox", { name: "Inner viewport width", exact: true })).toHaveValue("641");
+  await expect(page.getByLabel("Custom theme overrides", { exact: true })).toBeChecked();
+  for (const framework of frameworks) {
+    await expect(page.locator(`#${framework}-viewport`)).toHaveJSProperty("clientWidth", 641);
+    await expect(fixture(page, framework).getByText("(modifié)", { exact: true })).toBeVisible();
+  }
+});

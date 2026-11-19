@@ -5,11 +5,12 @@ import { frameworkNames, isFrameMessage, protocol } from "../previews/protocol";
 
 type FrameState = { status: "loading" | "ready" | "error"; error?: string | undefined; state?: Snapshot; events: NativeEvent[] };
 
-export function ComparisonFrame({ framework, config, resetToken, expanded, hidden, onExpand, triggerRef }: {
+export function ComparisonFrame({ framework, config, resetToken, expanded, previewWidth, hidden, onExpand, triggerRef }: {
   framework: Framework;
   config: ComparisonConfig;
   resetToken: number;
   expanded: boolean;
+  previewWidth: number;
   hidden: boolean;
   onExpand: () => void;
   triggerRef: (element: HTMLButtonElement | null) => void;
@@ -21,7 +22,7 @@ export function ComparisonFrame({ framework, config, resetToken, expanded, hidde
   const [result, setResult] = useState<FrameState>({ status: "loading", events: [] });
   const [dimensions, setDimensions] = useState({ width: 390, height: 844 });
   const name = frameworkNames[framework];
-  const width = expanded ? 1280 : 390;
+  const width = expanded ? 1280 : previewWidth;
 
   useEffect(() => {
     const frame = frameRef.current!;

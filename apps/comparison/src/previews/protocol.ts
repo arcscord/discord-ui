@@ -10,6 +10,10 @@ export const eventNames = [
   "thread-open",
   "thread-close",
   "thread-send",
+  "premium-click",
+  "slash-command",
+  "host-update",
+  "ephemeral-dismiss",
 ] as const;
 export type NativeEvent = { name: typeof eventNames[number]; args: unknown[] };
 export type Snapshot = Pick<LocalState, "waves" | "reacted" | "selectValues" | "activeThreadId"> & { messageCount: number; replyCount: number };
@@ -17,7 +21,7 @@ export function snapshot(state: LocalState): Snapshot {
   return {
     waves: state.waves,
     reacted: state.reacted,
-    selectValues: state.selectValues,
+    selectValues: Object.fromEntries(Object.entries(state.selectValues).filter(([, values]) => values !== undefined)),
     activeThreadId: state.activeThreadId,
     messageCount: state.channel.messages.length,
     replyCount: state.channel.threads?.[0]?.messages.length ?? 0,
@@ -45,7 +49,7 @@ function envelope(value: unknown): value is Record<string, unknown> & Envelope {
     && (value.revision as number) >= 0;
 }
 export function isConfig(value: unknown): value is ComparisonConfig {
-  if (!record(value) || typeof value.allowRemoteMedia !== "boolean")
+  if (!record(value) || typeof value.allowRemoteMedia !== "boolean" || (value.customTheme !== undefined && typeof value.customTheme !== "boolean"))
     return false;
   const parsed = parseConfig(new URLSearchParams({
     scenario: String(value.scenario),

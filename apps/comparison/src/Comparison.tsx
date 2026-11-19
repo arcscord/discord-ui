@@ -5,6 +5,8 @@ import { ComparisonFrame } from "./components/ComparisonFrame";
 import { frameworkNames } from "./previews/protocol";
 import "./styles.css";
 
+const previewWidths = [390, 480, 481, 640, 641, 1280];
+
 export default function Comparison() {
   const [search, setSearch] = useState(() => window.location.search);
   useEffect(() => {
@@ -18,7 +20,11 @@ export default function Comparison() {
   const expanded = frameworks.includes(requestedFocus as Framework)
     ? requestedFocus as Framework
     : null;
-  const invalidLayout = Boolean((requestedFocus && requestedFocus !== "all" && !expanded) || (params.has("width") && params.get("width") !== String(expanded ? 1280 : 390)));
+  const requestedWidth = Number(params.get("width") ?? 390);
+  const previewWidth = previewWidths.includes(requestedWidth)
+    ? requestedWidth
+    : 390;
+  const invalidLayout = Boolean((requestedFocus && requestedFocus !== "all" && !expanded) || (params.has("width") && (previewWidth !== requestedWidth || (expanded !== null && previewWidth !== 1280))));
   const [query, setQuery] = useState("");
   const [resetToken, setResetToken] = useState(0);
   const triggersRef = useRef<Partial<Record<Framework, HTMLButtonElement>>>({});
@@ -33,13 +39,19 @@ export default function Comparison() {
     const currentExpanded = frameworks.includes(currentFocus as Framework)
       ? currentFocus
       : null;
+    const currentWidth = Number(current.get("width") ?? 390);
     const next = new URLSearchParams({
       scenario: currentConfig.scenario,
       theme: currentConfig.theme,
       locale: currentConfig.locale,
       media: currentConfig.allowRemoteMedia ? "allow" : "block",
       focus: currentExpanded ?? "all",
-      width: String(currentExpanded ? 1280 : 390),
+      width: currentExpanded
+        ? "1280"
+        : String(previewWidths.includes(currentWidth)
+            ? currentWidth
+            : 390),
+      customTheme: currentConfig.customTheme ? "true" : "false",
       ...changes,
     });
     window.history.replaceState(null, "", `${window.location.pathname}?${next}`);
@@ -85,6 +97,28 @@ export default function Comparison() {
           </select>
         </label>
         <label>
+          Inner viewport width
+          <select value={expanded ? 1280 : previewWidth} onChange={event => update({ width: event.target.value, focus: "all" })}>
+            {previewWidths.map(width => (
+              <option key={width} value={width}>
+                {width}
+                {" "}
+                px
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="comparison-checkbox">
+          <input
+            type="checkbox"
+            checked={config.customTheme ?? false}
+            onChange={event => update({
+              customTheme: String(event.target.checked),
+            })}
+          />
+          Custom theme overrides
+        </label>
+        <label>
           Locale
           <select value={config.locale} onChange={event => update({ locale: event.target.value })}>
             <option value="en-US">English (US)</option>
@@ -122,7 +156,9 @@ export default function Comparison() {
         <div
           className="comparison-grid"
           style={{
-            gridTemplateColumns: expanded ? "1280px" : "repeat(3, 390px)",
+            gridTemplateColumns: expanded
+              ? "1280px"
+              : `repeat(3, ${previewWidth}px)`,
           }}
         >
           {frameworks.map(framework => (
@@ -132,6 +168,7 @@ export default function Comparison() {
               config={config}
               resetToken={resetToken}
               expanded={expanded === framework}
+              previewWidth={previewWidth}
               hidden={expanded !== null && expanded !== framework}
               onExpand={() => expand(framework)}
               triggerRef={(element) => {

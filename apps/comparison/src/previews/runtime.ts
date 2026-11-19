@@ -54,7 +54,11 @@ export function frameRuntime(framework: Framework): { start: (host: NativeHost) 
       try {
         const state = await host.configure(config, reset);
         await document.fonts.ready;
-        await Promise.all(Array.from(document.images, image => image.decode().catch(() => undefined)));
+        await Promise.all(Array.from(document.images, (image) => {
+          // Offscreen iframe fixtures must finish loading before they can be expanded.
+          image.loading = "eager";
+          return image.decode().catch(() => undefined);
+        }));
         if (disposed || revision !== requestedRevision || failed)
           return;
         document.documentElement.dataset.status = "ready";

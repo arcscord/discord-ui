@@ -17,7 +17,7 @@ import { frameworks, referenceTime } from "../../../fixtures/comparison/scenario
 import { classifyVariants } from "../../../scripts/comparison/groups.mts";
 import { compareImages } from "../../../scripts/comparison/images.mts";
 
-export type MatrixCase = { scenario: ScenarioId; theme: "light" | "ash" | "dark"; width: 390 | 1280 };
+export type MatrixCase = { scenario: ScenarioId; theme: "light" | "ash" | "dark"; width: number; locale?: "en-US" | "fr-FR"; customTheme?: boolean };
 type Action = (document: FrameLocator, framework: Framework) => Promise<void>;
 export type ComparisonRunner = {
   load: () => Promise<void>;
@@ -80,6 +80,7 @@ function buildDigest(directory: string): string {
 const assetDigest = buildDigest(join(root, "apps/comparison/dist"));
 
 export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): ComparisonRunner {
+  const startedAt = Date.now();
   const errors: string[] = [];
   let currentCheckpoint = "loading";
   const frameworkFailures: { framework: Framework; error: string }[] = [];
@@ -105,7 +106,8 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
     return new URL(`/?${new URLSearchParams({
       scenario: matrix.scenario,
       theme: matrix.theme,
-      locale: "en-US",
+      locale: matrix.locale ?? "en-US",
+      customTheme: String(matrix.customTheme ?? false),
       media: "block",
       focus: matrix.width === 1280
         ? framework
@@ -120,7 +122,10 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
     await expect(document.locator("html")).toHaveAttribute("data-status", "ready");
     await document.locator("html").evaluate(async () => {
       await window.document.fonts.ready;
-      await Promise.all(Array.from(window.document.images, image => image.decode()));
+      await Promise.all(Array.from(window.document.images, (image) => {
+        image.loading = "eager";
+        return image.decode().catch(() => undefined);
+      }));
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
     const observation = await document.locator("html").evaluate(() => {
@@ -259,9 +264,21 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
       await page.clock.install({
         time: new Date(referenceTime),
       });
-      await page.goto(`/?scenario=${matrix.scenario}&theme=${matrix.theme}&locale=en-US&media=block`);
-      for (const renderer of frameworks)
+      await page.goto(`/?${new URLSearchParams({
+        scenario: matrix.scenario,
+        theme: matrix.theme,
+        locale: matrix.locale ?? "en-US",
+        media: "block",
+        width: String(matrix.width),
+        customTheme: String(matrix.customTheme ?? false),
+      })}`);
+      for (const renderer of frameworks) {
         await expect(page.locator(`[data-framework="${renderer}"]`)).toHaveAttribute("data-status", "ready");
+        await expect(frame(renderer).locator("html")).toHaveAttribute("lang", matrix.locale ?? "en-US");
+        await expect(frame(renderer).locator(".arcscord-discord-ui")).toHaveAttribute("data-theme", matrix.customTheme ? "comparison-custom" : matrix.theme);
+        if (matrix.customTheme)
+          await expect(frame(renderer).locator(".arcscord-discord-ui")).toHaveCSS("--discord-ui-accent", "#a45de3");
+      }
     },
     async runFramework(framework, journey): Promise<void> {
       currentFramework = framework;
@@ -358,7 +375,9 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
             status: "incomplete",
             groups: [],
             outliers: [],
-            missing: [...missing],
+            missing: allPairs.length
+              ? [...missing]
+              : [...frameworks],
           };
         }
         return classifyVariants(frameworks, pairIndices.map(([left, right]) => ({
@@ -382,6 +401,7 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
       const path = info.outputPath("comparison-evidence.json");
       writeFileSync(path, JSON.stringify({
         schemaVersion: 2,
+        durationMs: Date.now() - startedAt,
         result,
         matrix,
         gitCommit,
@@ -394,7 +414,7 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
         nodeVersion: process.version,
         browser: page.context().browser()?.version(),
         deviceScaleFactor: 1,
-        locale: "en-US",
+        locale: matrix.locale ?? "en-US",
         timeZone: "UTC",
         referenceTime,
         rendererVersions: Object.fromEntries([
