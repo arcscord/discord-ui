@@ -153,8 +153,7 @@ export const SlashCommandEditor = defineRenderer<Props, PropsInput, SlashCommand
         <div class="dui-slash-line">
           <span class="dui-slash-app-icon" aria-hidden="true">/</span>
           <strong class="dui-slash-command-name">
-            /
-            {command.name}
+            {`/${command.name}`}
           </strong>
           {added.map((name) => {
             const option = command.arguments?.find(argument => argument.name === name);

@@ -24,8 +24,10 @@ The website consumes the built library. Run `pnpm build:lib` after library chang
 | `packages/discord-ui-vue` | Native Vue renderer, SFCs, typed events and slots |
 | `packages/discord-ui` | React components, shared contract re-exports and standalone compiled CSS |
 | `apps/website` | Docusaurus documentation, catalogue and integrated playground |
+| `apps/comparison` | Standalone React/Vue/Svelte comparison app |
 | `fixtures` | Synthetic data shared by examples and tests |
-| `tests/website` | Playwright interaction checks |
+| `tests/website` | Website Playwright interaction checks |
+| `tests/comparison` | Standalone comparison Playwright interaction checks |
 | `scripts` | Documentation generation, workspace and distribution checks |
 | `.github/workflows` | CI, security scanning, npm publication and Pages deployment |
 
@@ -38,6 +40,10 @@ Run commands from the repository root. Choose checks that cover the change:
 | `pnpm dev` / `pnpm dev:website` | Build the library and start Docusaurus |
 | `pnpm build:lib` | Build core then React ESM, declarations and CSS |
 | `pnpm build:website` | Build the library and production website |
+| `pnpm dev:comparison` | Build the libraries and start the comparison app on port 4175 |
+| `pnpm build:comparison` | Build the libraries and standalone comparison in `apps/comparison/dist` |
+| `pnpm test:comparison` | Build and run exploration and differential Chromium checks |
+| `pnpm test:comparison:docker` | Compare variants in the pinned Linux/amd64 browser environment |
 | `pnpm build` | Build all workspace packages |
 | `pnpm lint` | Check lint and formatting without editing |
 | `pnpm lint:fix` | Apply ESLint fixes |

@@ -1,5 +1,6 @@
 import type { LoadContext, Plugin } from "@docusaurus/types";
 import { execFile } from "node:child_process";
+import { rm } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
@@ -20,6 +21,8 @@ export default function examplePreviews(context: LoadContext): Plugin {
       ];
     },
     async loadContent() {
+      // Remove assets left by the former website comparison generator.
+      await rm(path.join(context.siteDir, "static/generated/comparison"), { recursive: true, force: true });
       await execute(process.execPath, [
         path.join(root, "scripts/workspace/generate-website-examples.mts"),
       ], { cwd: root });

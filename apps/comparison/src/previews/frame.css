@@ -1,0 +1,46 @@
+@font-face {
+  font-family: Inter;
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+
+html {
+  font-family: Inter, system-ui, sans-serif;
+  background: #323339;
+  color: #eee;
+}
+
+html[data-theme="light"] {
+  background: #fff;
+  color: #232428;
+}
+
+html[data-theme="dark"] {
+  background: #1a1a1e;
+}
+
+body {
+  margin: 0;
+}
+
+#capture {
+  min-height: 844px;
+}
+
+#app .arcscord-discord-ui {
+  min-height: 844px;
+}
+
+.frame-diagnostics {
+  padding: 16px;
+  border-top: 1px solid #808080;
+}
+
+.frame-diagnostics pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}

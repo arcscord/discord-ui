@@ -112,8 +112,7 @@ export function SlashCommandEditor({ command, values, onChange, onCancel, disabl
       <div className="dui-slash-line">
         <span className="dui-slash-app-icon" aria-hidden="true">/</span>
         <strong className="dui-slash-command-name">
-          /
-          {command.name}
+          {`/${command.name}`}
         </strong>
         {added.map((name) => {
           const option = command.arguments?.find(argument => argument.name === name);

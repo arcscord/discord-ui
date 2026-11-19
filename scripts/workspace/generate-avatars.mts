@@ -5,9 +5,12 @@ import { fileURLToPath } from "node:url";
 const root = new URL("../../", import.meta.url);
 const avatars = JSON.parse(await readFile(new URL("fixtures/avatars.json", root), "utf8")) as Record<string, { letter: string; color: string }>;
 const target = process.argv[2];
-if (target && target !== "website")
-  throw new Error("Expected website");
-const targets = ["apps/website/static/generated/avatars/"];
+if (target !== undefined && target !== "website" && target !== "comparison")
+  throw new Error("Expected website or comparison");
+const destinations = { website: "apps/website/static/generated/avatars/", comparison: "apps/comparison/public/generated/avatars/" };
+const targets = target
+  ? [destinations[target]]
+  : Object.values(destinations);
 for (const target of targets) {
   const directory = new URL(target, root);
   await mkdir(directory, { recursive: true });

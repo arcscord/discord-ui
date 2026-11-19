@@ -48,6 +48,9 @@ jobs:
 
   checks:
     name: Release checks
+    permissions:
+      contents: read
+      actions: read
     needs: validate
     uses: ./.github/workflows/ci.yml
     with:

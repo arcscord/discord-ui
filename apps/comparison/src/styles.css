@@ -1,0 +1,219 @@
+@font-face {
+  font-family: Inter;
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --comparison-page: #05010f;
+  --comparison-surface: #090116;
+  --comparison-border: #24264a;
+  --comparison-control-border: #55576d;
+  --comparison-text: #e8eefb;
+  --comparison-accent: #69a9ef;
+  --comparison-muted: #b5bdd4;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--comparison-text);
+  background: var(--comparison-page);
+  color-scheme: dark;
+  line-height: 1.6;
+  font-optical-sizing: auto;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, h3 { line-height: 1.2; margin: 0 0 1rem; }
+p { margin: 0 0 1rem; }
+pre { margin: 0; padding: 12px; background: var(--comparison-surface); overflow: auto; border-radius: 6px; }
+summary { margin-bottom: 8px; }
+
+.comparison-shell {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1456px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  min-width: 0;
+}
+
+.comparison-intro {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+
+.comparison-intro h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.comparison-eyebrow {
+  color: var(--comparison-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.comparison-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--comparison-border);
+  border-radius: 12px;
+}
+
+.comparison-controls label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+
+.comparison-shell input, .comparison-shell select, .comparison-shell button {
+  font: inherit;
+}
+
+.comparison-shell input[type="search"], .comparison-shell select, .comparison-shell button {
+  border: 1px solid var(--comparison-control-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--comparison-text);
+  background: var(--comparison-surface);
+}
+
+.comparison-shell input[type="search"] {
+  width: 200px;
+  max-width: 100%;
+}
+
+.comparison-shell button {
+  cursor: pointer;
+}
+
+.comparison-shell button:hover {
+  border-color: var(--comparison-accent);
+}
+
+.comparison-shell :focus-visible {
+  outline: 2px solid var(--comparison-accent);
+  outline-offset: 3px;
+}
+
+.comparison-controls .comparison-checkbox {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.comparison-expectations {
+  margin: 28px 0;
+  max-width: 850px;
+}
+
+.comparison-expectations h2 {
+  font-size: 1.25rem;
+}
+
+.comparison-expectations li {
+  font-size: 0.875rem;
+  margin: 4px 0;
+}
+
+.comparison-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 8px 4px 20px;
+  overscroll-behavior-x: contain;
+}
+
+.comparison-grid {
+  display: grid;
+  gap: 24px;
+  width: max-content;
+  align-items: start;
+}
+
+.comparison-panel {
+  width: 100%;
+  min-width: 0;
+}
+
+.comparison-panel[hidden] {
+  display: none;
+}
+
+.comparison-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+}
+
+.comparison-panel-heading h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.comparison-panel-heading span, .comparison-panel > p {
+  font-size: 0.75rem;
+  color: var(--comparison-muted);
+}
+
+.comparison-panel-heading button {
+  font-size: 0.75rem;
+}
+
+.comparison-panel iframe {
+  display: block;
+  border: 0;
+  border-radius: 8px;
+  max-width: none;
+  background: #323339;
+}
+
+.comparison-diagnostics {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--comparison-border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.comparison-diagnostics summary {
+  cursor: pointer;
+}
+
+.comparison-diagnostics h3 {
+  font-size: 0.8rem;
+  margin: 16px 0 8px;
+}
+
+.comparison-diagnostics pre {
+  font-size: 0.7rem;
+  max-height: 240px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.comparison-footnote {
+  font-size: 0.8rem;
+  color: var(--comparison-muted);
+  margin-top: 20px;
+}
+
+@media (max-width: 640px) {
+  .comparison-shell {
+    padding: 28px 16px;
+  }
+
+  .comparison-controls {
+    padding: 16px;
+  }
+
+  .comparison-controls label {
+    max-width: 100%;
+  }
+
+}

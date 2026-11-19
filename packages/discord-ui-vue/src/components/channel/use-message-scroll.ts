@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, shallowRef, watch } from "vue";
 export function useMessageScroll(conversationId: () => string, lastId: () => string | undefined, autoScroll: () => boolean) {
   const historyRef = shallowRef<HTMLDivElement | null>(null);
   let following = true;
+  let wasEnabled = false;
   let observer: ResizeObserver | undefined;
   let stop: (() => void) | undefined;
   function updateFollowState(element: HTMLDivElement): void {
@@ -12,20 +13,23 @@ export function useMessageScroll(conversationId: () => string, lastId: () => str
     stop = watch([autoScroll, conversationId, lastId], ([enabled]) => {
       observer?.disconnect();
       const history = historyRef.value;
-      if (!enabled || !history)
+      if (!enabled || !history) {
+        wasEnabled = false;
         return;
-      following = true;
+      }
+      if (!wasEnabled)
+        following = true;
+      wasEnabled = true;
       const scrollToBottom = (): void => {
-        history.scrollTop = history.scrollHeight;
+        if (following)
+          history.scrollTop = history.scrollHeight;
       };
       scrollToBottom();
       if (typeof ResizeObserver === "undefined" || !history.firstElementChild)
         return;
-      observer = new ResizeObserver(() => {
-        if (following)
-          scrollToBottom();
-      });
+      observer = new ResizeObserver(scrollToBottom);
       observer.observe(history.firstElementChild);
+      observer.observe(history);
     }, { immediate: true, flush: "post" });
   });
   onBeforeUnmount(() => {

@@ -42,6 +42,13 @@ Edit canonical example modules, not ignored files in `src/generated/examples/`.
 Dev/build regenerate previews from those modules. Demo interactions are local
 simulations; they do not connect to Discord.
 
+## Framework comparison
+
+The [standalone comparison app](../comparison/README.md) provides native React,
+Vue and Svelte fixtures, independent development/build commands and a dedicated
+static deployment output. Start it with `pnpm dev:comparison` from the repository
+root.
+
 ## Maintenance
 
 - [Documentation workflow](./docs/project/maintaining-docs.md): generation, sources and checks.

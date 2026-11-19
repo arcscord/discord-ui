@@ -21,6 +21,7 @@ concurrency:
 
 env:
   CI: true
+  BROWSER_BUILD_METADATA: .local/browser-build/metadata.json
 
 jobs:
   lint:
@@ -55,7 +56,7 @@ jobs:
       - name: Run unit tests
         run: pnpm test --reporter=default --reporter=junit --outputFile=.local/unit-results.xml
       - name: Upload test results
-        if: ${{ !cancelled() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: unit-results
@@ -63,6 +64,9 @@ jobs:
           retention-days: 7
 
   build:
+    outputs:
+      browser-artifact-id: ${{ steps.browser-builds.outputs.artifact-id }}
+      browser-artifact-digest: ${{ steps.browser-builds.outputs.artifact-digest }}
     name: Build, types and package
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -101,21 +105,34 @@ jobs:
           path: .local/package/*.tgz
           if-no-files-found: error
           retention-days: 7
+      - name: Record tested build identity
+        run: pnpm exec node scripts/comparison/build-metadata.mts
       - name: Upload browser builds
+        id: browser-builds
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: browser-builds
+          include-hidden-files: true
           path: |
+            .local/browser-build/metadata.json
             apps/website/build
+            apps/comparison/dist
             packages/discord-ui/dist
             packages/discord-ui-core/dist
             packages/discord-ui-vue/dist
             packages/discord-ui-svelte/dist
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
 
   browser:
     name: Browser tests (${{ matrix.suite }})
+    permissions:
+      contents: read
+      actions: read
+    env:
+      BROWSER_BUILD_ARTIFACT_ID: ${{ needs.build.outputs.browser-artifact-id }}
+      BROWSER_BUILD_ARTIFACT_DIGEST: ${{ needs.build.outputs.browser-artifact-digest }}
+      BROWSER_REPORT_MANIFEST: .local/browser-report-manifest.json
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -126,6 +143,11 @@ jobs:
           - suite: website
             config: playwright.website.config.mts
             results: .local/website-results
+            report: .local/playwright-report-website
+          - suite: comparison
+            config: playwright.comparison.config.mts
+            results: .local/comparison-docker/comparison-results
+            report: .local/comparison-docker/comparison-report
     steps:
       - name: Checkout source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -137,22 +159,35 @@ jobs:
       - name: Download browser builds
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: browser-builds
+          artifact-ids: ${{ needs.build.outputs.browser-artifact-id }}
           path: .
+      - name: Verify downloaded build and GitHub artifact identity
+        run: pnpm exec node scripts/comparison/build-metadata.mts --verify
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Install Chromium
+        if: matrix.suite == 'website'
         run: pnpm exec playwright install --with-deps chromium
       - name: Test desktop and mobile
+        if: matrix.suite == 'website'
         run: pnpm exec playwright test --config "${{ matrix.config }}"
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: .local/playwright-report-${{ matrix.suite }}
+      - name: Compare native variants in pinned Linux container
+        if: matrix.suite == 'comparison'
+        run: pnpm test:comparison:docker --use-built
       - name: Upload report and failure traces
-        if: ${{ !cancelled() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: browser-results-${{ matrix.suite }}
           path: |
-            .local/playwright-report-${{ matrix.suite }}
+            ${{ matrix.report }}
             ${{ matrix.results }}
+            .local/browser-report-manifest.json
+            .local/browser-build/metadata.json
+            .local/comparison-docker/browser-report-manifest.json
+          include-hidden-files: true
           retention-days: 7
 
   dependency-review:

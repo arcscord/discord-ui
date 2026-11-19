@@ -137,10 +137,9 @@
       {#if option}
         {@const text = option.choices?.find(choice => choice.value === values[name])?.name ?? values[name] ?? ""}
         {@const expanded = Boolean(option.choices && editing === name && choices?.length)}
-        <span id={`${id}-description-${name}`} hidden>{option.description}</span>
         <label class="dui-slash-token" class:dui-slash-token-active={editing === name}>
           <span>{name}</span>
-          <input aria-label={name} aria-describedby={`${id}-description-${name}`}
+          <input aria-label={name} {...{ "aria-description": option.description }}
                  role={option.choices ? "combobox" : undefined} aria-expanded={option.choices ? expanded : undefined}
                  aria-controls={expanded ? id : undefined} aria-activedescendant={expanded
                    ? `${id}-${activeIndex}`
