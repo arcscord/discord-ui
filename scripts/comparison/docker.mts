@@ -14,6 +14,21 @@ if (args.includes("--use-built")) {
   if (!existsSync(join(built, "index.html")))
     throw new Error("Build or download apps/comparison/dist before using --use-built.");
   mounts.push("--mount", `type=bind,source=${built},target=/workspace/apps/comparison/dist,readonly`);
+  for (const name of [
+    "discord-ui-core",
+    "discord-ui",
+    "discord-ui-vue",
+    "discord-ui-svelte",
+  ]) {
+    const directory = join(root, "packages", name, "dist");
+    if (!existsSync(directory))
+      throw new Error(`Build or download packages/${name}/dist before using --use-built.`);
+    mounts.push("--mount", `type=bind,source=${directory},target=/workspace/packages/${name}/dist,readonly`);
+  }
+  if (process.env.BROWSER_BUILD_METADATA) {
+    const metadata = join(root, process.env.BROWSER_BUILD_METADATA);
+    mounts.push("--mount", `type=bind,source=${metadata},target=/workspace/${process.env.BROWSER_BUILD_METADATA},readonly`);
+  }
 }
 const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
 const dirty = Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim());
@@ -24,6 +39,8 @@ await run("docker", [
   "linux/amd64",
   "--file",
   "scripts/comparison/Dockerfile",
+  "--build-arg",
+  `USE_BUILT=${args.includes("--use-built")}`,
   "--tag",
   image,
   ".",
@@ -43,6 +60,14 @@ const container = execFileSync("docker", [
   "GITHUB_RUN_ID",
   "--env",
   "GITHUB_RUN_ATTEMPT",
+  "--env",
+  "BROWSER_BUILD_METADATA",
+  "--env",
+  "BROWSER_BUILD_ARTIFACT_ID",
+  "--env",
+  "BROWSER_BUILD_ARTIFACT_DIGEST",
+  "--env",
+  "BROWSER_REPORT_MANIFEST",
   image,
   ...args.filter(value => value !== "--use-built"),
 ], {

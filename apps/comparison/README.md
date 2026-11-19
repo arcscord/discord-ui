@@ -232,3 +232,35 @@ artifact by the future PR publisher.
 CI builds and tests the comparison independently of the website browser suite,
 and includes its output in the browser-build artifact. Publication configuration
 and deployment credentials belong to the future preview-delivery workflow.
+
+## CI artifacts and revision identity
+
+Both browser suites consume the `browser-builds` artifact produced by the build
+job. CI downloads it by artifact ID and verifies its run, repository and digest
+against GitHub API metadata before testing. The Docker `--use-built` path skips
+application generation and mounts the downloaded comparison directory read-only.
+The build and browser diagnostics are retained for seven days.
+
+Each `browser-results-website` and `browser-results-comparison` artifact contains
+`browser-report-manifest.json`, alongside the HTML report and available failure
+diagnostics. The manifest records every planned test, all attempts and retries,
+errors, attachment paths and differential matrix/checkpoint evidence. Its overall
+status follows Playwright, including interrupted or timed-out runs. A test that
+never started remains listed with no attempts.
+
+Build provenance records the source PR number/repository/head SHA separately from
+`testedCheckoutSha`, which can be GitHub's synthetic merge checkout. Build run and
+attempt identify artifact creation. The manifest's `execution` identifies the
+browser attempt, including failed-job reruns that reuse an earlier build from the
+same run. Artifact IDs and digests link reports back to the tested build.
+
+The differential suite remains blocking through `CI / Required`. Existing visual
+calibration supports the current zero-changed-pixel policy. Behavior, accessibility
+and focus assertions remain independently blocking. CI uses a 20-minute browser budget
+and two workers. See the catalogue expansion measurements above
+for the local Linux timing that informed this budget.
+
+A future preview publisher must verify successful CI and artifact identity using
+GitHub metadata, then recheck the current PR head before publication. The report
+provides the revision data for that check. Trusted publication and stale-preview
+protection are implemented in the subsequent publishing stage.

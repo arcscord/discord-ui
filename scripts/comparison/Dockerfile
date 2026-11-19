@@ -18,8 +18,9 @@ COPY apps/comparison/package.json apps/comparison/package.json
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
+ARG USE_BUILT=false
 RUN node -e 'if (process.versions.node.split(".")[0] !== "26" || require("@playwright/test/package.json").version !== "1.64.1") throw new Error("Update the pinned comparison image to match the workspace toolchain.")' \
-    && pnpm build:comparison \
+    && if [ "$USE_BUILT" != "true" ]; then pnpm build:comparison; fi \
     && mkdir -p .local
 
 ENTRYPOINT ["pnpm", "exec", "playwright", "test", "-c", "playwright.comparison.config.mts"]

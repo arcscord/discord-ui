@@ -10,6 +10,7 @@ export default defineConfig({
   reporter: process.env.CI
     ? [
         ["github"],
+        ["./scripts/comparison/ci-reporter.mts"],
         [
           "html",
           { open: "never" },
