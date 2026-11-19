@@ -33,6 +33,7 @@ if (args.includes("--use-built")) {
 const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
 const dirty = Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim());
 
+process.stdout.write("[comparison] Building the pinned Linux test image\n");
 await run("docker", [
   "build",
   "--platform",
@@ -45,6 +46,7 @@ await run("docker", [
   image,
   ".",
 ]);
+process.stdout.write("[comparison] Creating the test container\n");
 const container = execFileSync("docker", [
   "create",
   "--platform",
@@ -84,6 +86,7 @@ function stop(): void {
 process.once("SIGINT", stop);
 process.once("SIGTERM", stop);
 try {
+  process.stdout.write("[comparison] Running Playwright comparison tests\n");
   // Inspect the container's exit status independently of the attach command.
   await run("docker", ["start", "--attach", container]).catch(() => undefined);
   const [status, exitCode] = execFileSync("docker", [
@@ -94,15 +97,18 @@ try {
   ], { encoding: "utf8" }).trim().split(" ");
   if (status !== "exited")
     throw new Error(`Comparison container did not finish (${status}).`);
+  process.stdout.write(`[comparison] Tests finished with exit code ${exitCode}\n`);
   process.exitCode = Number(exitCode);
 }
 finally {
   try {
+    process.stdout.write("[comparison] Collecting reports, screenshots and traces\n");
     await rm(output, { recursive: true, force: true });
     await mkdir(output, { recursive: true });
     await run("docker", ["cp", `${container}:/workspace/.local/.`, output]);
   }
   finally {
+    process.stdout.write("[comparison] Removing the test container\n");
     process.off("SIGINT", stop);
     process.off("SIGTERM", stop);
     await run("docker", ["rm", "--force", container]);
