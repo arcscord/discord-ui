@@ -9,6 +9,7 @@ export default defineConfig({
   workers: process.env.CI ? 2 : "50%",
   reporter: process.env.CI
     ? [
+        ["line"],
         ["github"],
         ["./scripts/comparison/ci-reporter.mts"],
         [
