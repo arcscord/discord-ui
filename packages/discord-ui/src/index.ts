@@ -30,10 +30,16 @@ export type { DisplayOptions, UnicodeEmojiOptions } from "./components/display-c
 export type { UILabels } from "./components/display-context";
 export { Embed } from "./components/embed/embed";
 export type { EmbedProps } from "./components/embed/embed";
+export { Audio } from "./components/media/audio";
+export type { AudioProps } from "./components/media/audio";
 export { Media } from "./components/media/media";
 export type { MediaProps } from "./components/media/media";
 export { MediaGallery } from "./components/media/media-gallery";
 export type { MediaGalleryProps } from "./components/media/media-gallery";
+export { Sticker } from "./components/media/sticker";
+export type { StickerProps } from "./components/media/sticker";
+export { Video } from "./components/media/video";
+export type { VideoProps } from "./components/media/video";
 export { Message } from "./components/message/message";
 export type { MessageProps } from "./components/message/message";
 export { MessageContent } from "./components/message/message-content";
@@ -56,7 +62,8 @@ export { defineTheme, themes, themeTokenProperties } from "./themes";
 export type { DiscordTheme, ThemeInput, ThemeName, ThemeOverrides, ThemeTokens } from "./themes";
 export type { ChannelViewModel } from "@arcscord/discord-ui-core";
 export type { ActionRowView, ButtonView, ChannelSelectMenuView, ChannelSelectOptionView, ComponentHandlers, ComponentInteractionContext, ComponentsV2Body, ContainerChild, ContainerView, FileView, GalleryView, LinkButtonView, MentionableSelectMenuView, MessageButtonView, MessageComponent, PremiumButtonView, RoleSelectMenuView, RoleSelectOptionView, SectionView, SelectChannelType, SelectDefaultValue, SelectMenuView, SelectOptionView, SelectValues, SelectValuesByMessage, SeparatorView, StringSelectMenuView, StringSelectOptionView, TextDisplayView, ThumbnailView, UserSelectMenuView, UserSelectOptionView } from "@arcscord/discord-ui-core";
-export type { EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities } from "@arcscord/discord-ui-core";
+
+export type { AudioView, EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities, MessageMediaView, StickerView, VideoView } from "@arcscord/discord-ui-core";
 export type { ChannelEntityView, ChannelType, RoleView, UserView } from "@arcscord/discord-ui-core";
 export type { AvatarFallback, InteractionReplyView, MessageAuthor, MessageContentView, MessageMetadata, MessageReplyView, MessageView, ReplyView, TextMessageBody } from "@arcscord/discord-ui-core";
 export type { ReactionToggleHandler, ReactionView } from "@arcscord/discord-ui-core";

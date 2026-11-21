@@ -1,10 +1,10 @@
-import type { MediaView } from "@arcscord/discord-ui-core";
+import type { MessageMediaView } from "@arcscord/discord-ui-core";
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import { defineRenderer } from "../../rendering";
 import { Media } from "./media";
 
 type MediaGalleryPropsInput = {
-  items: readonly MediaView[];
+  items: readonly MessageMediaView[];
 };
 export type MediaGalleryProps = MediaGalleryPropsInput;
 export type MediaGallerySlots = Record<string, never>;

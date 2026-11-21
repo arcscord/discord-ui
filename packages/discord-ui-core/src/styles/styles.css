@@ -239,7 +239,7 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-composer-command { padding: 0; align-items: stretch; }
 .dui-composer-command .dui-channel-send { position: absolute; right: 12px; bottom: 14px; }
 .dui-slash-fields, .dui-slash-editor { flex: 1; min-width: 0; }
-.dui-slash-heading { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--discord-ui-channel-header-divider); background: color-mix(in srgb, var(--discord-ui-channel-input-background), var(--discord-ui-text) 3%); border-radius: 8px 8px 0 0; }
+.dui-slash-heading { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--discord-ui-channel-header-divider); background: color-mix(in srgb, var(--discord-ui-channel-input-background), var(--discord-ui-text) 3%); border-radius: 8px; }
 .dui-slash-heading strong { flex-shrink: 0; }
 .dui-slash-heading > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .9em; }
 .dui-slash-heading button { display: grid; place-items: center; flex: 0 0 16px; width: 16px; height: 16px; padding: 0; border: 0; border-radius: 50%; background: var(--discord-ui-muted); color: var(--discord-ui-channel-input-background); font: inherit; font-size: 16px; line-height: 1; cursor: pointer; }
@@ -283,3 +283,88 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-file-download svg { flex: 0 0 18px; }
 .dui-file a.dui-file-download:hover { border-color: var(--discord-ui-muted); background: var(--discord-ui-secondary-hover); text-decoration: none; }
 .dui-file-download:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 2px; }
+
+/* Shared media players retain native keyboard-operable media and range controls. */
+.arcscord-discord-ui .dui-player { position: relative; box-sizing: border-box; width: 100%; max-width: 560px; min-width: 0; margin: 8px 0; border: 1px solid var(--discord-ui-border); border-radius: 8px; background: var(--discord-ui-background); color: var(--discord-ui-text); }
+/* Video chrome stays over the frame instead of extending the gallery tile. */
+.arcscord-discord-ui .dui-player-video { container-type: inline-size; border: 0; background: transparent; }
+.arcscord-discord-ui .dui-player-video .dui-player-controls { position: absolute; inset: auto 0 0; z-index: 2; flex-wrap: nowrap; border-radius: 0 0 8px 8px; background: rgb(0 0 0 / 55%); color: white; }
+.arcscord-discord-ui .dui-player-video .dui-player-controls button, .arcscord-discord-ui .dui-player-video .dui-player-time { color: white; }
+.arcscord-discord-ui .dui-player-video .dui-player-seek { background-color: rgb(255 255 255 / 35%); }
+.arcscord-discord-ui .dui-player-video .dui-player-controls[hidden], .arcscord-discord-ui .dui-player-preview-play[hidden] { display: none; }
+.arcscord-discord-ui .dui-player.dui-player-video > [role="status"] { position: absolute; z-index: 2; top: 8px; left: 8px; max-width: calc(100% - 56px); padding: 4px 8px; border-radius: 4px; background: rgb(0 0 0 / 55%); color: white; }
+.arcscord-discord-ui .dui-player-preview-play { position: absolute; top: 50%; left: 50%; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; transform: translate(-50%, -50%); border: 0; border-radius: 50%; background: rgb(0 0 0 / 60%); color: white; cursor: pointer; }
+.arcscord-discord-ui .dui-player-preview-play:hover { background: rgb(0 0 0 / 75%); }
+.arcscord-discord-ui .dui-player-download { position: absolute; z-index: 3; top: 8px; right: 8px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid var(--discord-ui-quote-border); border-radius: 5px; background: var(--discord-ui-surface); color: var(--discord-ui-text); opacity: 0; pointer-events: none; }
+.arcscord-discord-ui .dui-player-download .dui-player-icon { width: 18px; height: 18px; }
+.arcscord-discord-ui .dui-player:hover > .dui-player-download, .arcscord-discord-ui .dui-player:focus-within > .dui-player-download { opacity: 1; pointer-events: auto; }
+.arcscord-discord-ui .dui-player-video .dui-player-download { border-color: transparent; background: rgb(0 0 0 / 60%); color: white; }
+@media (hover: none) { .arcscord-discord-ui .dui-player > .dui-player-download { opacity: 1; pointer-events: auto; } }
+@container (max-width: 240px) {
+  .arcscord-discord-ui .dui-player-video .dui-player-controls { flex-wrap: wrap; gap: 4px; padding: 4px 6px; }
+  .arcscord-discord-ui .dui-player-video .dui-player-timeline { order: 1; flex-basis: 100%; height: 10px; }
+  .arcscord-discord-ui .dui-player-video .dui-player-controls button { min-width: 20px; min-height: 20px; }
+  .arcscord-discord-ui .dui-player-video .dui-player-controls .dui-player-icon { width: 20px; height: 20px; }
+  .arcscord-discord-ui .dui-player-video .dui-player-time { font-size: 10px; }
+}
+.arcscord-discord-ui .dui-player video { display: block; width: 100%; max-height: 420px; height: auto; object-fit: contain; background: var(--discord-ui-background); border-radius: 8px; }
+.arcscord-discord-ui .dui-player audio { display: none; }
+.arcscord-discord-ui .dui-player-audio { max-width: 432px; padding: 16px; }
+.arcscord-discord-ui .dui-player-file-header { display: flex; align-items: center; gap: 8px; min-width: 0; margin-bottom: 12px; padding-right: 24px; }
+.arcscord-discord-ui .dui-player-title { display: flex; flex-direction: column; min-width: 0; font-size: 16px; line-height: 1.25; }
+.arcscord-discord-ui .dui-player-title .dui-player-name { color: var(--discord-ui-link); overflow-wrap: anywhere; text-decoration: none; }
+.arcscord-discord-ui .dui-player-title a:hover { text-decoration: underline; }
+.arcscord-discord-ui .dui-player-size { color: var(--discord-ui-muted); font-size: 12px; }
+.arcscord-discord-ui .dui-player-controls { display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-width: 0; border-radius: 8px; background: light-dark(var(--discord-ui-surface), color-mix(in srgb, var(--discord-ui-background) 65%, black)); }
+.arcscord-discord-ui .dui-player-controls button, .arcscord-discord-ui .dui-player-controls a { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; min-width: 24px; min-height: 24px; padding: 0; box-sizing: border-box; border: 0; border-radius: 4px; background: transparent; color: var(--discord-ui-text); font: inherit; font-size: 14px; line-height: 20px; text-decoration: none; cursor: pointer; }
+.arcscord-discord-ui .dui-player-controls button:hover, .arcscord-discord-ui .dui-player-controls a:hover { color: var(--discord-ui-strong); }
+.arcscord-discord-ui .dui-player :focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 3px; }
+.arcscord-discord-ui .dui-player-controls input { display: block; padding: 0; margin: 0; accent-color: var(--discord-ui-accent); cursor: pointer; }
+.arcscord-discord-ui .dui-player-controls input:disabled { cursor: default; }
+.arcscord-discord-ui .dui-player-timeline { position: relative; display: flex; align-items: center; flex: 1 1 70px; min-width: 20px; height: 24px; }
+.arcscord-discord-ui .dui-player-seek { appearance: none; width: 100%; min-width: 0; height: 6px; border: 0; border-radius: 4px; background: linear-gradient(var(--discord-ui-accent), var(--discord-ui-accent)) left / 0% 100% no-repeat color-mix(in srgb, var(--discord-ui-muted) 45%, transparent); }
+.arcscord-discord-ui .dui-player-seek::-webkit-slider-runnable-track { height: 6px; background: transparent; }
+.arcscord-discord-ui .dui-player-seek::-webkit-slider-thumb { appearance: none; margin-top: -2px; width: 10px; height: 10px; border: 0; border-radius: 50%; background: var(--discord-ui-accent); }
+.arcscord-discord-ui .dui-player-seek::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: var(--discord-ui-accent); }
+.arcscord-discord-ui .dui-player-time { flex-shrink: 0; color: var(--discord-ui-strong); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.arcscord-discord-ui .dui-player > [role="status"] { padding: 8px 0; font-size: 12px; color: var(--discord-ui-muted); }
+.arcscord-discord-ui .dui-player-volume-control { position: relative; display: flex; flex: 0 0 auto; }
+.arcscord-discord-ui .dui-player-volume-popover { position: absolute; z-index: 5; bottom: calc(100% + 6px); left: 50%; display: flex; align-items: center; justify-content: center; width: 28px; height: 100px; box-sizing: border-box; padding: 10px; border-radius: 14px; background: light-dark(var(--discord-ui-surface), color-mix(in srgb, var(--discord-ui-background) 65%, black)); transform: translateX(-50%); opacity: 0; visibility: hidden; pointer-events: none; }
+.arcscord-discord-ui .dui-player-volume-popover::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 8px; }
+.arcscord-discord-ui .dui-player-volume-control[data-open="true"] .dui-player-volume-popover { opacity: 1; visibility: visible; pointer-events: auto; }
+.arcscord-discord-ui .dui-player-controls .dui-player-volume { appearance: none; writing-mode: vertical-lr; direction: rtl; width: 6px; height: 80px; border: 0; border-radius: 4px; background: linear-gradient(var(--discord-ui-accent), var(--discord-ui-accent)) bottom / 100% 100% no-repeat color-mix(in srgb, var(--discord-ui-muted) 45%, transparent); }
+.arcscord-discord-ui .dui-player-volume::-webkit-slider-thumb { appearance: none; width: 6px; height: 6px; border: 0; border-radius: 50%; background: var(--discord-ui-accent); }
+.arcscord-discord-ui .dui-player-volume::-moz-range-thumb { width: 6px; height: 6px; border: 0; border-radius: 50%; background: var(--discord-ui-accent); }
+.arcscord-discord-ui .dui-player-voice { width: max-content; max-width: 100%; padding: 7px; border-radius: 999px; background: var(--discord-ui-surface); }
+.arcscord-discord-ui .dui-player-voice .dui-player-controls { gap: 10px; padding: 0; background: transparent; }
+.arcscord-discord-ui .dui-player-voice .dui-player-play { width: 32px; height: 32px; border-radius: 50%; background: var(--discord-ui-accent); color: white; }
+.arcscord-discord-ui .dui-player-voice .dui-player-play .dui-player-icon { width: 18px; height: 18px; }
+.arcscord-discord-ui .dui-player-voice .dui-player-timeline { width: 64px; flex: 0 1 64px; min-width: 20px; }
+.arcscord-discord-ui .dui-player-voice .dui-player-time { color: var(--discord-ui-muted); font: inherit; font-size: 14px; font-variant-numeric: tabular-nums; }
+.arcscord-discord-ui .dui-player-voice .dui-player-speed { min-width: 32px; min-height: 18px; padding: 0 4px; border-radius: 4px; background: var(--discord-ui-secondary-hover); color: var(--discord-ui-muted); font-size: 12px; font-weight: 700; line-height: 18px; }
+.arcscord-discord-ui .dui-waveform { display: flex; align-items: center; gap: 0; width: 100%; height: 20px; overflow: hidden; }
+.arcscord-discord-ui .dui-waveform-bar { flex: 1 1 0; min-width: 0; max-width: 6px; clip-path: inset(0 25% round 2px); border-radius: 2px; background: var(--discord-ui-muted); }
+.arcscord-discord-ui .dui-waveform-bar[data-played="true"] { background: var(--discord-ui-strong); }
+.arcscord-discord-ui .dui-player-timeline-waveform .dui-player-seek { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.arcscord-discord-ui .dui-player-timeline-waveform:focus-within { outline: 2px solid var(--discord-ui-accent); outline-offset: 3px; border-radius: 3px; }
+.arcscord-discord-ui .dui-player:fullscreen { display: flex; flex-direction: column; justify-content: center; max-width: none; margin: 0; border: 0; border-radius: 0; }
+.arcscord-discord-ui .dui-player:fullscreen video { max-height: calc(100vh - 72px); flex: 1; min-height: 0; }
+.arcscord-discord-ui .dui-player-icon { display: block; width: 24px; height: 24px; background: currentColor; mask-position: center; mask-size: contain; mask-repeat: no-repeat; }
+.arcscord-discord-ui .dui-player-file-icon { position: relative; flex: 0 0 24px; width: 24px; height: 32px; border-radius: 2px; clip-path: polygon(0 0, 66% 0, 100% 25%, 100% 100%, 0 100%); background: color-mix(in srgb, var(--discord-ui-accent) 25%, var(--discord-ui-strong)); }
+.arcscord-discord-ui .dui-player-file-icon::before { content: ""; position: absolute; top: 0; right: 0; width: 34%; height: 25%; border-radius: 0 0 0 2px; background: color-mix(in srgb, var(--discord-ui-accent) 55%, var(--discord-ui-strong)); }
+.arcscord-discord-ui .dui-player-file-icon::after { content: ""; position: absolute; bottom: 4px; left: 3px; width: 18px; height: 18px; background: var(--discord-ui-accent); mask-size: contain; mask-position: center; mask-repeat: no-repeat; }
+.arcscord-discord-ui .dui-player-icon-play { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M7%204.8c0-1%201.1-1.6%202-1.1l12%207.2a1.3%201.3%200%200%201%200%202.2L9%2020.3c-.9.5-2-.1-2-1.1Z%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-pause { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%204h4v16H6zm8%200h4v16h-4z%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-replay { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%205a7%207%200%201%201-6.4%204.2L3.8%208.4A9%209%200%201%200%2012%203V0L7%204l5%204Z%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-speaker { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M2%209v6h4l6%205V4L6%209Z%22%2F%3E%3Cpath%20d%3D%22M15%208a5%205%200%200%201%200%208m3-11a9%209%200%200%201%200%2014%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-file-icon::after { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M2%209v6h4l6%205V4L6%209Z%22%2F%3E%3Cpath%20d%3D%22M15%208a5%205%200%200%201%200%208m3-11a9%209%200%200%201%200%2014%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-speaker-muted { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M2%209v6h4l6%205V4L6%209Z%22%2F%3E%3Cpath%20d%3D%22m16%209%206%206m0-6-6%206%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-fullscreen { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%209V3h6m6%200h6v6m0%206v6h-6m-6%200H3v-6%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-exit-fullscreen { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%209h6V3m6%200v6h6m0%206h-6v6m-6%200v-6H3%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-player-icon-download { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%203v12m-5-5%205%205%205-5M4%2017v4h16v-4%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.arcscord-discord-ui .dui-sticker { display: flex; width: 160px; max-width: 100%; min-height: 80px; margin: 8px 0; }
+.arcscord-discord-ui .dui-sticker img { display: block; width: 100%; height: 160px; max-width: 100%; object-fit: contain; }
+
+/* Ephemeral visibility takes precedence when the host supplies both hints. */
+.dui-message[data-mentioned]:not([data-ephemeral]) { background: var(--discord-ui-mentioned-background); border-left: 2px solid var(--discord-ui-mentioned-border); padding-left: 14px; }
+.dui-message[data-mentioned]:not([data-ephemeral]):hover, .dui-message[data-mentioned]:not([data-ephemeral]):focus-within { background: var(--discord-ui-mentioned-hover); }

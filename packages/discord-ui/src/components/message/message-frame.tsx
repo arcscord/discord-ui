@@ -5,6 +5,7 @@ import { useDisplayOptions } from "../display-context";
 export type MessageFrameProps = {
   hasThread?: boolean;
   ephemeral?: boolean;
+  mentioned?: boolean;
   reply?: ReactNode;
   avatar?: ReactNode;
   header?: ReactNode;
@@ -12,12 +13,14 @@ export type MessageFrameProps = {
   children: ReactNode;
 };
 
-export function MessageFrame({ avatar, reply, header, footer, children, ephemeral = false, hasThread = false }: MessageFrameProps) {
-  const { resolvedTheme, scoped } = useDisplayOptions();
+export function MessageFrame({ avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false }: MessageFrameProps) {
+  const { resolvedTheme, scoped, labels } = useDisplayOptions();
   return (
     <article
       className={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}
       data-ephemeral={ephemeral || undefined}
+      data-mentioned={mentioned || undefined}
+      aria-label={mentioned ? labels.mentionedMessage : undefined}
       data-has-thread={hasThread || undefined}
       data-theme={resolvedTheme.name}
       data-base-theme={scoped ? undefined : resolvedTheme.base}

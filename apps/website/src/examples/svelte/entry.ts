@@ -2,11 +2,13 @@ import type { Component } from "svelte";
 import { mount, unmount } from "svelte";
 import Conversation from "./conversation.svelte";
 import Interactions from "./interactions.svelte";
+import Media from "./media.svelte";
 import Message from "./message.svelte";
 import ThemesAndMedia from "./themes-and-media.svelte";
 
 const examples = new Map<string, Component>([
   ["message", Message],
+  ["media", Media],
   ["interactions", Interactions],
   ["conversation", Conversation],
   ["themes-and-media", ThemesAndMedia],

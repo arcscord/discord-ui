@@ -76,7 +76,15 @@ export async function buildReference() {
   const defaultsVariable = defaultsSource.statements.filter(ts.isVariableStatement).flatMap(statement => statement.declarationList.declarations).find(declaration => declaration.name.getText() === "defaultDisplayOptions")!;
   const defaultsObject = defaultsVariable.initializer as ts.ObjectLiteralExpression;
   const labelsObject = (defaultsObject.properties.find(property => property.name?.getText() === "labels") as ts.PropertyAssignment).initializer as ts.ObjectLiteralExpression;
-  const labelDefaults = Object.fromEntries(labelsObject.properties.filter(ts.isPropertyAssignment).map(property => [
+  const labelProperties = labelsObject.properties.flatMap((property) => {
+    if (!ts.isSpreadAssignment(property))
+      return [property];
+    const declaration = checker.getSymbolAtLocation(property.expression)?.valueDeclaration;
+    if (!declaration || !ts.isVariableDeclaration(declaration) || !declaration.initializer || !ts.isObjectLiteralExpression(declaration.initializer))
+      throw new Error(`Expected a label defaults object for ${property.expression.getText()}`);
+    return [...declaration.initializer.properties];
+  });
+  const labelDefaults = Object.fromEntries(labelProperties.filter(ts.isPropertyAssignment).map(property => [
     property.name.getText(),
     property.initializer.getText(),
   ]));

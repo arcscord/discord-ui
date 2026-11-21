@@ -5,6 +5,7 @@ import { render } from "svelte/server";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { demoChannel } from "../../../fixtures/channel.js";
 import * as svelte from "../src/index.js";
+import MediaFixture from "./MediaFixture.svelte";
 import RenderFixture from "./RenderFixture.svelte";
 
 describe("svelte public surface", () => {
@@ -12,7 +13,7 @@ describe("svelte public surface", () => {
     const components = Object.keys(react).filter(name => /^[A-Z]/u.test(name)).sort();
     const exports = Object.keys(svelte).filter(name => /^[A-Z]/u.test(name)).sort();
     expect(exports).toEqual(components);
-    expect(exports).toHaveLength(34);
+    expect(exports).toHaveLength(37);
     for (const name of exports)
       expect(svelte[name as keyof typeof svelte]).toBeTypeOf("function");
   });
@@ -89,5 +90,44 @@ describe("svelte server rendering", () => {
     expect(body).toContain("dui-thread-preview");
     expect(body).not.toContain("class=\"dui-thread-panel\"");
     expect(body).not.toContain("class=\"dui-channel-composer\"");
+  });
+});
+
+describe("svelte media rendering", () => {
+  it("renders custom video and voice controls with deterministic initial state", () => {
+    const { body } = render(MediaFixture, {
+      props: { allowRemoteMedia: true },
+    });
+    expect(body).toContain("<video");
+    expect(body).toContain("<audio");
+    expect(body).toContain("preload=\"none\"");
+    expect(body).not.toContain("autoplay");
+    expect(body).toContain("aria-label=\"Play\"");
+    expect(body).toContain("dui-waveform-bar");
+    expect(body).toContain("0:00 / 0:02");
+    expect(body).toContain("alt=\"Wave\"");
+    expect(body).toContain("Unsupported sticker format");
+    expect(body).not.toContain("src=\"https://media.example.test/sticker.json\"");
+    expect(body).not.toContain("src=\"/hidden.mp4\"");
+    expect(body).not.toContain("src=\"/hidden.ogg\"");
+    expect(render(MediaFixture, {
+      props: { allowRemoteMedia: true },
+    }).body).toBe(body);
+  });
+
+  it("blocks remote player, poster and sticker sources while retaining local images", () => {
+    const { body } = render(MediaFixture);
+    expect(body).not.toContain("<video");
+    expect(body).not.toContain("<audio");
+    expect(body).not.toContain("src=\"https://media.example.test/");
+    expect(body).not.toContain("poster=\"https://media.example.test/");
+    expect(body).toContain("src=\"/image.png\"");
+    expect(body).toContain("Media unavailable");
+  });
+
+  it("keeps public component model props typed", () => {
+    expectTypeOf<ComponentProps<typeof svelte.Video>>().toEqualTypeOf<svelte.VideoProps>();
+    expectTypeOf<ComponentProps<typeof svelte.Audio>>().toEqualTypeOf<svelte.AudioProps>();
+    expectTypeOf<ComponentProps<typeof svelte.Sticker>>().toEqualTypeOf<svelte.StickerProps>();
   });
 });

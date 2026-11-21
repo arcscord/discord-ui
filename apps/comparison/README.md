@@ -80,7 +80,7 @@ checkpoint also compares pixels, accessible state, focus and ID relationships.
 | Classic messages / `classic` | Edited marker, author metadata, unavailable reply, ephemeral dismissal, spoiler reveal/hide and controlled reaction | `initial`, `spoiler-visible`, `spoiler-hidden`, `reaction-on`, `reaction-off`, `ephemeral-dismissed` |
 | Markdown / `markdown` | Whitespace, nested emphasis, quote/list, mentions, timestamp, links and opt-in code highlighting | `formatted` |
 | Embeds / `embeds` | Inline fields, long text, local thumbnail, overflow and 480/481 px layout boundary | `fields-and-wrapping` |
-| Media and files / `media` | Local gallery, blocked image, allowlisted absolute URL, failed decode, attachment metadata and fallback labels | `media-policy` |
+| Media and files / `media` | Local image/video gallery, audio files, voice waveform, PNG/APNG/GIF stickers, Lottie fallback, blocked sources, allowlisted absolute URL, failed decode and attachment metadata | `media-policy`, `media-audio`, `media-stickers` |
 | Spoilers / `spoilers` | Pointer reveal, keyboard hide/reveal, focus and French labels | `hidden`, `pointer-reveal`, `keyboard-hide`, `keyboard-reveal` |
 | Components V2 / `interactions` | Container, section/accessory, separator, action rows, controlled multi-select and button context | `initial`, `menu-open`, `selected`, `menu-closed`, `wave`, `section-accessory` |
 | Buttons / `buttons` | Disabled, link and premium variants, exact callback message/component context | `variants`, `action-context`, `premium-context` |
@@ -92,6 +92,15 @@ checkpoint also compares pixels, accessible state, focus and ID relationships.
 
 The composition check dispatches a keyboard event with `isComposing` set. This
 checks the component guard with a synthetic browser event.
+Playback tests also exercise real local video and audio through native media events,
+keyboard seeking, volume, mute, vocal playback speed and rejected play promises.
+The fixtures use a short synthetic VP8 WebM, mono PCM WAV and local stickers.
+The PNG sticker is the supplied Arcscord logo, copied unchanged; APNG and GIF
+remain distinct synthetic assets. The video poster is extracted from the WebM's
+first decoded frame. Its initial central play button reveals the translucent
+playback bar after playback starts. The
+APNG contains one frame to keep visual comparison captures deterministic.
+
 The media fixture uses local assets. Its allowlisted image uses an absolute
 same-origin URL, while the blocked URL remains outside the allowlist. The asset
 generator writes an undecodable image served with HTTP 200 to exercise the

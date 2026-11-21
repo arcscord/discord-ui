@@ -19,7 +19,9 @@
   import Markdown from "../content/Markdown.svelte";
   import { getDisplayOptions } from "../display-context.js";
   import Embed from "../embed/Embed.svelte";
+  import Audio from "../media/Audio.svelte";
   import MediaGallery from "../media/MediaGallery.svelte";
+  import Sticker from "../media/Sticker.svelte";
   import ThreadPreview from "../thread/ThreadPreview.svelte";
   import MessageContent from "./MessageContent.svelte";
   import MessageFrame from "./MessageFrame.svelte";
@@ -35,7 +37,7 @@
 
 {#snippet replyPreview()}{#if message.reply}<ReplyPreview reply={message.reply} />{/if}{/snippet}
 
-<MessageFrame ephemeral={message.ephemeral === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
+<MessageFrame ephemeral={message.ephemeral === true} mentioned={message.mentioned === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
   {#snippet avatar()}<Avatar author={message.author} />{/snippet}
   {#snippet header()}<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} />{/snippet}
   {#snippet footer()}
@@ -65,7 +67,10 @@
     <MessageContent content={message.body.content} />
   {/if}
   {#if message.media?.length}<MediaGallery items={message.media} />{/if}
-  {#each message.attachments ?? [] as file (file.id)}<File {file} />{/each}
+  {#each message.attachments ?? [] as file (file.id)}
+    {#if file.kind === "audio"}<Audio audio={file} />{:else}<File {file} />{/if}
+  {/each}
+  {#each message.stickers ?? [] as sticker (sticker.id)}<Sticker {sticker} />{/each}
   {#each message.embeds ?? [] as embed (embed.id)}<Embed {embed} {referenceTime} />{/each}
   {#if message.components?.length}
     <MessageComponents messageId={message.id} {selectValues} components={message.components} {referenceTime} {onButtonClick} {onSelectChange} {onPremiumClick} />

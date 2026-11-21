@@ -14,6 +14,12 @@ content props accept typed Svelte snippets.
 | --- | --- | --- |
 | **children** | Yes | `Snippet<[]>` |
 
+## Audio
+
+| Prop | Required | Type |
+| --- | --- | --- |
+| **audio** | Yes | `AudioView` |
+
 ## Author
 
 | Prop | Required | Type |
@@ -151,13 +157,13 @@ content props accept typed Svelte snippets.
 
 | Prop | Required | Type |
 | --- | --- | --- |
-| **media** | Yes | `MediaView` |
+| **media** | Yes | `MessageMediaView` |
 
 ## MediaGallery
 
 | Prop | Required | Type |
 | --- | --- | --- |
-| **items** | Yes | `readonly MediaView[]` |
+| **items** | Yes | `readonly MessageMediaView[]` |
 
 ## Mention
 
@@ -206,6 +212,7 @@ content props accept typed Svelte snippets.
 | --- | --- | --- |
 | **hasThread** | No | `boolean` |
 | **ephemeral** | No | `boolean` |
+| **mentioned** | No | `boolean` |
 | **reply** | No | `Snippet<[]> \| undefined` |
 | **avatar** | No | `Snippet<[]>` |
 | **header** | No | `Snippet<[]>` |
@@ -286,6 +293,12 @@ content props accept typed Svelte snippets.
 | **inline** | No | `boolean` |
 | **placeholder** | No | `Snippet<[]>` |
 
+## Sticker
+
+| Prop | Required | Type |
+| --- | --- | --- |
+| **sticker** | Yes | `StickerView` |
+
 ## TextDisplay
 
 | Prop | Required | Type |
@@ -323,6 +336,12 @@ content props accept typed Svelte snippets.
 | Prop | Required | Type |
 | --- | --- | --- |
 | **media** | Yes | `MediaView` |
+
+## Video
+
+| Prop | Required | Type |
+| --- | --- | --- |
+| **video** | Yes | `VideoView` |
 
 ## Additional entry points
 

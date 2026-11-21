@@ -44,7 +44,10 @@ original preset base/color scheme is inherited unless the color scheme is explic
 Pass the result as `DiscordUI.theme`. The wrapper's `tokens` prop applies final
 per-scope overrides over the selected theme. Prefer semantic tokens such as
 `text`, `muted`, `surface`, `accent`, `border`, `containerSurface` and
-`selectChipBackground` to styling internal elements directly.
+`selectChipBackground` to styling internal elements directly. `mentionedBackground`,
+`mentionedHover` and `mentionedBorder` control the resting background, hover/focus
+background and 2px left border of a mentioned message. Override them through `tokens` or
+`defineTheme`, using the same inheritance rules as other semantic tokens.
 
 ## Keep scopes independent
 

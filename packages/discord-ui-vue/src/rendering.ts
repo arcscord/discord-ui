@@ -26,6 +26,7 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
     "divider",
     "edited",
     "ephemeral",
+    "mentioned",
     "hasThread",
     "showThreadPreview",
     "showDateSeparators",

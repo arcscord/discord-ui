@@ -126,6 +126,11 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
         image.loading = "eager";
         return image.decode().catch(() => undefined);
       }));
+      await Promise.all(Array.from(window.document.querySelectorAll<HTMLVideoElement>("video[poster]"), async (video) => {
+        const poster = new Image();
+        poster.src = video.poster;
+        await poster.decode().catch(() => undefined);
+      }));
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
     const observation = await document.locator("html").evaluate(() => {
@@ -193,6 +198,8 @@ export function createRunner(page: Page, info: TestInfo, matrix: MatrixCase): Co
       const bounds = iframe.getBoundingClientRect();
       iframe.style.transform = `translate(${Math.round(bounds.x) - bounds.x}px, ${Math.round(bounds.y) - bounds.y}px)`;
     });
+    // Keep incidental pointer hover out of the compared framework viewports.
+    await page.mouse.move(-1, -1);
     const image = await document.locator("#capture").screenshot({ animations: "disabled", caret: "hide", scale: "css" });
     return {
       framework,

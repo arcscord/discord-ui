@@ -68,7 +68,7 @@ Both message helpers accept `selectEntities`, keyed by the menu's Discord
 models. Entity menus start with an empty list when those choices are absent.
 The host authorizes access, supplies mention lookups and handles interactions.
 The message helper uses available data and omits unsupported nodes, including
-media references it cannot resolve. The renderer supports images and file links.
+media references it cannot resolve. The adapters render image and video galleries, audio files, voice notes, PNG/APNG/GIF stickers and file links. Lottie stickers have an explicit unsupported-format state.
 
 ### With discord.js v14
 
@@ -187,3 +187,12 @@ See the repository's
 MIT. Adapted parsing, highlighting and styles retain upstream notices in
 [THIRD_PARTY_NOTICES](./THIRD_PARTY_NOTICES). Twemoji graphics are not bundled or
 loaded implicitly; hosts supplying graphics retain their attribution obligations.
+
+## Mentioned messages
+
+Set `MessageView.mentioned` to `true` for the current viewer's highlighted
+messages. Rendering adapters also expose `MessageFrame.mentioned` for composed
+layouts. The host supplies the flag; Markdown mention tokens and API conversion
+leave it unset. The highlight uses its hover background on hover and keyboard focus. Ephemeral appearance takes precedence
+when both flags are true. Theme overrides accept `mentionedBackground`, `mentionedHover` and
+`mentionedBorder`.

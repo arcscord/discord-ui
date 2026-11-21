@@ -237,7 +237,7 @@ Union of supported non-container nodes. Nested containers are deliberately exclu
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"media-gallery"` | — | Discriminator selecting this model variant. |
-| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+| `items` | Yes | `readonly MessageMediaView[]` | — | Ordered gallery image and video models with stable IDs. |
 
 #### Variant 4
 
@@ -336,21 +336,21 @@ Resolved file metadata, with already-formatted size. HTTP(S) links only; spoofed
 
 <CodeBlock language="ts">{"import type { GalleryView } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Ordered media items in a V2 tree; each follows MediaView behavior.
+Ordered image or video items in a V2 tree; each follows the corresponding media model behavior.
 
-<CodeBlock language="ts">{"type GalleryView = {\n  id: string;\n  kind: \"media-gallery\";\n  items: readonly MediaView[];\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type GalleryView = {\n  id: string;\n  kind: \"media-gallery\";\n  items: readonly MessageMediaView[];\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"media-gallery"` | — | Discriminator selecting this model variant. |
-| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+| `items` | Yes | `readonly MessageMediaView[]` | — | Ordered gallery image and video models with stable IDs. |
 
 ### Valid example
 
 <CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.GalleryView = { id: \"gallery\", kind: \"media-gallery\", items: [{ id: \"image\", url: \"/examples/landscape.svg\", alt: \"Landscape\" }] };"}</CodeBlock>
 
-Related types: [MediaView](/docs/api/models#mediaview).
+Related types: [MessageMediaView](/docs/api/models#messagemediaview).
 
 [Usage guide and runnable example](/docs/guides/media)
 
@@ -489,7 +489,7 @@ Top-level V2 component union, including a container or supported non-container n
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"media-gallery"` | — | Discriminator selecting this model variant. |
-| `items` | Yes | `readonly MediaView[]` | — | Ordered gallery image models with stable IDs. |
+| `items` | Yes | `readonly MessageMediaView[]` | — | Ordered gallery image and video models with stable IDs. |
 
 #### Variant 4
 
@@ -994,7 +994,7 @@ Media model used as a section thumbnail accessory. Uses the same image URL/spoil
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `kind` | Yes | `"thumbnail"` | — | Discriminator selecting this model variant. |
-| `media` | Yes | `MediaView` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
+| `media` | Yes | `MediaView` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
 
 ### Valid example
 
@@ -1066,6 +1066,32 @@ Resolved user identity plus entityType=user. No string-option description/defaul
 Related types: [UserView](/docs/api/models#userview).
 
 [Usage guide and runnable example](/docs/guides/interactions)
+
+## AudioView
+
+<CodeBlock language="ts">{"import type { AudioView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Audio-file or voice-note display data. Set voice=true for vocal presentation and supply optional normalized waveform samples. Missing or invalid samples fall back to simple progress. Duration is initially supplied and updated by browser playback events.
+
+<CodeBlock language="ts">{"type AudioView = {\n  kind: \"audio\";\n  id: string;\n  url: string;\n  name: string;\n  size?: string;\n  spoiler?: boolean;\n  durationSeconds?: number;\n  voice?: boolean;\n  /** Normalized amplitude samples between zero and one. */\n  waveform?: readonly number[];\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"audio"` | — | Discriminator selecting this model variant. |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `size` | No | `string` | — | Already formatted file-size label, not a byte count. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `durationSeconds` | No | `number` | — | Optional initial positive duration in seconds; browser media events supply the playback duration. |
+| `voice` | No | `boolean` | — | Uses the voice-note presentation with optional waveform and playback speed controls. |
+| `waveform` | No | `readonly number[]` | — | Optional normalized amplitude samples between zero and one. Missing samples use simple progress. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.AudioView = { id: \"audio\", kind: \"audio\", url: \"/examples/trail.wav\", name: \"trail.wav\", durationSeconds: 3 };\nconst example2: API.AudioView = { id: \"voice\", kind: \"audio\", url: \"/examples/trail.wav\", name: \"Trail voice note\", voice: true, waveform: [0.2, 0.5, 0.8] };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
 
 ## EmbedView
 
@@ -1147,9 +1173,9 @@ Image display data. Spoilers defer mounting until reveal, dimensions reserve spa
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
-| `alt` | Yes | `string` | — | Meaningful image alternative describing the visual content. |
+| `alt` | Yes | `string` | — | Meaningful image or video alternative describing the visual content. |
 | `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
-| `width` | No | `number` | — | Optional intrinsic image width. |
+| `width` | No | `number` | — | Optional intrinsic image or video width. |
 | `height` | No | `number` | — | Channel viewport height (CSS height); or image intrinsic height where specified. |
 
 ### Valid example
@@ -1179,6 +1205,94 @@ Lookup maps resolve parsed tokens; the map key is the string ID and the value ho
 <CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageEntities = { users: { \"123456789012345678\": { name: \"Sam\" } }, roles: { moderators: { name: \"Moderators\", color: \"#5865f2\" } } };"}</CodeBlock>
 
 Related types: [EntityView](/docs/api/models#entityview), [RoleView](/docs/api/models#roleview).
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## MessageMediaView
+
+<CodeBlock language="ts">{"import type { MessageMediaView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Image or video model for message media and V2 gallery items. Existing image models retain their shape; videos have kind=video. Thumbnails and embed images continue to accept image models.
+
+<CodeBlock language="ts">{"type MessageMediaView = MediaView | VideoView;"}</CodeBlock>
+
+#### Variant 1
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `alt` | Yes | `string` | — | Meaningful image or video alternative describing the visual content. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `width` | No | `number` | — | Optional intrinsic image or video width. |
+| `height` | No | `number` | — | Channel viewport height (CSS height); or image intrinsic height where specified. |
+
+#### Variant 2
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"video"` | — | Discriminator selecting this model variant. |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `alt` | Yes | `string` | — | Meaningful image or video alternative describing the visual content. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `width` | No | `number` | — | Optional intrinsic image or video width. |
+| `height` | No | `number` | — | Channel viewport height (CSS height); or image intrinsic height where specified. |
+| `posterUrl` | No | `string` | — | Optional video poster source checked by the shared media policy. |
+| `durationSeconds` | No | `number` | — | Optional initial positive duration in seconds; browser media events supply the playback duration. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageMediaView = { id: \"image\", url: \"/examples/landscape.svg\", alt: \"Landscape\" };\nconst example2: API.MessageMediaView = { id: \"video\", kind: \"video\", url: \"/examples/trail.webm\", alt: \"Trail preview\" };"}</CodeBlock>
+
+Related types: [MediaView](/docs/api/models#mediaview), [VideoView](/docs/api/models#videoview).
+
+[Usage guide and runnable example](/docs/guides/media)
+
+## StickerView
+
+<CodeBlock language="ts">{"import type { StickerView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Named sticker display data. PNG, APNG and GIF render in a transparent frame. Lottie has an explicit translated unsupported-format state and makes no asset request.
+
+<CodeBlock language="ts">{"type StickerView = {\n  id: string;\n  name: string;\n  format: \"png\" | \"apng\" | \"gif\" | \"lottie\";\n  url: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `format` | Yes | `"png" \| "apng" \| "gif" \| "lottie"` | — | Sticker asset format. PNG, APNG and GIF render as images; Lottie shows an unsupported-format state. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.StickerView = { id: \"marker\", name: \"Arcscord sticker\", format: \"png\", url: \"/examples/arcscord-sticker.png\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
+## VideoView
+
+<CodeBlock language="ts">{"import type { VideoView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Directly playable video display data. Sources and optional posters obey media policy. Custom controls follow real browser playback events and expose fullscreen where available. Dimensions reserve space; spoilers defer player mounting.
+
+<CodeBlock language="ts">{"type VideoView = {\n  kind: \"video\";\n  id: string;\n  url: string;\n  alt: string;\n  spoiler?: boolean;\n  width?: number;\n  height?: number;\n  posterUrl?: string;\n  durationSeconds?: number;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `kind` | Yes | `"video"` | — | Discriminator selecting this model variant. |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `url` | Yes | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
+| `alt` | Yes | `string` | — | Meaningful image or video alternative describing the visual content. |
+| `spoiler` | No | `boolean` | — | Locally conceals content; not authorization. Media/file/container content defers mounting until reveal. |
+| `width` | No | `number` | — | Optional intrinsic image or video width. |
+| `height` | No | `number` | — | Channel viewport height (CSS height); or image intrinsic height where specified. |
+| `posterUrl` | No | `string` | — | Optional video poster source checked by the shared media policy. |
+| `durationSeconds` | No | `number` | — | Optional initial positive duration in seconds; browser media events supply the playback duration. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.VideoView = { id: \"video\", kind: \"video\", url: \"/examples/trail.webm\", alt: \"Trail preview\", width: 240, height: 135 };"}</CodeBlock>
 
 [Usage guide and runnable example](/docs/guides/messages)
 
@@ -1342,17 +1456,18 @@ Related types: [AvatarFallback](/docs/api/models#avatarfallback).
 
 <CodeBlock language="ts">{"import type { MessageContentView } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Classic text/Markdown permits top-level embeds, media, attachments and action rows. Components V2 forbids all four and contains its own body.components tree. Never mix both branches.
+Classic text/Markdown permits top-level embeds, media, attachments, stickers and action rows. Components V2 forbids those fields and contains its own body.components tree. Never mix both branches.
 
-<CodeBlock language="ts">{"type MessageContentView = ({\n  body: TextMessageBody | MarkdownMessageBody;\n  media?: readonly MediaView[];\n  attachments?: readonly FileView[];\n  embeds?: readonly EmbedView[];\n  components?: readonly ActionRowView[];\n} | {\n  body: ComponentsV2Body;\n  media?: never;\n  attachments?: never;\n  embeds?: never;\n  components?: never;\n});"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageContentView = ({\n  body: TextMessageBody | MarkdownMessageBody;\n  media?: readonly MessageMediaView[];\n  attachments?: readonly (FileView | AudioView)[];\n  stickers?: readonly StickerView[];\n  embeds?: readonly EmbedView[];\n  components?: readonly ActionRowView[];\n} | {\n  body: ComponentsV2Body;\n  media?: never;\n  attachments?: never;\n  stickers?: never;\n  embeds?: never;\n  components?: never;\n});"}</CodeBlock>
 
 #### Variant 1
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
-| `media` | No | `readonly MediaView[]` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
-| `attachments` | No | `readonly FileView[]` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `media` | No | `readonly MessageMediaView[]` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | No | `readonly (FileView \| AudioView)[]` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
+| `stickers` | No | `readonly StickerView[]` | — | Ordered classic-message sticker models; forbidden on a Components V2 body. |
 | `embeds` | No | `readonly EmbedView[]` | — | Classic-message cards; forbidden on a Components V2 body. |
 | `components` | No | `readonly ActionRowView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
 
@@ -1361,8 +1476,9 @@ Classic text/Markdown permits top-level embeds, media, attachments and action ro
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
-| `media` | Forbidden | `never` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
-| `attachments` | Forbidden | `never` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `media` | Forbidden | `never` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | Forbidden | `never` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
+| `stickers` | Forbidden | `never` | — | Ordered classic-message sticker models; forbidden on a Components V2 body. |
 | `embeds` | Forbidden | `never` | — | Classic-message cards; forbidden on a Components V2 body. |
 | `components` | Forbidden | `never` | — | Ordered component nodes; the owning union determines which variants are allowed. |
 
@@ -1370,7 +1486,7 @@ Classic text/Markdown permits top-level embeds, media, attachments and action ro
 
 <CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageContentView = { body: { kind: \"text\", content: \"Hello\" } };\nconst example2: API.MessageContentView = { body: { kind: \"components-v2\", components: [{ id: \"text\", kind: \"text-display\", content: \"Hello\" }] } };"}</CodeBlock>
 
-Related types: [TextMessageBody](/docs/api/models#textmessagebody), [MarkdownMessageBody](/docs/api/models#markdownmessagebody), [MediaView](/docs/api/models#mediaview), [FileView](/docs/api/models#fileview), [EmbedView](/docs/api/models#embedview), [ActionRowView](/docs/api/models#actionrowview), [ComponentsV2Body](/docs/api/models#componentsv2body).
+Related types: [TextMessageBody](/docs/api/models#textmessagebody), [MarkdownMessageBody](/docs/api/models#markdownmessagebody), [MessageMediaView](/docs/api/models#messagemediaview), [FileView](/docs/api/models#fileview), [AudioView](/docs/api/models#audioview), [StickerView](/docs/api/models#stickerview), [EmbedView](/docs/api/models#embedview), [ActionRowView](/docs/api/models#actionrowview), [ComponentsV2Body](/docs/api/models#componentsv2body).
 
 [Usage guide and runnable example](/docs/guides/messages)
 
@@ -1378,9 +1494,9 @@ Related types: [TextMessageBody](/docs/api/models#textmessagebody), [MarkdownMes
 
 <CodeBlock language="ts">{"import type { MessageMetadata } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Shared serializable metadata. edited is boolean; ephemeral is a display hint and the host controls access. No implicit clock or edit timestamp is introduced.
+Shared serializable metadata. edited is boolean; mentioned is a host-supplied viewer-specific highlight with no automatic text inference. Ephemeral is a display hint and takes visual precedence when both flags are true; the host controls access. No implicit clock or edit timestamp is introduced.
 
-<CodeBlock language="ts">{"type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n  /** Highlights a mention of the viewer, as resolved by the host application. */\n  mentioned?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1391,10 +1507,11 @@ Shared serializable metadata. edited is boolean; ephemeral is a display hint and
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 
 ### Valid example
 
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageMetadata = { id: \"message\", author, timestamp, edited: true };"}</CodeBlock>
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageMetadata = { id: \"message\", author, timestamp, edited: true, mentioned: true };"}</CodeBlock>
 
 Related types: [MessageAuthor](/docs/api/models#messageauthor), [ReactionView](/docs/api/models#reactionview), [ReplyView](/docs/api/models#replyview).
 
@@ -1455,9 +1572,11 @@ Metadata plus exactly one valid content family and an optional nonrecursive thre
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
-| `media` | No | `readonly MediaView[]` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
-| `attachments` | No | `readonly FileView[]` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `media` | No | `readonly MessageMediaView[]` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | No | `readonly (FileView \| AudioView)[]` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
+| `stickers` | No | `readonly StickerView[]` | — | Ordered classic-message sticker models; forbidden on a Components V2 body. |
 | `embeds` | No | `readonly EmbedView[]` | — | Classic-message cards; forbidden on a Components V2 body. |
 | `components` | No | `readonly ActionRowView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
 | `thread` | No | `ThreadSummaryView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
@@ -1473,9 +1592,11 @@ Metadata plus exactly one valid content family and an optional nonrecursive thre
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
-| `media` | Forbidden | `never` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
-| `attachments` | Forbidden | `never` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `media` | Forbidden | `never` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | Forbidden | `never` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
+| `stickers` | Forbidden | `never` | — | Ordered classic-message sticker models; forbidden on a Components V2 body. |
 | `embeds` | Forbidden | `never` | — | Classic-message cards; forbidden on a Components V2 body. |
 | `components` | Forbidden | `never` | — | Ordered component nodes; the owning union determines which variants are allowed. |
 | `thread` | No | `ThreadSummaryView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
@@ -1656,9 +1777,11 @@ A reply inside a thread. It has message metadata and one content family, but for
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
-| `media` | No | `readonly MediaView[]` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
-| `attachments` | No | `readonly FileView[]` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `media` | No | `readonly MessageMediaView[]` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | No | `readonly (FileView \| AudioView)[]` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
+| `stickers` | No | `readonly StickerView[]` | — | Ordered classic-message sticker models; forbidden on a Components V2 body. |
 | `embeds` | No | `readonly EmbedView[]` | — | Classic-message cards; forbidden on a Components V2 body. |
 | `components` | No | `readonly ActionRowView[]` | — | Ordered component nodes; the owning union determines which variants are allowed. |
 | `thread` | Forbidden | `never` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
@@ -1674,9 +1797,11 @@ A reply inside a thread. It has message metadata and one content family, but for
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
-| `media` | Forbidden | `never` | — | Image model(s), as indicated by the type. Follow the shared media policy. |
-| `attachments` | Forbidden | `never` | — | Classic-message file models; forbidden on a Components V2 body. |
+| `media` | Forbidden | `never` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
+| `attachments` | Forbidden | `never` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
+| `stickers` | Forbidden | `never` | — | Ordered classic-message sticker models; forbidden on a Components V2 body. |
 | `embeds` | Forbidden | `never` | — | Classic-message cards; forbidden on a Components V2 body. |
 | `components` | Forbidden | `never` | — | Ordered component nodes; the owning union determines which variants are allowed. |
 | `thread` | Forbidden | `never` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |

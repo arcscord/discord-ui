@@ -58,3 +58,31 @@ For SSR, keep initial model data, time zone, locale, theme, media rules and
 reference time consistent across server and client. See the [Svelte examples](https://ui.arcscord.dev/docs/svelte),
 [API reference](https://ui.arcscord.dev/docs/svelte/api) and
 [SSR guide](https://ui.arcscord.dev/docs/svelte/ssr).
+
+## Video, audio and stickers
+
+`Video`, `Audio` and `Sticker` render serializable `VideoView`, `AudioView` and
+`StickerView` models. `Message.media` and V2 galleries accept images and videos;
+classic-message `attachments` accept file cards and audio, and `stickers` accepts
+sticker models. Set `voice: true` for a vocal, with optional normalized `waveform`
+samples and `durationSeconds`. PNG, APNG and GIF stickers render in the browser;
+Lottie has an explicit unsupported-format state.
+
+Players start on user interaction with custom keyboard-accessible controls.
+Audio and videos with supplied posters use `preload="none"`; videos without posters
+load metadata to show a first-frame preview. Video controls overlay the preview
+after playback starts. Audio files and videos expose a top-right download link on
+hover or keyboard focus; voice notes omit that action. Hover or focus the speaker for a vertical volume slider;
+Escape closes it and returns speaker focus. Website sticker examples use the
+supplied Arcscord logo as a local sticker asset. The browser determines codec support. Sources and video
+posters follow `allowRemoteMedia` and `remoteMediaAllowlist`; spoilers defer
+player mounting until reveal.
+
+## Mentioned messages
+
+Set `MessageView.mentioned` to `true` for the current viewer's highlighted
+messages. Rendering adapters also expose `MessageFrame.mentioned` for composed
+layouts. The host supplies the flag; Markdown mention tokens and API conversion
+leave it unset. The highlight uses its hover background on hover and keyboard focus. Ephemeral appearance takes precedence
+when both flags are true. Theme overrides accept `mentionedBackground`, `mentionedHover` and
+`mentionedBorder`.

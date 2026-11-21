@@ -1,4 +1,4 @@
-import type { MediaView } from "./content";
+import type { MediaView, MessageMediaView } from "./content";
 import type { ChannelEntityView, ChannelType, RoleView, UserView } from "./entities";
 
 export type TextDisplayView = { id: string; kind: "text-display"; content: string };
@@ -88,7 +88,7 @@ export type ComponentHandlers = {
 };
 export type ThumbnailView = { id: string; kind: "thumbnail"; media: MediaView };
 export type SectionView = { id: string; kind: "section"; components: readonly TextDisplayView[]; accessory: ThumbnailView | MessageButtonView };
-export type GalleryView = { id: string; kind: "media-gallery"; items: readonly MediaView[] };
+export type GalleryView = { id: string; kind: "media-gallery"; items: readonly MessageMediaView[] };
 export type SeparatorView = { id: string; kind: "separator"; divider?: boolean; spacing?: "small" | "large" };
 export type ActionRowView = { id: string; kind: "action-row" } & (
   | { buttons: readonly MessageButtonView[]; select?: never }

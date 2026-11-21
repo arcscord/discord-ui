@@ -49,6 +49,7 @@ export function frameRuntime(framework: Framework): { start: (host: NativeHost) 
       document.querySelector<HTMLElement>("#capture")!.inert = true;
       document.documentElement.lang = config.locale;
       document.documentElement.dataset.theme = config.theme;
+      document.documentElement.dataset.scenario = config.scenario;
       if (reset)
         log.textContent = "";
       try {

@@ -30,3 +30,18 @@ it("resolves overrides without mutating inherited tokens", () => {
   expect(resolved.colorScheme).toBe("light");
   expect(themeStyle(resolved.tokens)).toEqual({ "--discord-ui-background": "#eee" });
 });
+
+it("inherits and overrides mentioned message tokens", () => {
+  const theme = defineTheme({
+    name: "mentions",
+    extends: "dark",
+    tokens: { mentionedBackground: "#112233", mentionedHover: "#223344", mentionedBorder: "#445566" },
+  });
+  const resolved = resolveTheme(theme, { mentionedBorder: "#778899" });
+  expect(themeStyle(resolved.tokens)).toEqual({
+    "--discord-ui-mentioned-background": "#112233",
+    "--discord-ui-mentioned-hover": "#223344",
+    "--discord-ui-mentioned-border": "#778899",
+  });
+  expect(theme.tokens.mentionedBorder).toBe("#445566");
+});

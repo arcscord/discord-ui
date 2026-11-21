@@ -1,8 +1,9 @@
-import type { MediaView } from "@arcscord/discord-ui-core";
+import type { MediaView, MessageMediaView } from "@arcscord/discord-ui-core";
 import { mediaUrl } from "@arcscord/discord-ui-core";
 import { useState } from "react";
 import { Spoiler } from "../content/spoiler";
 import { useDisplayOptions } from "../display-context";
+import { Video } from "./video";
 
 function MediaImage({ media, source }: { media: MediaView; source: string | undefined }) {
   const [failed, setFailed] = useState(false);
@@ -16,10 +17,12 @@ function MediaImage({ media, source }: { media: MediaView; source: string | unde
   );
 }
 
-export type MediaProps = { media: MediaView };
+export type MediaProps = { media: MessageMediaView };
 
 export function Media({ media }: MediaProps) {
   const { allowRemoteMedia, remoteMediaAllowlist } = useDisplayOptions();
+  if ("kind" in media && media.kind === "video")
+    return <Video video={media} />;
   const source = mediaUrl(media.url, allowRemoteMedia, remoteMediaAllowlist);
   const image = <MediaImage key={source} media={media} source={source} />;
   return media.spoiler

@@ -29,8 +29,11 @@ local simulation coverage; it is not Nuxt or live Discord certification.
 | Spoiler | Spoiler | SpoilerProps, SpoilerSlots, SpoilerEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | DiscordUI | DiscordUI | DiscordUIProps, DiscordUISlots, DiscordUIEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | Embed | Embed | EmbedProps, EmbedSlots, EmbedEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
+| Audio | Audio | AudioProps, AudioSlots, AudioEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | Media | Media | MediaProps, MediaSlots, MediaEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | MediaGallery | MediaGallery | MediaGalleryProps, MediaGallerySlots, MediaGalleryEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
+| Sticker | Sticker | StickerProps, StickerSlots, StickerEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
+| Video | Video | VideoProps, VideoSlots, VideoEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | Message | Message | MessageProps, MessageSlots, MessageEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | MessageContent | MessageContent | MessageContentProps, MessageContentSlots, MessageContentEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | MessageFrame | MessageFrame | MessageFrameProps, MessageFrameSlots, MessageFrameEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |

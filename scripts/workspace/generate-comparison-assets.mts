@@ -12,3 +12,6 @@ await cp(new URL("../../apps/website/static/fonts/", import.meta.url), new URL("
 
 // A deterministic decode failure served successfully in both development and production.
 await writeFile(new URL("../../apps/comparison/public/generated/avatars/invalid.png", import.meta.url), "not a PNG image");
+
+// Reuse the canonical synthetic media fixtures without external network requests.
+await cp(new URL("../../apps/website/static/examples/", import.meta.url), new URL("../../apps/comparison/public/examples/", import.meta.url), { recursive: true });

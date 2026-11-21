@@ -6,6 +6,7 @@ import { themeStyle } from "../../themes";
 type MessageFramePropsInput = {
   hasThread?: boolean;
   ephemeral?: boolean;
+  mentioned?: boolean;
   reply?: VNodeChild;
   avatar?: VNodeChild;
   header?: VNodeChild;
@@ -14,7 +15,7 @@ type MessageFramePropsInput = {
 };
 export type MessageFrameProps = Omit<MessageFramePropsInput, "children" | "avatar" | "reply" | "header" | "footer">;
 export type MessageFrameSlots = { default?: () => VNodeChild; avatar?: () => VNodeChild; reply?: () => VNodeChild; header?: () => VNodeChild; footer?: () => VNodeChild };
-export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsInput, MessageFrameSlots>("MessageFrame", ["hasThread", "ephemeral"], [
+export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsInput, MessageFrameSlots>("MessageFrame", ["hasThread", "ephemeral", "mentioned"], [
   "children",
   "avatar",
   "reply",
@@ -22,12 +23,14 @@ export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsI
   "footer",
 ], (input, display) => {
   return () => {
-    const { avatar, reply, header, footer, children, ephemeral = false, hasThread = false } = input(true);
-    const { resolvedTheme, scoped } = display;
+    const { avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false } = input(true);
+    const { resolvedTheme, scoped, labels } = display;
     return (
       <article
         class={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}
         data-ephemeral={ephemeral || undefined}
+        data-mentioned={mentioned || undefined}
+        aria-label={mentioned ? labels.mentionedMessage : undefined}
         data-has-thread={hasThread || undefined}
         data-theme={resolvedTheme.name}
         data-base-theme={scoped ? undefined : resolvedTheme.base}

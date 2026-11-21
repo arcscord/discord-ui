@@ -5,7 +5,7 @@ const guides = [
   ["messages", "Messages and replies", "Messages"],
   ["markdown", "Markdown, mentions and emoji", "Markdown"],
   ["embeds", "Embeds", "Embeds"],
-  ["media", "Media, galleries and files", "Media"],
+  ["media", "Images, video, audio and stickers", "Media"],
   ["components-v2", "Components V2", "ComponentsV2"],
   ["interactions", "Buttons and select menus", "Interactions"],
   ["reactions", "Reactions", "Reactions"],
