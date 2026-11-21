@@ -1,6 +1,7 @@
 import type { EmbedView } from "@arcscord/discord-ui-core";
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import { linkUrl, mediaUrl } from "@arcscord/discord-ui-core";
+import { inlineMarkdownText, parseInlineMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { defineRenderer, styleValue } from "../../rendering";
 import { Emoji } from "../content/emoji";
 import { Markdown } from "../content/markdown";
@@ -30,7 +31,9 @@ export const Embed = defineRenderer<EmbedProps, EmbedPropsInput, EmbedSlots>("Em
         style={styleValue(color
           ? { borderLeftColor: color }
           : undefined)}
-        aria-label={embed.title}
+        aria-label={embed.title
+          ? inlineMarkdownText(parseInlineMarkdown(embed.title))
+          : undefined}
       >
         <div class="dui-embed-main">
           {embed.author
@@ -49,8 +52,8 @@ export const Embed = defineRenderer<EmbedProps, EmbedPropsInput, EmbedSlots>("Em
             ? (
                 <div class="dui-embed-title">
                   {url
-                    ? <a href={url} target="_blank" rel="noreferrer noopener">{embed.title}</a>
-                    : embed.title}
+                    ? <a href={url} target="_blank" rel="noreferrer noopener"><Markdown inline content={embed.title} referenceTime={referenceTime} /></a>
+                    : <Markdown inline content={embed.title} referenceTime={referenceTime} />}
                 </div>
               )
             : null}
@@ -62,7 +65,7 @@ export const Embed = defineRenderer<EmbedProps, EmbedPropsInput, EmbedSlots>("Em
                 <div class="dui-embed-fields">
                   {embed.fields.map(field => (
                     <div key={field.id} class={field.inline ? "dui-embed-field-inline" : "dui-embed-field"}>
-                      <strong>{field.name}</strong>
+                      <strong class="dui-embed-field-name"><Markdown inline content={field.name} referenceTime={referenceTime} /></strong>
                       <Markdown content={field.value} referenceTime={referenceTime} />
                     </div>
                   ))}

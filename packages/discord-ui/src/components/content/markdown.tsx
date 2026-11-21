@@ -3,7 +3,7 @@ import type { MarkdownBlock, MarkdownNode } from "@arcscord/discord-ui-core/mark
 import type { ReactNode } from "react";
 import type { MentionInteractionHandlers } from "../../interactions";
 import { formatDiscordTimestamp, linkUrl } from "@arcscord/discord-ui-core";
-import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
+import { parseInlineMarkdown, parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { Fragment } from "react";
 import { useDisplayOptions } from "../display-context";
 import { MentionInteractionContext, useMentionInteractions } from "../interaction-context";
@@ -18,9 +18,14 @@ function string(value: unknown): string {
     : "";
 }
 
-export type MarkdownProps = MentionInteractionHandlers & { content: string; referenceTime?: string | undefined };
+export type MarkdownProps = MentionInteractionHandlers & {
+  content: string;
+  referenceTime?: string | undefined;
+  /** Render only inline formatting and emojis, as in embed titles and field names. */
+  inline?: boolean | undefined;
+};
 
-export function Markdown({ content, referenceTime, ...handlers }: MarkdownProps) {
+export function Markdown({ content, referenceTime, inline: inlineOnly, ...handlers }: MarkdownProps) {
   const options = useDisplayOptions();
   const interactions = useMentionInteractions(handlers);
   function children(value: unknown, key: string): ReactNode {
@@ -97,5 +102,7 @@ export function Markdown({ content, referenceTime, ...handlers }: MarkdownProps)
       : <ul key={`list-${node.line}`}>{items}</ul>;
   }
 
+  if (inlineOnly)
+    return <span className="dui-markdown dui-markdown-inline">{inline(parseInlineMarkdown(content), "inline")}</span>;
   return <MentionInteractionContext value={interactions}><div className="dui-markdown">{parseMarkdown(content).map(block)}</div></MentionInteractionContext>;
 }
