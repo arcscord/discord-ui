@@ -2,7 +2,7 @@ import type { MessageView } from "../src/index";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { renderHighlightedCode } from "../src/highlight";
-import { DiscordUI, Embed, Markdown, MediaGallery, Message } from "../src/index";
+import { DiscordUI, Embed, Markdown, MediaGallery, Mention, Message } from "../src/index";
 
 it("renders Discord entities, formatting, lists and fenced code without injected HTML", () => {
   const html = renderToStaticMarkup(
@@ -114,6 +114,17 @@ it("removes a structural line break after fenced code but preserves explicit emp
   expect(compact).toContain("</pre>After");
   const blank = renderToStaticMarkup(<Markdown content={"```ts\nconst a = 1;\n```\n\nAfter"} />);
   expect(blank).toContain("</pre><br/>After");
+});
+
+it("tints colored role mentions with the role color at 10% fill and 30% hover", () => {
+  const role = renderToStaticMarkup(<Mention id="1" kind="role" name="Test 3" color="#4612a4" />);
+  expect(role).toContain("color:#4612a4;--discord-ui-mention-fill:#4612a41a;--discord-ui-mention-fill-hover:#4612a44d");
+  for (const html of [
+    renderToStaticMarkup(<Mention id="1" kind="user" name="Alice" color="#4612a4" />),
+    renderToStaticMarkup(<Mention id="1" kind="role" name="Plain" />),
+    renderToStaticMarkup(<Mention id="1" kind="role" name="Invalid" color="red" />),
+  ])
+    expect(html).not.toContain("--discord-ui-mention-fill");
 });
 
 it("renders inline Markdown and custom emojis in embed titles and field names", () => {
