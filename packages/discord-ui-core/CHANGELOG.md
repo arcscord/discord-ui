@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- Provide restricted inline Markdown parsing for embed titles and field names,
+  with plain-text extraction for accessible names.
+- Scope embed field-name styles so nested bold text retains inline layout.
+
 ## 0.3.0
 
 ### Added
