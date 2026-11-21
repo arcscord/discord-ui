@@ -72,7 +72,7 @@ Mention targets contain `id`, `kind`, `name` and optional `color`; kinds are
 Mentions inside embeds and Components V2 inherit the message handlers.
 
 Click targets support Enter and Space. Focus a context-menu target and press
-Shift+F10 or the ContextMenu key to activate its callback. Mentions inside links
+Shift+F10 or the ContextMenu key to activate its callback. The browser menu event takes priority, with a fallback after key release when needed. Context-only targets also support Enter and Space. Composed avatars share the author name's keyboard action. Mentions inside links
 follow the enclosing link.
 
 User and mention context callbacks stop propagation to the message callback.
@@ -81,3 +81,7 @@ records `defaultPrevented` before the host calls `preventDefault()` and opens it
 own panel. Supply your own authorization, profile data and actions.
 
 [Edit the interactive transcript](/playground?example=recipe-transcript-interactions)
+
+Thread preview authors use the same user callbacks. With both navigation and user
+actions, activate the preview header to open the thread. Links and native controls
+inside a message keep their own context-menu behavior.

@@ -41,13 +41,13 @@ export function Message({ onUserClick, onUserContextMenu, onMentionClick, onMent
         reply={message.reply
           ? <ReplyPreview reply={message.reply} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} />
           : undefined}
-        avatar={<Avatar author={message.author} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} />}
+        avatar={<Avatar tabIndex={-1} author={message.author} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} />}
         header={<MessageHeader onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={message.author} timestamp={message.timestamp} edited={message.edited} />}
         hasThread={showThreadPreview && Boolean(message.thread)}
         footer={(
           <>
             {showThreadPreview && message.thread
-              ? <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
+              ? <ThreadPreview onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
               : null}
             {message.ephemeral
               ? (

@@ -10,22 +10,31 @@ export function Mention({ id, name, kind = "user", color, ...handlers }: Mention
     : undefined;
   const clickable = Boolean(target && onMentionClick);
   const contextual = Boolean(target && onMentionContextMenu);
-  const Wrapper = clickable ? "button" : "span";
+  const interactive = clickable || contextual;
+  const Wrapper = interactive ? "button" : "span";
   const safeColor = /^#[a-f\d]{6}$/iu.test(color ?? "")
     ? color
     : undefined;
   return (
     <Wrapper
-      type={clickable ? "button" : undefined}
+      type={interactive ? "button" : undefined}
       className={`dui-mention${clickable || contextual
         ? " dui-utility-target"
         : ""}`}
-      tabIndex={!clickable && contextual
-        ? 0
+      aria-haspopup={!clickable && contextual
+        ? "menu"
         : undefined}
       onKeyDown={contextual ? contextMenuKey : undefined}
-      onClick={target && onMentionClick
-        ? event => onMentionClick(target, event)
+      onClick={target && interactive
+        ? (event) => {
+            if (onMentionClick) {
+              onMentionClick(target, event);
+            }
+            else {
+              event.stopPropagation();
+              onMentionContextMenu?.(target, event);
+            }
+          }
         : undefined}
       onContextMenu={target && onMentionContextMenu
         ? (event) => {

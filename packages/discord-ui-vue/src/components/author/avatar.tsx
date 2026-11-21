@@ -19,10 +19,11 @@ function hexColor(value: string | undefined): string | undefined {
     ? value
     : undefined;
 }
-type AvatarImageInput = UserInteractionHandlers<MouseEvent> & { author: MessageAuthor; source: string | undefined };
+type AvatarImageInput = UserInteractionHandlers<MouseEvent> & { author: MessageAuthor; source: string | undefined; tabIndex?: number | undefined };
 const AvatarImage = defineRenderer<AvatarImageInput, AvatarImageInput, Record<string, never>>("AvatarImage", [
   "author",
   "source",
+  "tabIndex",
   "onUserClick",
   "onUserContextMenu",
 ], [], (input, _display) => {
@@ -54,27 +55,36 @@ const AvatarImage = defineRenderer<AvatarImageInput, AvatarImageInput, Record<st
   }
   return () => {
     const { author, source, failed, background, color, letter } = derive(true);
-    const { onUserClick, onUserContextMenu } = input();
+    const { onUserClick, onUserContextMenu, tabIndex } = input();
     const interactive = Boolean(onUserClick || onUserContextMenu);
-    return h(onUserClick ? "button" : "span", {
+    return h(onUserClick || onUserContextMenu
+      ? "button"
+      : "span", {
       "class": `dui-avatar${interactive ? " dui-utility-target" : ""}`,
-      "type": onUserClick ? "button" : undefined,
-      "tabindex": !onUserClick && onUserContextMenu
-        ? 0
+      "type": interactive ? "button" : undefined,
+      "tabindex": interactive ? tabIndex : undefined,
+      "aria-haspopup": !onUserClick && onUserContextMenu
+        ? "menu"
         : undefined,
       "aria-label": interactive ? author.displayName : undefined,
       "aria-hidden": interactive ? undefined : "true",
-      "role": interactive && !onUserClick
-        ? "img"
-        : undefined,
+
       "style": styleValue({
         background: source && !failed
           ? "transparent"
           : background,
         color,
       }),
-      "onClick": onUserClick
-        ? (event: MouseEvent) => onUserClick(author, event)
+      "onClick": interactive
+        ? (event: MouseEvent) => {
+            if (onUserClick) {
+              onUserClick(author, event);
+            }
+            else {
+              event.stopPropagation();
+              onUserContextMenu?.(author, event);
+            }
+          }
         : undefined,
       "onKeydown": onUserContextMenu ? dispatchKeyboardContextMenu : undefined,
       "onContextmenu": onUserContextMenu
@@ -89,16 +99,22 @@ const AvatarImage = defineRenderer<AvatarImageInput, AvatarImageInput, Record<st
   };
 });
 type AvatarPropsInput = UserInteractionHandlers<MouseEvent> & {
+  tabIndex?: number | undefined;
   author: MessageAuthor;
 };
 export type AvatarProps = AvatarPropsInput;
 export type AvatarSlots = Record<string, never>;
-export const Avatar = defineRenderer<AvatarProps, AvatarPropsInput, AvatarSlots>("Avatar", ["onUserClick", "onUserContextMenu", "author"], [], (input, display) => {
+export const Avatar = defineRenderer<AvatarProps, AvatarPropsInput, AvatarSlots>("Avatar", [
+  "onUserClick",
+  "onUserContextMenu",
+  "author",
+  "tabIndex",
+], [], (input, display) => {
   return () => {
-    const { author, onUserClick, onUserContextMenu } = input(true);
+    const { author, onUserClick, onUserContextMenu, tabIndex } = input(true);
     const { allowRemoteMedia, remoteMediaAllowlist } = display;
     const source = mediaUrl(author.avatarUrl, allowRemoteMedia, remoteMediaAllowlist);
-    return <AvatarImage key={source ?? ""} author={author} source={source} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} />;
+    return <AvatarImage key={source ?? ""} author={author} source={source} tabIndex={tabIndex} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} />;
   };
 });
 export type AvatarEmits = import("../../public-component").EventsFromProps<UserInteractionHandlers<MouseEvent>>;

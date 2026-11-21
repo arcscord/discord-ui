@@ -22,10 +22,22 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions (Context-menu targets support keyboard context access.) -->
-<svelte:element this={click ? "button" : "span"} type={click ? "button" : undefined} class={["dui-mention", (click || contextMenu) && "dui-utility-target"]} style:color={hexColor(color)} tabindex={!click && contextMenu
-  ? 0
-  : undefined} onclick={click
-  ? (event: MouseEvent) => click?.(target, event)
+<svelte:element this={click || contextMenu
+  ? "button"
+  : "span"} type={click || contextMenu
+  ? "button"
+  : undefined} class={["dui-mention", (click || contextMenu) && "dui-utility-target"]} style:color={hexColor(color)} aria-haspopup={!click && contextMenu
+  ? "menu"
+  : undefined} onclick={click || contextMenu
+  ? (event: MouseEvent) => {
+    if (click) {
+      click(target, event);
+    }
+    else {
+      event.stopPropagation();
+      contextMenu?.(target, event);
+    }
+  }
   : undefined} onkeydown={contextMenu ? contextMenuKeyboard : undefined} oncontextmenu={contextMenu
   ? (event: MouseEvent) => {
     event.stopPropagation();

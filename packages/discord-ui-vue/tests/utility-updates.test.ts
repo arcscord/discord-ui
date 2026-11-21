@@ -1,20 +1,35 @@
 import type { MentionTarget } from "../src/index";
+import { defaultDisplayOptions, themes } from "@arcscord/discord-ui-core";
 import { expect, it, vi } from "vitest";
 import { createRenderer, h, nextTick, shallowRef } from "vue";
-import { Author, Mention, Message } from "../src/index";
+import { displayKey } from "../src/display-context";
+import { Author, ChannelView, Mention, Message, ThreadPanel } from "../src/index";
 
-type HostNode = { tag: string; props: Record<string, unknown>; children: HostNode[] };
-const node = (tag: string): HostNode => ({ tag, props: {}, children: [] });
+type HostNode = { tag: string; props: Record<string, unknown>; children: HostNode[]; parent?: HostNode | undefined; focus: () => void };
+function node(tag: string): HostNode {
+  return {
+    tag,
+    props: {},
+    children: [],
+    focus: () => {},
+  };
+}
 const renderer = createRenderer<HostNode, HostNode>({
   createElement: node,
   createText: () => node("text"),
   createComment: () => node("comment"),
   setText: () => {},
   setElementText: () => {},
-  parentNode: () => null,
+  parentNode: child => child.parent ?? null,
   nextSibling: () => null,
-  insert: (child, parent) => { parent.children.push(child); },
-  remove: () => {},
+  insert: (child, parent) => {
+    child.parent = parent;
+    parent.children.push(child);
+  },
+  remove: (child) => {
+    if (child.parent)
+      child.parent.children.splice(child.parent.children.indexOf(child), 1);
+  },
   patchProp: (element, key, _previous, value) => { element.props[key] = value; },
 });
 function find(parent: HostNode, className: string): HostNode | undefined {
@@ -34,8 +49,9 @@ it("updates standalone utility semantics when only listener props change", async
   const app = renderer.createApp({
     render: () => h(Mention, { id: "123", name: "Name", onMentionContextMenu: handler.value }),
   });
+  app.provide(displayKey, { ...defaultDisplayOptions, scoped: true, resolvedTheme: themes.dark });
   app.mount(root);
-  expect(find(root, "dui-mention")?.props.tabindex).toBe(0);
+  expect(find(root, "dui-mention")?.tag).toBe("button");
   handler.value = undefined;
   await nextTick();
   expect(find(root, "dui-mention")?.props.tabindex).toBeUndefined();
@@ -61,6 +77,7 @@ it("reacts to author listener removal and preserves once-only emission", async (
       onUserClickOnce: active.value ? once : undefined,
     }),
   });
+  app.provide(displayKey, { ...defaultDisplayOptions, scoped: true, resolvedTheme: themes.dark });
   app.mount(root);
   const name = find(root, "dui-author-name")!;
   expect(name.tag).toBe("button");
@@ -86,10 +103,78 @@ it("removes inherited mention handlers without changing message data", async () 
   const app = renderer.createApp({
     render: () => h(Message, { message, onMentionContextMenu: handler.value }),
   });
+  app.provide(displayKey, { ...defaultDisplayOptions, scoped: true, resolvedTheme: themes.dark });
   app.mount(root);
-  expect(find(root, "dui-mention")?.props.tabindex).toBe(0);
+  expect(find(root, "dui-mention")?.tag).toBe("button");
   handler.value = undefined;
   await nextTick();
   expect(find(root, "dui-mention")?.props.onContextmenu).toBeUndefined();
+  app.unmount();
+});
+
+it("removes standalone once-only controls after consumption", async () => {
+  const root = node("root");
+  const once = vi.fn();
+  const app = renderer.createApp({
+    render: () => h(Mention, { id: "123", name: "Name", onMentionClickOnce: once }),
+  });
+  app.provide(displayKey, { ...defaultDisplayOptions, scoped: true, resolvedTheme: themes.dark });
+  app.mount(root);
+  (find(root, "dui-mention")!.props.onClick as (event: unknown) => void)({});
+  await nextTick();
+  expect(once).toHaveBeenCalledOnce();
+  expect(root.children.at(-1)?.tag).toBe("span");
+  app.unmount();
+});
+
+it.each([
+  ["channel", false],
+  ["channel", true],
+  ["thread", false],
+  ["thread", true],
+] as const)("consumes utility once only once through the %s public wrapper with regular=%s", async (kind, hasRegular) => {
+  const root = node("root");
+  const once = vi.fn();
+  const regular = vi.fn();
+  const message = {
+    id: "message",
+    author: { id: "author", displayName: "Author" },
+    timestamp: "2026-11-21T09:00:00Z",
+    body: { kind: "text" as const, content: "Message" },
+  };
+  const app = renderer.createApp({
+    render: () => kind === "channel"
+      ? h(ChannelView, {
+          channel: {
+            id: "channel",
+            name: "channel",
+            messages: [message],
+          },
+          composer: false,
+          onUserClickOnce: once,
+          onUserClick: hasRegular ? regular : undefined,
+        })
+      : h(ThreadPanel, {
+          thread: {
+            id: "thread",
+            name: "Thread",
+            parentMessageId: "parent",
+            messages: [message],
+          },
+          onUserClickOnce: once,
+          onUserClick: hasRegular ? regular : undefined,
+        }),
+  });
+  app.provide(displayKey, { ...defaultDisplayOptions, scoped: true, resolvedTheme: themes.dark });
+  app.mount(root);
+  const click = find(root, "dui-author-name")!.props.onClick as (event: unknown) => void;
+  click({});
+  await nextTick();
+  if (hasRegular)
+    click({});
+  else
+    expect(find(root, "dui-author-name")!.tag).toBe("span");
+  expect(once).toHaveBeenCalledOnce();
+  expect(regular).toHaveBeenCalledTimes(hasRegular ? 2 : 0);
   app.unmount();
 });

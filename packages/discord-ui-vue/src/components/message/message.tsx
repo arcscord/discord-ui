@@ -62,7 +62,7 @@ export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSl
           reply: () => message.reply
             ? <ReplyPreview onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} reply={message.reply} />
             : undefined,
-          avatar: () => <Avatar onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={message.author} />,
+          avatar: () => <Avatar tabIndex={-1} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={message.author} />,
           header: () => <MessageHeader onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={message.author} timestamp={message.timestamp} edited={message.edited} />,
           footer: () => (
             <>
@@ -70,6 +70,8 @@ export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSl
                 ? (
                     <ThreadPreview
                       thread={message.thread}
+                      onUserClick={onUserClick}
+                      onUserContextMenu={onUserContextMenu}
                       {...(onThreadOpen
                         ? { onOpen: onThreadOpen }
                         : {})}

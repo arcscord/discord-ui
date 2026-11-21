@@ -35,6 +35,7 @@ content props accept typed Svelte snippets.
 | **onUserClick** | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | **onUserContextMenu** | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | **author** | Yes | `MessageAuthor` |
+| **tabIndex** | No | `number \| undefined` |
 
 ## Button
 
@@ -361,6 +362,8 @@ content props accept typed Svelte snippets.
 
 | Prop | Required | Type |
 | --- | --- | --- |
+| **onUserClick** | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| **onUserContextMenu** | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | **thread** | Yes | `ThreadSummaryView` |
 | **onOpen** | No | `((id: string) => void) \| undefined` |
 | **active** | No | `boolean \| undefined` |

@@ -20,14 +20,14 @@ describe("utility interactions", () => {
     expect(renderToStaticMarkup(<Message message={message} />)).not.toContain("tabindex");
   });
 
-  it("uses named buttons for clicks and focusable targets for context menus", () => {
+  it("uses named buttons for both click and context-only actions", () => {
     expect(renderToStaticMarkup(<Author author={author} onUserClick={handler} />)).toContain("<button type=\"button\"");
     const avatar = renderToStaticMarkup(<Avatar author={author} onUserClick={handler} />);
     expect(avatar).toContain("aria-label=\"Author\"");
     expect(avatar).not.toContain("aria-hidden");
     const contextual = renderToStaticMarkup(<Author author={author} onUserContextMenu={handler} />);
-    expect(contextual).not.toContain("<button");
-    expect(contextual).toContain("tabindex=\"0\"");
+    expect(contextual).toContain("<button");
+    expect(contextual).toContain("aria-haspopup=\"menu\"");
   });
 
   it("requires a mention ID and supports all four mention kinds", () => {
@@ -97,6 +97,31 @@ describe("utility interactions", () => {
     expect(linked).not.toContain("<button");
     const spoiler = renderToStaticMarkup(<Markdown content="||<@123456789012345678>||" onMentionClick={handler} />);
     expect(spoiler.match(/<button/gu)).toHaveLength(2);
+  });
+
+  it("keeps composed avatars out of the duplicate tab sequence", () => {
+    const html = renderToStaticMarkup(<Message message={message} onUserClick={handler} />);
+    expect(html).toMatch(/<button[^>]*class="dui-avatar dui-utility-target"[^>]*tabindex="-1"/u);
+  });
+
+  it("passes user actions to thread preview authors without nested buttons", () => {
+    const html = renderToStaticMarkup(
+      <Message
+        message={{
+          ...message,
+          thread: {
+            id: "thread",
+            name: "Thread",
+            messageCount: 1,
+            lastMessage: { author, content: "Latest reply", timestamp: message.timestamp },
+          },
+        }}
+        onUserClick={handler}
+        onThreadOpen={handler}
+      />,
+    );
+    expect(html).toContain("dui-thread-open");
+    expect(html).toMatch(/dui-thread-last-author[\s\S]*?dui-author-name dui-utility-target/u);
   });
 
   it("specializes public callbacks with React events", () => {

@@ -1,7 +1,7 @@
 import type { MouseEventHandler, ReactNode } from "react";
 import { themeStyle } from "../../themes";
 import { useDisplayOptions } from "../display-context";
-import { contextMenuKey } from "../interaction-context";
+import { contextMenuKey, hasNativeContextMenu } from "../interaction-context";
 
 export type MessageFrameProps = {
   onContextMenu?: MouseEventHandler<HTMLElement> | undefined;
@@ -20,7 +20,12 @@ export function MessageFrame({ onContextMenu, avatar, reply, header, footer, chi
   return (
     <article
       onKeyDown={onContextMenu ? contextMenuKey : undefined}
-      onContextMenu={onContextMenu}
+      onContextMenu={onContextMenu
+        ? (event) => {
+            if (!hasNativeContextMenu(event.target, event.currentTarget))
+              onContextMenu(event);
+          }
+        : undefined}
       tabIndex={onContextMenu ? 0 : undefined}
       className={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}
       data-ephemeral={ephemeral || undefined}

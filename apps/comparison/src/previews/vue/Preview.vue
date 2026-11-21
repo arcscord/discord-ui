@@ -5,7 +5,7 @@ import type { NativeEvent, Snapshot } from "../protocol";
 import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui-vue";
 import { renderHighlightedCode } from "@arcscord/discord-ui-vue/highlight";
 import { computed, ref, watchEffect } from "vue";
-import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
+import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
 import { snapshot, utilityEvent } from "../protocol";
 import "@arcscord/discord-ui-vue/styles.css";
 
@@ -137,6 +137,7 @@ function send(content: string, threadId?: string): void {
       <MessageList
         :messages="utilityRecords"
         v-bind="utilityHandlers"
+        @thread-open="thread"
       />
     </template>
     <ChannelView v-else-if="config.scenario === 'channel' || config.scenario === 'threads-commands'" :channel="state.channel" :height="844" :active-thread-id="state.activeThreadId" :commands="commands" @thread-open="thread" @thread-close="thread(null)" @send="send" @thread-send="(id, content) => send(content, id)" @slash-command="invocation => event({ name: 'slash-command', args: [invocation] }, snapshot(state))" />
@@ -160,4 +161,7 @@ function send(content: string, threadId?: string): void {
       <Message :message="scenarioMessage(config.scenario, state, origin)" :select-values="state.selectValues" @select-change="select" @button-click="button" @premium-click="(sku, context) => event({ name: 'premium-click', args: [sku, context] }, snapshot(state))" />
     </template>
   </DiscordUI>
+  <div v-if="config.scenario === 'utility-interactions'" data-testid="standalone-utility">
+    <Message :message="standaloneUtilityMessage" @message-context-menu="(target, event) => props.event(utilityEvent('message-context-menu', target, event, true), snapshot(state))" />
+  </div>
 </template>

@@ -46,7 +46,7 @@ Combines author, mention and message context-menu callbacks. Supply them to Mess
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: E) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `onMentionClick` | No | `((mention: MentionTarget, event: E) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
 | `onMentionContextMenu` | No | `((mention: MentionTarget, event: E) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
-| `onMessageContextMenu` | No | `((message: MessageView, event: E) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: E) => void) \| undefined` | — | Called with the displayed message and context-menu event. Native child controls keep their own menus. The host chooses whether to preventDefault(). |
 
 ### Valid example
 

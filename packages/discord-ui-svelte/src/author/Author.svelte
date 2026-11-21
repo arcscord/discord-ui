@@ -14,10 +14,22 @@
 
 <span class="dui-author">
   <!-- svelte-ignore a11y_no_static_element_interactions (Context-menu targets support keyboard context access.) -->
-  <svelte:element this={onUserClick ? "button" : "span"} type={onUserClick ? "button" : undefined} class={["dui-author-name", (onUserClick || onUserContextMenu) && "dui-utility-target"]} style:color={hexColor(author.color)} tabindex={!onUserClick && onUserContextMenu
-    ? 0
-    : undefined} onclick={onUserClick
-    ? (event: MouseEvent) => onUserClick?.(author, event)
+  <svelte:element this={onUserClick || onUserContextMenu
+    ? "button"
+    : "span"} type={onUserClick || onUserContextMenu
+    ? "button"
+    : undefined} class={["dui-author-name", (onUserClick || onUserContextMenu) && "dui-utility-target"]} style:color={hexColor(author.color)} aria-haspopup={!onUserClick && onUserContextMenu
+    ? "menu"
+    : undefined} onclick={onUserClick || onUserContextMenu
+    ? (event: MouseEvent) => {
+      if (onUserClick) {
+        onUserClick(author, event);
+      }
+      else {
+        event.stopPropagation();
+        onUserContextMenu?.(author, event);
+      }
+    }
     : undefined} onkeydown={onUserContextMenu ? contextMenuKeyboard : undefined} oncontextmenu={onUserContextMenu
     ? (event: MouseEvent) => {
       event.stopPropagation();

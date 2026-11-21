@@ -21,14 +21,14 @@
   : display().labels.reply}>
   <span class="dui-reply-connector" aria-hidden="true"></span>
   {#if reply.kind === "interaction"}
-    <Avatar {onUserClick} {onUserContextMenu} author={reply.author} />
+    <Avatar tabIndex={-1} {onUserClick} {onUserContextMenu} author={reply.author} />
     <Author {onUserClick} {onUserContextMenu} author={reply.author} />
     <span class="dui-interaction-used">{display().labels.interactionUsed}</span>
     <span class="dui-interaction-command"><Mention kind="command" name={reply.commandName} /></span>
   {:else if reply.unavailable}
     <span class="dui-reply-content">{display().labels.replyUnavailable}</span>
   {:else}
-    <Avatar {onUserClick} {onUserContextMenu} author={reply.author} />
+    <Avatar tabIndex={-1} {onUserClick} {onUserContextMenu} author={reply.author} />
     <Author {onUserClick} {onUserContextMenu} author={reply.author} />
     <span class="dui-reply-content">{reply.content}</span>
   {/if}

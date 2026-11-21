@@ -12,13 +12,13 @@ for (const theme of ["light", "ash", "dark"]) {
       await page.goto(`/previews/${framework}/?scenario=utility-interactions&theme=${theme}`);
       await expect(page.locator("#status")).toHaveText("Loaded — local simulation");
       const observed: NativeEvent[] = [];
-      async function activate(target: Locator, name: NativeEvent["name"], id: string, options: { keyboard?: boolean; prevent?: boolean; contextKey?: boolean } = {}): Promise<NativeEvent> {
+      async function activate(target: Locator, name: NativeEvent["name"], id: string, options: { keyboard?: boolean; prevent?: boolean; contextKey?: boolean; activationKey?: "Enter" | "Space" } = {}): Promise<NativeEvent> {
         if (options.contextKey) {
           await target.focus();
           await target.press("Shift+F10");
         }
         else if (options.keyboard) {
-          await target.press("Enter");
+          await target.press(options.activationKey ?? "Enter");
         }
         else {
           await target.click({
@@ -35,14 +35,16 @@ for (const theme of ["light", "ash", "dark"]) {
         expect(current.args[1]).toEqual({
           defaultPreventedBefore: false,
           defaultPreventedAfter: options.prevent ?? false,
-          button: name.endsWith("context-menu")
-            ? 2
-            : 0,
+          button: options.contextKey
+            ? expect.any(Number)
+            : name.endsWith("context-menu") && !options.keyboard
+              ? 2
+              : 0,
         });
         observed.push(current);
         return current;
       }
-      const messages = page.locator(".dui-message");
+      const messages = page.locator(".dui-message-list .dui-message");
       await expect(messages).toHaveCount(2);
       const classic = messages.nth(0);
       const author = classic.locator(".dui-message-header .dui-author-name");
@@ -52,6 +54,30 @@ for (const theme of ["light", "ash", "dark"]) {
       await activate(classic.locator(".dui-message-avatar .dui-avatar"), "user-click", "guide");
       await activate(classic.locator(".dui-reply-preview .dui-author-name"), "user-click", "guide");
       await activate(author, "user-context-menu", "guide");
+      const threadPreview = classic.locator(".dui-thread-preview");
+      await expect(threadPreview.locator("button button")).toHaveCount(0);
+      await activate(threadPreview.locator(".dui-author-name"), "user-click", "thread-author", { keyboard: true });
+      await activate(threadPreview.locator(".dui-avatar"), "user-click", "thread-author");
+      await expect(threadPreview.locator(".dui-avatar")).toHaveAttribute("tabindex", "-1");
+      await threadPreview.locator("button.dui-thread-open").press("Enter");
+      await expect.poll(async () => (await page.locator("#events").textContent())!.trim().split("\n").filter(Boolean).length).toBe(observed.length + 1);
+      const opened = JSON.parse((await page.locator("#events").textContent())!.trim().split("\n").at(-1)!) as { event: NativeEvent };
+      expect(opened.event).toEqual({
+        name: "thread-open",
+        args: ["utility-thread"],
+      });
+      observed.push(opened.event);
+      for (const nativeTarget of [
+        classic.getByRole("link", { name: "Route guide" }),
+        classic.getByRole("combobox"),
+      ]) {
+        await nativeTarget.focus();
+        await nativeTarget.press("Shift+F10");
+        await page.keyboard.press("Escape");
+        const defaultAllowed = await nativeTarget.evaluate(element => element.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2 })));
+        expect(defaultAllowed).toBe(true);
+        expect((await page.locator("#events").textContent())!.trim().split("\n").filter(Boolean)).toHaveLength(observed.length);
+      }
       const expectedMentions = [
         { id: "123456789012345678", kind: "user" },
         { id: "234567890123456789", kind: "role" },
@@ -86,18 +112,36 @@ for (const theme of ["light", "ash", "dark"]) {
       const contextAuthor = classic.locator(".dui-message-header .dui-author-name");
       const contextAvatar = classic.locator(".dui-message-avatar .dui-avatar");
       const contextMention = classic.locator(".dui-mention").first();
-      for (const target of [contextAuthor, contextAvatar, contextMention]) {
-        await expect(target).toHaveAttribute("tabindex", "0");
-        await expect(target).not.toHaveRole("button");
+      for (const [index, target] of [contextAuthor, contextAvatar, contextMention].entries()) {
+        await expect(target).toHaveJSProperty("tabIndex", index === 1
+          ? -1
+          : 0);
+        await expect(target).toHaveRole("button");
+        await expect(target).toHaveAttribute("aria-haspopup", "menu");
         await target.focus();
         await expect(target).toBeFocused();
-        await target.press("Enter");
-        expect((await page.locator("#events").textContent())!.trim().split("\n").filter(Boolean)).toHaveLength(observed.length);
+        await activate(target, index === 2
+          ? "mention-context-menu"
+          : "user-context-menu", index === 2
+          ? expectedMentions[0].id
+          : "guide-updated", {
+          keyboard: true,
+          activationKey: index === 2
+            ? "Space"
+            : "Enter",
+          prevent: true,
+        });
       }
       await activate(contextAuthor, "user-context-menu", "guide-updated", { prevent: true, contextKey: true });
       await activate(contextAvatar, "user-context-menu", "guide-updated", { prevent: true, contextKey: true });
       await activate(contextMention, "mention-context-menu", expectedMentions[0].id, { prevent: true, contextKey: true });
       await activate(classic, "message-context-menu", "utility-classic", { prevent: true, contextKey: true });
+      const standalone = page.getByTestId("standalone-utility").locator("article.arcscord-discord-ui.dui-message");
+      await standalone.focus();
+      await expect(standalone).toBeFocused();
+      await expect(standalone).toHaveCSS("outline-style", "solid");
+      await expect(standalone).toHaveCSS("outline-width", "2px");
+      await activate(standalone, "message-context-menu", "utility-standalone", { contextKey: true, prevent: true });
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       await page.screenshot({
         path: testInfo.outputPath(`${framework}-${theme}.png`),

@@ -59,11 +59,23 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
   const component = defineComponent((props: P, { slots, emit }) => {
     const display = useDisplayOptions();
     const instance = getCurrentInstance()!;
+    const consumedOnce = shallowRef<ReadonlySet<string>>(new Set());
     const input = (withSlots = false): Input => {
       const values = { ...props } as Record<string, unknown>;
       for (const key of listeners) {
-        if (Reflect.get(props, key) || Reflect.get(props, `${key}Once`) || instance.vnode.props?.[`${key}Once`] || key.startsWith("onUpdate:"))
-          values[key] = (...args: unknown[]) => emit(eventName(key), ...args);
+        const utility = utilityListeners.has(key);
+        const once = Reflect.get(props, `${key}Once`) || instance.vnode.props?.[`${key}Once`];
+        if (utility)
+          delete values[`${key}Once`];
+        const regular = Reflect.get(props, key);
+        const availableOnce = once && (!utility || !consumedOnce.value.has(key));
+        values[key] = regular || availableOnce || key.startsWith("onUpdate:")
+          ? (...args: unknown[]) => {
+              if (utility && once && !consumedOnce.value.has(key))
+                consumedOnce.value = new Set([...consumedOnce.value, key]);
+              emit(eventName(key), ...args);
+            }
+          : undefined;
       }
       for (const key of withSlots
         ? slotNames

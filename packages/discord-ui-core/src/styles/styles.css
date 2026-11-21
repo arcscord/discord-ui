@@ -14,7 +14,10 @@
 .arcscord-discord-ui button.dui-mention { font-size: inherit; }
 .arcscord-discord-ui button.dui-avatar { padding: 0; }
 .arcscord-discord-ui .dui-utility-target:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 2px; }
+.arcscord-discord-ui.dui-message[tabindex]:focus-visible,
 .arcscord-discord-ui .dui-message[tabindex]:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: -2px; }
+.arcscord-discord-ui .dui-thread-open { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; text-align: inherit; cursor: pointer; }
+.arcscord-discord-ui .dui-thread-open:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 2px; }
 .dui-timestamp { color: var(--discord-ui-muted); font-size: 12px; }
 .dui-message-text { white-space: pre-wrap; overflow-wrap: anywhere; }
 .dui-markdown { overflow-wrap: anywhere; white-space: normal; }

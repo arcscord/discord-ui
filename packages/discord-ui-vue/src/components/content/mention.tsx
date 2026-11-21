@@ -32,26 +32,34 @@ export const Mention = defineRenderer<MentionProps, MentionPropsInput, MentionSl
     const safeColor = /^#[a-f\d]{6}$/iu.test(color ?? "")
       ? color
       : undefined;
-    return h(target && click
+    return h(interactive
       ? "button"
       : "span", {
-      class: `dui-mention${interactive ? " dui-utility-target" : ""}`,
-      type: target && click
+      "class": `dui-mention${interactive ? " dui-utility-target" : ""}`,
+      "type": interactive
         ? "button"
         : undefined,
-      tabindex: target && !click && contextMenu
-        ? 0
+      "aria-haspopup": target && !click && contextMenu
+        ? "menu"
         : undefined,
-      style: styleValue(safeColor
+      "style": styleValue(safeColor
         ? { color: safeColor }
         : undefined),
-      onClick: target && click
-        ? (event: MouseEvent) => click(target, event)
+      "onClick": target && (click || contextMenu)
+        ? (event: MouseEvent) => {
+            if (click) {
+              click(target, event);
+            }
+            else {
+              event.stopPropagation();
+              contextMenu?.(target, event);
+            }
+          }
         : undefined,
-      onKeydown: target && contextMenu
+      "onKeydown": target && contextMenu
         ? dispatchKeyboardContextMenu
         : undefined,
-      onContextmenu: target && contextMenu
+      "onContextmenu": target && contextMenu
         ? (event: MouseEvent) => {
             event.stopPropagation();
             contextMenu(target, event);

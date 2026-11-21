@@ -69,6 +69,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
+| `tabIndex` | No | `number \| undefined` | — | Keyboard tab order for an interactive avatar. Composed messages, replies and thread previews use -1 because their author name provides the same action. |
 
 <ReferenceExample id="avatar" />
 
@@ -82,7 +83,7 @@ Loads an allowed avatar URL or displays a deterministic initial/color fallback. 
 
 [Usage guide](/docs/guides/messages) · [Component](#avatar)
 
-<CodeBlock language="ts">{"export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor };"}</CodeBlock>
+<CodeBlock language="ts">{"export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor; tabIndex?: number | undefined };"}</CodeBlock>
 
 Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
@@ -566,7 +567,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
 | `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
-| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. Native child controls keep their own menus. The host chooses whether to preventDefault(). |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
 | `message` | Yes | `MessageView` | — | Complete display snapshot. Classic and V2 body families cannot be mixed. |
 | `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` | — | Values by select ID. Missing keys/undefined use local state; [] controls an empty selection. |

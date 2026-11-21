@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const recipes = [
   ["transcript", "recipe-transcript", "Read-only transcript"],
+  ["transcript", "recipe-transcript-interactions", "Read-only transcript"],
   ["interactive-preview", "recipe-interactive-preview", "Interactive message preview"],
   ["controlled-selections", "recipe-controlled-selections", "Controlled selections"],
   ["local-channel", "recipe-local-channel", "Channel with local messages"],
@@ -22,7 +23,9 @@ test("all recipes expose the same working module as the playground with no hydra
     expect((await page.goto(`/docs/recipes/${slug}`))?.ok()).toBe(true);
     await expect(page.locator("article h1")).toHaveText(title);
     await expect(page.locator("html")).toHaveAttribute("data-has-hydrated", "true");
-    const example = page.locator("article .reference-example");
+    const example = page.locator("article .reference-example").filter({
+      has: page.locator(`a[href^="/playground?example=${id}&"]`),
+    });
     await expect(example.locator("details")).toHaveAttribute("open", "");
     await expect(example.locator(".component-sample")).toBeVisible();
     for (const theme of ["light", "ash", "dark"]) {

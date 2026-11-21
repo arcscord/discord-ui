@@ -111,7 +111,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
 | `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
-| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. Native child controls keep their own menus. The host chooses whether to preventDefault(). |
 | `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` | — | Values by message ID and then select ID; permits reused component IDs across messages. |
 | `channel` | Yes | `ChannelViewModel` | — | Channel snapshot, including loaded linked threads when needed. |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
@@ -169,7 +169,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
 | `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
-| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. Native child controls keep their own menus. The host chooses whether to preventDefault(). |
 | `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` | — | Values by message ID and then select ID; permits reused component IDs across messages. |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
 | `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` | — | Called with messageId; host removes/hides the message and manages focus. |
@@ -219,7 +219,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
 | `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
-| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. Native child controls keep their own menus. The host chooses whether to preventDefault(). |
 | `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` | — | Values by message ID and then select ID; permits reused component IDs across messages. |
 | `thread` | Yes | `ThreadView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
@@ -250,11 +250,11 @@ Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [Mess
 
 <CodeBlock language="ts">{"import { ThreadPreview } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Displays a resolved summary/count and optional escaped last-message snapshot. It is a button only when onOpen is provided. active controls expanded appearance; onOpen reports the thread ID and never loads replies.
+Displays a resolved summary/count and optional escaped last-message snapshot. With onOpen it provides thread navigation. When user callbacks are supplied, the header opens the thread and the author name/avatar trigger separate user actions. The active prop controls expanded appearance. onOpen reports the thread ID and never loads replies.
 
 [Usage guide](/docs/guides/threads) · [Props type](#threadpreviewprops)
 
-<CodeBlock language="ts">{"export function ThreadPreview({ thread, onOpen, active }: ThreadPreviewProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function ThreadPreview({ thread, onOpen, active, ...handlers }: ThreadPreviewProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -262,24 +262,26 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `thread` | Yes | `ThreadSummaryView` | — | Thread snapshot or summary as specified by the type; not an automatic fetch. |
 | `onOpen` | No | `((id: string) => void) \| undefined` | — | Called with threadId; does not fetch a conversation. |
 | `active` | No | `boolean \| undefined` | `false` | Expanded/active appearance; does not fetch or navigate by itself. |
 
 <ReferenceExample id="thread-preview" />
 
-Related types: [ThreadSummaryView](/docs/api/models#threadsummaryview).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [ThreadSummaryView](/docs/api/models#threadsummaryview).
 
 ## ThreadPreviewProps
 
 <CodeBlock language="ts">{"import type { ThreadPreviewProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Displays a resolved summary/count and optional escaped last-message snapshot. It is a button only when onOpen is provided. active controls expanded appearance; onOpen reports the thread ID and never loads replies.
+Displays a resolved summary/count and optional escaped last-message snapshot. With onOpen it provides thread navigation. When user callbacks are supplied, the header opens the thread and the author name/avatar trigger separate user actions. The active prop controls expanded appearance. onOpen reports the thread ID and never loads replies.
 
 [Usage guide](/docs/guides/threads) · [Component](#threadpreview)
 
-<CodeBlock language="ts">{"export type ThreadPreviewProps = {\n  thread: ThreadSummaryView;\n  onOpen?: ((id: string) => void) | undefined;\n  active?: boolean | undefined;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"export type ThreadPreviewProps = UserInteractionHandlers & {\n  thread: ThreadSummaryView;\n  onOpen?: ((id: string) => void) | undefined;\n  active?: boolean | undefined;\n};"}</CodeBlock>
 
-Related types: [ThreadSummaryView](/docs/api/models#threadsummaryview).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [ThreadSummaryView](/docs/api/models#threadsummaryview).
 
 </div>

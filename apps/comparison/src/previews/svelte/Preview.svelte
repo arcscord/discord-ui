@@ -4,7 +4,7 @@
   import type { NativeEvent, Snapshot } from "../protocol";
   import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui-svelte";
   import { HighlightedCode } from "@arcscord/discord-ui-svelte/highlight";
-  import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
+  import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
   import { snapshot, utilityEvent } from "../protocol";
   import "@arcscord/discord-ui-svelte/styles.css";
 
@@ -114,7 +114,7 @@
   {#if config.scenario === "utility-interactions"}
     <button type="button" onclick={() => localState.reacted = !localState.reacted}>Update utility targets</button>
     <button type="button" onclick={() => utilityMode = (utilityMode + 1) % 3}>Cycle utility handlers</button>
-    <MessageList messages={utilityMessages(localState.reacted)}
+    <MessageList messages={utilityMessages(localState.reacted)} onThreadOpen={thread}
                  onUserClick={utilityMode === 2
                    ? undefined
                    : (target, nativeEvent) => event(utilityEvent("user-click", target, nativeEvent, false), snapshot(localState))}
@@ -153,3 +153,5 @@
     }, snapshot(localState))} />
   {/if}
 </DiscordUI>
+
+{#if config.scenario === "utility-interactions"}<div data-testid="standalone-utility"><Message message={standaloneUtilityMessage} onMessageContextMenu={(target, nativeEvent) => event(utilityEvent("message-context-menu", target, nativeEvent, true), snapshot(localState))} /></div>{/if}

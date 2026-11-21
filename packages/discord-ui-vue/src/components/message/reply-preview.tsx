@@ -25,7 +25,7 @@ export const ReplyPreview = defineRenderer<ReplyPreviewProps, ReplyPreviewPropsI
         {reply.kind === "interaction"
           ? (
               <>
-                <Avatar onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={reply.author} />
+                <Avatar tabIndex={-1} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={reply.author} />
                 <Author onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={reply.author} />
                 <span class="dui-interaction-used">{labels.interactionUsed}</span>
                 <span class="dui-interaction-command"><Mention kind="command" name={reply.commandName} /></span>
@@ -35,7 +35,7 @@ export const ReplyPreview = defineRenderer<ReplyPreviewProps, ReplyPreviewPropsI
             ? <span class="dui-reply-content">{labels.replyUnavailable}</span>
             : (
                 <>
-                  <Avatar onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={reply.author} />
+                  <Avatar tabIndex={-1} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={reply.author} />
                   <Author onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={reply.author} />
                   <span class="dui-reply-content">{reply.content}</span>
                 </>

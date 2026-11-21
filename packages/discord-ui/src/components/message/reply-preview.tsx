@@ -21,7 +21,7 @@ export function ReplyPreview({ reply, ...handlers }: ReplyPreviewProps) {
       {reply.kind === "interaction"
         ? (
             <>
-              <Avatar author={reply.author} {...handlers} />
+              <Avatar tabIndex={-1} author={reply.author} {...handlers} />
               <Author author={reply.author} {...handlers} />
               <span className="dui-interaction-used">{labels.interactionUsed}</span>
               <span className="dui-interaction-command"><Mention kind="command" name={reply.commandName} /></span>
@@ -31,7 +31,7 @@ export function ReplyPreview({ reply, ...handlers }: ReplyPreviewProps) {
           ? <span className="dui-reply-content">{labels.replyUnavailable}</span>
           : (
               <>
-                <Avatar author={reply.author} {...handlers} />
+                <Avatar tabIndex={-1} author={reply.author} {...handlers} />
                 <Author author={reply.author} {...handlers} />
                 <span className="dui-reply-content">{reply.content}</span>
               </>

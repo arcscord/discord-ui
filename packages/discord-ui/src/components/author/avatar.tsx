@@ -21,7 +21,7 @@ function hexColor(value: string | undefined): string | undefined {
     : undefined;
 }
 
-function AvatarImage({ author, source, onUserClick, onUserContextMenu }: AvatarProps & { source: string | undefined }) {
+function AvatarImage({ author, source, onUserClick, onUserContextMenu, tabIndex }: AvatarProps & { source: string | undefined }) {
   const [failed, setFailed] = useState(false);
   let hash = 0;
   for (const character of author.id)
@@ -33,23 +33,29 @@ function AvatarImage({ author, source, onUserClick, onUserContextMenu }: AvatarP
   const letter = [
     ...segmenter.segment(text),
   ][0]?.segment.toLocaleUpperCase("en-US") || "?";
-  const Wrapper = onUserClick ? "button" : "span";
   const interactive = Boolean(onUserClick || onUserContextMenu);
+  const Wrapper = interactive ? "button" : "span";
   return (
     <Wrapper
-      type={onUserClick ? "button" : undefined}
+      type={interactive ? "button" : undefined}
       className={`dui-avatar${interactive ? " dui-utility-target" : ""}`}
       aria-hidden={interactive ? undefined : true}
       aria-label={interactive ? author.displayName : undefined}
-      role={!onUserClick && onUserContextMenu
-        ? "img"
+      aria-haspopup={!onUserClick && onUserContextMenu
+        ? "menu"
         : undefined}
-      tabIndex={!onUserClick && onUserContextMenu
-        ? 0
-        : undefined}
+      tabIndex={interactive ? tabIndex : undefined}
       onKeyDown={onUserContextMenu ? contextMenuKey : undefined}
-      onClick={onUserClick
-        ? event => onUserClick(author, event)
+      onClick={interactive
+        ? (event) => {
+            if (onUserClick) {
+              onUserClick(author, event);
+            }
+            else {
+              event.stopPropagation();
+              onUserContextMenu?.(author, event);
+            }
+          }
         : undefined}
       onContextMenu={onUserContextMenu
         ? (event) => {
@@ -71,7 +77,7 @@ function AvatarImage({ author, source, onUserClick, onUserContextMenu }: AvatarP
   );
 }
 
-export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor };
+export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor; tabIndex?: number | undefined };
 
 export function Avatar({ author, ...handlers }: AvatarProps) {
   const { allowRemoteMedia, remoteMediaAllowlist } = useDisplayOptions();

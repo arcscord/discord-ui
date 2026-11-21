@@ -2,7 +2,7 @@
   import type { MessageAuthor } from "@arcscord/discord-ui-core";
   import type { UserInteractionHandlers } from "../interactions.js";
 
-  export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor };
+  export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor; tabIndex?: number | undefined };
   const backgrounds = [
     "#5865f2",
     "#3b8066",
@@ -26,7 +26,7 @@
   import { contextMenuKeyboard } from "../context-menu-keyboard.js";
   import { getDisplayOptions, hexColor } from "../display-context.js";
 
-  const { onUserClick, onUserContextMenu, author }: AvatarProps = $props();
+  const { onUserClick, onUserContextMenu, author, tabIndex }: AvatarProps = $props();
   const display = getDisplayOptions();
   const source = $derived(mediaUrl(author.avatarUrl, display().allowRemoteMedia, display().remoteMediaAllowlist));
   const background = $derived(hexColor(author.avatarFallback?.background) ?? backgrounds[avatarHash(author.id) % backgrounds.length]);
@@ -48,16 +48,28 @@
   });
 </script>
 
-<svelte:element this={onUserClick ? "button" : "span"} type={onUserClick ? "button" : undefined} class={["dui-avatar", (onUserClick || onUserContextMenu) && "dui-utility-target"]} aria-hidden={onUserClick || onUserContextMenu
+<svelte:element this={onUserClick || onUserContextMenu
+  ? "button"
+  : "span"} type={onUserClick || onUserContextMenu
+  ? "button"
+  : undefined} tabindex={onUserClick || onUserContextMenu
+  ? tabIndex
+  : undefined} class={["dui-avatar", (onUserClick || onUserContextMenu) && "dui-utility-target"]} aria-hidden={onUserClick || onUserContextMenu
   ? undefined
-  : true} role={!onUserClick && onUserContextMenu
-  ? "img"
-  : undefined} aria-label={onUserClick || onUserContextMenu
+  : true} aria-label={onUserClick || onUserContextMenu
   ? author.displayName
-  : undefined} tabindex={!onUserClick && onUserContextMenu
-  ? 0
-  : undefined} onclick={onUserClick
-  ? (event: MouseEvent) => onUserClick?.(author, event)
+  : undefined} aria-haspopup={!onUserClick && onUserContextMenu
+  ? "menu"
+  : undefined} onclick={onUserClick || onUserContextMenu
+  ? (event: MouseEvent) => {
+    if (onUserClick) {
+      onUserClick(author, event);
+    }
+    else {
+      event.stopPropagation();
+      onUserContextMenu?.(author, event);
+    }
+  }
   : undefined} onkeydown={onUserContextMenu ? contextMenuKeyboard : undefined} oncontextmenu={onUserContextMenu
   ? (event: MouseEvent) => {
     event.stopPropagation();

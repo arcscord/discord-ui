@@ -17,22 +17,34 @@ export const Author = defineRenderer<AuthorProps, AuthorPropsInput, AuthorSlots>
       : undefined;
     return (
       <span class="dui-author">
-        {h(onUserClick ? "button" : "span", {
-          class: `dui-author-name${onUserClick || onUserContextMenu
+        {h(onUserClick || onUserContextMenu
+          ? "button"
+          : "span", {
+          "class": `dui-author-name${onUserClick || onUserContextMenu
             ? " dui-utility-target"
             : ""}`,
-          type: onUserClick ? "button" : undefined,
-          tabindex: !onUserClick && onUserContextMenu
-            ? 0
+          "type": onUserClick || onUserContextMenu
+            ? "button"
             : undefined,
-          style: styleValue(color
+          "aria-haspopup": !onUserClick && onUserContextMenu
+            ? "menu"
+            : undefined,
+          "style": styleValue(color
             ? { color }
             : undefined),
-          onClick: onUserClick
-            ? (event: MouseEvent) => onUserClick(author, event)
+          "onClick": onUserClick || onUserContextMenu
+            ? (event: MouseEvent) => {
+                if (onUserClick) {
+                  onUserClick(author, event);
+                }
+                else {
+                  event.stopPropagation();
+                  onUserContextMenu?.(author, event);
+                }
+              }
             : undefined,
-          onKeydown: onUserContextMenu ? dispatchKeyboardContextMenu : undefined,
-          onContextmenu: onUserContextMenu
+          "onKeydown": onUserContextMenu ? dispatchKeyboardContextMenu : undefined,
+          "onContextmenu": onUserContextMenu
             ? (event: MouseEvent) => {
                 event.stopPropagation();
                 onUserContextMenu(author, event);

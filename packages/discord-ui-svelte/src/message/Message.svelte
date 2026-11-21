@@ -43,11 +43,11 @@
 <MessageFrame onContextMenu={onMessageContextMenu
   ? event => onMessageContextMenu?.(message, event)
   : undefined} ephemeral={message.ephemeral === true} mentioned={message.mentioned === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
-  {#snippet avatar()}<Avatar {onUserClick} {onUserContextMenu} author={message.author} />{/snippet}
+  {#snippet avatar()}<Avatar tabIndex={-1} {onUserClick} {onUserContextMenu} author={message.author} />{/snippet}
   {#snippet header()}<MessageHeader {onUserClick} {onUserContextMenu} author={message.author} timestamp={message.timestamp} edited={message.edited} />{/snippet}
   {#snippet footer()}
     {#if showThreadPreview && message.thread}
-      <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
+      <ThreadPreview {onUserClick} {onUserContextMenu} thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
     {/if}
     {#if message.ephemeral}
       <div class="dui-ephemeral-notice">

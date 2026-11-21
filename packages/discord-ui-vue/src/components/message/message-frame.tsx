@@ -2,7 +2,7 @@
 import type { VNodeChild } from "vue";
 import { defineRenderer, styleValue } from "../../rendering";
 import { themeStyle } from "../../themes";
-import { dispatchKeyboardContextMenu } from "../../utility-context";
+import { dispatchKeyboardContextMenu, isNativeControlContextMenu } from "../../utility-context";
 
 type MessageFramePropsInput = {
   onContextMenu?: ((event: MouseEvent) => void) | undefined;
@@ -35,7 +35,13 @@ export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsI
     return (
       <article
         {...(onContextMenu
-          ? { onContextmenu: onContextMenu, onKeydown: dispatchKeyboardContextMenu }
+          ? {
+              onContextmenu: (event: MouseEvent) => {
+                if (!isNativeControlContextMenu(event))
+                  onContextMenu(event);
+              },
+              onKeydown: dispatchKeyboardContextMenu,
+            }
           : {})}
         tabindex={onContextMenu ? 0 : undefined}
         class={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}

@@ -30,6 +30,7 @@ Events: `user-click`, `user-context-menu`.
 | --- | --- | --- |
 | `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `tabIndex` | No | `number \| undefined` |
 | `author` | Yes | `MessageAuthor` |
 
 Slots: none.
@@ -503,13 +504,15 @@ Events: `user-click`, `user-context-menu`, `mention-click`, `mention-context-men
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `thread` | Yes | `ThreadSummaryView` |
 | `onOpen` | No | `((id: string) => void) \| undefined` |
 | `active` | No | `boolean \| undefined` |
 
 Slots: none.
 
-Events: `open`.
+Events: `user-click`, `user-context-menu`, `open`.
 
 ## Themes and highlighting
 

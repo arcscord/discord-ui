@@ -8,20 +8,29 @@ export function Author({ author, onUserClick, onUserContextMenu }: AuthorProps) 
   const color = /^#[a-f\d]{6}$/iu.test(author.color ?? "")
     ? author.color
     : undefined;
-  const Name = onUserClick ? "button" : "span";
+  const interactive = Boolean(onUserClick || onUserContextMenu);
+  const Name = interactive ? "button" : "span";
   return (
     <span className="dui-author">
       <Name
-        type={onUserClick ? "button" : undefined}
+        type={interactive ? "button" : undefined}
         className={`dui-author-name${onUserClick || onUserContextMenu
           ? " dui-utility-target"
           : ""}`}
-        tabIndex={!onUserClick && onUserContextMenu
-          ? 0
+        aria-haspopup={!onUserClick && onUserContextMenu
+          ? "menu"
           : undefined}
         onKeyDown={onUserContextMenu ? contextMenuKey : undefined}
-        onClick={onUserClick
-          ? event => onUserClick(author, event)
+        onClick={interactive
+          ? (event) => {
+              if (onUserClick) {
+                onUserClick(author, event);
+              }
+              else {
+                event.stopPropagation();
+                onUserContextMenu?.(author, event);
+              }
+            }
           : undefined}
         onContextMenu={onUserContextMenu
           ? (event) => {
