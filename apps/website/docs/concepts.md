@@ -36,7 +36,8 @@ viewer and enforce authorization in your application.
 ## Convert received Discord data
 
 The shared `@arcscord/discord-ui-core/discord-api` entry converts Discord API v10
-responses into models for React and Vue. Add `@arcscord/discord-ui-core` as a direct
+responses into models for React, Vue and Svelte. Add
+`@arcscord/discord-ui-core` as a direct
 dependency to import this entry. Use `fromDiscordMessage` with a complete
 message, or `fromDiscordMessageComponents` with the component array and its
 `{ attachments }`. The same entry exports `fromDiscordUser`, `fromDiscordRole`

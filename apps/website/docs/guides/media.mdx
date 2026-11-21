@@ -144,6 +144,9 @@ Copy these assets or supply your own URLs.
 
 ## Migrating existing media consumers
 
+Core `0.3.0`, React `0.4.0` and Vue `0.2.0` introduce the following media
+contract changes. Svelte `0.1.0` uses these contracts from its first release.
+
 `MediaView` keeps its image contract. `MessageContentView.media` and
 `GalleryView.items` now contain `MessageMediaView` values, so custom renderers
 must handle videos as well as images. Narrow with `"kind" in item && item.kind === "video"`,

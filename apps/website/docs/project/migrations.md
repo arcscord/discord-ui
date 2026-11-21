@@ -5,9 +5,18 @@ description: Release notes, public contract changes and when to snapshot documen
 
 # Changelog and migration policy
 
-Documentation uses one current tree. The Core, React and Vue packages have
+Documentation uses one current tree. The Core, React, Vue and Svelte packages have
 independent versions and changelogs. See
 [repository releases](https://github.com/arcscord/discord-ui/releases) for release notes.
+
+## Media contract migration
+
+Core `0.3.0`, React `0.4.0` and Vue `0.2.0` expand the media and attachment
+contracts. Svelte `0.1.0` uses the same shared models.
+
+The [media migration guide](../guides/media.mdx#migrating-existing-media-consumers)
+describes the expanded media and attachment unions and the changes needed by
+custom renderers and attachment filters.
 
 ## When a public contract changes
 

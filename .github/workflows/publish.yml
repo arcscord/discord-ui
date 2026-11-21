@@ -2,11 +2,11 @@ name: Stage npm package
 
 on:
   push:
-    tags: ["v*", "core-v*", "vue-v*"]
+    tags: ["v*", "core-v*", "vue-v*", "svelte-v*"]
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing version tag to stage (for example v0.2.0 or core-v0.2.0).
+        description: Existing version tag to stage (for example v0.2.0, core-v0.2.0, vue-v0.1.0 or svelte-v0.1.0).
         required: true
         type: string
 

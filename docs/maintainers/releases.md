@@ -1,6 +1,6 @@
 # CI and npm releases
 
-Maintainer procedures for validating, staging and approving releases of the Core, React and Vue packages.
+Maintainer procedures for validating, staging and approving releases of the Core, React, Vue and Svelte packages.
 Commands run from the repository root. For local setup, see
 [Contributing](../../CONTRIBUTING.md).
 
@@ -34,11 +34,11 @@ Enable Dependabot alerts and security updates in the repository settings.
 | --- | --- | --- |
 | React: `@arcscord/discord-ui` | `packages/discord-ui/package.json` | `vX.Y.Z` |
 | Vue: `@arcscord/discord-ui-vue` | `packages/discord-ui-vue/package.json` | `vue-vX.Y.Z` |
+| Svelte: `@arcscord/discord-ui-svelte` | `packages/discord-ui-svelte/package.json` | `svelte-vX.Y.Z` |
 | Core: `@arcscord/discord-ui-core` | `packages/discord-ui-core/package.json` | `core-vX.Y.Z` |
 
-Each package owns its version and changelog. The initial core version is `0.2.0`;
-it does not force React to keep the same version. The Vue adapter starts independently at `0.1.0`. Angular and Svelte adapters
-and their release tags remain future work.
+Each package owns its version and changelog. Core `0.3.0`, React `0.4.0`, Vue
+`0.2.0` and Svelte `0.1.0` use independent release tags.
 
 A compatible feature increments the affected packages' minor versions. A core
 JavaScript fix only needs a core patch. Each adapter copies the shared CSS at
@@ -47,16 +47,16 @@ Vue-only fix increments Vue's patch. Breaking changes increment the major after 
 `1.0`, with a migration note. Shared changes can be prepared together but are
 published in dependency order.
 
-Both adapters declare `workspace:^` for the core. Packing replaces it with a caret range
+All three adapters declare `workspace:^` for the core. Packing replaces it with a caret range
 based on the current core manifest. `^0.2.0` accepts `0.2.x`, not `0.3.0`; `^1.4.0`
 accepts compatible `1.x` releases. When an adapter needs a newer core API, raise
 its dependency minimum with its next release. Consumers with lockfiles must
 update their resolved core version to receive compatible JavaScript fixes.
 
-The isolated package check packs all three packages and uses an override to
+The isolated package check packs all four packages and uses an override to
 test the adapters against the matching local core archive.
 The React consumer disables dependency hoisting. The Vue consumer checks both
-Bundler and NodeNext types. The core is checked without framework dependencies.
+Bundler and NodeNext types; the Svelte consumer checks Svelte integration. The core is checked without framework dependencies.
 
 ## Check a published package
 
@@ -94,6 +94,7 @@ pnpm docs:check
 pnpm --filter @arcscord/discord-ui-core pack --pack-destination "$PWD/.local/package"
 pnpm --filter @arcscord/discord-ui pack --pack-destination "$PWD/.local/package"
 pnpm --filter @arcscord/discord-ui-vue pack --pack-destination "$PWD/.local/package"
+pnpm --filter @arcscord/discord-ui-svelte pack --pack-destination "$PWD/.local/package"
 ```
 
 `pnpm check` builds the website; browser tests reuse that build. Merge the
@@ -104,11 +105,11 @@ a separate manual approval on npm.
 ## Stage from GitHub
 
 [The staging workflow](../../.github/workflows/publish.yml) stages the selected package on npm when a
-`v*` (React), `vue-v*` (Vue) or `core-v*` (core) tag is pushed. It can also be started with **Actions → Stage npm package →
+`v*` (React), `vue-v*` (Vue), `svelte-v*` (Svelte) or `core-v*` (core) tag is pushed. It can also be started with **Actions → Stage npm package →
 Run workflow**, supplying an existing tag. The tag must match the committed
 targeted package manifest version and point to a commit contained in
 `main`; the `0.0.0` placeholder is rejected. Stable versions use the npm `latest`
-tag; prereleases such as `v0.2.0-beta.1` use `next`.
+tag; prereleases such as `v0.4.0-beta.1` use `next`.
 
 The workflow runs the full CI against the resolved release commit, then selects
 only the targeted package tarball from the verified artifacts and stages it with provenance using `npm stage publish`. Staging uses the
@@ -130,8 +131,8 @@ Then tag the merged commit, for example:
 ```sh
 git switch main
 git pull --ff-only
-git tag v0.3.0
-git push origin v0.3.0
+git tag core-v0.3.0
+git push origin core-v0.3.0
 ```
 
 Creating a new version tag through the GitHub Release form also triggers the
@@ -146,17 +147,74 @@ an old failed run uses its original workflow revision.
 
 ## Core-first releases and first publication
 
-For a release involving the core and one or both adapters:
+### Publish stable releases from GitHub
+
+Merge the preparation PR into `main` and wait for CI to pass. Create stable
+GitHub releases targeting the merged `main` commit with these tags:
+
+| Package | GitHub tag | npm dist-tag |
+| --- | --- | --- |
+| Core | `core-v0.3.0` | `latest` |
+| React | `v0.4.0` | `latest` |
+| Vue | `vue-v0.2.0` | `latest` |
+| Svelte | `svelte-v0.1.0` | `latest` |
+
+Publish and approve Core `0.3.0` on npm before staging the adapters. Complete
+Svelte's registry bootstrap and trusted publisher setup before its stable release.
+
+### Bootstrap the Svelte npm package
+
+Create the npm package with a minimal registry-setup version `0.0.0-beta.1`,
+using the npm `beta` dist-tag. This package contains setup metadata and a README.
+The stable adapter's runtime and its Core dependency ship with `0.1.0`.
+Run the following command from an npm session authenticated with publish access
+to the `@arcscord` scope:
+
+```sh
+bootstrap_dir=$(mktemp -d)
+cat > "$bootstrap_dir/package.json" <<'JSON'
+{
+  "name": "@arcscord/discord-ui-svelte",
+  "version": "0.0.0-beta.1",
+  "description": "Registry bootstrap for the native Svelte Discord UI adapter.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcscord/discord-ui.git",
+    "directory": "packages/discord-ui-svelte"
+  }
+}
+JSON
+printf '%s\n' '# Discord UI for Svelte' '' 'Registry setup package for the native Svelte Discord UI adapter.' > "$bootstrap_dir/README.md"
+cp LICENSE "$bootstrap_dir/LICENSE"
+npm publish "$bootstrap_dir" --access public --tag beta --ignore-scripts
+```
+
+After publication, configure the package's trusted publisher for repository
+`arcscord/discord-ui`, workflow `publish.yml`, environment `npm-publish`, with
+staging permission. Then publish the stable `svelte-v0.1.0` GitHub release after
+Core `0.3.0` is public, and approve the resulting npm stage. This authenticated
+bootstrap uses the npm registry directly. Stable workflow releases attach
+GitHub Actions OIDC provenance.
+See [trusted publisher configuration](https://docs.npmjs.com/trusted-publishers/).
+
+### Release packages in dependency order
+
+For a release involving the core and one or more adapters:
 
 1. Validate the tarballs locally and merge the changes into `main`.
 2. Create the core's matching `core-vX.Y.Z` tag and stage the core.
 3. Review and approve the core on npm; confirm its exact version is public.
 4. Tag and stage each adapter being released using `vue-vX.Y.Z` for Vue and
-   `vX.Y.Z` for React.
-5. Review and approve each adapter independently.
+   `svelte-vX.Y.Z` for Svelte and `vX.Y.Z` for React.
+5. Review and approve each adapter independently. For the first Svelte version,
+   complete the bootstrap and trusted publisher setup above before staging it.
+6. Confirm the registry versions and update release availability notices in the
+   installation, compatibility, migration, media and Svelte guides, package
+   READMEs and changelogs to reflect the approved versions.
 
 Before staging an adapter, the workflow verifies that the minimum core version
-from its packed dependency range is public. CI validates all three tarballs for
+from its packed dependency range is public. CI validates all four tarballs for
 every release.
 
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+
+- Render video, audio, voice notes and stickers with accessible player controls,
+  spoiler handling and the shared remote-media policy.
+- Highlight viewer-supplied mentioned messages and display author server tags.
+- Add user, mention and message context-menu callbacks across messages, replies,
+  lists, channels and threads, including keyboard access and event propagation.
+
+### Migration from 0.3.x
+
+- Require Core `^0.3.0`. Custom media and attachment renderers must handle the
+  expanded image/video and file/audio unions described in the Core changelog.
+- Playback, persistence, profile/menu content and Discord network calls remain
+  application-owned through serializable data and intent callbacks.
+
 ## 0.3.0
 
 - Extract shared models, themes, styles and content processing into

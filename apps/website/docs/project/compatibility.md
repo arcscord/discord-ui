@@ -5,8 +5,8 @@ description: Declared package requirements and the boundaries of local verificat
 
 # Compatibility and limitations
 
-Separate a declared contract from a tested environment. This site documents the
-current repository, including changes ahead of the stable npm releases.
+This page describes the package contracts and the environments covered by
+repository verification.
 
 | Area | Repository contract / evidence | Limit |
 | --- | --- | --- |

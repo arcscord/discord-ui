@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { coreMinimumVersion, releaseMetadata, releaseTarget, verifyPublishedCoreDependency } from "./metadata.mts";
 
-const versions = { react: "1.2.3", core: "0.2.4", vue: "0.1.0" };
+const versions = {
+  react: "1.2.3",
+  core: "0.2.4",
+  vue: "0.1.0",
+  svelte: "0.1.0",
+};
 describe("independent release metadata", () => {
   it("selects React while allowing a different core version", () => {
     expect(releaseMetadata("v1.2.3", versions)).toEqual({
@@ -24,6 +29,7 @@ describe("independent release metadata", () => {
   it.each(["1.0.0-beta.1", "0.1.0-rc.0", "1.0.0-0.alpha-1"])("keeps prerelease %s off latest", (version) => {
     expect(releaseMetadata(`v${version}`, { ...versions, react: version }).distTag).toBe("next");
     expect(releaseMetadata(`core-v${version}`, { ...versions, core: version }).distTag).toBe("next");
+    expect(releaseMetadata(`svelte-v${version}`, { ...versions, svelte: version }).distTag).toBe("next");
   });
   it.each([
     "main",
@@ -36,12 +42,15 @@ describe("independent release metadata", () => {
     "v1.2.3;echo bad",
     "core-v01.2.3",
     "angular-v1.2.3",
+    "svelte-v01.2.3",
   ])("rejects invalid tag %j", (tag) => {
     expect(() => releaseTarget(tag)).toThrow();
   });
   it("rejects mismatches only for the targeted package", () => {
     expect(() => releaseMetadata("v1.2.4", versions)).toThrow();
     expect(() => releaseMetadata("core-v0.2.3", versions)).toThrow();
+    expect(() => releaseMetadata("svelte-v0.1.1", versions)).toThrow();
+    expect(() => releaseMetadata("svelte-v0.0.0", { ...versions, svelte: "0.0.0" })).toThrow();
     expect(() => releaseMetadata("v0.0.0", { ...versions, react: "0.0.0" })).toThrow();
     expect(() => releaseMetadata("core-v0.0.0", { ...versions, core: "0.0.0" })).toThrow();
   });
@@ -96,4 +105,14 @@ describe("published core requirement before adapter staging", () => {
 
 it("selects the Vue artifact independently from React and core", () => {
   expect(releaseMetadata("vue-v0.1.0", versions)).toMatchObject({ packageName: "@arcscord/discord-ui-vue", version: "0.1.0", tarball: "arcscord-discord-ui-vue-0.1.0.tgz" });
+});
+
+it("selects the Svelte artifact independently from other packages", () => {
+  expect(releaseMetadata("svelte-v0.1.0", versions)).toEqual({
+    version: "0.1.0",
+    distTag: "latest",
+    tarball: "arcscord-discord-ui-svelte-0.1.0.tgz",
+    packageName: "@arcscord/discord-ui-svelte",
+    directory: "packages/discord-ui-svelte",
+  });
 });
