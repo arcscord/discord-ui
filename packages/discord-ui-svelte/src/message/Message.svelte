@@ -37,7 +37,7 @@
 
 {#snippet replyPreview()}{#if message.reply}<ReplyPreview reply={message.reply} />{/if}{/snippet}
 
-<MessageFrame ephemeral={message.ephemeral === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
+<MessageFrame ephemeral={message.ephemeral === true} mentioned={message.mentioned === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
   {#snippet avatar()}<Avatar author={message.author} />{/snippet}
   {#snippet header()}<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} />{/snippet}
   {#snippet footer()}

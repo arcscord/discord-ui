@@ -70,6 +70,16 @@ Discord premium buttons open Discord's purchase flow without sending a button
 interaction to your application. See [button variants](./guides/interactions.mdx#button-variants)
 for the distinction between display metadata and Discord payloads.
 
+## Mentioned message display
+
+`MessageView.mentioned` and `MessageFrame.mentioned` accept an optional boolean
+supplied by the host. Set it to highlight a message for the current viewer.
+Markdown mention text and Discord conversion leave this viewer-specific choice
+to the application. The highlight adds a background and left border, with no
+visibility notice or dismissal control. Ephemeral appearance takes precedence
+when both flags are true. Customize the highlight through the optional
+`mentionedBackground` and `mentionedBorder` theme overrides.
+
 ## Conversation identity and thread navigation
 
 Changing `channel.id` on `ChannelView`, or `thread.id` on a standalone

@@ -55,6 +55,8 @@ export type MessageMetadata = {
   edited?: boolean;
   /** Display-only visibility hint. The host controls access to private data. */
   ephemeral?: boolean;
+  /** Highlights a mention of the viewer, as resolved by the host application. */
+  mentioned?: boolean;
 };
 
 export type MessageContentView = (

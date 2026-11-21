@@ -529,7 +529,7 @@ Related types: [VideoView](/docs/api/models#videoview).
 
 <CodeBlock language="ts">{"import { Message } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Renders a complete classic or Components V2 snapshot, with optional reply, edits, reactions, ephemeral notice and thread summary. Callbacks report intent; the host updates the model. Ephemeral is appearance, not authorization. Body Markdown/V2 and embeds use the wrapper reference time or message timestamp.
+Renders a complete classic or Components V2 snapshot, with optional reply, edits, reactions, mentioned highlight, ephemeral notice and thread summary. Callbacks report intent; the host updates the model. Ephemeral is appearance, not authorization. Body Markdown/V2 and embeds use the wrapper reference time or message timestamp.
 
 [Usage guide](/docs/guides/messages) · [Props type](#messageprops)
 
@@ -560,7 +560,7 @@ Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [Reac
 
 <CodeBlock language="ts">{"import type { MessageProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Renders a complete classic or Components V2 snapshot, with optional reply, edits, reactions, ephemeral notice and thread summary. Callbacks report intent; the host updates the model. Ephemeral is appearance, not authorization. Body Markdown/V2 and embeds use the wrapper reference time or message timestamp.
+Renders a complete classic or Components V2 snapshot, with optional reply, edits, reactions, mentioned highlight, ephemeral notice and thread summary. Callbacks report intent; the host updates the model. Ephemeral is appearance, not authorization. Body Markdown/V2 and embeds use the wrapper reference time or message timestamp.
 
 [Usage guide](/docs/guides/messages) · [Component](#message)
 
@@ -602,11 +602,11 @@ Displays a plain content string as escaped text. Choose Markdown when formatting
 
 <CodeBlock language="ts">{"import { MessageFrame } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Composes explicit avatar, reply, header, body and footer React slots. It supplies a default style scope when standalone; it does not normalize a MessageView or add send/interaction handlers.
+Composes explicit avatar, reply, header, body and footer React slots. Its mentioned prop enables the host-supplied message highlight. It supplies a default style scope when standalone; it does not normalize a MessageView or add send/interaction handlers.
 
 [Usage guide](/docs/guides/messages) · [Props type](#messageframeprops)
 
-<CodeBlock language="ts">{"export function MessageFrame({ avatar, reply, header, footer, children, ephemeral, hasThread }: MessageFrameProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function MessageFrame({ avatar, reply, header, footer, children, ephemeral, mentioned, hasThread }: MessageFrameProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -616,6 +616,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | --- | --- | --- | --- | --- |
 | `hasThread` | No | `boolean` | `false` | Enables the message-frame thread connector layout. |
 | `ephemeral` | No | `boolean` | `false` | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | `false` | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `reply` | No | `ReactNode` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `avatar` | No | `ReactNode` | — | React avatar slot. |
 | `header` | No | `ReactNode` | — | Custom React header slot; ChannelView otherwise renders ChannelHeader. |
@@ -628,11 +629,11 @@ Optional props without a listed default remain absent; the behavior note describ
 
 <CodeBlock language="ts">{"import type { MessageFrameProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Composes explicit avatar, reply, header, body and footer React slots. It supplies a default style scope when standalone; it does not normalize a MessageView or add send/interaction handlers.
+Composes explicit avatar, reply, header, body and footer React slots. Its mentioned prop enables the host-supplied message highlight. It supplies a default style scope when standalone; it does not normalize a MessageView or add send/interaction handlers.
 
 [Usage guide](/docs/guides/messages) · [Component](#messageframe)
 
-<CodeBlock language="ts">{"export type MessageFrameProps = {\n  hasThread?: boolean;\n  ephemeral?: boolean;\n  reply?: ReactNode;\n  avatar?: ReactNode;\n  header?: ReactNode;\n  footer?: ReactNode;\n  children: ReactNode;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"export type MessageFrameProps = {\n  hasThread?: boolean;\n  ephemeral?: boolean;\n  mentioned?: boolean;\n  reply?: ReactNode;\n  avatar?: ReactNode;\n  header?: ReactNode;\n  footer?: ReactNode;\n  children: ReactNode;\n};"}</CodeBlock>
 
 ## MessageHeader
 

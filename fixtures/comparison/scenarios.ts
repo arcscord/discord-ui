@@ -173,6 +173,7 @@ export const scenarioMessages: Record<string, MessageView> = {
   "media": {
     ...base,
     id: "media",
+    mentioned: true,
     body: { kind: "text", content: "Media and files" },
     media: [
       {

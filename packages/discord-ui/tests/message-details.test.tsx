@@ -1,7 +1,7 @@
 import type { MessageView } from "../src/index";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, expectTypeOf, it } from "vitest";
-import { DiscordUI, Message } from "../src/index";
+import { DiscordUI, Message, MessageFrame } from "../src/index";
 
 const base: MessageView = {
   id: "reply",
@@ -175,4 +175,29 @@ it("shows ephemeral notices for classic and V2 messages, with no inactive dismis
   const publicMessage = renderToStaticMarkup(<Message message={base} onEphemeralDismiss={() => {}} />);
   expect(publicMessage).not.toContain("dui-ephemeral-notice");
   expect(publicMessage).not.toContain("data-ephemeral");
+});
+
+it("highlights mentioned messages without an ephemeral notice or dismiss action", () => {
+  const html = renderToStaticMarkup(<Message message={{ ...base, mentioned: true }} onEphemeralDismiss={() => {}} />);
+  expect(html).toContain("data-mentioned=\"true\"");
+  expect(html).not.toContain("data-ephemeral");
+  expect(html).not.toContain("dui-ephemeral-notice");
+  expect(html).not.toContain("dui-ephemeral-dismiss");
+  expect(renderToStaticMarkup(<Message message={base} />)).not.toContain("data-mentioned");
+  expect(renderToStaticMarkup(<Message message={{ ...base, mentioned: false }} />)).not.toContain("data-mentioned");
+});
+
+it("preserves explicit ephemeral metadata on a mentioned message", () => {
+  const html = renderToStaticMarkup(<Message message={{ ...base, mentioned: true, ephemeral: true }} onEphemeralDismiss={() => {}} />);
+  expect(html).toContain("data-mentioned=\"true\"");
+  expect(html).toContain("data-ephemeral=\"true\"");
+  expect(html).toContain("dui-ephemeral-notice");
+  expect(html).toContain("dui-ephemeral-dismiss");
+});
+
+it("supports a mentioned standalone message frame", () => {
+  const html = renderToStaticMarkup(<MessageFrame mentioned>Highlighted message</MessageFrame>);
+  expect(html).toContain("data-mentioned=\"true\"");
+  expect(html).toContain("Highlighted message");
+  expect(html).not.toContain("data-ephemeral");
 });

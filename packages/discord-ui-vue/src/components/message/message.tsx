@@ -46,6 +46,7 @@ export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSl
     return (
       <MessageFrame
         ephemeral={message.ephemeral === true}
+        mentioned={message.mentioned === true}
         hasThread={showThreadPreview && Boolean(message.thread)}
         v-slots={{
           reply: () => message.reply

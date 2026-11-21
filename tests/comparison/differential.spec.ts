@@ -261,6 +261,8 @@ async function embeds(runner: Runner, width = 390): Promise<void> {
 async function media(runner: Runner): Promise<void> {
   await runner.checkpoint("media-policy", initial, [], async (document) => {
     await expect(document.getByText("Media and files", { exact: true })).toBeVisible();
+    await expect(document.locator(".dui-message[data-mentioned=true]")).toHaveCount(1);
+    await expect(document.locator(".dui-ephemeral-notice, .dui-ephemeral-dismiss")).toHaveCount(0);
     await expect(document.getByRole("img", { name: "Local image", exact: true })).toBeVisible();
     await expect(document.getByRole("img", { name: "Allowlisted image", exact: true })).toBeVisible();
     await expect(document.getByRole("img", { name: "Media unavailable: Missing image", exact: true })).toBeVisible();

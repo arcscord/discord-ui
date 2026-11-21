@@ -1494,9 +1494,9 @@ Related types: [TextMessageBody](/docs/api/models#textmessagebody), [MarkdownMes
 
 <CodeBlock language="ts">{"import type { MessageMetadata } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Shared serializable metadata. edited is boolean; ephemeral is a display hint and the host controls access. No implicit clock or edit timestamp is introduced.
+Shared serializable metadata. edited is boolean; mentioned is a host-supplied viewer-specific highlight with no automatic text inference. Ephemeral is a display hint and takes visual precedence when both flags are true; the host controls access. No implicit clock or edit timestamp is introduced.
 
-<CodeBlock language="ts">{"type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageMetadata = {\n  id: string;\n  author: MessageAuthor;\n  /** Explicit ISO 8601 timestamp including a timezone; no implicit local clock. */\n  timestamp: string;\n  reactions?: readonly ReactionView[];\n  reply?: ReplyView;\n  /** Shows the edited marker; omitted is equivalent to false. */\n  edited?: boolean;\n  /** Display-only visibility hint. The host controls access to private data. */\n  ephemeral?: boolean;\n  /** Highlights a mention of the viewer, as resolved by the host application. */\n  mentioned?: boolean;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1507,10 +1507,11 @@ Shared serializable metadata. edited is boolean; ephemeral is a display hint and
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 
 ### Valid example
 
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageMetadata = { id: \"message\", author, timestamp, edited: true };"}</CodeBlock>
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageMetadata = { id: \"message\", author, timestamp, edited: true, mentioned: true };"}</CodeBlock>
 
 Related types: [MessageAuthor](/docs/api/models#messageauthor), [ReactionView](/docs/api/models#reactionview), [ReplyView](/docs/api/models#replyview).
 
@@ -1571,6 +1572,7 @@ Metadata plus exactly one valid content family and an optional nonrecursive thre
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
 | `media` | No | `readonly MessageMediaView[]` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
 | `attachments` | No | `readonly (FileView \| AudioView)[]` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
@@ -1590,6 +1592,7 @@ Metadata plus exactly one valid content family and an optional nonrecursive thre
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
 | `media` | Forbidden | `never` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
 | `attachments` | Forbidden | `never` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
@@ -1774,6 +1777,7 @@ A reply inside a thread. It has message metadata and one content family, but for
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `MarkdownMessageBody \| TextMessageBody` | — | Discriminated text/Markdown or Components V2 content. |
 | `media` | No | `readonly MessageMediaView[]` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
 | `attachments` | No | `readonly (FileView \| AudioView)[]` | — | Classic-message file or audio models; forbidden on a Components V2 body. |
@@ -1793,6 +1797,7 @@ A reply inside a thread. It has message metadata and one content family, but for
 | `reply` | No | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 | `edited` | No | `boolean` | — | Shows the translated edit marker when true; no edit timestamp is required. |
 | `ephemeral` | No | `boolean` | — | Display-only visibility notice and appearance. Host enforces authorization. |
+| `mentioned` | No | `boolean` | — | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
 | `body` | Yes | `ComponentsV2Body` | — | Discriminated text/Markdown or Components V2 content. |
 | `media` | Forbidden | `never` | — | Image or video model(s), as indicated by the type. Follow the shared media policy. |
 | `attachments` | Forbidden | `never` | — | Classic-message file or audio models; forbidden on a Components V2 body. |

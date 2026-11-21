@@ -10,6 +10,8 @@ export const themeTokenProperties = {
   ephemeralBackground: "--discord-ui-ephemeral-background",
   ephemeralHover: "--discord-ui-ephemeral-hover",
   ephemeralBorder: "--discord-ui-ephemeral-border",
+  mentionedBackground: "--discord-ui-mentioned-background",
+  mentionedBorder: "--discord-ui-mentioned-border",
   focusBackground: "--discord-ui-row-hover",
   codeBackground: "--discord-ui-code-background",
   spoilerBackground: "--discord-ui-spoiler-hidden",

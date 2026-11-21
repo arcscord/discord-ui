@@ -185,7 +185,7 @@ test("the editable media conversation renders all supported message media", asyn
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/playground?example=media-conversation");
   const preview = page.locator(".live-panel");
-  await expect(preview.locator(".dui-message")).toHaveCount(5);
+  await expect(preview.locator(".dui-message")).toHaveCount(6);
   await expect(preview.locator("video")).toHaveAttribute("poster", "/examples/trail-poster.png");
   await expect(preview.locator("audio")).toHaveCount(2);
   await expect(preview.locator(".dui-player-voice .dui-waveform")).toBeVisible();

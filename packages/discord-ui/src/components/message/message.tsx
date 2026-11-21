@@ -31,6 +31,7 @@ export function Message({ message, selectValues, onEphemeralDismiss, onReactionT
   return (
     <MessageFrame
       ephemeral={message.ephemeral === true}
+      mentioned={message.mentioned === true}
       reply={message.reply
         ? <ReplyPreview reply={message.reply} />
         : undefined}

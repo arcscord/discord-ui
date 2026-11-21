@@ -40,6 +40,13 @@ const member = {
 };
 export const mediaConversation: readonly MessageView[] = [
   {
+    id: "media-conversation-mentioned",
+    author: member,
+    timestamp: "2026-11-01T10:19:00Z",
+    mentioned: true,
+    body: { kind: "markdown", content: "<@123456789012345678> I collected the video, audio and voice note below. [Open trail guide](https://example.com/trail)." },
+  },
+  {
     id: "media-conversation-video",
     author: guide,
     timestamp: "2026-11-01T10:20:00Z",

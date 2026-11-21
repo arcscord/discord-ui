@@ -187,3 +187,13 @@ See the repository's
 MIT. Adapted parsing, highlighting and styles retain upstream notices in
 [THIRD_PARTY_NOTICES](./THIRD_PARTY_NOTICES). Twemoji graphics are not bundled or
 loaded implicitly; hosts supplying graphics retain their attribution obligations.
+
+## Mentioned messages
+
+Set `MessageView.mentioned` to `true` for the current viewer's highlighted
+messages. Rendering adapters also expose `MessageFrame.mentioned` for composed
+layouts. The host supplies the flag; Markdown mention tokens and API conversion
+leave it unset. The highlight preserves its colors on hover and focus and adds
+no ephemeral notice or dismissal action. Ephemeral appearance takes precedence
+when both flags are true. Theme overrides accept `mentionedBackground` and
+`mentionedBorder`.
