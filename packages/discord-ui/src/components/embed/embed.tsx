@@ -1,5 +1,6 @@
 import type { EmbedView } from "@arcscord/discord-ui-core";
 import { linkUrl, mediaUrl } from "@arcscord/discord-ui-core";
+import { inlineMarkdownText, parseInlineMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { Emoji } from "../content/emoji";
 import { Markdown } from "../content/markdown";
 import { useDisplayOptions } from "../display-context";
@@ -23,7 +24,9 @@ export function Embed({ embed, referenceTime }: EmbedProps) {
       style={color
         ? { borderLeftColor: color }
         : undefined}
-      aria-label={embed.title}
+      aria-label={embed.title
+        ? inlineMarkdownText(parseInlineMarkdown(embed.title))
+        : undefined}
     >
       <div className="dui-embed-main">
         {embed.author
@@ -42,8 +45,8 @@ export function Embed({ embed, referenceTime }: EmbedProps) {
           ? (
               <div className="dui-embed-title">
                 {url
-                  ? <a href={url} target="_blank" rel="noreferrer noopener">{embed.title}</a>
-                  : embed.title}
+                  ? <a href={url} target="_blank" rel="noreferrer noopener"><Markdown inline content={embed.title} referenceTime={referenceTime} /></a>
+                  : <Markdown inline content={embed.title} referenceTime={referenceTime} />}
               </div>
             )
           : null}
@@ -55,7 +58,7 @@ export function Embed({ embed, referenceTime }: EmbedProps) {
               <div className="dui-embed-fields">
                 {embed.fields.map(field => (
                   <div key={field.id} className={field.inline ? "dui-embed-field-inline" : "dui-embed-field"}>
-                    <strong>{field.name}</strong>
+                    <strong className="dui-embed-field-name"><Markdown inline content={field.name} referenceTime={referenceTime} /></strong>
                     <Markdown content={field.value} referenceTime={referenceTime} />
                   </div>
                 ))}

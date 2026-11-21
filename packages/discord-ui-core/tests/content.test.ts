@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { segmentUnicodeEmoji } from "../src/emoji";
 import { highlightCode } from "../src/highlight";
-import { parseMarkdown } from "../src/markdown";
+import { inlineMarkdownText, parseInlineMarkdown, parseMarkdown } from "../src/markdown";
 import { formatDiscordTimestamp, parseTimestamp } from "../src/utils/timestamps";
 
 describe("framework-neutral content data", () => {
@@ -136,5 +136,35 @@ describe("explicit timestamp formatting", () => {
     const options = { locale: "en-US", timeZone: "UTC", referenceTime: "2026-10-29T18:00:00Z" };
     expect(formatDiscordTimestamp("1793297100", "R", options)?.label).toBe("in 5 minutes");
     expect(formatDiscordTimestamp("1793297100", "R", { ...options, referenceTime: "invalid" })).toBeUndefined();
+  });
+
+  it("restricts embed title markup to inline formatting, emojis and timestamps", () => {
+    const nodes = parseInlineMarkdown("<:id:974006684643127296> **Ticket** <@123> <#456> @everyone # x [l](https://a.test) https://b.test");
+    expect(nodes).toEqual([
+      { type: "emoji", id: "974006684643127296", name: "id" },
+      { type: "text", content: " " },
+      {
+        type: "strong",
+        content: [
+          { type: "text", content: "Ticket" },
+        ],
+      },
+      { type: "text", content: " <@123> <#456> @everyone # x [l](https://a.test) https://b.test" },
+    ]);
+    expect(inlineMarkdownText(nodes)).toBe(":id: Ticket <@123> <#456> @everyone # x [l](https://a.test) https://b.test");
+    expect(parseInlineMarkdown("||s|| `c` <t:0:R> ~~x~~ __u__ *e*").map(node => node.type))
+      .toEqual([
+        "spoiler",
+        "text",
+        "inlineCode",
+        "text",
+        "timestamp",
+        "text",
+        "strikethrough",
+        "text",
+        "underline",
+        "text",
+        "em",
+      ]);
   });
 });

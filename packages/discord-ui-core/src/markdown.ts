@@ -1,5 +1,5 @@
 // Parsing rules adapted from AutoThreads; see THIRD_PARTY_NOTICES.
-import { parse } from "discord-markdown-parser";
+import { parse, rules, SimpleMarkdown } from "discord-markdown-parser";
 
 /** Renderer-neutral nodes. Unsupported parser nodes retain their textual children. */
 export type MarkdownNode = {
@@ -78,6 +78,61 @@ function inline(value: string): MarkdownNode[] {
     index = end - 1;
   }
   return normalized;
+}
+
+// Embed titles and field names accept inline formatting and emojis only;
+// mentions, links, headings and blocks stay as source text.
+const inlineRules = [
+  "escape",
+  "strong",
+  "em",
+  "underline",
+  "strikethrough",
+  "inlineCode",
+  "spoiler",
+  "emoji",
+  "twemoji",
+  "emoticon",
+  "timestamp",
+  "text",
+] as const;
+const inlineParser = SimpleMarkdown.parserFor(Object.fromEntries(inlineRules.map(name => [name, rules[name]!])));
+
+function mergeText(nodes: MarkdownNode[]): MarkdownNode[] {
+  const merged: MarkdownNode[] = [];
+  for (const node of nodes) {
+    if (Array.isArray(node.content))
+      node.content = mergeText(node.content);
+    const previous = merged.at(-1);
+    if (node.type === "text" && previous?.type === "text" && typeof previous.content === "string" && typeof node.content === "string")
+      previous.content += node.content;
+    else
+      merged.push(node);
+  }
+  return merged;
+}
+
+/** Parse restricted inline Markdown, as Discord renders embed titles and field names. */
+export function parseInlineMarkdown(value: string): MarkdownNode[] {
+  return mergeText((inlineParser(value, { inline: true }) as RawNode[]).map(normalizeNode));
+}
+
+/** Flatten inline nodes to plain text, for accessible names. */
+export function inlineMarkdownText(nodes: MarkdownNode[]): string {
+  return nodes.map((node) => {
+    if (node.type === "emoji")
+      return `:${node.name ?? ""}:`;
+    if (node.type === "twemoji")
+      return node.name ?? "";
+    if (node.type === "timestamp") {
+      return `<t:${node.timestamp ?? ""}${node.format
+        ? `:${node.format}`
+        : ""}>`;
+    }
+    return Array.isArray(node.content)
+      ? inlineMarkdownText(node.content)
+      : node.content ?? "";
+  }).join("");
 }
 
 // Recognize simple list blocks without touching fenced code or multiline spoilers/quotes.

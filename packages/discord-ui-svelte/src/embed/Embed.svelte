@@ -6,6 +6,7 @@
 
 <script lang="ts">
   import { linkUrl, mediaUrl } from "@arcscord/discord-ui-core";
+  import { inlineMarkdownText, parseInlineMarkdown } from "@arcscord/discord-ui-core/markdown";
   import Emoji from "../content/Emoji.svelte";
   import Markdown from "../content/Markdown.svelte";
   import { getDisplayOptions, hexColor } from "../display-context.js";
@@ -17,10 +18,13 @@
   const url = $derived(linkUrl(embed.url));
   const authorUrl = $derived(linkUrl(embed.author?.url));
   const authorImage = $derived(mediaUrl(embed.author?.iconUrl, display().allowRemoteMedia, display().remoteMediaAllowlist));
+  const titleLabel = $derived(embed.title
+    ? inlineMarkdownText(parseInlineMarkdown(embed.title))
+    : undefined);
   const footerImage = $derived(mediaUrl(embed.footer?.iconUrl, display().allowRemoteMedia, display().remoteMediaAllowlist));
 </script>
 
-<section class="dui-embed" style:border-left-color={hexColor(embed.color)} aria-label={embed.title}>
+<section class="dui-embed" style:border-left-color={hexColor(embed.color)} aria-label={titleLabel}>
   <div class="dui-embed-main">
     {#if embed.author}
       <div class="dui-embed-author">
@@ -30,7 +34,7 @@
     {/if}
     {#if embed.title}
       <div class="dui-embed-title">
-        {#if url}<a href={url} target="_blank" rel="noreferrer noopener">{embed.title}</a>{:else}{embed.title}{/if}
+        {#if url}<a href={url} target="_blank" rel="noreferrer noopener"><Markdown inline content={embed.title} {referenceTime} /></a>{:else}<Markdown inline content={embed.title} {referenceTime} />{/if}
       </div>
     {/if}
     {#if embed.description}<Markdown content={embed.description} {referenceTime} />{/if}
@@ -38,7 +42,7 @@
       <div class="dui-embed-fields">
         {#each embed.fields as field (field.id)}
           <div class={field.inline ? "dui-embed-field-inline" : "dui-embed-field"}>
-            <strong>{field.name}</strong>
+            <strong class="dui-embed-field-name"><Markdown inline content={field.name} {referenceTime} /></strong>
             <Markdown content={field.value} {referenceTime} />
           </div>
         {/each}
