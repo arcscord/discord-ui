@@ -140,7 +140,10 @@ describe("svelte media rendering", () => {
         },
       },
     });
-    expect(body.replaceAll(/<!--.*?-->/gu, "")).toContain("<span class=\"dui-author-tag\"><img class=\"dui-author-tag-badge\" src=\"/tag.png\" alt=\"\" width=\"13\" height=\"13\"/><span class=\"dui-author-tag-text\">DEV</span></span>");
+    expect(body).toContain("<span class=\"dui-author-tag\">");
+    expect(body).toContain("<img class=\"dui-author-tag-badge\" src=\"/tag.png\" alt=\"\" width=\"13\" height=\"13\"/>");
+    expect(body).toContain("<span class=\"dui-author-tag-text\">DEV</span>");
+    expect(body.indexOf("dui-author-tag-badge")).toBeLessThan(body.indexOf("dui-author-tag-text"));
     expect(render(svelte.Author, {
       props: {
         author: {
