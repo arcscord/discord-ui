@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1
+
+### Fixed
+
+- Render inline Markdown, emoji, spoilers and timestamps in embed titles and
+  field names, with plain-text accessible embed names.
+- Tint role mention backgrounds and hover states using the supplied role color.
+- Require Core `^0.3.1` and include its corrected embed field-name styles.
+
 ## 0.4.0
 
 ### Added

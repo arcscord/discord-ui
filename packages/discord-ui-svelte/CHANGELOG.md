@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1
+
+### Fixed
+
+- Render inline Markdown, emoji, spoilers and timestamps in embed titles and
+  field names, with plain-text accessible embed names.
+- Tint role mention backgrounds and hover states using the supplied role color.
+- Require Core `^0.3.1` and include its corrected embed field-name styles.
+
 ## 0.1.0 — initial Svelte adapter
 
 It requires Core `^0.3.0`.
