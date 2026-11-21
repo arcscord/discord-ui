@@ -55,7 +55,7 @@ invocation; the thread is a summary that can open a separate conversation.
 
 Set `mentioned: true` when the application determines that a message mentions
 the current viewer. The message gains a highlighted background and a 2px left
-border. Hover and keyboard focus retain the same colors. `MessageFrame` also
+border. Hover and keyboard focus use the dedicated hover background. `MessageFrame` also
 accepts the `mentioned` prop for composed layouts. Omission is equivalent to false.
 
 The host supplies this flag independently from Markdown mention tokens.
@@ -63,7 +63,7 @@ The host supplies this flag independently from Markdown mention tokens.
 context. Highlighting adds no visibility notice or dismissal control. When a
 message is both mentioned and ephemeral, its ephemeral appearance takes precedence.
 
-Use the `mentionedBackground` and `mentionedBorder` theme tokens to customize the
+Use the `mentionedBackground`, `mentionedHover` and `mentionedBorder` theme tokens to customize the
 highlight. The [complete media conversation](/playground?example=media-conversation)
 starts with a mentioned message and retains video, audio, vocal and sticker examples.
 

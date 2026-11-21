@@ -367,3 +367,4 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 
 /* Ephemeral visibility takes precedence when the host supplies both hints. */
 .dui-message[data-mentioned]:not([data-ephemeral]) { background: var(--discord-ui-mentioned-background); border-left: 2px solid var(--discord-ui-mentioned-border); padding-left: 14px; }
+.dui-message[data-mentioned]:not([data-ephemeral]):hover, .dui-message[data-mentioned]:not([data-ephemeral]):focus-within { background: var(--discord-ui-mentioned-hover); }

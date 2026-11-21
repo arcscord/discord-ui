@@ -11,6 +11,7 @@ export const themeTokenProperties = {
   ephemeralHover: "--discord-ui-ephemeral-hover",
   ephemeralBorder: "--discord-ui-ephemeral-border",
   mentionedBackground: "--discord-ui-mentioned-background",
+  mentionedHover: "--discord-ui-mentioned-hover",
   mentionedBorder: "--discord-ui-mentioned-border",
   focusBackground: "--discord-ui-row-hover",
   codeBackground: "--discord-ui-code-background",

@@ -83,7 +83,6 @@ player mounting until reveal.
 Set `MessageView.mentioned` to `true` for the current viewer's highlighted
 messages. Rendering adapters also expose `MessageFrame.mentioned` for composed
 layouts. The host supplies the flag; Markdown mention tokens and API conversion
-leave it unset. The highlight preserves its colors on hover and focus and adds
-no ephemeral notice or dismissal action. Ephemeral appearance takes precedence
-when both flags are true. Theme overrides accept `mentionedBackground` and
+leave it unset. The highlight uses its hover background on hover and keyboard focus. Ephemeral appearance takes precedence
+when both flags are true. Theme overrides accept `mentionedBackground`, `mentionedHover` and
 `mentionedBorder`.

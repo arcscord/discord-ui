@@ -78,7 +78,7 @@ Markdown mention text and Discord conversion leave this viewer-specific choice
 to the application. The highlight adds a background and left border, with no
 visibility notice or dismissal control. Ephemeral appearance takes precedence
 when both flags are true. Customize the highlight through the optional
-`mentionedBackground` and `mentionedBorder` theme overrides.
+`mentionedBackground`, `mentionedHover` and `mentionedBorder` theme overrides.
 
 ## Conversation identity and thread navigation
 
