@@ -1,16 +1,33 @@
 <script setup lang="ts">
-import type { ComponentInteractionContext } from "@arcscord/discord-ui-vue";
+import type { ComponentInteractionContext, MessageInteractionHandlers } from "@arcscord/discord-ui-vue";
 import type { ComparisonConfig } from "../../../../../fixtures/comparison/scenarios";
 import type { NativeEvent, Snapshot } from "../protocol";
-import { ChannelView, DiscordUI, Message } from "@arcscord/discord-ui-vue";
+import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui-vue";
 import { renderHighlightedCode } from "@arcscord/discord-ui-vue/highlight";
 import { computed, ref, watchEffect } from "vue";
-import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages } from "../../../../../fixtures/comparison/scenarios";
-import { snapshot } from "../protocol";
+import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
+import { snapshot, utilityEvent } from "../protocol";
 import "@arcscord/discord-ui-vue/styles.css";
 
 const props = defineProps<{ config: ComparisonConfig; report: (state: Snapshot) => void; event: (event: NativeEvent, state: Snapshot) => void }>();
 const state = ref(createLocalState());
+const utilityMode = ref(0);
+const utilityRecords = computed(() => utilityMessages(state.value.reacted));
+const utilityHandlers = computed<MessageInteractionHandlers>(() => ({
+  onUserClick: utilityMode.value === 2
+    ? undefined
+    : (target, event) => props.event(utilityEvent("user-click", target, event, false), snapshot(state.value)),
+  onUserContextMenu: utilityMode.value === 1
+    ? undefined
+    : (target, event) => props.event(utilityEvent("user-context-menu", target, event, state.value.reacted), snapshot(state.value)),
+  onMentionClick: utilityMode.value === 2
+    ? undefined
+    : (target, event) => props.event(utilityEvent("mention-click", target, event, false), snapshot(state.value)),
+  onMentionContextMenu: utilityMode.value === 1
+    ? undefined
+    : (target, event) => props.event(utilityEvent("mention-context-menu", target, event, state.value.reacted), snapshot(state.value)),
+  onMessageContextMenu: (target, event) => props.event(utilityEvent("message-context-menu", target, event, state.value.reacted), snapshot(state.value)),
+}));
 const origin = window.location.origin;
 watchEffect(() => props.report(snapshot(state.value)));
 const message = computed(() => ({
@@ -110,7 +127,20 @@ function send(content: string, threadId?: string): void {
 
 <template>
   <DiscordUI v-bind="displayOptions(config, origin)" :render-code="config.scenario === 'markdown' ? renderHighlightedCode : undefined">
-    <ChannelView v-if="config.scenario === 'channel' || config.scenario === 'threads-commands'" :channel="state.channel" :height="844" :active-thread-id="state.activeThreadId" :commands="commands" @thread-open="thread" @thread-close="thread(null)" @send="send" @thread-send="(id, content) => send(content, id)" @slash-command="invocation => event({ name: 'slash-command', args: [invocation] }, snapshot(state))" />
+    <template v-if="config.scenario === 'utility-interactions'">
+      <button type="button" @click="state.reacted = !state.reacted">
+        Update utility targets
+      </button>
+      <button type="button" @click="utilityMode = (utilityMode + 1) % 3">
+        Cycle utility handlers
+      </button>
+      <MessageList
+        :messages="utilityRecords"
+        v-bind="utilityHandlers"
+        @thread-open="thread"
+      />
+    </template>
+    <ChannelView v-else-if="config.scenario === 'channel' || config.scenario === 'threads-commands'" :channel="state.channel" :height="844" :active-thread-id="state.activeThreadId" :commands="commands" @thread-open="thread" @thread-close="thread(null)" @send="send" @thread-send="(id, content) => send(content, id)" @slash-command="invocation => event({ name: 'slash-command', args: [invocation] }, snapshot(state))" />
     <Message v-else-if="config.scenario === 'interactions'" :message="interactionMessage" :select-values="state.selectValues" @select-change="select" @button-click="button" />
     <template v-else-if="config.scenario === 'classic' || config.scenario === 'reactions'">
       <button v-if="config.scenario === 'reactions'" type="button" @click="hostUpdate('reaction')">
@@ -131,4 +161,7 @@ function send(content: string, threadId?: string): void {
       <Message :message="scenarioMessage(config.scenario, state, origin)" :select-values="state.selectValues" @select-change="select" @button-click="button" @premium-click="(sku, context) => event({ name: 'premium-click', args: [sku, context] }, snapshot(state))" />
     </template>
   </DiscordUI>
+  <div v-if="config.scenario === 'utility-interactions'" data-testid="standalone-utility">
+    <Message :message="standaloneUtilityMessage" @message-context-menu="(target, event) => props.event(utilityEvent('message-context-menu', target, event, true), snapshot(state))" />
+  </div>
 </template>

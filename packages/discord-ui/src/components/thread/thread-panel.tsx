@@ -1,4 +1,5 @@
 import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage, ThreadView } from "@arcscord/discord-ui-core";
+import type { MessageInteractionHandlers } from "../../interactions";
 import { useEffect, useRef, useState } from "react";
 import { ChannelComposer } from "../channel/channel-composer";
 import { ChannelHeader } from "../channel/channel-header";
@@ -6,7 +7,7 @@ import { MessageList } from "../channel/message-list";
 import { useMessageScroll } from "../channel/use-message-scroll";
 import { useDisplayOptions } from "../display-context";
 
-export type ThreadPanelProps = ComponentHandlers & {
+export type ThreadPanelProps = ComponentHandlers & MessageInteractionHandlers & {
   selectValuesByMessage?: SelectValuesByMessage | undefined;
   thread: ThreadView;
   onReactionToggle?: ReactionToggleHandler | undefined;
@@ -22,7 +23,7 @@ export function ThreadPanel(props: ThreadPanelProps) {
   return <ThreadPanelContent key={props.thread.id} {...props} />;
 }
 
-function ThreadPanelContent({ selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
+function ThreadPanelContent({ onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps) {
   const { labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -55,7 +56,7 @@ function ThreadPanelContent({ selectValuesByMessage, onEphemeralDismiss, onButto
           : undefined}
       />
       <div className="dui-channel-history" role="log" aria-label={`${labels.thread} : ${thread.name}`} aria-live="polite" tabIndex={0} ref={historyRef} onScroll={event => updateFollowState(event.currentTarget)}>
-        <MessageList selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
+        <MessageList onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} onMentionClick={onMentionClick} onMentionContextMenu={onMentionContextMenu} onMessageContextMenu={onMessageContextMenu} selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={messages} showThreadPreviews={false} />
       </div>
       <ChannelComposer channelName={thread.name} value={draft} onValueChange={setDraft} onSend={onSend ? send : undefined} disabled={composerDisabled} />
     </aside>

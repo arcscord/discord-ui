@@ -1,8 +1,9 @@
 <script module lang="ts">
   import type { ChannelViewModel, ComponentHandlers, ReactionToggleHandler, SelectValuesByMessage, SlashCommand, SlashCommandHandler } from "@arcscord/discord-ui-core";
   import type { Snippet } from "svelte";
+  import type { MessageInteractionHandlers } from "../interactions.js";
 
-  export type ChannelViewProps = ComponentHandlers & {
+  export type ChannelViewProps = ComponentHandlers & MessageInteractionHandlers & {
     selectValuesByMessage?: SelectValuesByMessage | undefined;
     channel: ChannelViewModel;
     onReactionToggle?: ReactionToggleHandler | undefined;

@@ -44,6 +44,7 @@ export { default as DiscordUI } from "./DiscordUI.svelte";
 export type { DiscordUIProps, DisplayOptions } from "./display-context.js";
 export type { EmbedProps } from "./embed/Embed.svelte";
 export { default as Embed } from "./embed/Embed.svelte";
+export type { MentionInteractionHandlers, MessageInteractionHandlers, UserInteractionHandlers } from "./interactions.js";
 export type { AudioProps } from "./media/Audio.svelte";
 export { default as Audio } from "./media/Audio.svelte";
 export type { MediaProps } from "./media/Media.svelte";
@@ -72,4 +73,5 @@ export type { ThreadPanelProps } from "./thread/ThreadPanel.svelte";
 export { default as ThreadPanel } from "./thread/ThreadPanel.svelte";
 export type { ThreadPreviewProps } from "./thread/ThreadPreview.svelte";
 export { default as ThreadPreview } from "./thread/ThreadPreview.svelte";
+
 export * from "@arcscord/discord-ui-core";

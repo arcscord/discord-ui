@@ -1,5 +1,9 @@
 /** Typed by the reference generator's compiler check; these are display data, not send payloads. */
 export const modelExamples: Record<string, string[]> = {
+  MentionTarget: ["{ id: \"sam\", kind: \"user\", name: \"Sam\" }"],
+  UserInteractionHandlers: ["{ onUserClick: (author, event) => { console.log(author.id, event.currentTarget); } }"],
+  MentionInteractionHandlers: ["{ onMentionClick: (mention, event) => { console.log(mention.kind, mention.id, event.currentTarget); } }"],
+  MessageInteractionHandlers: ["{ onMessageContextMenu: (message, event) => { event.preventDefault(); console.log(message.id); } }"],
   UnicodeEmojiOptions: ["{ mode: \"native\" }", "{ mode: \"twemoji\", baseUrl: \"/emojis/twemoji-16.0.1\" }"],
   AvatarFallback: ["{ letter: \"S\", background: \"#5865f2\", color: \"#ffffff\" }"],
   MessageAuthor: ["{ id: \"sam\", displayName: \"Sam\", bot: false }"],
@@ -79,6 +83,10 @@ export const modelExamples: Record<string, string[]> = {
 };
 
 export const modelNotes: Record<string, string> = {
+  MentionTarget: "Display data for an identified user, role, channel or command mention. Unknown entities retain their identifier as the visible name. The host resolves additional metadata.",
+  UserInteractionHandlers: "Optional host actions for author avatars and names, including reply authors. Events default to React mouse events. Context handlers stop propagation to the message and leave default prevention to the host.",
+  MentionInteractionHandlers: "Optional host actions for mentions with an identifier. Events default to React mouse events. Markdown inside messages, embeds and Components V2 inherits the handlers. Linked mentions retain link navigation.",
+  MessageInteractionHandlers: "Combines author, mention and message context-menu callbacks. Supply them to Message, MessageList, ChannelView or ThreadPanel. Applications own profile cards, menus and external data.",
   UnicodeEmojiOptions: "Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-relative sources work with allowRemoteMedia=false. HTTP(S) sources use allowRemoteMedia and remoteMediaAllowlist. Failed images preserve Unicode; no CDN is implicit.",
   AvatarFallback: "Colors require six-digit hex values. The first grapheme of letter or the author's display name is used; blank names fall back to a question mark. Missing colors are deterministic from author identity.",
   MessageAuthor: "Resolved author metadata, including optional avatar fallback and application/verification markers. IDs stay strings and the host supplies display names.",

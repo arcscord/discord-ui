@@ -1,7 +1,8 @@
 <script module lang="ts">
   import type { MessageAuthor } from "@arcscord/discord-ui-core";
+  import type { UserInteractionHandlers } from "../interactions.js";
 
-  export type MessageHeaderProps = { author: MessageAuthor; timestamp: string; edited?: boolean | undefined };
+  export type MessageHeaderProps = UserInteractionHandlers & { author: MessageAuthor; timestamp: string; edited?: boolean | undefined };
 </script>
 
 <script lang="ts">
@@ -9,12 +10,12 @@
   import { getDisplayOptions } from "../display-context.js";
   import MessageTimestamp from "./MessageTimestamp.svelte";
 
-  const { author, timestamp, edited = false }: MessageHeaderProps = $props();
+  const { onUserClick, onUserContextMenu, author, timestamp, edited = false }: MessageHeaderProps = $props();
   const display = getDisplayOptions();
 </script>
 
 <header class="dui-message-header">
-  <Author {author} />
+  <Author {onUserClick} {onUserContextMenu} {author} />
   <MessageTimestamp {timestamp} />
   {#if edited}<span class="dui-message-edited">{display().labels.edited}</span>{/if}
 </header>

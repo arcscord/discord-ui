@@ -1,6 +1,7 @@
-import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValues } from "@arcscord/discord-ui-core";
-// Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
+import type { ComponentHandlers, MessageInteractionHandlers, MessageView, ReactionToggleHandler, SelectValues } from "@arcscord/discord-ui-core";
 import { defineRenderer } from "../../rendering";
+// Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
+import { provideMentionInteractions } from "../../utility-context";
 import { Avatar } from "../author/avatar";
 import { MessageComponents } from "../components-v2/message-components";
 import { File } from "../components-v2/primitives";
@@ -16,7 +17,7 @@ import { MessageHeader } from "./message-header";
 import { Reactions } from "./reactions";
 import { ReplyPreview } from "./reply-preview";
 
-type MessagePropsInput = ComponentHandlers & {
+type MessagePropsInput = ComponentHandlers & MessageInteractionHandlers<MouseEvent> & {
   onReactionToggle?: ReactionToggleHandler | undefined;
   message: MessageView;
   selectValues?: SelectValues | undefined;
@@ -28,6 +29,11 @@ type MessagePropsInput = ComponentHandlers & {
 export type MessageProps = MessagePropsInput;
 export type MessageSlots = Record<string, never>;
 export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSlots>("Message", [
+  "onUserClick",
+  "onUserContextMenu",
+  "onMentionClick",
+  "onMentionContextMenu",
+  "onMessageContextMenu",
   "onButtonClick",
   "onSelectChange",
   "onPremiumClick",
@@ -39,27 +45,33 @@ export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSl
   "activeThreadId",
   "showThreadPreview",
 ], [], (input, display) => {
+  provideMentionInteractions(() => input());
   return () => {
-    const { message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick } = input(true);
+    const { message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick, onUserClick, onUserContextMenu, onMessageContextMenu } = input(true);
     const { referenceTime: reference, labels } = display;
     const referenceTime = reference ?? message.timestamp;
     return (
       <MessageFrame
+        onContextMenu={onMessageContextMenu
+          ? event => onMessageContextMenu(message, event)
+          : undefined}
         ephemeral={message.ephemeral === true}
         mentioned={message.mentioned === true}
         hasThread={showThreadPreview && Boolean(message.thread)}
         v-slots={{
           reply: () => message.reply
-            ? <ReplyPreview reply={message.reply} />
+            ? <ReplyPreview onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} reply={message.reply} />
             : undefined,
-          avatar: () => <Avatar author={message.author} />,
-          header: () => <MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} />,
+          avatar: () => <Avatar tabIndex={-1} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={message.author} />,
+          header: () => <MessageHeader onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} author={message.author} timestamp={message.timestamp} edited={message.edited} />,
           footer: () => (
             <>
               {showThreadPreview && message.thread
                 ? (
                     <ThreadPreview
                       thread={message.thread}
+                      onUserClick={onUserClick}
+                      onUserContextMenu={onUserContextMenu}
                       {...(onThreadOpen
                         ? { onOpen: onThreadOpen }
                         : {})}
@@ -121,4 +133,4 @@ export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSl
     );
   };
 });
-export type MessageEmits = { "button-click": Parameters<NonNullable<MessageProps["onButtonClick"]>>; "select-change": Parameters<NonNullable<MessageProps["onSelectChange"]>>; "premium-click": Parameters<NonNullable<MessageProps["onPremiumClick"]>>; "reaction-toggle": Parameters<NonNullable<MessageProps["onReactionToggle"]>>; "ephemeral-dismiss": Parameters<NonNullable<MessageProps["onEphemeralDismiss"]>>; "thread-open": Parameters<NonNullable<MessageProps["onThreadOpen"]>> };
+export type MessageEmits = import("../../public-component").EventsFromProps<MessageInteractionHandlers<MouseEvent>> & { "button-click": Parameters<NonNullable<MessageProps["onButtonClick"]>>; "select-change": Parameters<NonNullable<MessageProps["onSelectChange"]>>; "premium-click": Parameters<NonNullable<MessageProps["onPremiumClick"]>>; "reaction-toggle": Parameters<NonNullable<MessageProps["onReactionToggle"]>>; "ephemeral-dismiss": Parameters<NonNullable<MessageProps["onEphemeralDismiss"]>>; "thread-open": Parameters<NonNullable<MessageProps["onThreadOpen"]>> };

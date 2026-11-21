@@ -1,7 +1,8 @@
 <script module lang="ts">
   import type { ThreadSummaryView } from "@arcscord/discord-ui-core";
+  import type { UserInteractionHandlers } from "../interactions.js";
 
-  export type ThreadPreviewProps = {
+  export type ThreadPreviewProps = UserInteractionHandlers & {
     thread: ThreadSummaryView;
     onOpen?: ((id: string) => void) | undefined;
     active?: boolean | undefined;
@@ -14,7 +15,7 @@
   import Avatar from "../author/Avatar.svelte";
   import { getDisplayOptions } from "../display-context.js";
 
-  const { thread, onOpen, active = false }: ThreadPreviewProps = $props();
+  const { onUserClick, onUserContextMenu, thread, onOpen, active = false }: ThreadPreviewProps = $props();
   const display = getDisplayOptions();
   const descriptionId = $props.id();
   const labels = $derived(display().labels);
@@ -33,15 +34,18 @@
     : undefined);
 </script>
 
-{#snippet content()}
+{#snippet header()}
   <span class="dui-thread-preview-header">
     <span class="dui-thread-name" title={thread.name}>{thread.name}</span>
     <span class="dui-thread-count">{countLabel}{#if onOpen}<span aria-hidden="true">&nbsp;›</span>{/if}</span>
   </span>
+{/snippet}
+
+{#snippet recent()}
   <span class="dui-thread-last" id={descriptionId}>
     {#if last}
-      <Avatar author={last.author} />
-      <span class="dui-thread-last-author"><Author author={last.author} /></span>
+      <Avatar tabIndex={-1} {onUserClick} {onUserContextMenu} author={last.author} />
+      <span class="dui-thread-last-author"><Author {onUserClick} {onUserContextMenu} author={last.author} /></span>
       <span class="dui-thread-snippet" title={last.content}>{last.content}</span>
       {#if time}<time class="dui-thread-last-time" datetime={time.dateTime}>{time.label}</time>{/if}
     {:else}
@@ -50,8 +54,17 @@
   </span>
 {/snippet}
 
-{#if onOpen}
-  <button type="button" class="dui-thread-preview" aria-label={`${labels.openThread} ${thread.name}, ${countLabel}`} aria-describedby={descriptionId} aria-expanded={active} onclick={() => onOpen?.(thread.id)}>{@render content()}</button>
+{#if onUserClick || onUserContextMenu}
+  <div class="dui-thread-preview">
+    {#if onOpen}
+      <button type="button" class="dui-thread-open" aria-label={`${labels.openThread} ${thread.name}, ${countLabel}`} aria-describedby={descriptionId} aria-expanded={active} onclick={() => onOpen?.(thread.id)}>{@render header()}</button>
+    {:else}
+      {@render header()}
+    {/if}
+    {@render recent()}
+  </div>
+{:else if onOpen}
+  <button type="button" class="dui-thread-preview" aria-label={`${labels.openThread} ${thread.name}, ${countLabel}`} aria-describedby={descriptionId} aria-expanded={active} onclick={() => onOpen?.(thread.id)}>{@render header()}{@render recent()}</button>
 {:else}
-  <div class="dui-thread-preview">{@render content()}</div>
+  <div class="dui-thread-preview">{@render header()}{@render recent()}</div>
 {/if}

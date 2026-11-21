@@ -1,4 +1,4 @@
-import type { ChannelViewModel, ComponentHandlers, ReactionToggleHandler, SelectValuesByMessage, SlashCommand, SlashCommandHandler } from "@arcscord/discord-ui-core";
+import type { ChannelViewModel, ComponentHandlers, MessageInteractionHandlers, ReactionToggleHandler, SelectValuesByMessage, SlashCommand, SlashCommandHandler } from "@arcscord/discord-ui-core";
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import type { CSSProperties, VNodeChild } from "vue";
 import { shallowRef } from "vue";
@@ -10,7 +10,7 @@ import { ChannelHeader } from "./channel-header";
 import { MessageList } from "./message-list";
 import { useMessageScroll } from "./use-message-scroll";
 
-type ChannelViewPropsInput = ComponentHandlers & {
+type ChannelViewPropsInput = ComponentHandlers & MessageInteractionHandlers<MouseEvent> & {
   "onUpdate:activeThreadId"?: ((id: string | null) => void) | undefined;
   "selectValuesByMessage"?: SelectValuesByMessage | undefined;
   "channel": ChannelViewModel;
@@ -34,6 +34,11 @@ type ChannelViewPropsInput = ComponentHandlers & {
 export type ChannelViewProps = Omit<ChannelViewPropsInput, "header" | "composer"> & { composer?: false };
 export type ChannelViewSlots = { header?: () => VNodeChild; composer?: () => VNodeChild };
 export const ChannelView = defineRenderer<ChannelViewProps, ChannelViewPropsInput, ChannelViewSlots>("ChannelView", [
+  "onUserClick",
+  "onUserContextMenu",
+  "onMentionClick",
+  "onMentionContextMenu",
+  "onMessageContextMenu",
   "onButtonClick",
   "onSelectChange",
   "onPremiumClick",
@@ -61,7 +66,7 @@ export const ChannelView = defineRenderer<ChannelViewProps, ChannelViewPropsInpu
     return <ChannelViewContent key={props.channel.id} {...props} />;
   };
 });
-export type ChannelViewEmits = {
+export type ChannelViewEmits = import("../../public-component").EventsFromProps<MessageInteractionHandlers<MouseEvent>> & {
   "update:activeThreadId": [id: string | null];
   "button-click": Parameters<NonNullable<ChannelViewProps["onButtonClick"]>>;
   "select-change": Parameters<NonNullable<ChannelViewProps["onSelectChange"]>>;
@@ -75,6 +80,11 @@ export type ChannelViewEmits = {
   "slash-command": Parameters<NonNullable<ChannelViewProps["onSlashCommand"]>>;
 };
 const ChannelViewContent = defineRenderer<ChannelViewPropsInput, ChannelViewPropsInput, Record<string, never>>("ChannelViewContent", [
+  "onUserClick",
+  "onUserContextMenu",
+  "onMentionClick",
+  "onMentionContextMenu",
+  "onMessageContextMenu",
   "onButtonClick",
   "onSelectChange",
   "onPremiumClick",
@@ -103,7 +113,7 @@ const ChannelViewContent = defineRenderer<ChannelViewPropsInput, ChannelViewProp
   const openerRef = shallowRef<HTMLElement | null | null>(null);
   const restoreFocusRef = shallowRef(false);
   function derive(withSlots = false) {
-    const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, channel, activeThreadId, onThreadOpen, onThreadClose, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true } = input(withSlots);
+    const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, channel, activeThreadId, onThreadOpen, onThreadClose, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true } = input(withSlots);
     const { scoped, labels } = display;
     const draft = draftState.value;
     const selection = selectionState.value;
@@ -138,7 +148,7 @@ const ChannelViewContent = defineRenderer<ChannelViewPropsInput, ChannelViewProp
           <div class="dui-channel-main">
             {header ?? <ChannelHeader name={channel.name} topic={channel.topic} />}
             <div class="dui-channel-history" ref={historyRef} role="log" aria-label={labels.messages} aria-live="polite" tabindex={0} onScroll={event => updateFollowState((event.currentTarget as HTMLInputElement & HTMLFormElement & HTMLDivElement))}>
-              <MessageList selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
+              <MessageList selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} onMentionClick={onMentionClick} onMentionContextMenu={onMentionContextMenu} onMessageContextMenu={onMessageContextMenu} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
             </div>
             {composer === false
               ? null
@@ -152,6 +162,11 @@ const ChannelViewContent = defineRenderer<ChannelViewPropsInput, ChannelViewProp
                   onButtonClick={onButtonClick}
                   onSelectChange={onSelectChange}
                   onPremiumClick={onPremiumClick}
+                  onUserClick={onUserClick}
+                  onUserContextMenu={onUserContextMenu}
+                  onMentionClick={onMentionClick}
+                  onMentionContextMenu={onMentionContextMenu}
+                  onMessageContextMenu={onMessageContextMenu}
                   key={open.id}
                   thread={open}
                   onReactionToggle={onReactionToggle}
@@ -174,6 +189,11 @@ const ChannelViewContent = defineRenderer<ChannelViewPropsInput, ChannelViewProp
       onButtonClick,
       onSelectChange,
       onPremiumClick,
+      onUserClick,
+      onUserContextMenu,
+      onMentionClick,
+      onMentionContextMenu,
+      onMessageContextMenu,
       channel,
       activeThreadId,
       onThreadOpen,

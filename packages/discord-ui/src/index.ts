@@ -58,6 +58,7 @@ export { ThreadPanel } from "./components/thread/thread-panel";
 export type { ThreadPanelProps } from "./components/thread/thread-panel";
 export { ThreadPreview } from "./components/thread/thread-preview";
 export type { ThreadPreviewProps } from "./components/thread/thread-preview";
+export type { MentionInteractionHandlers, MentionTarget, MessageInteractionHandlers, UserInteractionHandlers } from "./interactions";
 export { defineTheme, themes, themeTokenProperties } from "./themes";
 export type { DiscordTheme, ThemeInput, ThemeName, ThemeOverrides, ThemeTokens } from "./themes";
 export type { ChannelViewModel } from "@arcscord/discord-ui-core";

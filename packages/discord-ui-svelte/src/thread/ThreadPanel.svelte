@@ -1,7 +1,8 @@
 <script module lang="ts">
   import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage, ThreadView } from "@arcscord/discord-ui-core";
+  import type { MessageInteractionHandlers } from "../interactions.js";
 
-  export type ThreadPanelProps = ComponentHandlers & {
+  export type ThreadPanelProps = ComponentHandlers & MessageInteractionHandlers & {
     selectValuesByMessage?: SelectValuesByMessage | undefined;
     thread: ThreadView;
     onReactionToggle?: ReactionToggleHandler | undefined;

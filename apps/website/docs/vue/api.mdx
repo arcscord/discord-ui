@@ -16,21 +16,26 @@ below as Vue's typed `on…` props. `class` and `style` are native Vue attribute
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `author` | Yes | `MessageAuthor` |
 
 Slots: none.
 
-Events: none.
+Events: `user-click`, `user-context-menu`.
 
 ## Avatar
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `tabIndex` | No | `number \| undefined` |
 | `author` | Yes | `MessageAuthor` |
 
 Slots: none.
 
-Events: none.
+Events: `user-click`, `user-context-menu`.
 
 ## ChannelComposer
 
@@ -63,12 +68,17 @@ Events: none.
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `onSend` | No | `((content: string) => void) \| undefined` |
 | `commands` | No | `readonly SlashCommand[]` |
 | `onSlashCommand` | No | `SlashCommandHandler` |
 | `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
 | `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
 | `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onMentionClick` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMessageContextMenu` | No | `((message: MessageView, event: MouseEvent) => void) \| undefined` |
 | `onUpdate:activeThreadId` | No | `((id: string \| null) => void) \| undefined` |
 | `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` |
 | `channel` | Yes | `ChannelViewModel` |
@@ -86,7 +96,7 @@ Events: none.
 
 Slots: `header`, `composer`.
 
-Events: `update:activeThreadId`, `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `send`, `thread-open`, `thread-close`, `thread-send`, `slash-command`.
+Events: `user-click`, `user-context-menu`, `mention-click`, `mention-context-menu`, `message-context-menu`, `update:activeThreadId`, `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `send`, `thread-open`, `thread-close`, `thread-send`, `slash-command`.
 
 ## MessageList
 
@@ -95,6 +105,11 @@ Events: `update:activeThreadId`, `button-click`, `select-change`, `premium-click
 | `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
 | `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
 | `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onMentionClick` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMessageContextMenu` | No | `((message: MessageView, event: MouseEvent) => void) \| undefined` |
 | `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
 | `onEphemeralDismiss` | No | `((messageId: string) => void) \| undefined` |
@@ -107,7 +122,7 @@ Events: `update:activeThreadId`, `button-click`, `select-change`, `premium-click
 
 Slots: none.
 
-Events: `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `thread-open`.
+Events: `user-click`, `user-context-menu`, `mention-click`, `mention-context-menu`, `message-context-menu`, `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `thread-open`.
 
 ## MessageComponents
 
@@ -139,10 +154,10 @@ Events: none.
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
 | `disabled` | No | `boolean \| undefined` |
+| `onClick` | No | `(() => void) \| undefined` |
 | `label` | Yes | `string` |
 | `ariaLabel` | No | `string \| undefined` |
 | `variant` | No | `"primary" \| "secondary" \| "success" \| "danger" \| "premium" \| undefined` |
-| `onClick` | No | `(() => void) \| undefined` |
 
 Slots: `emoji`.
 
@@ -250,24 +265,29 @@ Events: none.
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onMentionClick` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
 | `content` | Yes | `string` |
 | `referenceTime` | No | `string \| undefined` |
 
 Slots: none.
 
-Events: none.
+Events: `mention-click`, `mention-context-menu`.
 
 ## Mention
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onMentionClick` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `id` | No | `string \| undefined` |
 | `name` | Yes | `string` |
-| `kind` | No | `"channel" \| "user" \| "role" \| "command"` |
+| `kind` | No | `"channel" \| "user" \| "role" \| "command" \| undefined` |
 | `color` | No | `string \| undefined` |
 
 Slots: none.
 
-Events: none.
+Events: `mention-click`, `mention-context-menu`.
 
 ## Spoiler
 
@@ -283,11 +303,11 @@ Events: none.
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `referenceTime` | No | `string` |
 | `theme` | No | `ThemeInput` |
 | `tokens` | No | `Partial<o>` |
 | `locale` | No | `string` |
 | `timeZone` | No | `string` |
-| `referenceTime` | No | `string` |
 | `entities` | No | `MessageEntities` |
 | `allowRemoteMedia` | No | `boolean` |
 | `remoteMediaAllowlist` | No | `readonly string[]` |
@@ -367,6 +387,11 @@ Events: none.
 | `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
 | `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
 | `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onMentionClick` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMessageContextMenu` | No | `((message: MessageView, event: MouseEvent) => void) \| undefined` |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
 | `message` | Yes | `MessageView` |
 | `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` |
@@ -377,7 +402,7 @@ Events: none.
 
 Slots: none.
 
-Events: `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `thread-open`.
+Events: `user-click`, `user-context-menu`, `mention-click`, `mention-context-menu`, `message-context-menu`, `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `thread-open`.
 
 ## MessageContent
 
@@ -393,25 +418,28 @@ Events: none.
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onContextMenu` | No | `((event: MouseEvent) => void) \| undefined` |
 | `hasThread` | No | `boolean` |
 | `ephemeral` | No | `boolean` |
 | `mentioned` | No | `boolean` |
 
 Slots: `default`, `avatar`, `reply`, `header`, `footer`.
 
-Events: none.
+Events: `context-menu`.
 
 ## MessageHeader
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `author` | Yes | `MessageAuthor` |
 | `timestamp` | Yes | `string` |
 | `edited` | No | `boolean \| undefined` |
 
 Slots: none.
 
-Events: none.
+Events: `user-click`, `user-context-menu`.
 
 ## MessageTimestamp
 
@@ -438,11 +466,13 @@ Events: `toggle`.
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `reply` | Yes | `ReplyView` |
 
 Slots: none.
 
-Events: none.
+Events: `user-click`, `user-context-menu`.
 
 ## ThreadPanel
 
@@ -451,6 +481,11 @@ Events: none.
 | `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` |
 | `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` |
 | `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onMentionClick` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: MouseEvent) => void) \| undefined` |
+| `onMessageContextMenu` | No | `((message: MessageView, event: MouseEvent) => void) \| undefined` |
 | `selectValuesByMessage` | No | `Readonly<Record<string, Readonly<Record<string, readonly string[] \| undefined>> \| undefined>> \| undefined` |
 | `thread` | Yes | `ThreadView` |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` |
@@ -463,19 +498,21 @@ Events: none.
 
 Slots: none.
 
-Events: `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `close`, `send`.
+Events: `user-click`, `user-context-menu`, `mention-click`, `mention-context-menu`, `message-context-menu`, `button-click`, `select-change`, `premium-click`, `reaction-toggle`, `ephemeral-dismiss`, `close`, `send`.
 
 ## ThreadPreview
 
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: MouseEvent) => void) \| undefined` |
 | `thread` | Yes | `ThreadSummaryView` |
 | `onOpen` | No | `((id: string) => void) \| undefined` |
 | `active` | No | `boolean \| undefined` |
 
 Slots: none.
 
-Events: `open`.
+Events: `user-click`, `user-context-menu`, `open`.
 
 ## Themes and highlighting
 

@@ -40,7 +40,7 @@ the libraries and sources in this repository. Prepared fonts and avatar assets
 are ignored. The font and its license share their canonical source with the
 documentation under `apps/website/static/fonts/`.
 
-The catalogue covers twelve scenario families. Events and state describe local
+The catalogue covers thirteen scenario families. Events and state describe local
 simulations. The differential runner compares all three native renderers at
 explicit checkpoints.
 
@@ -68,6 +68,17 @@ checkpoints. Captures from matching checkpoints are compared React/Vue,
 React/Svelte and Vue/Svelte. Each framework also receives independent assertions
 for expected state, exact callback parameters/order/count, keyboard focus,
 accessible roles/names/descriptions and reading position.
+
+### Utility callback coverage
+
+The `utility-interactions` scenario adds matching native `MessageList` fixtures
+for classic messages, reply authors, embeds and Components V2. Its focused
+`utility-interactions.spec.ts` checks all three frameworks across all themes and
+the configured desktop and narrow Chromium viewports. Independent assertions
+verify author and mention identity, keyboard activation and focus, exact callback
+counts, context propagation, host-selected `preventDefault()` and updated authors
+and callback closures. Serialized callback journeys must match across frameworks.
+This focused scenario runs separately from the twelve-family pixel matrix below.
 
 ### Coverage
 

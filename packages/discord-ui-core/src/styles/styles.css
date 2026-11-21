@@ -9,6 +9,15 @@
 .dui-avatar { display: inline-flex; height: 40px; border-radius: 50%; overflow: hidden; align-items: center; justify-content: center; background: var(--discord-ui-accent); color: white; font-size: 20px; font-weight: 600; padding-top: 0; }
 .dui-avatar > span { font-size: inherit; line-height: 1; }
 .dui-author-name { font-weight: 600; }
+.arcscord-discord-ui .dui-utility-target { border: 0; font-family: inherit; line-height: inherit; text-align: inherit; cursor: pointer; }
+.arcscord-discord-ui button.dui-author-name { padding: 0; background: transparent; color: inherit; font-size: inherit; }
+.arcscord-discord-ui button.dui-mention { font-size: inherit; }
+.arcscord-discord-ui button.dui-avatar { padding: 0; }
+.arcscord-discord-ui .dui-utility-target:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 2px; }
+.arcscord-discord-ui.dui-message[tabindex]:focus-visible,
+.arcscord-discord-ui .dui-message[tabindex]:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: -2px; }
+.arcscord-discord-ui .dui-thread-open { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; text-align: inherit; cursor: pointer; }
+.arcscord-discord-ui .dui-thread-open:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: 2px; }
 .dui-timestamp { color: var(--discord-ui-muted); font-size: 12px; }
 .dui-message-text { white-space: pre-wrap; overflow-wrap: anywhere; }
 .dui-markdown { overflow-wrap: anywhere; white-space: normal; }

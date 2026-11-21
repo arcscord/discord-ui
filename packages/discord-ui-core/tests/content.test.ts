@@ -107,6 +107,28 @@ describe("framework-neutral content data", () => {
   });
 });
 describe("explicit timestamp formatting", () => {
+  it("accepts explicit offset suffixes while rejecting invalid and local dates", () => {
+    expect(parseTimestamp("2026-10-29T18:00:00+02:30")?.toISOString()).toBe("2026-10-29T15:30:00.000Z");
+    expect(parseTimestamp("2026-10-29T18:00:00-03:30")?.toISOString()).toBe("2026-10-29T21:30:00.000Z");
+    for (const timestamp of [
+      "2026-10-29",
+      "2026-10-29T18:00:00",
+      "invalidTZ",
+      "2026-99-29T18:00:00Z",
+      "2026-10-29T18:00:00+25:00",
+    ])
+      expect(parseTimestamp(timestamp)).toBeUndefined();
+  });
+
+  it("rejects repeated timestamp separators without polynomial suffix scanning", () => {
+    const repeated = "T".repeat(50000);
+    const started = performance.now();
+    expect(parseTimestamp(`${repeated}invalid`)).toBeUndefined();
+    expect(parseTimestamp(`${repeated}Z`)).toBeUndefined();
+    expect(parseTimestamp(`${repeated}+02:00`)).toBeUndefined();
+    expect(performance.now() - started).toBeLessThan(500);
+  });
+
   it("requires timezone metadata and a valid reference for relative times", () => {
     expect(parseTimestamp("2026-10-29T18:00:00")).toBeUndefined();
     expect(parseTimestamp("invalid")).toBeUndefined();

@@ -32,6 +32,9 @@ const pages = {
 };
 const callbackNames = new Set([
   "ComponentHandlers",
+  "UserInteractionHandlers",
+  "MentionInteractionHandlers",
+  "MessageInteractionHandlers",
   "ComponentInteractionContext",
   "SelectValues",
   "SelectValuesByMessage",
@@ -205,6 +208,14 @@ export async function buildReference() {
     const declaration = symbol.declarations![0]!;
     if (ts.isTypeAliasDeclaration(declaration)) {
       const helpers = new Map<string, string>();
+      // Specialized adapter aliases need their renamed Core imports to be readable.
+      const target = ts.isTypeReferenceNode(declaration.type)
+        ? checker.getSymbolAtLocation(declaration.type.typeName)
+        : undefined;
+      const renamedImport = target?.declarations?.some(node => ts.isImportSpecifier(node) && node.propertyName);
+      const imports = renamedImport
+        ? declaration.getSourceFile().statements.filter(ts.isImportDeclaration).map(node => node.getText()).join("\n")
+        : "";
       function findHelpers(node: ts.Node) {
         if (ts.isTypeReferenceNode(node)) {
           const target = checker.getSymbolAtLocation(node.typeName);
@@ -220,7 +231,9 @@ export async function buildReference() {
         ts.forEachChild(node, findHelpers);
       }
       findHelpers(declaration.type);
-      return `${[
+      return `${imports
+        ? `${imports}\n\n`
+        : ""}${[
         ...helpers.values(),
       ].join("\n\n")}${helpers.size ? "\n\n" : ""}${declaration.getText()}`;
     }

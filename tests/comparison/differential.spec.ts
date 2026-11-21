@@ -651,7 +651,7 @@ const journeys = {
   "threads-commands": threadsCommands,
 };
 
-function registerCase(matrix: Parameters<typeof createRunner>[2]): void {
+function registerCase(matrix: Parameters<typeof createRunner>[2] & { scenario: keyof typeof journeys }): void {
   test(`${matrix.scenario} ${matrix.theme} ${matrix.width}${matrix.locale
     ? ` ${matrix.locale}`
     : ""}${matrix.customTheme ? " custom" : ""}`, async ({ page }, info) => {

@@ -7,7 +7,7 @@
   import { trackMessageScroll } from "./message-scroll.svelte.js";
   import MessageList from "./MessageList.svelte";
 
-  const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, channel, activeThreadId, onThreadOpen, onThreadClose, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps = $props();
+  const { onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, channel, activeThreadId, onThreadOpen, onThreadClose, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps = $props();
   const display = getDisplayOptions();
   let draft = $state("");
   let selected = $state<string>();
@@ -58,7 +58,7 @@
       {#if header}{@render header()}{:else}<ChannelHeader name={channel.name} topic={channel.topic} />{/if}
       <!-- svelte-ignore a11y_no_noninteractive_tabindex (Make the scrolling history independently keyboard-scrollable.) -->
       <div class="dui-channel-history" bind:this={history} role="log" aria-label={display().labels.messages} aria-live="polite" tabindex="0" onscroll={scroll}>
-        <MessageList {selectValuesByMessage} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {onReactionToggle}
+        <MessageList {onUserClick} {onUserContextMenu} {onMentionClick} {onMentionContextMenu} {onMessageContextMenu} {selectValuesByMessage} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {onReactionToggle}
                      messages={channel.messages} {showDateSeparators} onThreadOpen={openThread} activeThreadId={opened?.id}
                      availableThreadIds={availableThreads.map(thread => thread.id)} />
       </div>
@@ -73,7 +73,7 @@
     </div>
     {#if opened}
       {@const thread = opened}
-      <ThreadPanel {selectValuesByMessage} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {thread} {onReactionToggle}
+      <ThreadPanel {onUserClick} {onUserContextMenu} {onMentionClick} {onMentionContextMenu} {onMessageContextMenu} {selectValuesByMessage} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {thread} {onReactionToggle}
                    parentMessage={channel.messages.find(message => message.id === thread.parentMessageId)}
                    onClose={closeThread} onSend={onThreadSend
                      ? content => onThreadSend?.(thread.id, content)

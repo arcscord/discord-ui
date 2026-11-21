@@ -86,3 +86,17 @@ layouts. The host supplies the flag; Markdown mention tokens and API conversion
 leave it unset. The highlight uses its hover background on hover and keyboard focus. Ephemeral appearance takes precedence
 when both flags are true. Theme overrides accept `mentionedBackground`, `mentionedHover` and
 `mentionedBorder`.
+
+### Author, mention and message intent
+
+Pass `onUserClick`, `onUserContextMenu`, `onMentionClick`,
+`onMentionContextMenu` and `onMessageContextMenu` to `Message`, `MessageList`,
+`ChannelView` or `ThreadPanel`. Callbacks receive the author, `MentionTarget` or
+message, followed by the pointer event. Mention targets include a string `id`,
+`kind` (`user`, `role`, `channel`, `command`), `name` and optional `color`.
+Reply authors and mentions in rich content use the same callbacks.
+
+Events use native DOM `MouseEvent`.
+User and mention context handlers stop propagation to the message handler.
+The host can call `event.preventDefault()` to replace the browser menu, and owns
+profile information, menu actions, dismissal and focus restoration.

@@ -476,7 +476,75 @@ export const commands = [
   },
 ];
 
+export const standaloneUtilityMessage: MessageView = {
+  id: "utility-standalone",
+  author: { id: "standalone-author", displayName: "Standalone Guide" },
+  timestamp: referenceTime,
+  body: { kind: "text", content: "Standalone keyboard context target" },
+};
+
+export function utilityMessages(updated = false): MessageView[] {
+  const utilityAuthor = {
+    id: updated ? "guide-updated" : "guide",
+    displayName: updated ? "Updated Guide" : "Field Guide",
+  };
+  const content = "<@123456789012345678> <@&234567890123456789> <#345678901234567890> </route:456789012345678901>";
+  return [
+    {
+      id: "utility-classic",
+      author: utilityAuthor,
+      timestamp: referenceTime,
+      reply: { messageId: "original", author: utilityAuthor, content: "Earlier route" },
+      body: { kind: "markdown", content: `${content} [Route guide](https://example.com/route)` },
+      components: [
+        {
+          id: "utility-row",
+          kind: "action-row",
+          select: {
+            id: "utility-select",
+            kind: "string-select",
+            placeholder: "Choose a route",
+            options: [
+              { value: "ridge", label: "Ridge" },
+            ],
+          },
+        },
+      ],
+      thread: {
+        id: "utility-thread",
+        name: "Utility route",
+        messageCount: 1,
+        lastMessage: {
+          author: { id: "thread-author", displayName: "Thread Guide" },
+          content: "Thread route",
+          timestamp: referenceTime,
+        },
+      },
+      embeds: [
+        { id: "utility-embed", description: content },
+      ],
+    },
+    {
+      id: "utility-v2",
+      author: utilityAuthor,
+      timestamp: referenceTime,
+      body: {
+        kind: "components-v2",
+        components: [
+          { id: "utility-text", kind: "text-display", content },
+        ],
+      },
+    },
+  ];
+}
+
 export const scenarios = [
+  {
+    id: "utility-interactions",
+    title: "Utility callbacks",
+    description: "Author, mention and message callbacks with native context-menu decisions.",
+    checkpoints: ["Activate author and mention targets, then inspect callback payloads.", "Toggle context-menu suppression and update author identity."],
+  },
   {
     id: "classic",
     title: "Classic message",

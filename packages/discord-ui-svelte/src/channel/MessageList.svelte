@@ -1,7 +1,8 @@
 <script module lang="ts">
   import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage } from "@arcscord/discord-ui-core";
+  import type { MessageInteractionHandlers } from "../interactions.js";
 
-  export type MessageListProps = ComponentHandlers & {
+  export type MessageListProps = ComponentHandlers & MessageInteractionHandlers & {
     selectValuesByMessage?: SelectValuesByMessage | undefined;
     onReactionToggle?: ReactionToggleHandler | undefined;
     onEphemeralDismiss?: ((messageId: string) => void) | undefined;
@@ -19,7 +20,7 @@
   import { getDisplayOptions } from "../display-context.js";
   import Message from "../message/Message.svelte";
 
-  const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps = $props();
+  const { onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps = $props();
   const display = getDisplayOptions();
   const labels = $derived(display().labels);
   const dates = $derived.by(() => {
@@ -59,7 +60,7 @@
       {@const date = dates[index]}
       <li class="dui-message-list-item">
         {#if date}<div class="dui-date-separator"><time datetime={date.key}>{date.label}</time></div>{/if}
-        <Message {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {message}
+        <Message {onUserClick} {onUserContextMenu} {onMentionClick} {onMentionContextMenu} {onMessageContextMenu} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {message}
                  selectValues={selectValuesByMessage && Object.hasOwn(selectValuesByMessage, message.id)
                    ? selectValuesByMessage[message.id]
                    : undefined}

@@ -72,4 +72,7 @@ export type { ThreadPanelEmits, ThreadPanelProps, ThreadPanelSlots } from "./com
 export { ThreadPreview } from "./components/thread/thread-preview";
 export type { ThreadPreviewEmits, ThreadPreviewProps, ThreadPreviewSlots } from "./components/thread/thread-preview";
 export type { DiscordUIEmits, DiscordUIProps, DiscordUISlots, DisplayOptions } from "./display-context";
+export type { MentionInteractionHandlers, MessageInteractionHandlers, UserInteractionHandlers } from "./interactions";
+
 export * from "@arcscord/discord-ui-core";
+export type { MentionTarget } from "@arcscord/discord-ui-core";

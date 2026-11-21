@@ -1,3 +1,4 @@
+import type { MentionInteractionHandlers } from "@arcscord/discord-ui-core";
 import type { MarkdownBlock, MarkdownNode } from "@arcscord/discord-ui-core/markdown";
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import type { VNodeChild } from "vue";
@@ -5,6 +6,7 @@ import { formatDiscordTimestamp, linkUrl } from "@arcscord/discord-ui-core";
 import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { Fragment } from "vue";
 import { defineRenderer } from "../../rendering";
+import { useMentionInteractions } from "../../utility-context";
 import { Emoji } from "./emoji";
 import { Mention } from "./mention";
 import { Spoiler } from "./spoiler";
@@ -15,23 +17,29 @@ function string(value: unknown): string {
     ? String(value)
     : "";
 }
-type MarkdownPropsInput = {
+type MarkdownPropsInput = MentionInteractionHandlers<MouseEvent> & {
   content: string;
   referenceTime?: string | undefined;
 };
 export type MarkdownProps = MarkdownPropsInput;
 export type MarkdownSlots = Record<string, never>;
-export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, MarkdownSlots>("Markdown", ["content", "referenceTime"], [], (input, display) => {
+export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, MarkdownSlots>("Markdown", [
+  "content",
+  "referenceTime",
+  "onMentionClick",
+  "onMentionContextMenu",
+], [], (input, display) => {
+  const inherited = useMentionInteractions();
   return () => {
-    const { content, referenceTime } = input(true);
+    const { content, referenceTime, onMentionClick, onMentionContextMenu } = input(true);
     const options = display;
-    function children(value: unknown, key: string): VNodeChild {
+    function children(value: unknown, key: string, withinLink = false): VNodeChild {
       return Array.isArray(value)
-        ? value.map((node: MarkdownNode, index) => render(node, `${key}-${index}`))
+        ? value.map((node: MarkdownNode, index) => render(node, `${key}-${index}`, withinLink))
         : string(value);
     }
-    function render(node: MarkdownNode, key: string): VNodeChild {
-      const body = () => children(node.content, key);
+    function render(node: MarkdownNode, key: string, withinLink = false): VNodeChild {
+      const body = () => children(node.content, key, withinLink);
       switch (node.type) {
         case "text": return <UnicodeEmoji key={key} content={string(node.content)} />;
         case "br":
@@ -57,7 +65,7 @@ export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, Markdo
         case "link": {
           const url = linkUrl(string(node.target ?? node.content));
           const label = Array.isArray(node.content)
-            ? body()
+            ? children(node.content, key, Boolean(url))
             : <UnicodeEmoji content={string(node.content ?? node.target)} />;
           return url
             ? <a key={key} href={url} target="_blank" rel="noreferrer noopener">{label}</a>
@@ -73,7 +81,7 @@ export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, Markdo
             : kind === "channel"
               ? options.entities.channels?.[id]
               : options.entities.roles?.[id];
-          return <Mention key={key} kind={kind} name={entity?.name ?? id} color={entity?.color} />;
+          return <Mention key={key} id={withinLink ? undefined : id} onMentionClick={onMentionClick ?? inherited().onMentionClick} onMentionContextMenu={onMentionContextMenu ?? inherited().onMentionContextMenu} kind={kind} name={entity?.name ?? id} color={entity?.color} />;
         }
         case "everyone":
         case "here": return <Mention key={key} name={node.type} />;
@@ -82,7 +90,18 @@ export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, Markdo
           return <Emoji key={key} name={entity?.name ?? string(node.name)} image={entity?.image} />;
         }
         case "twemoji": return <UnicodeEmoji key={key} content={string(node.name)} />;
-        case "slashCommand": return <Mention key={key} kind="command" name={options.entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)} />;
+        case "slashCommand": return (
+          <Mention
+            key={key}
+            id={withinLink
+              ? undefined
+              : string(node.id)}
+            onMentionClick={onMentionClick ?? inherited().onMentionClick}
+            onMentionContextMenu={onMentionContextMenu ?? inherited().onMentionContextMenu}
+            kind="command"
+            name={options.entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)}
+          />
+        );
         case "timestamp": {
           const timestamp = formatDiscordTimestamp(string(node.timestamp), string(node.format), { ...options, referenceTime: referenceTime ?? options.referenceTime ?? "1970-01-01T00:00:00Z" });
           return timestamp
@@ -92,8 +111,8 @@ export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, Markdo
         default: return <Fragment key={key}>{body()}</Fragment>;
       }
     }
-    function inline(nodes: MarkdownNode[], key: string): VNodeChild {
-      return nodes.map((node, index) => render(node, `${key}-${index}`));
+    function inline(nodes: MarkdownNode[], key: string, withinLink = false): VNodeChild {
+      return nodes.map((node, index) => render(node, `${key}-${index}`, withinLink));
     }
     function block(node: MarkdownBlock): VNodeChild {
       if (node.kind === "text")
@@ -106,4 +125,4 @@ export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, Markdo
     return <div class="dui-markdown">{parseMarkdown(content).map(block)}</div>;
   };
 });
-export type MarkdownEmits = Record<string, never>;
+export type MarkdownEmits = import("../../public-component").EventsFromProps<MarkdownProps>;

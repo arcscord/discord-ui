@@ -1,10 +1,10 @@
-import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage } from "@arcscord/discord-ui-core";
+import type { ComponentHandlers, MessageInteractionHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage } from "@arcscord/discord-ui-core";
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import { parseTimestamp } from "@arcscord/discord-ui-core";
 import { defineRenderer } from "../../rendering";
 import { Message } from "../message/message";
 
-type MessageListPropsInput = ComponentHandlers & {
+type MessageListPropsInput = ComponentHandlers & MessageInteractionHandlers<MouseEvent> & {
   selectValuesByMessage?: SelectValuesByMessage | undefined;
   onReactionToggle?: ReactionToggleHandler | undefined;
   onEphemeralDismiss?: ((messageId: string) => void) | undefined;
@@ -18,6 +18,11 @@ type MessageListPropsInput = ComponentHandlers & {
 export type MessageListProps = MessageListPropsInput;
 export type MessageListSlots = Record<string, never>;
 export const MessageList = defineRenderer<MessageListProps, MessageListPropsInput, MessageListSlots>("MessageList", [
+  "onUserClick",
+  "onUserContextMenu",
+  "onMentionClick",
+  "onMentionContextMenu",
+  "onMessageContextMenu",
   "onButtonClick",
   "onSelectChange",
   "onPremiumClick",
@@ -32,7 +37,7 @@ export const MessageList = defineRenderer<MessageListProps, MessageListPropsInpu
   "availableThreadIds",
 ], [], (input, display) => {
   return () => {
-    const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds } = input(true);
+    const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds } = input(true);
     const { locale, timeZone, labels } = display;
     const keyFormat = new Intl.DateTimeFormat("en-CA", {
       year: "numeric",
@@ -66,6 +71,11 @@ export const MessageList = defineRenderer<MessageListProps, MessageListPropsInpu
                 onButtonClick={onButtonClick}
                 onSelectChange={onSelectChange}
                 onPremiumClick={onPremiumClick}
+                onUserClick={onUserClick}
+                onUserContextMenu={onUserContextMenu}
+                onMentionClick={onMentionClick}
+                onMentionContextMenu={onMentionContextMenu}
+                onMessageContextMenu={onMessageContextMenu}
                 message={message}
                 selectValues={selectValuesByMessage && Object.hasOwn(selectValuesByMessage, message.id)
                   ? selectValuesByMessage[message.id]
@@ -84,4 +94,4 @@ export const MessageList = defineRenderer<MessageListProps, MessageListPropsInpu
     );
   };
 });
-export type MessageListEmits = { "button-click": Parameters<NonNullable<MessageListProps["onButtonClick"]>>; "select-change": Parameters<NonNullable<MessageListProps["onSelectChange"]>>; "premium-click": Parameters<NonNullable<MessageListProps["onPremiumClick"]>>; "reaction-toggle": Parameters<NonNullable<MessageListProps["onReactionToggle"]>>; "ephemeral-dismiss": Parameters<NonNullable<MessageListProps["onEphemeralDismiss"]>>; "thread-open": Parameters<NonNullable<MessageListProps["onThreadOpen"]>> };
+export type MessageListEmits = import("../../public-component").EventsFromProps<MessageInteractionHandlers<MouseEvent>> & { "button-click": Parameters<NonNullable<MessageListProps["onButtonClick"]>>; "select-change": Parameters<NonNullable<MessageListProps["onSelectChange"]>>; "premium-click": Parameters<NonNullable<MessageListProps["onPremiumClick"]>>; "reaction-toggle": Parameters<NonNullable<MessageListProps["onReactionToggle"]>>; "ephemeral-dismiss": Parameters<NonNullable<MessageListProps["onEphemeralDismiss"]>>; "thread-open": Parameters<NonNullable<MessageListProps["onThreadOpen"]>> };

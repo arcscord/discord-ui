@@ -1,13 +1,14 @@
 import type { ReplyView } from "@arcscord/discord-ui-core";
+import type { UserInteractionHandlers } from "../../interactions";
 import { Author } from "../author/author";
 import { Avatar } from "../author/avatar";
 import { Mention } from "../content/mention";
 import { useDisplayOptions } from "../display-context";
 
 /** Renders the host-supplied message or interaction preview without loading original attachments. */
-export type ReplyPreviewProps = { reply: ReplyView };
+export type ReplyPreviewProps = UserInteractionHandlers & { reply: ReplyView };
 
-export function ReplyPreview({ reply }: ReplyPreviewProps) {
+export function ReplyPreview({ reply, ...handlers }: ReplyPreviewProps) {
   const { labels } = useDisplayOptions();
   return (
     <div
@@ -20,8 +21,8 @@ export function ReplyPreview({ reply }: ReplyPreviewProps) {
       {reply.kind === "interaction"
         ? (
             <>
-              <Avatar author={reply.author} />
-              <Author author={reply.author} />
+              <Avatar tabIndex={-1} author={reply.author} {...handlers} />
+              <Author author={reply.author} {...handlers} />
               <span className="dui-interaction-used">{labels.interactionUsed}</span>
               <span className="dui-interaction-command"><Mention kind="command" name={reply.commandName} /></span>
             </>
@@ -30,8 +31,8 @@ export function ReplyPreview({ reply }: ReplyPreviewProps) {
           ? <span className="dui-reply-content">{labels.replyUnavailable}</span>
           : (
               <>
-                <Avatar author={reply.author} />
-                <Author author={reply.author} />
+                <Avatar tabIndex={-1} author={reply.author} {...handlers} />
+                <Author author={reply.author} {...handlers} />
                 <span className="dui-reply-content">{reply.content}</span>
               </>
             )}

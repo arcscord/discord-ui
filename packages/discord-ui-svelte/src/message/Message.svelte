@@ -1,7 +1,8 @@
 <script module lang="ts">
   import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValues } from "@arcscord/discord-ui-core";
+  import type { MessageInteractionHandlers } from "../interactions.js";
 
-  export type MessageProps = ComponentHandlers & {
+  export type MessageProps = ComponentHandlers & MessageInteractionHandlers & {
     onReactionToggle?: ReactionToggleHandler | undefined;
     message: MessageView;
     selectValues?: SelectValues | undefined;
@@ -22,6 +23,7 @@
   import Audio from "../media/Audio.svelte";
   import MediaGallery from "../media/MediaGallery.svelte";
   import Sticker from "../media/Sticker.svelte";
+  import { provideMentionInteractions } from "../mention-context.js";
   import ThreadPreview from "../thread/ThreadPreview.svelte";
   import MessageContent from "./MessageContent.svelte";
   import MessageFrame from "./MessageFrame.svelte";
@@ -29,20 +31,23 @@
   import Reactions from "./Reactions.svelte";
   import ReplyPreview from "./ReplyPreview.svelte";
 
-  const { message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick }: MessageProps = $props();
+  const { onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview = true, onButtonClick, onSelectChange, onPremiumClick }: MessageProps = $props();
+  provideMentionInteractions(() => ({ onMentionClick, onMentionContextMenu }));
   const display = getDisplayOptions();
   const referenceTime = $derived(display().referenceTime ?? message.timestamp);
   const labels = $derived(display().labels);
 </script>
 
-{#snippet replyPreview()}{#if message.reply}<ReplyPreview reply={message.reply} />{/if}{/snippet}
+{#snippet replyPreview()}{#if message.reply}<ReplyPreview {onUserClick} {onUserContextMenu} reply={message.reply} />{/if}{/snippet}
 
-<MessageFrame ephemeral={message.ephemeral === true} mentioned={message.mentioned === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
-  {#snippet avatar()}<Avatar author={message.author} />{/snippet}
-  {#snippet header()}<MessageHeader author={message.author} timestamp={message.timestamp} edited={message.edited} />{/snippet}
+<MessageFrame onContextMenu={onMessageContextMenu
+  ? event => onMessageContextMenu?.(message, event)
+  : undefined} ephemeral={message.ephemeral === true} mentioned={message.mentioned === true} hasThread={showThreadPreview && Boolean(message.thread)} reply={message.reply ? replyPreview : undefined}>
+  {#snippet avatar()}<Avatar tabIndex={-1} {onUserClick} {onUserContextMenu} author={message.author} />{/snippet}
+  {#snippet header()}<MessageHeader {onUserClick} {onUserContextMenu} author={message.author} timestamp={message.timestamp} edited={message.edited} />{/snippet}
   {#snippet footer()}
     {#if showThreadPreview && message.thread}
-      <ThreadPreview thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
+      <ThreadPreview {onUserClick} {onUserContextMenu} thread={message.thread} onOpen={onThreadOpen} active={activeThreadId === message.thread.id} />
     {/if}
     {#if message.ephemeral}
       <div class="dui-ephemeral-notice">

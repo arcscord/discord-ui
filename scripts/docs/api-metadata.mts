@@ -35,7 +35,7 @@ export const componentNotes: Record<string, string> = {
   ChannelComposer: "Controlled plain-text draft plus local slash-command/argument editing. onSend reports text without clearing a standalone draft; the host clears value. onSlashCommand receives a supplied command and nonblank arguments, then local command state clears. Required/choice validation gates local invocation. Enter sends and Shift+Enter inserts a line; IME composition is respected.",
   MessageList: "Renders supplied array order and optional date separators in the wrapper time zone. It has no viewport, fetch, pagination or composer. Controlled selection values are scoped first by message ID; thread callbacks only receive available IDs when that filter is supplied.",
   ThreadPanel: "Renders supplied replies and optionally prepends parentMessage. The composer has local draft state and reports sends; the host appends replies. Changing thread ID resets local state. Escape requests close and the close button receives focus when available. Standalone hosts own focus restoration. There is no composer replacement/hide prop.",
-  ThreadPreview: "Displays a resolved summary/count and optional escaped last-message snapshot. It is a button only when onOpen is provided. active controls expanded appearance; onOpen reports the thread ID and never loads replies.",
+  ThreadPreview: "Displays a resolved summary/count and optional escaped last-message snapshot. With onOpen it provides thread navigation. When user callbacks are supplied, the header opens the thread and the author name/avatar trigger separate user actions. The active prop controls expanded appearance. onOpen reports the thread ID and never loads replies.",
 };
 
 export const propertyNotes: Record<string, string> = {
@@ -108,6 +108,13 @@ export const propertyNotes: Record<string, string> = {
   onClick: "Native button intent callback with no arguments.",
   onChange: "Proposed standalone selection values; update controlled values to accept.",
   onToggle: "Standalone reaction ID; host updates count/me.",
+  onUserClick: "Called with the displayed author and pointer or keyboard-generated click event for an avatar or name.",
+  onUserContextMenu: "Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault().",
+  onMentionClick: "Called with an identified mention's id, kind and display metadata, then the click event.",
+  onMentionContextMenu: "Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault().",
+  onMessageContextMenu: "Called with the displayed message and context-menu event. Native child controls keep their own menus. The host chooses whether to preventDefault().",
+  tabIndex: "Keyboard tab order for an interactive avatar. Composed messages, replies and thread previews use -1 because their author name provides the same action.",
+  onContextMenu: "Context-menu event on the message article. Supplying a handler makes the article keyboard-focusable.",
   onReactionToggle: "Called with (messageId, reactionId); host updates the relevant snapshot.",
   onEphemeralDismiss: "Called with messageId; host removes/hides the message and manages focus.",
   onThreadOpen: "Called with threadId; open/fetch/update controlled navigation in the host.",

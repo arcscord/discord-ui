@@ -1,9 +1,10 @@
 import type { ComponentHandlers, MessageView, ReactionToggleHandler, SelectValuesByMessage } from "@arcscord/discord-ui-core";
+import type { MessageInteractionHandlers } from "../../interactions";
 import { parseTimestamp } from "@arcscord/discord-ui-core";
 import { useDisplayOptions } from "../display-context";
 import { Message } from "../message/message";
 
-export type MessageListProps = ComponentHandlers & {
+export type MessageListProps = ComponentHandlers & MessageInteractionHandlers & {
   selectValuesByMessage?: SelectValuesByMessage | undefined;
   onReactionToggle?: ReactionToggleHandler | undefined;
   onEphemeralDismiss?: ((messageId: string) => void) | undefined;
@@ -15,7 +16,7 @@ export type MessageListProps = ComponentHandlers & {
   availableThreadIds?: readonly string[] | undefined;
 };
 
-export function MessageList({ selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps) {
+export function MessageList({ onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, messages, onReactionToggle, showDateSeparators = true, showThreadPreviews = true, onThreadOpen, activeThreadId, availableThreadIds }: MessageListProps) {
   const { locale, timeZone, labels } = useDisplayOptions();
   const keyFormat = new Intl.DateTimeFormat("en-CA", {
     year: "numeric",
@@ -45,6 +46,11 @@ export function MessageList({ selectValuesByMessage, onEphemeralDismiss, onButto
               ? <div className="dui-date-separator"><time dateTime={dateKey}>{labelFormat.format(date)}</time></div>
               : null}
             <Message
+              onUserClick={onUserClick}
+              onUserContextMenu={onUserContextMenu}
+              onMentionClick={onMentionClick}
+              onMentionContextMenu={onMentionContextMenu}
+              onMessageContextMenu={onMessageContextMenu}
               onEphemeralDismiss={onEphemeralDismiss}
               onButtonClick={onButtonClick}
               onSelectChange={onSelectChange}
