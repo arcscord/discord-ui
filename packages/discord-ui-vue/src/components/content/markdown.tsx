@@ -3,7 +3,7 @@ import type { MarkdownBlock, MarkdownNode } from "@arcscord/discord-ui-core/mark
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import type { VNodeChild } from "vue";
 import { formatDiscordTimestamp, linkUrl } from "@arcscord/discord-ui-core";
-import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
+import { parseInlineMarkdown, parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { Fragment } from "vue";
 import { defineRenderer } from "../../rendering";
 import { useMentionInteractions } from "../../utility-context";
@@ -20,18 +20,21 @@ function string(value: unknown): string {
 type MarkdownPropsInput = MentionInteractionHandlers<MouseEvent> & {
   content: string;
   referenceTime?: string | undefined;
+  /** Render only inline formatting and emojis, as in embed titles and field names. */
+  inline?: boolean | undefined;
 };
 export type MarkdownProps = MarkdownPropsInput;
 export type MarkdownSlots = Record<string, never>;
 export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, MarkdownSlots>("Markdown", [
   "content",
   "referenceTime",
+  "inline",
   "onMentionClick",
   "onMentionContextMenu",
 ], [], (input, display) => {
   const inherited = useMentionInteractions();
   return () => {
-    const { content, referenceTime, onMentionClick, onMentionContextMenu } = input(true);
+    const { content, referenceTime, inline: inlineOnly, onMentionClick, onMentionContextMenu } = input(true);
     const options = display;
     function children(value: unknown, key: string, withinLink = false): VNodeChild {
       return Array.isArray(value)
@@ -122,6 +125,8 @@ export const Markdown = defineRenderer<MarkdownProps, MarkdownPropsInput, Markdo
         ? <ol key={`list-${node.line}`} start={node.start}>{items}</ol>
         : <ul key={`list-${node.line}`}>{items}</ul>;
     }
+    if (inlineOnly)
+      return <span class="dui-markdown dui-markdown-inline">{inline(parseInlineMarkdown(content), "inline")}</span>;
     return <div class="dui-markdown">{parseMarkdown(content).map(block)}</div>;
   };
 });

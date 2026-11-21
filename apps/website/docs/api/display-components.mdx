@@ -126,7 +126,7 @@ Parses supported Discord formatting into React nodes. Mentions use resolved enti
 
 [Usage guide](/docs/guides/markdown) · [Props type](#markdownprops)
 
-<CodeBlock language="ts">{"export function Markdown({ content, referenceTime, ...handlers }: MarkdownProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Markdown({ content, referenceTime, inline: inlineOnly, ...handlers }: MarkdownProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -138,6 +138,7 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
 | `referenceTime` | No | `string \| undefined` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
+| `inline` | No | `boolean \| undefined` | — | Inline spoiler wrapper, embed-field layout request or Markdown inline-only mode (formatting, emojis and timestamps; mentions, links and blocks stay as text), depending on the type. |
 
 <ReferenceExample id="markdown" />
 
@@ -151,7 +152,7 @@ Parses supported Discord formatting into React nodes. Mentions use resolved enti
 
 [Usage guide](/docs/guides/markdown) · [Component](#markdown)
 
-<CodeBlock language="ts">{"export type MarkdownProps = MentionInteractionHandlers & { content: string; referenceTime?: string | undefined };"}</CodeBlock>
+<CodeBlock language="ts">{"export type MarkdownProps = MentionInteractionHandlers & {\n  content: string;\n  referenceTime?: string | undefined;\n  /** Render only inline formatting and emojis, as in embed titles and field names. */\n  inline?: boolean | undefined;\n};"}</CodeBlock>
 
 Related types: [MentionInteractionHandlers](/docs/api/callbacks#mentioninteractionhandlers).
 
@@ -343,7 +344,7 @@ All label fields have type string; optional keys in the declaration remain optio
 
 <CodeBlock language="ts">{"import { Embed } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Renders a supplied card with Markdown descriptions/values and optional images, fields, author and footer. No URL preview is fetched. Unsafe links lose their anchor; images obey the wrapper media policy.
+Renders a supplied card with Markdown descriptions/values, inline Markdown titles/field names and optional images, fields, author and footer. No URL preview is fetched. Unsafe links lose their anchor; images obey the wrapper media policy.
 
 [Usage guide](/docs/guides/embeds) · [Props type](#embedprops)
 
@@ -366,7 +367,7 @@ Related types: [EmbedView](/docs/api/models#embedview).
 
 <CodeBlock language="ts">{"import type { EmbedProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Renders a supplied card with Markdown descriptions/values and optional images, fields, author and footer. No URL preview is fetched. Unsafe links lose their anchor; images obey the wrapper media policy.
+Renders a supplied card with Markdown descriptions/values, inline Markdown titles/field names and optional images, fields, author and footer. No URL preview is fetched. Unsafe links lose their anchor; images obey the wrapper media policy.
 
 [Usage guide](/docs/guides/embeds) · [Component](#embed)
 

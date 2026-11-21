@@ -1125,14 +1125,14 @@ Resolved optional card fields. Only id is required. Description and field values
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
-| `title` | No | `string` | — | Visible embed title; links only when the URL is allowed. |
+| `title` | No | `string` | — | Visible embed title with inline Markdown and emojis; mentions stay as text. Links only when the URL is allowed. |
 | `url` | No | `string` | — | HTTP(S) for outgoing links/files; images use the separate shared media URL policy. |
 | `description` | No | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
 | `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
 | `author` | No | `{ name: string; url?: string; iconUrl?: string; }` | — | Resolved author display metadata; not a fetch instruction. |
 | `thumbnail` | No | `MediaView` | — | Optional resolved thumbnail image. |
 | `image` | No | `MediaView` | — | Resolved image model/URL as specified by the type; shared media policy applies. |
-| `fields` | No | `readonly { id: string; name: string; value: string; inline?: boolean; }[]` | — | Ordered embed fields with stable IDs, name, Markdown value and optional inline layout. |
+| `fields` | No | `readonly { id: string; name: string; value: string; inline?: boolean; }[]` | — | Ordered embed fields with stable IDs, inline Markdown name, Markdown value and optional inline layout. |
 | `footer` | No | `{ text: string; iconUrl?: string; }` | — | Resolved footer metadata or React footer slot as indicated by the type. |
 | `timestamp` | No | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
 

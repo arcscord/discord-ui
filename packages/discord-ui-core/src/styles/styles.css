@@ -55,7 +55,7 @@
 .dui-embed-fields { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; }
 .dui-embed-field { flex: 1 0 100%; min-width: 0; }
 .dui-embed-field-inline { flex: 1 0 140px; min-width: 0; }
-.dui-embed-fields strong { display: block; color: var(--discord-ui-strong); margin-bottom: 2px; }
+.dui-embed-field-name { display: block; color: var(--discord-ui-strong); margin-bottom: 2px; }
 .dui-embed-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: .74rem; color: var(--discord-ui-muted); }
 .dui-embed-footer .dui-emoji { width: 20px; height: 20px; border-radius: 50%; }
 .dui-components-v2 { min-width: 0; }

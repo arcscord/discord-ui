@@ -5,6 +5,7 @@ import { render } from "svelte/server";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { demoChannel } from "../../../fixtures/channel.js";
 import * as svelte from "../src/index.js";
+import EmbedFixture from "./EmbedFixture.svelte";
 import MediaFixture from "./MediaFixture.svelte";
 import RenderFixture from "./RenderFixture.svelte";
 
@@ -153,5 +154,27 @@ describe("svelte media rendering", () => {
         },
       },
     }).body).not.toContain("<img");
+  });
+});
+
+describe("svelte embed inline Markdown", () => {
+  it("renders custom emojis and inline formatting in titles and field names", () => {
+    for (const url of [undefined, "https://example.com/ticket"]) {
+      const html = render(EmbedFixture, {
+        props: { url },
+      }).body;
+      const title = /<div class="dui-embed-title">(.*?)<\/div>/su.exec(html)?.[1] ?? "";
+      const field = /<strong class="dui-embed-field-name">(.*?)<\/strong>/su.exec(html)?.[1] ?? "";
+      for (const zone of [title, field]) {
+        expect(zone).toMatch(/<img class="dui-emoji"[^>]* src="\/emoji\.svg"/u);
+        expect(zone).not.toContain("&lt;:id:");
+      }
+      expect(title).toMatch(/<strong>(?:<!--[^>]*-->)*Ticket(?:<!--[^>]*-->)*<\/strong>/u);
+      expect(title).toContain("&lt;@123>");
+      expect(title).not.toContain("dui-mention");
+      expect(html).toContain("aria-label=\":id: Ticket fermé &lt;@123>\"");
+      if (url)
+        expect(title).toMatch(/^(?:\s|<!--[^>]*-->)*<a href="https:\/\/example\.com\/ticket"/u);
+    }
   });
 });

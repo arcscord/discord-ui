@@ -2,7 +2,12 @@
   import type { MarkdownNode } from "@arcscord/discord-ui-core/markdown";
   import type { MentionInteractionHandlers } from "../interactions.js";
 
-  export type MarkdownProps = MentionInteractionHandlers & { content: string; referenceTime?: string | undefined };
+  export type MarkdownProps = MentionInteractionHandlers & {
+    content: string;
+    referenceTime?: string | undefined;
+    /** Render only inline formatting and emojis, as in embed titles and field names. */
+    inline?: boolean | undefined;
+  };
 
   function string(value: unknown): string {
     return typeof value === "string" || typeof value === "number"
@@ -14,16 +19,21 @@
 <script lang="ts">
   // AST rendering adapted from the AutoThreads renderer; see THIRD_PARTY_NOTICES.
   import { formatDiscordTimestamp, linkUrl } from "@arcscord/discord-ui-core";
-  import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
+  import { parseInlineMarkdown, parseMarkdown } from "@arcscord/discord-ui-core/markdown";
   import { getDisplayOptions } from "../display-context.js";
   import Emoji from "./Emoji.svelte";
   import Mention from "./Mention.svelte";
   import Spoiler from "./Spoiler.svelte";
   import UnicodeEmoji from "./UnicodeEmoji.svelte";
 
-  const { content, referenceTime, onMentionClick, onMentionContextMenu }: MarkdownProps = $props();
+  const { content, referenceTime, inline: inlineOnly = false, onMentionClick, onMentionContextMenu }: MarkdownProps = $props();
   const display = getDisplayOptions();
-  const blocks = $derived(parseMarkdown(content));
+  const blocks = $derived(inlineOnly
+    ? []
+    : parseMarkdown(content));
+  const inlineNodes = $derived(inlineOnly
+    ? parseInlineMarkdown(content)
+    : []);
 </script>
 
 {#snippet inline(nodes: MarkdownNode[], inLink = false)}
@@ -99,14 +109,18 @@
   {/if}
 {/snippet}
 
-<div class="dui-markdown">
-  {#each blocks as block (`${block.kind}-${block.line}`)}
-    {#if block.kind === "text"}
-      {@render inline(block.children)}
-    {:else}
-      <svelte:element this={block.ordered ? "ol" : "ul"} start={block.ordered ? block.start : undefined}>
-        {#each block.items as item (item.line)}<li>{@render inline(item.children)}</li>{/each}
-      </svelte:element>
-    {/if}
-  {/each}
-</div>
+{#if inlineOnly}
+  <span class="dui-markdown dui-markdown-inline">{@render inline(inlineNodes)}</span>
+{:else}
+  <div class="dui-markdown">
+    {#each blocks as block (`${block.kind}-${block.line}`)}
+      {#if block.kind === "text"}
+        {@render inline(block.children)}
+      {:else}
+        <svelte:element this={block.ordered ? "ol" : "ul"} start={block.ordered ? block.start : undefined}>
+          {#each block.items as item (item.line)}<li>{@render inline(item.children)}</li>{/each}
+        </svelte:element>
+      {/if}
+    {/each}
+  </div>
+{/if}

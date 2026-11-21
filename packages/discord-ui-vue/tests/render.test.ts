@@ -282,3 +282,42 @@ it("types component ref events without permitting unknown names or invalid paylo
   }
   void check;
 });
+
+it("renders custom emojis and inline formatting in embed titles and field names", async () => {
+  for (const url of [undefined, "https://example.com/ticket"]) {
+    const html = await renderToString(createSSRApp({
+      render: () => h(VueUI.DiscordUI, {
+        entities: {
+          emojis: {
+            "974006684643127296": { name: "id", image: "/emoji.svg" },
+          },
+        },
+      }, {
+        default: () => h(VueUI.Embed, {
+          embed: {
+            id: "e",
+            ...(url
+              ? { url }
+              : {}),
+            title: "<:id:974006684643127296> **Ticket** fermé <@123>",
+            fields: [
+              { id: "f", name: "<:id:974006684643127296> Ticket ID", value: "<:id:974006684643127296> 1" },
+            ],
+          },
+        }),
+      }),
+    }));
+    const title = /<div class="dui-embed-title">(.*?)<\/div>/su.exec(html)?.[1] ?? "";
+    const field = /<strong class="dui-embed-field-name">(.*?)<\/strong>/su.exec(html)?.[1] ?? "";
+    for (const zone of [title, field]) {
+      expect(zone).toMatch(/<img class="dui-emoji"[^>]* src="\/emoji\.svg"/u);
+      expect(zone).not.toContain("&lt;:id:");
+    }
+    expect(title).toMatch(/<strong>(?:<!--[^>]*-->)*Ticket(?:<!--[^>]*-->)*<\/strong>/u);
+    expect(title).toContain("&lt;@123&gt;");
+    expect(title).not.toContain("dui-mention");
+    expect(html).toContain("aria-label=\":id: Ticket fermé &lt;@123&gt;\"");
+    if (url)
+      expect(title).toMatch(/^(?:\s|<!--[^>]*-->)*<a href="https:\/\/example\.com\/ticket"/u);
+  }
+});

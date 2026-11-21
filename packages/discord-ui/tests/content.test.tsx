@@ -2,7 +2,7 @@ import type { MessageView } from "../src/index";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { renderHighlightedCode } from "../src/highlight";
-import { DiscordUI, Markdown, MediaGallery, Message } from "../src/index";
+import { DiscordUI, Embed, Markdown, MediaGallery, Message } from "../src/index";
 
 it("renders Discord entities, formatting, lists and fenced code without injected HTML", () => {
   const html = renderToStaticMarkup(
@@ -114,4 +114,41 @@ it("removes a structural line break after fenced code but preserves explicit emp
   expect(compact).toContain("</pre>After");
   const blank = renderToStaticMarkup(<Markdown content={"```ts\nconst a = 1;\n```\n\nAfter"} />);
   expect(blank).toContain("</pre><br/>After");
+});
+
+it("renders inline Markdown and custom emojis in embed titles and field names", () => {
+  const embed = {
+    id: "e",
+    title: "<:id:974006684643127296> **Ticket** fermé <@123>",
+    fields: [
+      { id: "f", name: "<:id:974006684643127296> Ticket ID", value: "<:id:974006684643127296> 1" },
+    ],
+  };
+  for (const url of [undefined, "https://example.com/ticket"]) {
+    const html = renderToStaticMarkup(
+      <DiscordUI entities={{
+        emojis: {
+          "974006684643127296": { name: "id", image: "/emoji.svg" },
+        },
+      }}
+      >
+        <Embed embed={url
+          ? { ...embed, url }
+          : embed}
+        />
+      </DiscordUI>,
+    );
+    const title = /<div class="dui-embed-title">(.*?)<\/div>/u.exec(html)?.[1] ?? "";
+    const field = /<strong class="dui-embed-field-name">(.*?)<\/span><\/strong>/u.exec(html)?.[1] ?? "";
+    for (const zone of [title, field]) {
+      expect(zone).toContain("<img class=\"dui-emoji\" src=\"/emoji.svg\"");
+      expect(zone).not.toContain("&lt;:id:");
+    }
+    expect(title).toContain("<strong>Ticket</strong>");
+    expect(title).toContain("&lt;@123&gt;");
+    expect(title).not.toContain("dui-mention");
+    expect(html).toContain("aria-label=\":id: Ticket fermé &lt;@123&gt;\"");
+    if (url)
+      expect(title).toMatch(/^<a href="https:\/\/example\.com\/ticket"/u);
+  }
 });
