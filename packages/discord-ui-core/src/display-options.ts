@@ -37,6 +37,7 @@ export type UILabels = Partial<typeof defaultMediaLabels> & {
   replyUnavailable: string;
   interactionReply: string;
   interactionUsed: string;
+  mentionedMessage?: string;
   ephemeralNotice: string;
   dismissMessage: string;
   downloadFile: string;
@@ -104,6 +105,7 @@ export const defaultDisplayOptions: BaseDisplayOptions = {
     replyUnavailable: "Original message unavailable",
     interactionReply: "Interaction response",
     interactionUsed: "used",
+    mentionedMessage: "Mentioned message",
     ephemeralNotice: "Only you can see this",
     dismissMessage: "Dismiss message",
     downloadFile: "Download {name}",

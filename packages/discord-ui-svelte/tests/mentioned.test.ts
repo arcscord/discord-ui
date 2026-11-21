@@ -21,6 +21,7 @@ describe("mentioned messages", () => {
       },
     });
     expect(body).toContain("data-mentioned=\"true\"");
+    expect(body).toContain("aria-label=\"Mentioned message\"");
     expect(body).toContain("A regular highlighted message");
     expect(body).not.toContain("data-ephemeral");
     expect(body).not.toContain("dui-ephemeral-notice");
@@ -49,6 +50,7 @@ describe("mentioned messages", () => {
       },
     });
     expect(body).toContain("data-mentioned=\"true\"");
+    expect(body).toContain("aria-label=\"Mentioned message\"");
     expect(body).toContain("data-ephemeral=\"true\"");
     expect(body.match(/class="dui-ephemeral-notice"/gu)).toHaveLength(1);
     expect(body.match(/class="dui-ephemeral-dismiss"/gu)).toHaveLength(1);
@@ -60,6 +62,7 @@ describe("mentioned messages", () => {
       props: { mentioned: true },
     });
     expect(body).toContain("data-mentioned=\"true\"");
+    expect(body).toContain("aria-label=\"Mentioned message\"");
     expect(body).toContain("Standalone mentioned frame");
     expect(body).not.toContain("dui-ephemeral-notice");
     expect(body).not.toContain("dui-ephemeral-dismiss");
@@ -73,4 +76,12 @@ describe("mentioned messages", () => {
     const mentioned = { ...message, mentioned: true } satisfies MessageView;
     expect(JSON.parse(JSON.stringify(mentioned))).toEqual(mentioned);
   });
+});
+
+it("localizes the mentioned article name and leaves ordinary articles unnamed", () => {
+  const { body } = render(MentionFrameFixture, {
+    props: { mentioned: true, label: "Message mentionné" },
+  });
+  expect(body).toContain("aria-label=\"Message mentionné\"");
+  expect(render(MentionFrameFixture).body).not.toMatch(/<article[^>]*aria-label/u);
 });

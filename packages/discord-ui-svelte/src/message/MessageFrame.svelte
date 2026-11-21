@@ -22,7 +22,9 @@
   const scoped = $derived(display().scoped);
 </script>
 
-<article class={[!scoped && "arcscord-discord-ui", "dui-message"]} data-ephemeral={ephemeral || undefined} data-mentioned={mentioned || undefined} data-has-thread={hasThread || undefined} data-theme={theme.name} data-base-theme={scoped ? undefined : theme.base} data-color-scheme={theme.colorScheme} style={scoped
+<article class={[!scoped && "arcscord-discord-ui", "dui-message"]} data-ephemeral={ephemeral || undefined} data-mentioned={mentioned || undefined} aria-label={mentioned
+  ? display().labels.mentionedMessage
+  : undefined} data-has-thread={hasThread || undefined} data-theme={theme.name} data-base-theme={scoped ? undefined : theme.base} data-color-scheme={theme.colorScheme} style={scoped
   ? undefined
   : themeCss(theme.tokens)}>
   {#if reply}<div class="dui-message-reply">{@render reply()}</div>{/if}

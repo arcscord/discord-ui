@@ -1,7 +1,13 @@
 <script lang="ts">
-  import { MessageFrame } from "../src/index.js";
+  import { DiscordUI, MessageFrame } from "../src/index.js";
 
-  const { mentioned = false }: { mentioned?: boolean } = $props();
+  const { mentioned = false, label }: { mentioned?: boolean; label?: string } = $props();
 </script>
 
-<MessageFrame {mentioned}><p>Standalone mentioned frame</p></MessageFrame>
+{#if label}
+  <DiscordUI labels={{ mentionedMessage: label }}>
+    <MessageFrame {mentioned}><p>Standalone mentioned frame</p></MessageFrame>
+  </DiscordUI>
+{:else}
+  <MessageFrame {mentioned}><p>Standalone mentioned frame</p></MessageFrame>
+{/if}

@@ -194,6 +194,12 @@ export const Player = defineRenderer<PlayerProps, PlayerProps, Record<string, ne
       return (
         <div class="dui-media-error" role="status">
           {`${labels.mediaUnavailable}: ${name}`}
+          {source && failed.value && !voice && download && (
+            <>
+              {" "}
+              <a class="dui-player-name" href={download} download="">{labels.downloadFile.replace("{name}", name)}</a>
+            </>
+          )}
         </div>
       );
     }
@@ -241,7 +247,7 @@ export const Player = defineRenderer<PlayerProps, PlayerProps, Record<string, ne
             <span class="dui-player-file-icon" aria-hidden="true" />
             <div class="dui-player-title">
               {download
-                ? <a class="dui-player-name" href={download} download>{name}</a>
+                ? <a class="dui-player-name" href={download} download="">{name}</a>
                 : <span class="dui-player-name">{name}</span>}
               {media.size && <span class="dui-player-size">{media.size}</span>}
             </div>

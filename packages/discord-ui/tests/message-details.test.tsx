@@ -180,6 +180,7 @@ it("shows ephemeral notices for classic and V2 messages, with no inactive dismis
 it("highlights mentioned messages without an ephemeral notice or dismiss action", () => {
   const html = renderToStaticMarkup(<Message message={{ ...base, mentioned: true }} onEphemeralDismiss={() => {}} />);
   expect(html).toContain("data-mentioned=\"true\"");
+  expect(html).toContain("aria-label=\"Mentioned message\"");
   expect(html).not.toContain("data-ephemeral");
   expect(html).not.toContain("dui-ephemeral-notice");
   expect(html).not.toContain("dui-ephemeral-dismiss");
@@ -190,6 +191,7 @@ it("highlights mentioned messages without an ephemeral notice or dismiss action"
 it("preserves explicit ephemeral metadata on a mentioned message", () => {
   const html = renderToStaticMarkup(<Message message={{ ...base, mentioned: true, ephemeral: true }} onEphemeralDismiss={() => {}} />);
   expect(html).toContain("data-mentioned=\"true\"");
+  expect(html).toContain("aria-label=\"Mentioned message\"");
   expect(html).toContain("data-ephemeral=\"true\"");
   expect(html).toContain("dui-ephemeral-notice");
   expect(html).toContain("dui-ephemeral-dismiss");
@@ -198,6 +200,17 @@ it("preserves explicit ephemeral metadata on a mentioned message", () => {
 it("supports a mentioned standalone message frame", () => {
   const html = renderToStaticMarkup(<MessageFrame mentioned>Highlighted message</MessageFrame>);
   expect(html).toContain("data-mentioned=\"true\"");
+  expect(html).toContain("aria-label=\"Mentioned message\"");
   expect(html).toContain("Highlighted message");
   expect(html).not.toContain("data-ephemeral");
+});
+
+it("localizes the mentioned article name and leaves ordinary articles unnamed", () => {
+  const html = renderToStaticMarkup(
+    <DiscordUI labels={{ mentionedMessage: "Message mentionné" }}>
+      <Message message={{ ...base, mentioned: true }} />
+    </DiscordUI>,
+  );
+  expect(html).toContain("aria-label=\"Message mentionné\"");
+  expect(renderToStaticMarkup(<Message message={base} />)).not.toMatch(/<article[^>]*aria-label/u);
 });

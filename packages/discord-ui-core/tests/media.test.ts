@@ -207,6 +207,16 @@ describe("voice waveform decoding and duration formatting", () => {
 });
 
 describe("sticker conversion", () => {
+  it("encodes sticker IDs as a single CDN path segment", () => {
+    const view = fromDiscordMessage({
+      ...message,
+      sticker_items: [
+        { id: "123/456?size=1#fragment", name: "Sticker", format_type: StickerFormatType.PNG },
+      ],
+    });
+    expect(view.stickers?.[0]?.url).toBe("https://cdn.discordapp.com/stickers/123%2F456%3Fsize%3D1%23fragment.png");
+  });
+
   it("converts every supported format to its correct delivery URL", () => {
     const view = fromDiscordMessage({
       ...message,

@@ -176,7 +176,12 @@
 </script>
 
 {#if !source || failed}
-  <div class="dui-media-error" role="status">{display().labels.mediaUnavailable}: {name}</div>
+  <div class="dui-media-error" role="status">
+    {display().labels.mediaUnavailable}: {name}
+    {#if source && failed && !isVoice && downloadUrl}
+      <a class="dui-player-name" href={downloadUrl} download>{display().labels.downloadFile.replace("{name}", name)}</a>
+    {/if}
+  </div>
 {:else}
   <div bind:this={container} data-started={started} class={[
     "dui-player",

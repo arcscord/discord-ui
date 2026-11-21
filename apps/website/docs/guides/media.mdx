@@ -35,7 +35,7 @@ Dimensions reserve space and describe aspect ratio. Give every gallery item a
 stable ID. For a classic message, use `media` and `attachments`; in a V2 body use
 media-gallery and file nodes inside the component tree. V2 galleries accept
 images and videos. Message-level audio attachments and stickers belong to classic
-messages.
+messages. V2 file components retain their file-link rendering, including when their source is audio.
 
 The minimal example uses `/examples/landscape.svg`. Copy
 `apps/website/static/examples/landscape.svg` into your app's public `examples`
@@ -106,7 +106,8 @@ The same models work in `message.media` and `message.attachments` respectively.
 
 Playback starts on user interaction. Audio players use `preload="none"`. Video
 with a supplied poster also uses `preload="none"`; without a poster it loads
-metadata to expose its first frame. The initial video preview shows a central
+metadata to expose its first frame. This can request video bytes before a click,
+subject to the same remote-media policy as the poster and source. The initial video preview shows a central
 play button. Its translucent playback bar appears after playback starts.
 Players expose
 keyboard-accessible play/pause, seeking, volume and mute controls. Hover or focus
@@ -123,6 +124,8 @@ and `durationSeconds`. The compact vocal layout places its waveform behind the
 seek control and shows one duration. Missing samples use a simple progress bar.
 Vocals also expose 1X, 1.5X and 2X playback speeds. Control names can be translated through
 `DiscordUI.labels`. Blocked or failed media show the localized unavailable state.
+After a playback error, allowed audio files and videos retain a download link so
+the attachment can be opened externally. Voice messages retain their compact error state.
 
 ## Stickers
 
@@ -138,6 +141,22 @@ The local example uses synthetic `/examples/trail.webm` and `/examples/trail.wav
 The video uses `/examples/trail-poster.png`, extracted from its first frame.
 Its `/examples/arcscord-sticker.png` sticker uses the supplied Arcscord logo unchanged.
 Copy these assets or supply your own URLs.
+
+## Migrating existing media consumers
+
+`MediaView` keeps its image contract. `MessageContentView.media` and
+`GalleryView.items` now contain `MessageMediaView` values, so custom renderers
+must handle videos as well as images. Narrow with `"kind" in item && item.kind === "video"`,
+or delegate to `Media` or `MediaGallery`. The discriminator value identifies a video.
+
+`MessageContentView.attachments` now contains `FileView | AudioView` values.
+Custom attachment renderers should check `attachment.kind === "audio"` and render
+`Audio` for that branch before passing file values to `File`.
+
+`fromDiscordMessage` now classifies recognized audio attachments as `AudioView`
+and moves recognized video attachments into `media`. Consumers that previously
+assumed every attachment was a generic file need to update their rendering and
+any attachment filtering logic. Unknown formats continue to produce generic files.
 
 ## File links
 

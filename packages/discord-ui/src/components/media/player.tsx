@@ -137,6 +137,12 @@ export function Player({ media, source }: { media: AudioView | VideoView; source
     return (
       <div className="dui-media-error" role="status">
         {`${labels.mediaUnavailable}: ${name}`}
+        {source && failed && !voice && download && (
+          <>
+            {" "}
+            <a className="dui-player-name" href={download} download>{labels.downloadFile.replace("{name}", name)}</a>
+          </>
+        )}
       </div>
     );
   }

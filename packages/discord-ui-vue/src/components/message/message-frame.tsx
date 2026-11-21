@@ -24,12 +24,13 @@ export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsI
 ], (input, display) => {
   return () => {
     const { avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false } = input(true);
-    const { resolvedTheme, scoped } = display;
+    const { resolvedTheme, scoped, labels } = display;
     return (
       <article
         class={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}
         data-ephemeral={ephemeral || undefined}
         data-mentioned={mentioned || undefined}
+        aria-label={mentioned ? labels.mentionedMessage : undefined}
         data-has-thread={hasThread || undefined}
         data-theme={resolvedTheme.name}
         data-base-theme={scoped ? undefined : resolvedTheme.base}

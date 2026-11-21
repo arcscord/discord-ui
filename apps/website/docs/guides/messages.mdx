@@ -57,6 +57,8 @@ Set `mentioned: true` when the application determines that a message mentions
 the current viewer. The message gains a highlighted background and a 2px left
 border. Hover and keyboard focus use the dedicated hover background. `MessageFrame` also
 accepts the `mentioned` prop for composed layouts. Omission is equivalent to false.
+Mentioned articles have the accessible name supplied by `labels.mentionedMessage`
+(default `Mentioned message`), which can be translated through `DiscordUI.labels`.
 
 The host supplies this flag independently from Markdown mention tokens.
 `fromDiscordMessage` leaves it unset because the converter has no current-viewer

@@ -25,10 +25,13 @@ const colors = [
 for (const framework of frameworks) {
   test(`${framework} uses the supplied mentioned rest and hover colors in every theme`, async ({ page }) => {
     for (const { theme, background, hover, border } of colors) {
-      await page.mouse.move(-1, -1);
       await page.goto(`/previews/${framework}/?scenario=media&theme=${theme}&media=block`);
+      const diagnostics = page.locator("#status");
+      await expect(diagnostics).toHaveText("Loaded — local simulation");
+      await diagnostics.hover();
       const message = page.locator(".dui-message[data-mentioned=true]");
       await expect(message).toHaveCount(1);
+      await expect(message).toHaveAccessibleName("Mentioned message");
       await expect(message).toHaveAttribute("data-mentioned", "true");
       await expect(message).not.toHaveAttribute("data-ephemeral");
       await expect(message.locator(".dui-ephemeral-notice, .dui-ephemeral-dismiss")).toHaveCount(0);
@@ -41,7 +44,7 @@ for (const framework of frameworks) {
       const file = message.getByRole("link", { name: "route.txt", exact: true });
       await file.focus();
       await expect(file).toBeFocused();
-      await page.mouse.move(-1, -1);
+      await diagnostics.hover();
       await expect(message).toHaveCSS("background-color", hover);
       await expect(message).toHaveCSS("border-left-color", border);
       await file.evaluate(element => (element as HTMLElement).blur());

@@ -150,10 +150,36 @@ for (const framework of frameworks) {
     await expect(player.getByRole("button", { name: "Play", exact: true })).toBeVisible();
     expect(requests.filter(url => url.includes("trail.webm"))).toEqual([]);
     await player.getByRole("button", { name: "Play", exact: true }).click();
-    await expect(page.getByRole("status").filter({ hasText: "Media unavailable: Trail preview" })).toBeVisible();
+    const fallback = page.getByRole("status").filter({ hasText: "Media unavailable: Trail preview" });
+    await expect(fallback).toBeVisible();
+    await expect(fallback.getByRole("link", { name: "Download Trail preview", exact: true })).toHaveAttribute("href", "http://127.0.0.1:4177/examples/trail.webm");
     await expect(page.locator("video")).toHaveCount(0);
     expect(requests.filter(url => url.includes("trail.webm"))).toHaveLength(1);
     expect(errors).toEqual([]);
+  });
+
+  test(`${framework} preserves allowed attachment downloads after media errors`, async ({ page }) => {
+    await page.goto(`/previews/${framework}/?scenario=media&theme=dark&media=block`);
+    await expect(page.locator(".dui-player-audio").first().locator(".dui-player-download")).toHaveAttribute("href", "http://127.0.0.1:4177/examples/trail.wav");
+    await page.locator("video").first().dispatchEvent("error");
+    await page.locator(".dui-player-audio").first().locator("audio").dispatchEvent("error");
+    await page.locator(".dui-player-voice audio").dispatchEvent("error");
+
+    const videoFallback = page.getByRole("status").filter({ hasText: "Media unavailable: Trail preview" });
+    const videoDownload = videoFallback.getByRole("link", { name: "Download Trail preview", exact: true });
+    await expect(videoDownload).toHaveAttribute("href", "http://127.0.0.1:4177/examples/trail.webm");
+    await expect(videoDownload).toHaveAttribute("download", "");
+    await videoDownload.focus();
+    await expect(videoDownload).toBeFocused();
+
+    const audioFallback = page.getByRole("status").filter({ hasText: "Media unavailable: trail.wav" });
+    await expect(audioFallback.getByRole("link", { name: "Download trail.wav", exact: true })).toHaveAttribute("href", "http://127.0.0.1:4177/examples/trail.wav");
+    for (const name of ["Trail voice note", "Remote video", "Remote audio"]) {
+      const fallback = page.getByRole("status").filter({ hasText: `Media unavailable: ${name}` });
+      await expect(fallback).toBeVisible();
+      await expect(fallback.getByRole("link")).toHaveCount(0);
+    }
+    await expect(page.locator("video, audio")).toHaveCount(0);
   });
 }
 

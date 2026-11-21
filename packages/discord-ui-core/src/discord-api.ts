@@ -220,7 +220,7 @@ export function fromDiscordMessage(message: DiscordMessageInput, options: Discor
         id: sticker.id,
         name: sticker.name,
         format,
-        url: `${origin}/stickers/${sticker.id}.${extension}`,
+        url: `${origin}/stickers/${encodeURIComponent(sticker.id)}.${extension}`,
       },
     ];
   });
