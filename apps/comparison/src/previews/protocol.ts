@@ -14,6 +14,11 @@ export const eventNames = [
   "slash-command",
   "host-update",
   "ephemeral-dismiss",
+  "user-click",
+  "user-context-menu",
+  "mention-click",
+  "mention-context-menu",
+  "message-context-menu",
 ] as const;
 export type NativeEvent = { name: typeof eventNames[number]; args: unknown[] };
 export type Snapshot = Pick<LocalState, "waves" | "reacted" | "selectValues" | "activeThreadId"> & { messageCount: number; replyCount: number };
@@ -95,3 +100,17 @@ export function isFrameMessage(value: unknown): value is FrameMessage {
 }
 
 export const frameworkNames = { react: "React", vue: "Vue", svelte: "Svelte" };
+
+/** Only serializable event observations cross the fixture protocol. */
+export function utilityEvent(name: NativeEvent["name"], target: unknown, event: Pick<MouseEvent, "defaultPrevented" | "preventDefault" | "button">, prevent: boolean): NativeEvent {
+  const before = event.defaultPrevented;
+  if (prevent)
+    event.preventDefault();
+  return {
+    name,
+    args: [
+      target,
+      { defaultPreventedBefore: before, defaultPreventedAfter: event.defaultPrevented, button: event.button },
+    ],
+  };
+}

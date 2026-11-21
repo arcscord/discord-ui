@@ -476,7 +476,44 @@ export const commands = [
   },
 ];
 
+export function utilityMessages(updated = false): MessageView[] {
+  const utilityAuthor = {
+    id: updated ? "guide-updated" : "guide",
+    displayName: updated ? "Updated Guide" : "Field Guide",
+  };
+  const content = "<@123456789012345678> <@&234567890123456789> <#345678901234567890> </route:456789012345678901>";
+  return [
+    {
+      id: "utility-classic",
+      author: utilityAuthor,
+      timestamp: referenceTime,
+      reply: { messageId: "original", author: utilityAuthor, content: "Earlier route" },
+      body: { kind: "markdown", content },
+      embeds: [
+        { id: "utility-embed", description: content },
+      ],
+    },
+    {
+      id: "utility-v2",
+      author: utilityAuthor,
+      timestamp: referenceTime,
+      body: {
+        kind: "components-v2",
+        components: [
+          { id: "utility-text", kind: "text-display", content },
+        ],
+      },
+    },
+  ];
+}
+
 export const scenarios = [
+  {
+    id: "utility-interactions",
+    title: "Utility callbacks",
+    description: "Author, mention and message callbacks with native context-menu decisions.",
+    checkpoints: ["Activate author and mention targets, then inspect callback payloads.", "Toggle context-menu suppression and update author identity."],
+  },
   {
     id: "classic",
     title: "Classic message",

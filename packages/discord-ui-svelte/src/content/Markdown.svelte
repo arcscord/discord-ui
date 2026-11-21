@@ -1,7 +1,8 @@
 <script module lang="ts">
   import type { MarkdownNode } from "@arcscord/discord-ui-core/markdown";
+  import type { MentionInteractionHandlers } from "../interactions.js";
 
-  export type MarkdownProps = { content: string; referenceTime?: string | undefined };
+  export type MarkdownProps = MentionInteractionHandlers & { content: string; referenceTime?: string | undefined };
 
   function string(value: unknown): string {
     return typeof value === "string" || typeof value === "number"
@@ -20,53 +21,53 @@
   import Spoiler from "./Spoiler.svelte";
   import UnicodeEmoji from "./UnicodeEmoji.svelte";
 
-  const { content, referenceTime }: MarkdownProps = $props();
+  const { content, referenceTime, onMentionClick, onMentionContextMenu }: MarkdownProps = $props();
   const display = getDisplayOptions();
   const blocks = $derived(parseMarkdown(content));
 </script>
 
-{#snippet inline(nodes: MarkdownNode[])}
-  {#each nodes as node (node)}{@render renderNode(node)}{/each}
+{#snippet inline(nodes: MarkdownNode[], inLink = false)}
+  {#each nodes as node (node)}{@render renderNode(node, inLink)}{/each}
 {/snippet}
 
-{#snippet children(value: unknown)}
-  {#if Array.isArray(value)}{@render inline(value)}{:else}{string(value)}{/if}
+{#snippet children(value: unknown, inLink = false)}
+  {#if Array.isArray(value)}{@render inline(value, inLink)}{:else}{string(value)}{/if}
 {/snippet}
 
-{#snippet linkLabel(node: MarkdownNode)}
-  {#if Array.isArray(node.content)}{@render children(node.content)}{:else}<UnicodeEmoji content={string(node.content ?? node.target)} />{/if}
+{#snippet linkLabel(node: MarkdownNode, inLink = false)}
+  {#if Array.isArray(node.content)}{@render children(node.content, inLink)}{:else}<UnicodeEmoji content={string(node.content ?? node.target)} />{/if}
 {/snippet}
 
-{#snippet renderNode(node: MarkdownNode)}
+{#snippet renderNode(node: MarkdownNode, inLink = false)}
   {#if node.type === "text"}
     <UnicodeEmoji content={string(node.content)} />
   {:else if node.type === "br" || node.type === "newline"}
     <br />
   {:else if node.type === "strong"}
-    <strong>{@render children(node.content)}</strong>
+    <strong>{@render children(node.content, inLink)}</strong>
   {:else if node.type === "em"}
-    <em>{@render children(node.content)}</em>
+    <em>{@render children(node.content, inLink)}</em>
   {:else if node.type === "underline"}
-    <u>{@render children(node.content)}</u>
+    <u>{@render children(node.content, inLink)}</u>
   {:else if node.type === "strikethrough"}
-    <s>{@render children(node.content)}</s>
+    <s>{@render children(node.content, inLink)}</s>
   {:else if node.type === "inlineCode"}
     <code class="dui-inline-code">{string(node.content)}</code>
   {:else if node.type === "codeBlock"}
     {@const renderCode = display().renderCode}
     <pre class="dui-code-block">{#if renderCode}{@render renderCode(string(node.content), string(node.lang))}{:else}<code>{string(node.content)}</code>{/if}</pre>
   {:else if node.type === "spoiler"}
-    <Spoiler>{@render children(node.content)}</Spoiler>
+    <Spoiler>{@render children(node.content, inLink)}</Spoiler>
   {:else if node.type === "blockQuote"}
-    <blockquote class="dui-blockquote">{@render children(node.content)}</blockquote>
+    <blockquote class="dui-blockquote">{@render children(node.content, inLink)}</blockquote>
   {:else if node.type === "heading"}
     {@const level = Math.max(1, Math.min(3, Number(node.level) || 1))}
-    <div role="heading" aria-level={level} class={`dui-heading dui-heading-${level}`}>{@render children(node.content)}</div>
+    <div role="heading" aria-level={level} class={`dui-heading dui-heading-${level}`}>{@render children(node.content, inLink)}</div>
   {:else if node.type === "subtext"}
-    <small class="dui-subtext">{@render children(node.content)}</small>
+    <small class="dui-subtext">{@render children(node.content, inLink)}</small>
   {:else if node.type === "url" || node.type === "autolink" || node.type === "link"}
     {@const url = linkUrl(string(node.target ?? node.content))}
-    {#if url}<a href={url} target="_blank" rel="noreferrer noopener">{@render linkLabel(node)}</a>{:else}{@render linkLabel(node)}{/if}
+    {#if url}<a href={url} target="_blank" rel="noreferrer noopener">{@render linkLabel(node, true)}</a>{:else}{@render linkLabel(node)}{/if}
   {:else if node.type === "user" || node.type === "channel" || node.type === "role"}
     {@const id = string(node.id)}
     {@const entities = display().entities}
@@ -75,7 +76,7 @@
       : node.type === "channel"
       ? entities.channels?.[id]
       : entities.roles?.[id]}
-    <Mention kind={node.type} name={entity?.name ?? id} color={entity?.color} />
+    <Mention id={inLink ? undefined : id} {onMentionClick} {onMentionContextMenu} kind={node.type} name={entity?.name ?? id} color={entity?.color} />
   {:else if node.type === "everyone" || node.type === "here"}
     <Mention name={node.type} />
   {:else if node.type === "emoji"}
@@ -84,7 +85,9 @@
   {:else if node.type === "twemoji"}
     <UnicodeEmoji content={string(node.name)} />
   {:else if node.type === "slashCommand"}
-    <Mention kind="command" name={display().entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)} />
+    <Mention id={inLink
+      ? undefined
+      : string(node.id)} {onMentionClick} {onMentionContextMenu} kind="command" name={display().entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)} />
   {:else if node.type === "timestamp"}
     {@const timestamp = formatDiscordTimestamp(string(node.timestamp), string(node.format), {
       ...display(),
@@ -92,7 +95,7 @@
     })}
     {#if timestamp}<time class="dui-inline-timestamp" datetime={timestamp.dateTime}>{timestamp.label}</time>{:else}<span>{display().labels.invalidTimestamp}</span>{/if}
   {:else}
-    {@render children(node.content)}
+    {@render children(node.content, inLink)}
   {/if}
 {/snippet}
 

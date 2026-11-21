@@ -40,6 +40,27 @@ Native Unicode by default, or Twemoji SVGs from an explicit baseUrl. Local root-
 
 [Usage guide and runnable example](/docs/guides/messages)
 
+## MentionTarget
+
+<CodeBlock language="ts">{"import type { MentionTarget } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Display data for an identified user, role, channel or command mention. Unknown entities retain their identifier as the visible name. The host resolves additional metadata.
+
+<CodeBlock language="ts">{"type MentionTarget = {\n  id: string;\n  kind: \"user\" | \"role\" | \"channel\" | \"command\";\n  name: string;\n  color?: string | undefined;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `kind` | Yes | `"user" \| "role" \| "channel" \| "command"` | — | Discriminator selecting this model variant. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `color` | No | `string \| undefined` | — | Six-digit hex display color; invalid values fall back to component styling. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MentionTarget = { id: \"sam\", kind: \"user\", name: \"Sam\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
 ## ChannelViewModel
 
 <CodeBlock language="ts">{"import type { ChannelViewModel } from \"@arcscord/discord-ui\";"}</CodeBlock>

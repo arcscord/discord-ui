@@ -1,5 +1,6 @@
 import type { ChannelViewModel, ComponentHandlers, ReactionToggleHandler, SelectValuesByMessage, SlashCommand, SlashCommandHandler } from "@arcscord/discord-ui-core";
 import type { CSSProperties, ReactNode } from "react";
+import type { MessageInteractionHandlers } from "../../interactions";
 import { useEffect, useRef, useState } from "react";
 import { DiscordUI } from "../discord-ui";
 import { useDisplayOptions } from "../display-context";
@@ -9,7 +10,7 @@ import { ChannelHeader } from "./channel-header";
 import { MessageList } from "./message-list";
 import { useMessageScroll } from "./use-message-scroll";
 
-export type ChannelViewProps = ComponentHandlers & {
+export type ChannelViewProps = ComponentHandlers & MessageInteractionHandlers & {
   selectValuesByMessage?: SelectValuesByMessage | undefined;
   channel: ChannelViewModel;
   onReactionToggle?: ReactionToggleHandler | undefined;
@@ -34,7 +35,7 @@ export function ChannelView(props: ChannelViewProps) {
   return <ChannelViewContent key={props.channel.id} {...props} />;
 }
 
-function ChannelViewContent({ selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, channel, activeThreadId, onThreadOpen, onThreadClose, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
+function ChannelViewContent({ onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, channel, activeThreadId, onThreadOpen, onThreadClose, onReactionToggle, height = 560, header, composer, onSend, onThreadSend, commands, onSlashCommand, composerDisabled = false, autoScroll = true, showDateSeparators = true }: ChannelViewProps) {
   const { scoped, labels } = useDisplayOptions();
   const [draft, setDraft] = useState("");
   const { historyRef, updateFollowState } = useMessageScroll(channel.id, channel.messages.at(-1)?.id, autoScroll);
@@ -87,7 +88,7 @@ function ChannelViewContent({ selectValuesByMessage, onEphemeralDismiss, onButto
             tabIndex={0}
             onScroll={event => updateFollowState(event.currentTarget)}
           >
-            <MessageList selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
+            <MessageList onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} onMentionClick={onMentionClick} onMentionContextMenu={onMentionContextMenu} onMessageContextMenu={onMessageContextMenu} selectValuesByMessage={selectValuesByMessage} onEphemeralDismiss={onEphemeralDismiss} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} onReactionToggle={onReactionToggle} messages={channel.messages} showDateSeparators={showDateSeparators} onThreadOpen={openThread} activeThreadId={open?.id} availableThreadIds={availableThreads.map(thread => thread.id)} />
           </div>
           {composer === false
             ? null
@@ -96,6 +97,11 @@ function ChannelViewContent({ selectValuesByMessage, onEphemeralDismiss, onButto
         {open
           ? (
               <ThreadPanel
+                onUserClick={onUserClick}
+                onUserContextMenu={onUserContextMenu}
+                onMentionClick={onMentionClick}
+                onMentionContextMenu={onMentionContextMenu}
+                onMessageContextMenu={onMessageContextMenu}
                 selectValuesByMessage={selectValuesByMessage}
                 onEphemeralDismiss={onEphemeralDismiss}
                 onButtonClick={onButtonClick}

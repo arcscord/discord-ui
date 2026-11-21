@@ -13,6 +13,66 @@ Signatures and field tables are extracted from the public TypeScript contracts. 
 
 [Public entry points](/docs/api/entry-points) · [API index](/docs/api-reference)
 
+## MentionInteractionHandlers
+
+<CodeBlock language="ts">{"import type { MentionInteractionHandlers } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Optional host actions for mentions with an identifier. Events default to React mouse events. Markdown inside messages, embeds and Components V2 inherits the handlers. Linked mentions retain link navigation.
+
+<CodeBlock language="ts">{"import type { MentionInteractionHandlers as CoreMentionHandlers, MessageInteractionHandlers as CoreMessageHandlers, UserInteractionHandlers as CoreUserHandlers } from \"@arcscord/discord-ui-core\";\nimport type { MouseEvent } from \"react\";\n\nexport type MentionInteractionHandlers<E = MouseEvent<HTMLElement>> = CoreMentionHandlers<E>;"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onMentionClick` | No | `((mention: MentionTarget, event: E) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: E) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MentionInteractionHandlers = { onMentionClick: (mention, event) => { console.log(mention.kind, mention.id, event.currentTarget); } };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## MessageInteractionHandlers
+
+<CodeBlock language="ts">{"import type { MessageInteractionHandlers } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Combines author, mention and message context-menu callbacks. Supply them to Message, MessageList, ChannelView or ThreadPanel. Applications own profile cards, menus and external data.
+
+<CodeBlock language="ts">{"import type { MentionInteractionHandlers as CoreMentionHandlers, MessageInteractionHandlers as CoreMessageHandlers, UserInteractionHandlers as CoreUserHandlers } from \"@arcscord/discord-ui-core\";\nimport type { MouseEvent } from \"react\";\n\nexport type MessageInteractionHandlers<E = MouseEvent<HTMLElement>> = CoreMessageHandlers<E>;"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: E) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: E) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+| `onMentionClick` | No | `((mention: MentionTarget, event: E) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: E) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: E) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageInteractionHandlers = { onMessageContextMenu: (message, event) => { event.preventDefault(); console.log(message.id); } };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
+## UserInteractionHandlers
+
+<CodeBlock language="ts">{"import type { UserInteractionHandlers } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Optional host actions for author avatars and names, including reply authors. Events default to React mouse events. Context handlers stop propagation to the message and leave default prevention to the host.
+
+<CodeBlock language="ts">{"import type { MentionInteractionHandlers as CoreMentionHandlers, MessageInteractionHandlers as CoreMessageHandlers, UserInteractionHandlers as CoreUserHandlers } from \"@arcscord/discord-ui-core\";\nimport type { MouseEvent } from \"react\";\n\nexport type UserInteractionHandlers<E = MouseEvent<HTMLElement>> = CoreUserHandlers<E>;"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: E) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: E) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.UserInteractionHandlers = { onUserClick: (author, event) => { console.log(author.id, event.currentTarget); } };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/interactions)
+
 ## ComponentHandlers
 
 <CodeBlock language="ts">{"import type { ComponentHandlers } from \"@arcscord/discord-ui\";"}</CodeBlock>

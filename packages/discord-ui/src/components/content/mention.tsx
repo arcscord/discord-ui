@@ -1,12 +1,38 @@
-export type MentionProps = { name: string; kind?: "user" | "role" | "channel" | "command"; color?: string | undefined };
+import type { MentionInteractionHandlers, MentionTarget } from "../../interactions";
+import { contextMenuKey, useMentionInteractions } from "../interaction-context";
 
-export function Mention({ name, kind = "user", color }: MentionProps) {
+export type MentionProps = MentionInteractionHandlers & { id?: string | undefined; name: string; kind?: MentionTarget["kind"]; color?: string | undefined };
+
+export function Mention({ id, name, kind = "user", color, ...handlers }: MentionProps) {
+  const { onMentionClick, onMentionContextMenu } = useMentionInteractions(handlers);
+  const target = id
+    ? { id, name, kind, color }
+    : undefined;
+  const clickable = Boolean(target && onMentionClick);
+  const contextual = Boolean(target && onMentionContextMenu);
+  const Wrapper = clickable ? "button" : "span";
   const safeColor = /^#[a-f\d]{6}$/iu.test(color ?? "")
     ? color
     : undefined;
   return (
-    <span
-      className="dui-mention"
+    <Wrapper
+      type={clickable ? "button" : undefined}
+      className={`dui-mention${clickable || contextual
+        ? " dui-utility-target"
+        : ""}`}
+      tabIndex={!clickable && contextual
+        ? 0
+        : undefined}
+      onKeyDown={contextual ? contextMenuKey : undefined}
+      onClick={target && onMentionClick
+        ? event => onMentionClick(target, event)
+        : undefined}
+      onContextMenu={target && onMentionContextMenu
+        ? (event) => {
+            event.stopPropagation();
+            onMentionContextMenu(target, event);
+          }
+        : undefined}
       style={safeColor
         ? { color: safeColor }
         : undefined}
@@ -17,6 +43,6 @@ export function Mention({ name, kind = "user", color }: MentionProps) {
           ? "/"
           : "@"}
       {name}
-    </span>
+    </Wrapper>
   );
 }

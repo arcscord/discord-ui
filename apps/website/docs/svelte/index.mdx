@@ -84,3 +84,27 @@ audio/video and the supplied Arcscord logo as a sticker; copy
 
 See the [Svelte API reference](./api.mdx) for all components, callbacks and
 snippets, and [SSR and hydration](./ssr.md) for server setup.
+
+## Author and mention callbacks
+
+`Message`, `MessageList`, `ChannelView` and `ThreadPanel` expose author, mention
+and message-context callbacks. The first argument is `MessageAuthor`,
+`MentionTarget` or `MessageView`; the second is a native DOM `MouseEvent`.
+`MentionTarget` carries `id`, `kind`, `name` and optional `color`, including
+unresolved mention IDs. Reply authors and mentions inside rich content use the
+same handlers. The application owns profile cards and menus.
+
+```svelte
+<Message {message}
+  onUserClick={(author, event) => showProfile(author, event)}
+  onUserContextMenu={(author, event) => openUserMenu(author, event)}
+  onMentionClick={(mention, event) => showMention(mention, event)}
+  onMentionContextMenu={(mention, event) => openMentionMenu(mention, event)}
+  onMessageContextMenu={(record, event) => openMessageMenu(record, event)} />
+```
+
+User and mention context handlers take priority over the message handler.
+Call `event.preventDefault()` in your host callback when replacing the browser
+context menu. Restore focus when dismissing your interface. Standalone `Author`,
+`Avatar`, `MessageHeader` and `ReplyPreview` accept user handlers; `Mention` accepts
+an optional ID and mention handlers, and `Markdown` accepts mention handlers.

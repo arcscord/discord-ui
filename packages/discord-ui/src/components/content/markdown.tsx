@@ -1,10 +1,12 @@
 import type { MarkdownBlock, MarkdownNode } from "@arcscord/discord-ui-core/markdown";
 // AST rendering adapted from the AutoThreads renderer; see THIRD_PARTY_NOTICES.
 import type { ReactNode } from "react";
+import type { MentionInteractionHandlers } from "../../interactions";
 import { formatDiscordTimestamp, linkUrl } from "@arcscord/discord-ui-core";
 import { parseMarkdown } from "@arcscord/discord-ui-core/markdown";
 import { Fragment } from "react";
 import { useDisplayOptions } from "../display-context";
+import { MentionInteractionContext, useMentionInteractions } from "../interaction-context";
 import { Emoji } from "./emoji";
 import { Mention } from "./mention";
 import { Spoiler } from "./spoiler";
@@ -16,10 +18,11 @@ function string(value: unknown): string {
     : "";
 }
 
-export type MarkdownProps = { content: string; referenceTime?: string | undefined };
+export type MarkdownProps = MentionInteractionHandlers & { content: string; referenceTime?: string | undefined };
 
-export function Markdown({ content, referenceTime }: MarkdownProps) {
+export function Markdown({ content, referenceTime, ...handlers }: MarkdownProps) {
   const options = useDisplayOptions();
+  const interactions = useMentionInteractions(handlers);
   function children(value: unknown, key: string): ReactNode {
     return Array.isArray(value)
       ? value.map((node: MarkdownNode, index) => render(node, `${key}-${index}`))
@@ -52,7 +55,7 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
           ? body()
           : <UnicodeEmoji content={string(node.content ?? node.target)} />;
         return url
-          ? <a key={key} href={url} target="_blank" rel="noreferrer noopener">{label}</a>
+          ? <MentionInteractionContext key={key} value={{}}><a href={url} target="_blank" rel="noreferrer noopener">{label}</a></MentionInteractionContext>
           : <Fragment key={key}>{label}</Fragment>;
       }
       case "user": case "channel": case "role": {
@@ -63,7 +66,7 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
           : kind === "channel"
             ? options.entities.channels?.[id]
             : options.entities.roles?.[id];
-        return <Mention key={key} kind={kind} name={entity?.name ?? id} color={entity?.color} />;
+        return <Mention key={key} id={id} kind={kind} name={entity?.name ?? id} color={entity?.color} />;
       }
       case "everyone": case "here": return <Mention key={key} name={node.type} />;
       case "emoji": {
@@ -71,7 +74,7 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
         return <Emoji key={key} name={entity?.name ?? string(node.name)} image={entity?.image} />;
       }
       case "twemoji": return <UnicodeEmoji key={key} content={string(node.name)} />;
-      case "slashCommand": return <Mention key={key} kind="command" name={options.entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)} />;
+      case "slashCommand": return <Mention key={key} id={string(node.id)} kind="command" name={options.entities.commands?.[string(node.id)]?.name ?? string(node.fullName ?? node.name)} />;
       case "timestamp": {
         const timestamp = formatDiscordTimestamp(string(node.timestamp), string(node.format), { ...options, referenceTime: referenceTime ?? options.referenceTime ?? "1970-01-01T00:00:00Z" });
         return timestamp
@@ -94,5 +97,5 @@ export function Markdown({ content, referenceTime }: MarkdownProps) {
       : <ul key={`list-${node.line}`}>{items}</ul>;
   }
 
-  return <div className="dui-markdown">{parseMarkdown(content).map(block)}</div>;
+  return <MentionInteractionContext value={interactions}><div className="dui-markdown">{parseMarkdown(content).map(block)}</div></MentionInteractionContext>;
 }

@@ -3,11 +3,11 @@ import { appendMessage, classicExtras, classicMessage, createLocalState, default
 import { isConfigureMessage, isFrameMessage, protocol, snapshot } from "../src/previews/protocol";
 
 describe("comparison fixtures and transport", () => {
-  it("covers twelve distinct scenario families in the base matrix", () => {
-    expect(scenarios).toHaveLength(12);
-    expect(new Set(scenarios.map(scenario => scenario.id)).size).toBe(12);
-    expect(scenarios.length * 3 * 2).toBe(72);
-    expect(scenarios.length * 3 * 2 * 3).toBe(216);
+  it("covers thirteen distinct scenario families across theme and width settings", () => {
+    expect(scenarios).toHaveLength(13);
+    expect(new Set(scenarios.map(scenario => scenario.id)).size).toBe(13);
+    expect(scenarios.length * 3 * 2).toBe(78);
+    expect(scenarios.length * 3 * 2 * 3).toBe(234);
   });
 
   it("round-trips custom theme configuration and rejects invalid flags", () => {

@@ -3,6 +3,58 @@ import type { ComponentExample } from "./component-examples";
 /** Complete local recipes; exportCode supplies only the explicitly used public imports/hooks. */
 export const recipeExamples: ComponentExample[] = [
   {
+    id: "recipe-transcript-interactions",
+    title: "Transcript utility interactions",
+    component: "MessageList",
+    family: "Recipes",
+    layout: "message",
+    interactive: true,
+    description: "Open host-controlled author and mention information or a contextual action from a transcript.",
+    code: `function TranscriptInteractions({ theme }) {
+  const [selection, setSelection] = useState(null);
+  const [status, setStatus] = useState("Ready");
+  const opener = useRef(null);
+  const panel = useRef(null);
+  const author = { id: "123456789012345678", displayName: "Sam" };
+  const records = [{ id: "transcript-question", author, timestamp: "2026-11-01T10:00:00Z",
+    body: { kind: "markdown", content: "Ask <@123456789012345678> in <#234567890123456789>, notify <@&345678901234567890>, or try </help:456789012345678901>." },
+    reply: { messageId: "original", author, content: "An earlier question" },
+    embeds: [{ id: "details", description: "Follow up with <@123456789012345678>." }],
+  }];
+  useEffect(() => {
+    if (selection) panel.current?.querySelector("button")?.focus();
+  }, [selection]);
+  function close() {
+    setSelection(null);
+    opener.current?.focus();
+  }
+  function show(kind, target, event, menu = false) {
+    const wasPrevented = event.defaultPrevented;
+    if (menu) event.preventDefault();
+    opener.current = event.currentTarget;
+    setSelection({ kind, target, menu });
+    setStatus(JSON.stringify({ kind, id: target.id, name: target.displayName || target.name || target.id, defaultPrevented: wasPrevented }));
+  }
+  return <DiscordUI theme={theme} locale="en-US" timeZone="UTC" allowRemoteMedia={false}>
+    <MessageList messages={records}
+      onUserClick={(target, event) => show("user", target, event)}
+      onUserContextMenu={(target, event) => show("user-context", target, event, true)}
+      onMentionClick={(target, event) => show(target.kind, target, event)}
+      onMentionContextMenu={(target, event) => show(target.kind + "-context", target, event, true)}
+      onMessageContextMenu={(target, event) => show("message-context", target, event, true)} />
+    <p role="status" aria-live="polite" style={{ overflowWrap: "anywhere" }}>{status}</p>
+    {selection && <section ref={panel} role="region" aria-label={selection.menu ? "Context actions" : "Entity information"}
+      onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); close(); } }}
+      style={{ padding: 12, border: "1px solid currentColor", borderRadius: 8 }}>
+      <p>{selection.kind} · {selection.target.displayName || selection.target.name || selection.target.id}</p>
+      <p>ID {selection.target.id}</p>
+      {selection.menu && <button type="button" onClick={() => { setStatus("Selected " + selection.target.id); close(); }}>Select entity</button>}
+      <button type="button" onClick={close}>Close information</button>
+    </section>}
+  </DiscordUI>;
+}`,
+  },
+  {
     id: "recipe-transcript",
     title: "Read-only transcript",
     component: "MessageList",

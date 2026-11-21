@@ -2,8 +2,10 @@
 import type { VNodeChild } from "vue";
 import { defineRenderer, styleValue } from "../../rendering";
 import { themeStyle } from "../../themes";
+import { dispatchKeyboardContextMenu } from "../../utility-context";
 
 type MessageFramePropsInput = {
+  onContextMenu?: ((event: MouseEvent) => void) | undefined;
   hasThread?: boolean;
   ephemeral?: boolean;
   mentioned?: boolean;
@@ -15,7 +17,12 @@ type MessageFramePropsInput = {
 };
 export type MessageFrameProps = Omit<MessageFramePropsInput, "children" | "avatar" | "reply" | "header" | "footer">;
 export type MessageFrameSlots = { default?: () => VNodeChild; avatar?: () => VNodeChild; reply?: () => VNodeChild; header?: () => VNodeChild; footer?: () => VNodeChild };
-export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsInput, MessageFrameSlots>("MessageFrame", ["hasThread", "ephemeral", "mentioned"], [
+export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsInput, MessageFrameSlots>("MessageFrame", [
+  "onContextMenu",
+  "hasThread",
+  "ephemeral",
+  "mentioned",
+], [
   "children",
   "avatar",
   "reply",
@@ -23,10 +30,14 @@ export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsI
   "footer",
 ], (input, display) => {
   return () => {
-    const { avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false } = input(true);
+    const { onContextMenu, avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false } = input(true);
     const { resolvedTheme, scoped, labels } = display;
     return (
       <article
+        {...(onContextMenu
+          ? { onContextmenu: onContextMenu, onKeydown: dispatchKeyboardContextMenu }
+          : {})}
+        tabindex={onContextMenu ? 0 : undefined}
         class={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}
         data-ephemeral={ephemeral || undefined}
         data-mentioned={mentioned || undefined}
@@ -52,4 +63,4 @@ export const MessageFrame = defineRenderer<MessageFrameProps, MessageFramePropsI
     );
   };
 });
-export type MessageFrameEmits = Record<string, never>;
+export type MessageFrameEmits = import("../../public-component").EventsFromProps<MessageFrameProps>;

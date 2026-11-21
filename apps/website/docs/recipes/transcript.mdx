@@ -52,3 +52,32 @@ the provided controls, not content permissions or immutable storage.
 [MessageList](/docs/api/conversation-components#messagelist), [MessageView](/docs/api/models#messageview), [FileView](/docs/api/models#fileview).
 
 [Edit this recipe](/playground?example=recipe-transcript) · [Compare all themes](/components?example=recipe-transcript) · [All recipes](../recipes.md)
+
+## Author, mention and contextual interactions
+
+<ReferenceExample id="recipe-transcript-interactions" initiallyOpen />
+
+This second transcript keeps its information card and context actions in React
+state. Activate an author avatar, author name or mention with the keyboard or
+pointer. Escape or Close dismisses the card and restores focus to its trigger.
+Right-click an author, mention or message to open the application's action panel.
+The panel's Select entity action updates local status.
+
+Pass `onUserClick`, `onUserContextMenu`, `onMentionClick`,
+`onMentionContextMenu` and `onMessageContextMenu` to `Message`, `MessageList`,
+`ChannelView` or `ThreadPanel`. React callbacks receive the target and a
+`React.MouseEvent<HTMLElement>`. Authors include reply and interaction authors.
+Mention targets contain `id`, `kind`, `name` and optional `color`; kinds are
+`user`, `role`, `channel` and `command`. Unresolved mentions retain their ID.
+Mentions inside embeds and Components V2 inherit the message handlers.
+
+Click targets support Enter and Space. Focus a context-menu target and press
+Shift+F10 or the ContextMenu key to activate its callback. Mentions inside links
+follow the enclosing link.
+
+User and mention context callbacks stop propagation to the message callback.
+The library preserves the browser's default context-menu behavior. This example
+records `defaultPrevented` before the host calls `preventDefault()` and opens its
+own panel. Supply your own authorization, profile data and actions.
+
+[Edit the interactive transcript](/playground?example=recipe-transcript-interactions)

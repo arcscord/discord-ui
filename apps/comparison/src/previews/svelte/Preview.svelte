@@ -2,14 +2,15 @@
   import type { ComponentInteractionContext } from "@arcscord/discord-ui-svelte";
   import type { ComparisonConfig } from "../../../../../fixtures/comparison/scenarios";
   import type { NativeEvent, Snapshot } from "../protocol";
-  import { ChannelView, DiscordUI, Message } from "@arcscord/discord-ui-svelte";
+  import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui-svelte";
   import { HighlightedCode } from "@arcscord/discord-ui-svelte/highlight";
-  import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages } from "../../../../../fixtures/comparison/scenarios";
-  import { snapshot } from "../protocol";
+  import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
+  import { snapshot, utilityEvent } from "../protocol";
   import "@arcscord/discord-ui-svelte/styles.css";
 
   const { config, report, event }: { config: ComparisonConfig; report: (localState: Snapshot) => void; event: (event: NativeEvent, localState: Snapshot) => void } = $props();
   const localState = $state(createLocalState());
+  let utilityMode = $state(0);
   $effect(() => report(snapshot(localState)));
   const message = $derived({
     ...(config.scenario === "reactions"
@@ -110,7 +111,24 @@
 <DiscordUI {...displayOptions(config, window.location.origin)} renderCode={config.scenario === "markdown"
   ? highlighted
   : undefined}>
-  {#if config.scenario === "channel" || config.scenario === "threads-commands"}
+  {#if config.scenario === "utility-interactions"}
+    <button type="button" onclick={() => localState.reacted = !localState.reacted}>Update utility targets</button>
+    <button type="button" onclick={() => utilityMode = (utilityMode + 1) % 3}>Cycle utility handlers</button>
+    <MessageList messages={utilityMessages(localState.reacted)}
+                 onUserClick={utilityMode === 2
+                   ? undefined
+                   : (target, nativeEvent) => event(utilityEvent("user-click", target, nativeEvent, false), snapshot(localState))}
+                 onUserContextMenu={utilityMode === 1
+                   ? undefined
+                   : (target, nativeEvent) => event(utilityEvent("user-context-menu", target, nativeEvent, localState.reacted), snapshot(localState))}
+                 onMentionClick={utilityMode === 2
+                   ? undefined
+                   : (target, nativeEvent) => event(utilityEvent("mention-click", target, nativeEvent, false), snapshot(localState))}
+                 onMentionContextMenu={utilityMode === 1
+                   ? undefined
+                   : (target, nativeEvent) => event(utilityEvent("mention-context-menu", target, nativeEvent, localState.reacted), snapshot(localState))}
+                 onMessageContextMenu={(target, nativeEvent) => event(utilityEvent("message-context-menu", target, nativeEvent, localState.reacted), snapshot(localState))} />
+  {:else if config.scenario === "channel" || config.scenario === "threads-commands"}
     <ChannelView channel={localState.channel} height={844} activeThreadId={localState.activeThreadId} onThreadOpen={thread} onThreadClose={() => thread(null)} onSend={content => send(content)} onThreadSend={(id, content) => send(content, id)} {commands} onSlashCommand={invocation => event({
       name: "slash-command",
       args: [invocation],

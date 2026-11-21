@@ -6,7 +6,7 @@
   import MessageList from "../channel/MessageList.svelte";
   import { getDisplayOptions } from "../display-context.js";
 
-  const { selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps = $props();
+  const { onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, selectValuesByMessage, onEphemeralDismiss, onButtonClick, onSelectChange, onPremiumClick, thread, onReactionToggle, parentMessage, onClose, onSend, composerDisabled = false, autoScroll = true }: ThreadPanelProps = $props();
   const display = getDisplayOptions();
   const label = $derived(`${display().labels.thread} : ${thread.name}`);
   let draft = $state("");
@@ -47,7 +47,7 @@
   <ChannelHeader name={thread.name} actions={onClose ? actions : undefined} />
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (Make the scrolling history independently keyboard-scrollable.) -->
   <div class="dui-channel-history" role="log" aria-label={label} aria-live="polite" tabindex="0" bind:this={history} onscroll={scroll}>
-    <MessageList {selectValuesByMessage} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {onReactionToggle}
+    <MessageList {onUserClick} {onUserContextMenu} {onMentionClick} {onMentionContextMenu} {onMessageContextMenu} {selectValuesByMessage} {onEphemeralDismiss} {onButtonClick} {onSelectChange} {onPremiumClick} {onReactionToggle}
                  {messages} showThreadPreviews={false} />
   </div>
   <ChannelComposer channelName={thread.name} value={draft} onValueChange={value => draft = value} onSend={onSend ? send : undefined} disabled={composerDisabled} />

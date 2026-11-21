@@ -1,7 +1,9 @@
-import type { MessageAuthor } from "@arcscord/discord-ui-core";
-// Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
+import type { MessageAuthor, UserInteractionHandlers } from "@arcscord/discord-ui-core";
 import { mediaUrl } from "@arcscord/discord-ui-core";
+// Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
+import { h } from "vue";
 import { defineRenderer, state, styleValue } from "../../rendering";
+import { dispatchKeyboardContextMenu } from "../../utility-context";
 
 const backgrounds = [
   "#5865f2",
@@ -17,8 +19,13 @@ function hexColor(value: string | undefined): string | undefined {
     ? value
     : undefined;
 }
-type AvatarImageInput = { author: MessageAuthor; source: string | undefined };
-const AvatarImage = defineRenderer<AvatarImageInput, AvatarImageInput, Record<string, never>>("AvatarImage", ["author", "source"], [], (input, _display) => {
+type AvatarImageInput = UserInteractionHandlers<MouseEvent> & { author: MessageAuthor; source: string | undefined };
+const AvatarImage = defineRenderer<AvatarImageInput, AvatarImageInput, Record<string, never>>("AvatarImage", [
+  "author",
+  "source",
+  "onUserClick",
+  "onUserContextMenu",
+], [], (input, _display) => {
   const [failedState, setFailed] = state<boolean>(false);
   function derive(withSlots = false) {
     const { author, source } = input(withSlots);
@@ -46,36 +53,52 @@ const AvatarImage = defineRenderer<AvatarImageInput, AvatarImageInput, Record<st
     };
   }
   return () => {
-    const { source, failed, background, color, letter } = derive(true);
-    return (
-      <span
-        class="dui-avatar"
-        aria-hidden="true"
-        style={styleValue({
-          background: source && !failed
-            ? "transparent"
-            : background,
-          color,
-        })}
-      >
-        {source && !failed
-          ? <img src={source} alt="" width={40} height={40} onError={() => setFailed(true)} />
-          : <span>{letter}</span>}
-      </span>
-    );
+    const { author, source, failed, background, color, letter } = derive(true);
+    const { onUserClick, onUserContextMenu } = input();
+    const interactive = Boolean(onUserClick || onUserContextMenu);
+    return h(onUserClick ? "button" : "span", {
+      "class": `dui-avatar${interactive ? " dui-utility-target" : ""}`,
+      "type": onUserClick ? "button" : undefined,
+      "tabindex": !onUserClick && onUserContextMenu
+        ? 0
+        : undefined,
+      "aria-label": interactive ? author.displayName : undefined,
+      "aria-hidden": interactive ? undefined : "true",
+      "role": interactive && !onUserClick
+        ? "img"
+        : undefined,
+      "style": styleValue({
+        background: source && !failed
+          ? "transparent"
+          : background,
+        color,
+      }),
+      "onClick": onUserClick
+        ? (event: MouseEvent) => onUserClick(author, event)
+        : undefined,
+      "onKeydown": onUserContextMenu ? dispatchKeyboardContextMenu : undefined,
+      "onContextmenu": onUserContextMenu
+        ? (event: MouseEvent) => {
+            event.stopPropagation();
+            onUserContextMenu(author, event);
+          }
+        : undefined,
+    }, source && !failed
+      ? <img src={source} alt="" width={40} height={40} onError={() => setFailed(true)} />
+      : <span aria-hidden={interactive ? "true" : undefined}>{letter}</span>);
   };
 });
-type AvatarPropsInput = {
+type AvatarPropsInput = UserInteractionHandlers<MouseEvent> & {
   author: MessageAuthor;
 };
 export type AvatarProps = AvatarPropsInput;
 export type AvatarSlots = Record<string, never>;
-export const Avatar = defineRenderer<AvatarProps, AvatarPropsInput, AvatarSlots>("Avatar", ["author"], [], (input, display) => {
+export const Avatar = defineRenderer<AvatarProps, AvatarPropsInput, AvatarSlots>("Avatar", ["onUserClick", "onUserContextMenu", "author"], [], (input, display) => {
   return () => {
-    const { author } = input(true);
+    const { author, onUserClick, onUserContextMenu } = input(true);
     const { allowRemoteMedia, remoteMediaAllowlist } = display;
     const source = mediaUrl(author.avatarUrl, allowRemoteMedia, remoteMediaAllowlist);
-    return <AvatarImage key={source ?? ""} author={author} source={source} />;
+    return <AvatarImage key={source ?? ""} author={author} source={source} onUserClick={onUserClick} onUserContextMenu={onUserContextMenu} />;
   };
 });
-export type AvatarEmits = Record<string, never>;
+export type AvatarEmits = import("../../public-component").EventsFromProps<UserInteractionHandlers<MouseEvent>>;

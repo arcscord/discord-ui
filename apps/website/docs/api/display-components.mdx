@@ -22,7 +22,7 @@ Displays a resolved author name, validated color and supplied bot/verification m
 
 [Usage guide](/docs/guides/messages) · [Props type](#authorprops)
 
-<CodeBlock language="ts">{"export function Author({ author }: AuthorProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Author({ author, onUserClick, onUserContextMenu }: AuthorProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -30,11 +30,13 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
 
 <ReferenceExample id="author" />
 
-Related types: [MessageAuthor](/docs/api/models#messageauthor).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
 ## AuthorProps
 
@@ -44,9 +46,9 @@ Displays a resolved author name, validated color and supplied bot/verification m
 
 [Usage guide](/docs/guides/messages) · [Component](#author)
 
-<CodeBlock language="ts">{"export type AuthorProps = { author: MessageAuthor };"}</CodeBlock>
+<CodeBlock language="ts">{"export type AuthorProps = UserInteractionHandlers & { author: MessageAuthor };"}</CodeBlock>
 
-Related types: [MessageAuthor](/docs/api/models#messageauthor).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
 ## Avatar
 
@@ -56,7 +58,7 @@ Loads an allowed avatar URL or displays a deterministic initial/color fallback. 
 
 [Usage guide](/docs/guides/messages) · [Props type](#avatarprops)
 
-<CodeBlock language="ts">{"export function Avatar({ author }: AvatarProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Avatar({ author, ...handlers }: AvatarProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -64,11 +66,13 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
 
 <ReferenceExample id="avatar" />
 
-Related types: [MessageAuthor](/docs/api/models#messageauthor).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
 ## AvatarProps
 
@@ -78,9 +82,9 @@ Loads an allowed avatar URL or displays a deterministic initial/color fallback. 
 
 [Usage guide](/docs/guides/messages) · [Component](#avatar)
 
-<CodeBlock language="ts">{"export type AvatarProps = { author: MessageAuthor };"}</CodeBlock>
+<CodeBlock language="ts">{"export type AvatarProps = UserInteractionHandlers & { author: MessageAuthor };"}</CodeBlock>
 
-Related types: [MessageAuthor](/docs/api/models#messageauthor).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
 ## Emoji
 
@@ -121,7 +125,7 @@ Parses supported Discord formatting into React nodes. Mentions use resolved enti
 
 [Usage guide](/docs/guides/markdown) · [Props type](#markdownprops)
 
-<CodeBlock language="ts">{"export function Markdown({ content, referenceTime }: MarkdownProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Markdown({ content, referenceTime, ...handlers }: MarkdownProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -129,10 +133,14 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `content` | Yes | `string` | — | Plain string or Markdown source as specified by the owning renderer. |
 | `referenceTime` | No | `string \| undefined` | — | Stable ISO reference for relative timestamps. Renderer-specific fallback is explained above. |
 
 <ReferenceExample id="markdown" />
+
+Related types: [MentionInteractionHandlers](/docs/api/callbacks#mentioninteractionhandlers).
 
 ## MarkdownProps
 
@@ -142,7 +150,9 @@ Parses supported Discord formatting into React nodes. Mentions use resolved enti
 
 [Usage guide](/docs/guides/markdown) · [Component](#markdown)
 
-<CodeBlock language="ts">{"export type MarkdownProps = { content: string; referenceTime?: string | undefined };"}</CodeBlock>
+<CodeBlock language="ts">{"export type MarkdownProps = MentionInteractionHandlers & { content: string; referenceTime?: string | undefined };"}</CodeBlock>
+
+Related types: [MentionInteractionHandlers](/docs/api/callbacks#mentioninteractionhandlers).
 
 ## Mention
 
@@ -152,7 +162,7 @@ Displays a supplied user/role/channel/command name with its prefix and optional 
 
 [Usage guide](/docs/guides/markdown) · [Props type](#mentionprops)
 
-<CodeBlock language="ts">{"export function Mention({ name, kind, color }: MentionProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Mention({ id, name, kind, color, ...handlers }: MentionProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -160,11 +170,16 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+| `id` | No | `string \| undefined` | — | Stable string identity within this model's scope. |
 | `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
 | `kind` | No | `"user" \| "role" \| "channel" \| "command"` | `"user"` | Discriminator selecting this model variant. |
 | `color` | No | `string \| undefined` | — | Six-digit hex display color; invalid values fall back to component styling. |
 
 <ReferenceExample id="mention" />
+
+Related types: [MentionInteractionHandlers](/docs/api/callbacks#mentioninteractionhandlers), [MentionTarget](/docs/api/models#mentiontarget).
 
 ## MentionProps
 
@@ -174,7 +189,9 @@ Displays a supplied user/role/channel/command name with its prefix and optional 
 
 [Usage guide](/docs/guides/markdown) · [Component](#mention)
 
-<CodeBlock language="ts">{"export type MentionProps = { name: string; kind?: \"user\" | \"role\" | \"channel\" | \"command\"; color?: string | undefined };"}</CodeBlock>
+<CodeBlock language="ts">{"export type MentionProps = MentionInteractionHandlers & { id?: string | undefined; name: string; kind?: MentionTarget[\"kind\"]; color?: string | undefined };"}</CodeBlock>
+
+Related types: [MentionInteractionHandlers](/docs/api/callbacks#mentioninteractionhandlers), [MentionTarget](/docs/api/models#mentiontarget).
 
 ## DiscordUI
 
@@ -534,7 +551,7 @@ Renders a complete classic or Components V2 snapshot, with optional reply, edits
 
 [Usage guide](/docs/guides/messages) · [Props type](#messageprops)
 
-<CodeBlock language="ts">{"export function Message({ message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview, onButtonClick, onSelectChange, onPremiumClick }: MessageProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function Message({ onUserClick, onUserContextMenu, onMentionClick, onMentionContextMenu, onMessageContextMenu, message, selectValues, onEphemeralDismiss, onReactionToggle, onThreadOpen, activeThreadId, showThreadPreview, onButtonClick, onSelectChange, onPremiumClick }: MessageProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -545,6 +562,11 @@ Optional props without a listed default remain absent; the behavior note describ
 | `onButtonClick` | No | `((id: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (componentId, context); host handles the requested action. |
 | `onSelectChange` | No | `((id: string, values: string[], context: ComponentInteractionContext) => void) \| undefined` | — | Called with (selectId, proposedValues, context); host updates any controlled values. |
 | `onPremiumClick` | No | `((skuId: string, context: ComponentInteractionContext) => void) \| undefined` | — | Called with (skuId, context); no purchase or product lookup is performed. |
+| `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+| `onMentionClick` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with an identified mention's id, kind and display metadata, then the click event. |
+| `onMentionContextMenu` | No | `((mention: MentionTarget, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the identified mention and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
+| `onMessageContextMenu` | No | `((message: MessageView, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed message and context-menu event. The host chooses whether to preventDefault(). |
 | `onReactionToggle` | No | `ReactionToggleHandler \| undefined` | — | Called with (messageId, reactionId); host updates the relevant snapshot. |
 | `message` | Yes | `MessageView` | — | Complete display snapshot. Classic and V2 body families cannot be mixed. |
 | `selectValues` | No | `Readonly<Record<string, readonly string[] \| undefined>> \| undefined` | — | Values by select ID. Missing keys/undefined use local state; [] controls an empty selection. |
@@ -555,7 +577,7 @@ Optional props without a listed default remain absent; the behavior note describ
 
 <ReferenceExample id="message" />
 
-Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview), [SelectValues](/docs/api/callbacks#selectvalues).
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [MessageInteractionHandlers](/docs/api/callbacks#messageinteractionhandlers), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview), [SelectValues](/docs/api/callbacks#selectvalues).
 
 ## MessageProps
 
@@ -565,9 +587,9 @@ Renders a complete classic or Components V2 snapshot, with optional reply, edits
 
 [Usage guide](/docs/guides/messages) · [Component](#message)
 
-<CodeBlock language="ts">{"export type MessageProps = ComponentHandlers & {\n  onReactionToggle?: ReactionToggleHandler | undefined;\n  message: MessageView;\n  selectValues?: SelectValues | undefined;\n  onEphemeralDismiss?: ((messageId: string) => void) | undefined;\n  onThreadOpen?: ((id: string) => void) | undefined;\n  activeThreadId?: string | undefined;\n  showThreadPreview?: boolean | undefined;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"export type MessageProps = ComponentHandlers & MessageInteractionHandlers & {\n  onReactionToggle?: ReactionToggleHandler | undefined;\n  message: MessageView;\n  selectValues?: SelectValues | undefined;\n  onEphemeralDismiss?: ((messageId: string) => void) | undefined;\n  onThreadOpen?: ((id: string) => void) | undefined;\n  activeThreadId?: string | undefined;\n  showThreadPreview?: boolean | undefined;\n};"}</CodeBlock>
 
-Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview), [SelectValues](/docs/api/callbacks#selectvalues).
+Related types: [ComponentHandlers](/docs/api/callbacks#componenthandlers), [MessageInteractionHandlers](/docs/api/callbacks#messageinteractionhandlers), [ReactionToggleHandler](/docs/api/callbacks#reactiontogglehandler), [MessageView](/docs/api/models#messageview), [SelectValues](/docs/api/callbacks#selectvalues).
 
 ## MessageContent
 
@@ -607,7 +629,7 @@ Composes explicit avatar, reply, header, body and footer React slots. Its mentio
 
 [Usage guide](/docs/guides/messages) · [Props type](#messageframeprops)
 
-<CodeBlock language="ts">{"export function MessageFrame({ avatar, reply, header, footer, children, ephemeral, mentioned, hasThread }: MessageFrameProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function MessageFrame({ onContextMenu, avatar, reply, header, footer, children, ephemeral, mentioned, hasThread }: MessageFrameProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -615,6 +637,7 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onContextMenu` | No | `MouseEventHandler<HTMLElement> \| undefined` | — | Context-menu event on the message article. Supplying a handler makes the article keyboard-focusable. |
 | `hasThread` | No | `boolean` | `false` | Enables the message-frame thread connector layout. |
 | `ephemeral` | No | `boolean` | `false` | Display-only visibility notice and appearance. Host enforces authorization. |
 | `mentioned` | No | `boolean` | `false` | Host-supplied highlight for a message mentioning the current viewer. Defaults to false; message text and API conversion do not infer it. Adds a background and left border without an ephemeral notice or dismiss control. Ephemeral appearance takes precedence when both flags are true. |
@@ -634,7 +657,7 @@ Composes explicit avatar, reply, header, body and footer React slots. Its mentio
 
 [Usage guide](/docs/guides/messages) · [Component](#messageframe)
 
-<CodeBlock language="ts">{"export type MessageFrameProps = {\n  hasThread?: boolean;\n  ephemeral?: boolean;\n  mentioned?: boolean;\n  reply?: ReactNode;\n  avatar?: ReactNode;\n  header?: ReactNode;\n  footer?: ReactNode;\n  children: ReactNode;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"export type MessageFrameProps = {\n  onContextMenu?: MouseEventHandler<HTMLElement> | undefined;\n  hasThread?: boolean;\n  ephemeral?: boolean;\n  mentioned?: boolean;\n  reply?: ReactNode;\n  avatar?: ReactNode;\n  header?: ReactNode;\n  footer?: ReactNode;\n  children: ReactNode;\n};"}</CodeBlock>
 
 ## MessageHeader
 
@@ -644,7 +667,7 @@ Combines Author and MessageTimestamp. The edited marker is a boolean display cho
 
 [Usage guide](/docs/guides/messages) · [Props type](#messageheaderprops)
 
-<CodeBlock language="ts">{"export function MessageHeader({ author, timestamp, edited }: MessageHeaderProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function MessageHeader({ author, timestamp, edited, ...handlers }: MessageHeaderProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -652,13 +675,15 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `author` | Yes | `MessageAuthor` | — | Resolved author display metadata; not a fetch instruction. |
 | `timestamp` | Yes | `string` | — | Explicit ISO 8601 instant with a time-zone suffix (Z or offset). |
 | `edited` | No | `boolean \| undefined` | `false` | Shows the translated edit marker when true; no edit timestamp is required. |
 
 <ReferenceExample id="message-header" />
 
-Related types: [MessageAuthor](/docs/api/models#messageauthor).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
 ## MessageHeaderProps
 
@@ -668,9 +693,9 @@ Combines Author and MessageTimestamp. The edited marker is a boolean display cho
 
 [Usage guide](/docs/guides/messages) · [Component](#messageheader)
 
-<CodeBlock language="ts">{"export type MessageHeaderProps = { author: MessageAuthor; timestamp: string; edited?: boolean | undefined };"}</CodeBlock>
+<CodeBlock language="ts">{"export type MessageHeaderProps = UserInteractionHandlers & { author: MessageAuthor; timestamp: string; edited?: boolean | undefined };"}</CodeBlock>
 
-Related types: [MessageAuthor](/docs/api/models#messageauthor).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [MessageAuthor](/docs/api/models#messageauthor).
 
 ## MessageTimestamp
 
@@ -710,7 +735,7 @@ Displays the supplied original-message snapshot, unavailable-original state or i
 
 [Usage guide](/docs/guides/messages) · [Props type](#replypreviewprops)
 
-<CodeBlock language="ts">{"export function ReplyPreview({ reply }: ReplyPreviewProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function ReplyPreview({ reply, ...handlers }: ReplyPreviewProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -718,11 +743,13 @@ Optional props without a listed default remain absent; the behavior note describ
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
+| `onUserClick` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and pointer or keyboard-generated click event for an avatar or name. |
+| `onUserContextMenu` | No | `((author: MessageAuthor, event: React.MouseEvent<HTMLElement, MouseEvent>) => void) \| undefined` | — | Called with the displayed author and context-menu event. Takes priority over the message callback. The host chooses whether to preventDefault(). |
 | `reply` | Yes | `ReplyView` | — | Supplied original/interaction snapshot or React slot, depending on the owning type. |
 
 <ReferenceExample id="reply-preview" />
 
-Related types: [ReplyView](/docs/api/models#replyview).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [ReplyView](/docs/api/models#replyview).
 
 ## ReplyPreviewProps
 
@@ -732,8 +759,8 @@ Displays the supplied original-message snapshot, unavailable-original state or i
 
 [Usage guide](/docs/guides/messages) · [Component](#replypreview)
 
-<CodeBlock language="ts">{"export type ReplyPreviewProps = { reply: ReplyView };"}</CodeBlock>
+<CodeBlock language="ts">{"export type ReplyPreviewProps = UserInteractionHandlers & { reply: ReplyView };"}</CodeBlock>
 
-Related types: [ReplyView](/docs/api/models#replyview).
+Related types: [UserInteractionHandlers](/docs/api/callbacks#userinteractionhandlers), [ReplyView](/docs/api/models#replyview).
 
 </div>

@@ -14,6 +14,20 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
   factory: (input: (withSlots?: boolean) => Input, display: DisplayContextValue) => () => VNodeChild,
 ): PublicComponent<P, S, EventsFromProps<P>> {
   const listeners = propNames.filter(key => key.startsWith("on"));
+  // These listeners affect rendered semantics, so Vue must track them as props.
+  // Declared emits listeners are skipped by Vue's component update comparison.
+  const utilityListeners = new Set([
+    "onUserClick",
+    "onUserContextMenu",
+    "onMentionClick",
+    "onMentionContextMenu",
+    "onMessageContextMenu",
+    "onContextMenu",
+  ]);
+  const runtimePropNames = [
+    ...propNames,
+    ...listeners.filter(key => utilityListeners.has(key)).map(key => `${key}Once`),
+  ];
   function eventName(key: string): string {
     return key.startsWith("onUpdate:")
       ? `update:${key.slice(9)}`
@@ -36,7 +50,7 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
     "autoScroll",
     "chip",
   ]);
-  const runtimeProps = Object.fromEntries(propNames.map(key => [
+  const runtimeProps = Object.fromEntries(runtimePropNames.map(key => [
     key,
     booleanProps.has(key)
       ? { type: Boolean, default: undefined }
@@ -48,7 +62,7 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
     const input = (withSlots = false): Input => {
       const values = { ...props } as Record<string, unknown>;
       for (const key of listeners) {
-        if (Reflect.get(props, key) || instance.vnode.props?.[`${key}Once`] || key.startsWith("onUpdate:"))
+        if (Reflect.get(props, key) || Reflect.get(props, `${key}Once`) || instance.vnode.props?.[`${key}Once`] || key.startsWith("onUpdate:"))
           values[key] = (...args: unknown[]) => emit(eventName(key), ...args);
       }
       for (const key of withSlots
@@ -66,7 +80,7 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
   }, {
     name,
     props: runtimeProps,
-    emits: listeners.map(eventName),
+    emits: listeners.filter(key => !utilityListeners.has(key)).map(eventName),
     slots: Object as SlotsType<S>,
   });
   return component as unknown as PublicComponent<P, S, EventsFromProps<P>>;

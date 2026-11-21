@@ -1,8 +1,10 @@
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 import { themeStyle } from "../../themes";
 import { useDisplayOptions } from "../display-context";
+import { contextMenuKey } from "../interaction-context";
 
 export type MessageFrameProps = {
+  onContextMenu?: MouseEventHandler<HTMLElement> | undefined;
   hasThread?: boolean;
   ephemeral?: boolean;
   mentioned?: boolean;
@@ -13,10 +15,13 @@ export type MessageFrameProps = {
   children: ReactNode;
 };
 
-export function MessageFrame({ avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false }: MessageFrameProps) {
+export function MessageFrame({ onContextMenu, avatar, reply, header, footer, children, ephemeral = false, mentioned = false, hasThread = false }: MessageFrameProps) {
   const { resolvedTheme, scoped, labels } = useDisplayOptions();
   return (
     <article
+      onKeyDown={onContextMenu ? contextMenuKey : undefined}
+      onContextMenu={onContextMenu}
+      tabIndex={onContextMenu ? 0 : undefined}
       className={`${scoped ? "" : "arcscord-discord-ui "}dui-message`}
       data-ephemeral={ephemeral || undefined}
       data-mentioned={mentioned || undefined}
