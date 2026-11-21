@@ -1,6 +1,6 @@
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
-  - tsdown@0.23.4
+  - tsdown@0.23.7
 
 trustPolicy: no-downgrade
 shellEmulator: true
@@ -9,9 +9,18 @@ packages:
   - packages/*
   - apps/*
 
-# Babel uses the same semver APIs in v7; keep no-downgrade protection enabled.
 overrides:
+  # Corrected math rendering and glob expansion in the lint/build toolchain.
+  katex@^0.16.8: 0.18.2
+  minimatch@^10.2.2: 11.0.1
+
+  # Babel uses the same semver APIs in v7; keep no-downgrade protection enabled.
   semver@^6.3.1: 7.8.5
+  # Security fixes for Docusaurus webpack serialization and build workers.
+  serialize-javascript@^6.0.0: 7.1.3
+  tinypool@^1.1.1: 2.1.2
+  # Preserve CommonJS support for sockjs while using the corrected UUID parser.
+  uuid@^8.3.2: 11.1.1
 
 allowBuilds:
   # core-js only prints funding information; no generated files are required.

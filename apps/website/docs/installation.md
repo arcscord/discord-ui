@@ -21,6 +21,14 @@ version or framework has been tested.
 The command uses npm's default `latest` tag. To choose a specific release, check
 the [versions on npm](https://www.npmjs.com/package/@arcscord/discord-ui?activeTab=versions).
 
+## Development documentation and upcoming releases
+
+This documentation includes changes prepared for Core `0.3.0-beta.1`, React `0.4.0-beta.1`,
+Vue `0.2.0-beta.1` and the initial Svelte `0.1.0-beta.1` release. These versions are unpublished.
+The current npm releases are Core `0.2.0`, React `0.3.0` and Vue `0.1.0`.
+Installing `latest` selects those published releases. To try the upcoming APIs,
+use a workspace build or the local tarball procedure below.
+
 ## Use the package in this monorepo
 
 Add this entry to the consuming workspace application's `package.json`:

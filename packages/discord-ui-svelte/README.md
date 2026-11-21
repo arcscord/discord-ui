@@ -4,6 +4,9 @@ Native Svelte 5 components for Discord-style messages, Components V2, channels
 and threads. The adapter uses the same display models and styles as the other
 Discord UI adapters. It requires Svelte 5.46.4 or later in the Svelte 5 line.
 
+Svelte `0.1.0-beta.1` and its upcoming Core `0.3.0-beta.1` dependency are unpublished.
+Use local builds to try this adapter.
+
 ## Install a local build
 
 From the repository root, build and pack the two packages:
@@ -19,10 +22,10 @@ the matching archive:
 
 ```yaml
 overrides:
-  "@arcscord/discord-ui-core": "file:/tmp/discord-ui/arcscord-discord-ui-core-0.2.0.tgz"
+  "@arcscord/discord-ui-core": "file:/tmp/discord-ui/arcscord-discord-ui-core-0.3.0-beta.1.tgz"
 ```
 
-Then run `pnpm add /tmp/discord-ui/arcscord-discord-ui-svelte-0.1.0.tgz`.
+Then run `pnpm add /tmp/discord-ui/arcscord-discord-ui-svelte-0.1.0-beta.1.tgz`.
 
 ## Render a message
 
