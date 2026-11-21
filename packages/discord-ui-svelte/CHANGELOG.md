@@ -1,8 +1,7 @@
 # Changelog
 
-## 0.1.0 — initial release candidate
+## 0.1.0 — initial Svelte adapter
 
-This first version is prepared in the repository and awaits npm publication.
 It requires Core `^0.3.0`.
 
 - Add native Svelte 5 components for Discord message interfaces, channels and threads.

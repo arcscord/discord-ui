@@ -1,8 +1,6 @@
 # Changelog
 
-## 0.2.0 — release candidate
-
-This version is prepared in the repository and awaits npm publication.
+## 0.2.0
 
 ### Added
 

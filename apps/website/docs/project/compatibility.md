@@ -5,14 +5,8 @@ description: Declared package requirements and the boundaries of local verificat
 
 # Compatibility and limitations
 
-Separate a declared contract from a tested environment. This site documents the
-current repository, including changes ahead of the stable npm releases.
-
-The upcoming Core `0.3.0`, React `0.4.0`, Vue `0.2.0` and initial Svelte `0.1.0`
-releases are unpublished. npm currently provides Core `0.2.0`, React `0.3.0`
-and Vue `0.1.0`. Use local builds for upcoming APIs and follow the
-[installation guide](../installation.md#development-documentation-and-upcoming-releases)
-for availability and tarball setup.
+This page describes the package contracts and the environments covered by
+repository verification.
 
 | Area | Repository contract / evidence | Limit |
 | --- | --- | --- |

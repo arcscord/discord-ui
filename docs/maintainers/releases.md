@@ -37,7 +37,8 @@ Enable Dependabot alerts and security updates in the repository settings.
 | Svelte: `@arcscord/discord-ui-svelte` | `packages/discord-ui-svelte/package.json` | `svelte-vX.Y.Z` |
 | Core: `@arcscord/discord-ui-core` | `packages/discord-ui-core/package.json` | `core-vX.Y.Z` |
 
-Each package owns its version and changelog. The upcoming releases are Core `0.3.0`, React `0.4.0`, Vue `0.2.0` and Svelte `0.1.0`; these versions are not yet published. Angular remains future work.
+Each package owns its version and changelog. Core `0.3.0`, React `0.4.0`, Vue
+`0.2.0` and Svelte `0.1.0` use independent release tags.
 
 A compatible feature increments the affected packages' minor versions. A core
 JavaScript fix only needs a core patch. Each adapter copies the shared CSS at
@@ -146,7 +147,7 @@ an old failed run uses its original workflow revision.
 
 ## Core-first releases and first publication
 
-### Publish the prepared stable releases from GitHub
+### Publish stable releases from GitHub
 
 Merge the preparation PR into `main` and wait for CI to pass. Create stable
 GitHub releases targeting the merged `main` commit with these tags:
@@ -175,7 +176,7 @@ cat > "$bootstrap_dir/package.json" <<'JSON'
 {
   "name": "@arcscord/discord-ui-svelte",
   "version": "0.0.0-beta.1",
-  "description": "Registry bootstrap for the upcoming native Svelte Discord UI adapter.",
+  "description": "Registry bootstrap for the native Svelte Discord UI adapter.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -184,7 +185,7 @@ cat > "$bootstrap_dir/package.json" <<'JSON'
   }
 }
 JSON
-printf '%s\n' '# Discord UI for Svelte' '' 'Registry setup package. The native Svelte adapter ships in version 0.1.0.' > "$bootstrap_dir/README.md"
+printf '%s\n' '# Discord UI for Svelte' '' 'Registry setup package for the native Svelte Discord UI adapter.' > "$bootstrap_dir/README.md"
 cp LICENSE "$bootstrap_dir/LICENSE"
 npm publish "$bootstrap_dir" --access public --tag beta --ignore-scripts
 ```
@@ -210,7 +211,7 @@ For a release involving the core and one or more adapters:
    complete the bootstrap and trusted publisher setup above before staging it.
 6. Confirm the registry versions and update release availability notices in the
    installation, compatibility, migration, media and Svelte guides, package
-   READMEs and changelog candidate headings to reflect the approved versions.
+   READMEs and changelogs to reflect the approved versions.
 
 Before staging an adapter, the workflow verifies that the minimum core version
 from its packed dependency range is public. CI validates all four tarballs for

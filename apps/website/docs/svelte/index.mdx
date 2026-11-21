@@ -15,13 +15,13 @@ consumer's Svelte tooling.
 
 ## Installation
 
-Svelte `0.1.0` is unpublished. Its upcoming Core dependency is `0.3.0`, also
-unpublished. For the local release candidate, run `pnpm build:lib` at the repository root.
-Pack both libraries with `pnpm --filter @arcscord/discord-ui-core pack` and
-`pnpm --filter @arcscord/discord-ui-svelte pack`. In a Svelte app, install the
-Svelte archive and add a pnpm override pointing `@arcscord/discord-ui-core`
-to the matching Core archive. See the [package README](https://github.com/arcscord/discord-ui/tree/main/packages/discord-ui-svelte)
-for the exact commands.
+Install the Svelte adapter in your application:
+
+```sh
+pnpm add @arcscord/discord-ui-svelte
+```
+
+The adapter installs its compatible Core dependency automatically.
 
 Import `@arcscord/discord-ui-svelte/styles.css` once and use `DiscordUI` to
 scope styles and provide display options. Each example below uses public

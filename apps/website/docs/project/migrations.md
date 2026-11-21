@@ -9,12 +9,10 @@ Documentation uses one current tree. The Core, React, Vue and Svelte packages ha
 independent versions and changelogs. See
 [repository releases](https://github.com/arcscord/discord-ui/releases) for release notes.
 
-## Upcoming release transition
+## Media contract migration
 
-Core `0.3.0`, React `0.4.0` and Vue `0.2.0` are prepared successors to the
-published Core `0.2.0`, React `0.3.0` and Vue `0.1.0` releases. Svelte `0.1.0`
-is prepared as its first release. All four upcoming versions are unpublished.
-Use local builds for the APIs documented in this development tree.
+Core `0.3.0`, React `0.4.0` and Vue `0.2.0` expand the media and attachment
+contracts. Svelte `0.1.0` uses the same shared models.
 
 The [media migration guide](../guides/media.mdx#migrating-existing-media-consumers)
 describes the expanded media and attachment unions and the changes needed by
