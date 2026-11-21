@@ -163,19 +163,18 @@ describe("svelte embed inline Markdown", () => {
       const html = render(EmbedFixture, {
         props: { url },
       }).body;
-      const markup = html.replace(/<!--.*?-->/gsu, "");
-      const title = /<div class="dui-embed-title">(.*?)<\/div>/su.exec(markup)?.[1] ?? "";
-      const field = /<strong class="dui-embed-field-name">(.*?)<\/strong>/su.exec(markup)?.[1] ?? "";
+      const title = /<div class="dui-embed-title">(.*?)<\/div>/su.exec(html)?.[1] ?? "";
+      const field = /<strong class="dui-embed-field-name">(.*?)<\/strong>/su.exec(html)?.[1] ?? "";
       for (const zone of [title, field]) {
         expect(zone).toMatch(/<img class="dui-emoji"[^>]* src="\/emoji\.svg"/u);
         expect(zone).not.toContain("&lt;:id:");
       }
-      expect(title).toContain("<strong>Ticket</strong>");
+      expect(title).toMatch(/<strong>(?:<!--[^>]*-->)*Ticket(?:<!--[^>]*-->)*<\/strong>/u);
       expect(title).toContain("&lt;@123>");
       expect(title).not.toContain("dui-mention");
       expect(html).toContain("aria-label=\":id: Ticket fermé &lt;@123>\"");
       if (url)
-        expect(title).toMatch(/^\s*<a href="https:\/\/example\.com\/ticket"/u);
+        expect(title).toMatch(/^(?:\s|<!--[^>]*-->)*<a href="https:\/\/example\.com\/ticket"/u);
     }
   });
 });
