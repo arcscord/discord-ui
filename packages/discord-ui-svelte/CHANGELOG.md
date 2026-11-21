@@ -1,9 +1,9 @@
 # Changelog
 
-## 0.1.0-beta.1 — initial beta
+## 0.1.0 — initial release candidate
 
 This first version is prepared in the repository and awaits npm publication.
-It requires Core `^0.3.0-beta.1`.
+It requires Core `^0.3.0`.
 
 - Add native Svelte 5 components for Discord message interfaces, channels and threads.
 - Share display models, theme presets and scoped CSS with the core package.

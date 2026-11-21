@@ -23,8 +23,8 @@ the [versions on npm](https://www.npmjs.com/package/@arcscord/discord-ui?activeT
 
 ## Development documentation and upcoming releases
 
-This documentation includes changes prepared for Core `0.3.0-beta.1`, React `0.4.0-beta.1`,
-Vue `0.2.0-beta.1` and the initial Svelte `0.1.0-beta.1` release. These versions are unpublished.
+This documentation includes changes prepared for Core `0.3.0`, React `0.4.0`,
+Vue `0.2.0` and the initial Svelte `0.1.0` release. These versions are unpublished.
 The current npm releases are Core `0.2.0`, React `0.3.0` and Vue `0.1.0`.
 Installing `latest` selects those published releases. To try the upcoming APIs,
 use a workspace build or the local tarball procedure below.

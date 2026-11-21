@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0-beta.1 — beta
+## 0.2.0 — release candidate
 
 This version is prepared in the repository and awaits npm publication.
 
@@ -14,7 +14,7 @@ This version is prepared in the repository and awaits npm publication.
 
 ### Migration from 0.1.x
 
-- Require Core `^0.3.0-beta.1`. Custom media and attachment renderers must handle the
+- Require Core `^0.3.0`. Custom media and attachment renderers must handle the
   expanded image/video and file/audio unions described in the Core changelog.
 
 ## 0.1.0 — initial Vue adapter

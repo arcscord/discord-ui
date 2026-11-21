@@ -26,7 +26,7 @@ describe("independent release metadata", () => {
       directory: "packages/discord-ui-core",
     });
   });
-  it.each(["0.1.0-rc.0", "1.0.0-0.alpha-1"])("keeps prerelease %s off latest", (version) => {
+  it.each(["1.0.0-beta.1", "0.1.0-rc.0", "1.0.0-0.alpha-1"])("keeps prerelease %s off latest", (version) => {
     expect(releaseMetadata(`v${version}`, { ...versions, react: version }).distTag).toBe("next");
     expect(releaseMetadata(`core-v${version}`, { ...versions, core: version }).distTag).toBe("next");
     expect(releaseMetadata(`svelte-v${version}`, { ...versions, svelte: version }).distTag).toBe("next");
@@ -115,15 +115,4 @@ it("selects the Svelte artifact independently from other packages", () => {
     packageName: "@arcscord/discord-ui-svelte",
     directory: "packages/discord-ui-svelte",
   });
-});
-
-it.each(["1.0.0-beta", "0.3.0-beta.1"])("routes beta %s to the beta npm tag for each package", (version) => {
-  for (const [target, prefix] of [
-    ["react", "v"],
-    ["core", "core-v"],
-    ["vue", "vue-v"],
-    ["svelte", "svelte-v"],
-  ] as const) {
-    expect(releaseMetadata(`${prefix}${version}`, { ...versions, [target]: version }).distTag).toBe("beta");
-  }
 });

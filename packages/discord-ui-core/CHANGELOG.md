@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0-beta.1 — beta
+## 0.3.0 — release candidate
 
 This version is prepared in the repository and awaits npm publication.
 
@@ -23,8 +23,8 @@ This version is prepared in the repository and awaits npm publication.
   audio branch before passing file values to a file renderer.
 - `fromDiscordMessage` classifies recognized audio attachments as audio and moves
   recognized video attachments into `media`. Review custom attachment filters.
-- Adapters using these contracts require Core `^0.3.0-beta.1`. Publish and approve this
-  Core version before staging React `0.4.0-beta.1`, Vue `0.2.0-beta.1` or Svelte `0.1.0-beta.1`.
+- Adapters using these contracts require Core `^0.3.0`. Publish and approve this
+  Core version before staging React `0.4.0`, Vue `0.2.0` or Svelte `0.1.0`.
 
 ## 0.2.0 — initial core extraction
 

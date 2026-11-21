@@ -35,11 +35,9 @@ export function releaseMetadata(tag: string, versions: Record<ReleasePackage, st
     throw new Error(`Tag ${tag} must match a releasable ${directory}/package.json version (${versions[target]}).`);
   return {
     version,
-    distTag: /-beta(?:\.|$)/u.test(version)
-      ? "beta"
-      : version.includes("-")
-        ? "next"
-        : "latest",
+    distTag: version.includes("-")
+      ? "next"
+      : "latest",
     tarball: `${name.slice(1).replace("/", "-")}-${version}.tgz`,
     packageName: name,
     directory,

@@ -37,7 +37,7 @@ viewer and enforce authorization in your application.
 
 The shared `@arcscord/discord-ui-core/discord-api` entry converts Discord API v10
 responses into models for React, Vue and Svelte. This entry is available in the
-upcoming Core `0.3.0-beta.1` release and local builds. Core `0.2.0` on npm does not
+upcoming Core `0.3.0` release and local builds. Core `0.2.0` on npm does not
 include it. See [installation](./installation.md#development-documentation-and-upcoming-releases)
 for release availability. Add `@arcscord/discord-ui-core` as a direct
 dependency to import this entry. Use `fromDiscordMessage` with a complete

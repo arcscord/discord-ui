@@ -11,8 +11,8 @@ independent versions and changelogs. See
 
 ## Upcoming release transition
 
-Core `0.3.0-beta.1`, React `0.4.0-beta.1` and Vue `0.2.0-beta.1` are prepared successors to the
-published Core `0.2.0`, React `0.3.0` and Vue `0.1.0` releases. Svelte `0.1.0-beta.1`
+Core `0.3.0`, React `0.4.0` and Vue `0.2.0` are prepared successors to the
+published Core `0.2.0`, React `0.3.0` and Vue `0.1.0` releases. Svelte `0.1.0`
 is prepared as its first release. All four upcoming versions are unpublished.
 Use local builds for the APIs documented in this development tree.
 

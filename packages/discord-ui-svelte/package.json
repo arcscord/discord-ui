@@ -1,6 +1,6 @@
 {
   "name": "@arcscord/discord-ui-svelte",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0",
   "description": "Svelte components for Discord message interfaces, powered by the shared core.",
   "type": "module",
   "license": "MIT",
