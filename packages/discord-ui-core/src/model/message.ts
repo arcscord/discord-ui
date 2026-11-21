@@ -10,6 +10,12 @@ export type AvatarFallback = {
   color?: string;
 };
 
+/** A server tag shown after the author name; `badgeUrl` is an optional small image. */
+export type AuthorTag = {
+  text: string;
+  badgeUrl?: string;
+};
+
 /** Display metadata supplied by the application, without Discord API calls. */
 export type MessageAuthor = {
   id: string;
@@ -19,6 +25,7 @@ export type MessageAuthor = {
   bot?: boolean;
   verified?: boolean;
   color?: string;
+  tag?: AuthorTag;
 };
 
 /** Plain text is the first supported body; richer variants will extend this union. */

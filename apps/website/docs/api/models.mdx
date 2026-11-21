@@ -1405,6 +1405,25 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor).
 
 [Usage guide and runnable example](/docs/guides/messages)
 
+## AuthorTag
+
+<CodeBlock language="ts">{"import type { AuthorTag } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Server tag text, as shown by Discord after the author name. The badge image is optional and follows allowRemoteMedia and remoteMediaAllowlist; the tag text remains when it is omitted or blocked.
+
+<CodeBlock language="ts">{"type AuthorTag = {\n  text: string;\n  badgeUrl?: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `text` | Yes | `string` | — | Resolved footer/tag text or semantic foreground token, depending on the type. |
+| `badgeUrl` | No | `string` | — | Optional tag badge image checked by the shared media policy; omitted or blocked badges show the text only. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.AuthorTag = { text: \"DEV\" };\nconst example2: API.AuthorTag = { text: \"DEV\", badgeUrl: \"/examples/tag-badge.png\" };"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/messages)
+
 ## AvatarFallback
 
 <CodeBlock language="ts">{"import type { AvatarFallback } from \"@arcscord/discord-ui\";"}</CodeBlock>
@@ -1451,9 +1470,9 @@ Related types: [MessageAuthor](/docs/api/models#messageauthor).
 
 <CodeBlock language="ts">{"import type { MessageAuthor } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Resolved author metadata, including optional avatar fallback and application/verification markers. IDs stay strings and the host supplies display names.
+Resolved author metadata, including optional avatar fallback, server tag and application/verification markers. IDs stay strings and the host supplies display names.
 
-<CodeBlock language="ts">{"type MessageAuthor = {\n  id: string;\n  displayName: string;\n  avatarUrl?: string;\n  avatarFallback?: AvatarFallback;\n  bot?: boolean;\n  verified?: boolean;\n  color?: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type MessageAuthor = {\n  id: string;\n  displayName: string;\n  avatarUrl?: string;\n  avatarFallback?: AvatarFallback;\n  bot?: boolean;\n  verified?: boolean;\n  color?: string;\n  tag?: AuthorTag;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
@@ -1464,12 +1483,13 @@ Resolved author metadata, including optional avatar fallback and application/ver
 | `bot` | No | `boolean` | — | Shows the supplied application/bot identity marker. |
 | `verified` | No | `boolean` | — | Shows supplied verification metadata; no verification lookup is performed. |
 | `color` | No | `string` | — | Six-digit hex display color; invalid values fall back to component styling. |
+| `tag` | No | `AuthorTag` | — | Optional server tag shown after the author name, with an optional badge image. |
 
-### Valid example
+### Valid examples
 
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\", bot: false };"}</CodeBlock>
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\", bot: false };\nconst example2: API.MessageAuthor = { id: \"chris\", displayName: \"Chris\", tag: { text: \"DEV\" } };"}</CodeBlock>
 
-Related types: [AvatarFallback](/docs/api/models#avatarfallback).
+Related types: [AvatarFallback](/docs/api/models#avatarfallback), [AuthorTag](/docs/api/models#authortag).
 
 [Usage guide and runnable example](/docs/guides/messages)
 

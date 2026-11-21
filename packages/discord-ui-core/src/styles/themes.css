@@ -23,6 +23,7 @@
   --discord-ui-text: #dbdee1;
   --discord-ui-muted: #949ba4;
   --discord-ui-strong: #f2f3f5;
+  --discord-ui-author-tag-background: #333338;
   --discord-ui-link: #60b6f7;
   --discord-ui-accent: #5865f2;
   --discord-ui-warning: #f0b232;
@@ -65,6 +66,7 @@
   --discord-ui-mentioned-hover: #393839;
   --discord-ui-mentioned-border: #FDB529;
   --discord-ui-row-hover: #3E3F46;
+  --discord-ui-author-tag-background: #46464D;
   --discord-ui-code-background: #343748;
   --discord-ui-spoiler-hidden: #7D7E86;
   --discord-ui-quote-border: #595A63;
@@ -98,6 +100,7 @@
   --discord-ui-text: #31353b;
   --discord-ui-muted: #707885;
   --discord-ui-strong: #1f2329;
+  --discord-ui-author-tag-background: #E2E2E4;
   --discord-ui-link: #0b88c3;
   --discord-ui-surface: #FFF;
   --discord-ui-border: #d9dde3;

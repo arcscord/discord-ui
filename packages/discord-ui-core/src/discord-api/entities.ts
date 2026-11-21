@@ -1,5 +1,6 @@
 import type { APIPartialChannel, APIRole, APIUser } from "discord-api-types/v10";
 import type { ChannelEntityView, ChannelType, RoleView, UserView } from "../model/entities";
+import type { AuthorTag } from "../model/message";
 import { CDNRoutes, ImageFormat, RouteBases, UserFlags } from "discord-api-types/v10";
 
 export function hexColor(color: number): string {
@@ -34,6 +35,19 @@ export function discordUserIdentity(user: APIUser): Required<Pick<UserView, "id"
     avatarUrl: userAvatarUrl(user),
     bot: user.bot ?? false,
     verified: Boolean(flags & UserFlags.VerifiedBot),
+  };
+}
+
+/** Server tag the user chose to display, with its badge from Discord's CDN. */
+export function discordUserTag(user: APIUser): AuthorTag | undefined {
+  const guild = user.primary_guild;
+  if (!guild?.identity_enabled || !guild.tag)
+    return undefined;
+  return {
+    text: guild.tag,
+    ...(guild.identity_guild_id && guild.badge
+      ? { badgeUrl: `${RouteBases.cdn}/guild-tag-badges/${guild.identity_guild_id}/${guild.badge}.png` }
+      : {}),
   };
 }
 

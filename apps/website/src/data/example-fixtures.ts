@@ -32,7 +32,12 @@ export const demoSticker = {
   format: "png" as const,
   url: "/examples/arcscord-sticker.png",
 };
-const guide = { id: "ines", displayName: "Inès", avatarUrl: "/generated/avatars/ines.svg" };
+const guide = {
+  id: "ines",
+  displayName: "Inès",
+  avatarUrl: "/generated/avatars/ines.svg",
+  tag: { text: "DEMO", badgeUrl: "/examples/tag-badge.png" },
+};
 const member = {
   id: "sam",
   displayName: "Sam",

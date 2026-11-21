@@ -1,4 +1,4 @@
-import type { APIAttachment, APIEmbed, APIMessage, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
+import type { APIAttachment, APIEmbed, APIMessage, APIUser, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
 import type { DiscordMessageConversionOptions } from "./discord-api/components";
 import type { FileView } from "./model/components";
 import type { AudioView, EmbedView, MessageMediaView, StickerView } from "./model/content";
@@ -6,7 +6,7 @@ import type { MessageAuthor, MessageMetadata, MessageView, ReplyView } from "./m
 import type { ThreadSummaryView } from "./model/thread";
 import { ChannelType, ComponentType, MessageFlags, MessageType, StickerFormatType } from "discord-api-types/v10";
 import { convertActionRow, fromDiscordMessageComponents } from "./discord-api/components";
-import { discordUserIdentity, emojiView, guildAvatarUrl, hexColor } from "./discord-api/entities";
+import { discordUserIdentity, discordUserTag, emojiView, guildAvatarUrl, hexColor } from "./discord-api/entities";
 import { attachmentKind, audioView, fileView, galleryMediaView, mediaView, resolveMedia } from "./discord-api/media";
 import { linkUrl } from "./utils/urls";
 
@@ -16,8 +16,18 @@ export { fromDiscordChannel, fromDiscordRole, fromDiscordUser } from "./discord-
 
 type DiscordMessageInput = APIMessage & Pick<GatewayMessageCreateDispatchData, "guild_id" | "member">;
 
+function userAuthor(user: APIUser): ReturnType<typeof discordUserIdentity> & Pick<MessageAuthor, "tag"> {
+  const tag = discordUserTag(user);
+  return {
+    ...discordUserIdentity(user),
+    ...(tag
+      ? { tag }
+      : {}),
+  };
+}
+
 function messageAuthor(message: DiscordMessageInput): MessageAuthor {
-  const author = discordUserIdentity(message.author);
+  const author = userAuthor(message.author);
   const memberAvatar = message.member?.avatar;
   return {
     ...author,
@@ -43,7 +53,7 @@ function messageReply(message: APIMessage): ReplyView | undefined {
   if (message.type === MessageType.ChatInputCommand && message.interaction?.name) {
     return {
       kind: "interaction",
-      author: discordUserIdentity(message.interaction.user),
+      author: userAuthor(message.interaction.user),
       commandName: message.interaction.name,
     };
   }

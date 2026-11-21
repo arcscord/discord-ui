@@ -1,5 +1,7 @@
 import type { MessageAuthor } from "@arcscord/discord-ui-core";
 import type { UserInteractionHandlers } from "../../interactions";
+import { mediaUrl } from "@arcscord/discord-ui-core";
+import { useDisplayOptions } from "../display-context";
 import { contextMenuKey } from "../interaction-context";
 
 export type AuthorProps = UserInteractionHandlers & { author: MessageAuthor };
@@ -8,6 +10,8 @@ export function Author({ author, onUserClick, onUserContextMenu }: AuthorProps) 
   const color = /^#[a-f\d]{6}$/iu.test(author.color ?? "")
     ? author.color
     : undefined;
+  const { allowRemoteMedia, remoteMediaAllowlist } = useDisplayOptions();
+  const tagBadge = mediaUrl(author.tag?.badgeUrl, allowRemoteMedia, remoteMediaAllowlist);
   const interactive = Boolean(onUserClick || onUserContextMenu);
   const Name = interactive ? "button" : "span";
   return (
@@ -44,6 +48,16 @@ export function Author({ author, onUserClick, onUserContextMenu }: AuthorProps) 
       >
         {author.displayName}
       </Name>
+      {author.tag?.text
+        ? (
+            <span className="dui-author-tag">
+              {tagBadge
+                ? <img className="dui-author-tag-badge" src={tagBadge} alt="" width={13} height={13} />
+                : null}
+              <span className="dui-author-tag-text">{author.tag.text}</span>
+            </span>
+          )
+        : null}
       {author.bot
         ? <span className="dui-bot-badge">{author.verified ? "✓ APP" : "APP"}</span>
         : null}

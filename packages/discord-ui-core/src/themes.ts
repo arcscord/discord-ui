@@ -20,6 +20,7 @@ export const themeTokenProperties = {
   text: "--discord-ui-text",
   muted: "--discord-ui-muted",
   strong: "--discord-ui-strong",
+  authorTagBackground: "--discord-ui-author-tag-background",
   link: "--discord-ui-link",
   accent: "--discord-ui-accent",
   warning: "--discord-ui-warning",
