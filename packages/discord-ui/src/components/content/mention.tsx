@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { MentionInteractionHandlers, MentionTarget } from "../../interactions";
 import { contextMenuKey, useMentionInteractions } from "../interaction-context";
 
@@ -43,7 +44,13 @@ export function Mention({ id, name, kind = "user", color, ...handlers }: Mention
           }
         : undefined}
       style={safeColor
-        ? { color: safeColor }
+        ? {
+            color: safeColor,
+            // Discord tints role mentions with the role color: 10% fill, 30% on hover.
+            ...(kind === "role"
+              ? { "--discord-ui-mention-fill": `${safeColor}1a`, "--discord-ui-mention-fill-hover": `${safeColor}4d` } as CSSProperties
+              : {}),
+          }
         : undefined}
     >
       {kind === "channel"

@@ -18,6 +18,10 @@
   const contextMenu = $derived(id
     ? onMentionContextMenu ?? inherited().onMentionContextMenu
     : undefined);
+  // Discord tints role mentions with the role color: 10% fill, 30% on hover.
+  const roleColor = $derived(kind === "role"
+    ? hexColor(color)
+    : undefined);
   const target = $derived({ id: id ?? "", name, kind, color } satisfies MentionTarget);
 </script>
 
@@ -26,7 +30,7 @@
   ? "button"
   : "span"} type={click || contextMenu
   ? "button"
-  : undefined} class={["dui-mention", (click || contextMenu) && "dui-utility-target"]} style:color={hexColor(color)} aria-haspopup={!click && contextMenu
+  : undefined} class={["dui-mention", (click || contextMenu) && "dui-utility-target"]} style:color={hexColor(color)} style:--discord-ui-mention-fill={roleColor && `${roleColor}1a`} style:--discord-ui-mention-fill-hover={roleColor && `${roleColor}4d`} aria-haspopup={!click && contextMenu
   ? "menu"
   : undefined} onclick={click || contextMenu
   ? (event: MouseEvent) => {

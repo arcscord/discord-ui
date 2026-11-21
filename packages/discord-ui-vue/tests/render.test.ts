@@ -282,3 +282,37 @@ it("types component ref events without permitting unknown names or invalid paylo
   }
   void check;
 });
+
+it("tints colored role mentions with the role color like React", async () => {
+  for (const props of [
+    {
+      id: "1",
+      kind: "role",
+      name: "Test 3",
+      color: "#4612a4",
+    },
+    {
+      id: "1",
+      kind: "user",
+      name: "Alice",
+      color: "#4612a4",
+    },
+  ] as const) {
+    const vue = await renderToString(createSSRApp({
+      render: () => h(VueUI.Mention, props),
+    }));
+    const react = renderToStaticMarkup(createElement(ReactUI.Mention, props));
+    const fill = /--discord-ui-mention-fill:([^;"]+)/u;
+    expect(fill.exec(vue)?.[1]).toBe(fill.exec(react)?.[1]);
+  }
+  const role = await renderToString(createSSRApp({
+    render: () => h(VueUI.Mention, {
+      id: "1",
+      kind: "role",
+      name: "Test 3",
+      color: "#4612a4",
+    }),
+  }));
+  expect(role).toContain("--discord-ui-mention-fill:#4612a41a");
+  expect(role).toContain("--discord-ui-mention-fill-hover:#4612a44d");
+});

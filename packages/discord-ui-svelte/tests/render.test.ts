@@ -155,3 +155,27 @@ describe("svelte media rendering", () => {
     }).body).not.toContain("<img");
   });
 });
+
+describe("svelte role mentions", () => {
+  it("tints colored role mentions with the role color at 10% fill and 30% hover", () => {
+    const role = render(svelte.Mention, {
+      props: {
+        id: "1",
+        kind: "role",
+        name: "Test 3",
+        color: "#4612a4",
+      },
+    }).body;
+    expect(role).toContain("--discord-ui-mention-fill: #4612a41a;");
+    expect(role).toContain("--discord-ui-mention-fill-hover: #4612a44d;");
+    const user = render(svelte.Mention, {
+      props: {
+        id: "1",
+        kind: "user",
+        name: "Alice",
+        color: "#4612a4",
+      },
+    }).body;
+    expect(user).not.toContain("--discord-ui-mention-fill");
+  });
+});
