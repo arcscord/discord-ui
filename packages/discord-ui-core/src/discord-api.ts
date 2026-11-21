@@ -1,13 +1,13 @@
 import type { APIAttachment, APIEmbed, APIMessage, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
 import type { DiscordMessageConversionOptions } from "./discord-api/components";
 import type { FileView } from "./model/components";
-import type { EmbedView, MediaView } from "./model/content";
+import type { AudioView, EmbedView, MessageMediaView, StickerView } from "./model/content";
 import type { MessageAuthor, MessageMetadata, MessageView, ReplyView } from "./model/message";
 import type { ThreadSummaryView } from "./model/thread";
-import { ChannelType, ComponentType, MessageFlags, MessageType } from "discord-api-types/v10";
+import { ChannelType, ComponentType, MessageFlags, MessageType, StickerFormatType } from "discord-api-types/v10";
 import { convertActionRow, fromDiscordMessageComponents } from "./discord-api/components";
 import { discordUserIdentity, emojiView, guildAvatarUrl, hexColor } from "./discord-api/entities";
-import { fileView, isImageAttachment, mediaView, resolveMedia } from "./discord-api/media";
+import { attachmentKind, audioView, fileView, galleryMediaView, mediaView, resolveMedia } from "./discord-api/media";
 import { linkUrl } from "./utils/urls";
 
 export { fromDiscordMessageComponents } from "./discord-api/components";
@@ -165,15 +165,21 @@ export function fromDiscordMessage(message: DiscordMessageInput, options: Discor
   ]
     .filter(url => url !== undefined)
     .map(attachmentUrlKey)));
-  const media: MediaView[] = [];
-  const files: FileView[] = [];
+  const media: MessageMediaView[] = [];
+  const files: (FileView | AudioView)[] = [];
   for (const attachment of message.attachments) {
     if (embeddedMedia.has(attachmentUrlKey(attachment.url)) || embeddedMedia.has(attachmentUrlKey(attachment.proxy_url)))
       continue;
-    if (isImageAttachment(attachment)) {
-      const image = mediaView(attachment.id, attachment, [], attachment.description ?? attachment.filename, attachment.filename.startsWith("SPOILER_"));
+    const kind = attachmentKind(attachment);
+    if (kind === "image" || kind === "video") {
+      const image = galleryMediaView(attachment.id, attachment, [attachment], attachment.description ?? attachment.filename, attachment.filename.startsWith("SPOILER_"));
       if (image)
         media.push(image);
+    }
+    else if (kind === "audio") {
+      const audio = audioView(attachment, Boolean(flags & MessageFlags.IsVoiceMessage));
+      if (audio)
+        files.push(audio);
     }
     else {
       const url = linkUrl(attachment.url) ?? linkUrl(attachment.proxy_url);
@@ -191,6 +197,35 @@ export function fromDiscordMessage(message: DiscordMessageInput, options: Discor
     ...metadata,
     body: { kind: "markdown", content: message.content },
   };
+  const stickers = message.sticker_items?.flatMap((sticker): StickerView[] => {
+    const formats = {
+      [StickerFormatType.PNG]: "png",
+      [StickerFormatType.APNG]: "apng",
+      [StickerFormatType.GIF]: "gif",
+      [StickerFormatType.Lottie]: "lottie",
+    } as const;
+    const format = formats[sticker.format_type];
+    if (!format)
+      return [];
+    const extension = format === "apng"
+      ? "png"
+      : format === "lottie"
+        ? "json"
+        : format;
+    const origin = format === "gif"
+      ? "https://media.discordapp.net"
+      : "https://cdn.discordapp.com";
+    return [
+      {
+        id: sticker.id,
+        name: sticker.name,
+        format,
+        url: `${origin}/stickers/${sticker.id}.${extension}`,
+      },
+    ];
+  });
+  if (stickers?.length)
+    view.stickers = stickers;
   if (media.length)
     view.media = media;
   if (files.length)

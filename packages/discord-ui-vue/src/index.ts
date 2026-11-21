@@ -43,10 +43,16 @@ export type { SpoilerEmits, SpoilerProps, SpoilerSlots } from "./components/cont
 export { DiscordUI } from "./components/discord-ui";
 export { Embed } from "./components/embed/embed";
 export type { EmbedEmits, EmbedProps, EmbedSlots } from "./components/embed/embed";
+export { Audio } from "./components/media/audio";
+export type { AudioEmits, AudioProps, AudioSlots } from "./components/media/audio";
 export { Media } from "./components/media/media";
 export type { MediaEmits, MediaProps, MediaSlots } from "./components/media/media";
 export { MediaGallery } from "./components/media/media-gallery";
 export type { MediaGalleryEmits, MediaGalleryProps, MediaGallerySlots } from "./components/media/media-gallery";
+export { Sticker } from "./components/media/sticker";
+export type { StickerEmits, StickerProps, StickerSlots } from "./components/media/sticker";
+export { Video } from "./components/media/video";
+export type { VideoEmits, VideoProps, VideoSlots } from "./components/media/video";
 export { Message } from "./components/message/message";
 export type { MessageEmits, MessageProps, MessageSlots } from "./components/message/message";
 export { MessageContent } from "./components/message/message-content";

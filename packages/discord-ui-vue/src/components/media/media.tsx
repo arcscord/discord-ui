@@ -1,8 +1,9 @@
-import type { MediaView } from "@arcscord/discord-ui-core";
+import type { MediaView, MessageMediaView } from "@arcscord/discord-ui-core";
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
 import { mediaUrl } from "@arcscord/discord-ui-core";
 import { defineRenderer, state, styleValue } from "../../rendering";
 import { Spoiler } from "../content/spoiler";
+import { Video } from "./video";
 
 type MediaImageInput = { media: MediaView; source: string | undefined };
 const MediaImage = defineRenderer<MediaImageInput, MediaImageInput, Record<string, never>>("MediaImage", ["media", "source"], [], (input, display) => {
@@ -25,13 +26,15 @@ const MediaImage = defineRenderer<MediaImageInput, MediaImageInput, Record<strin
   };
 });
 type MediaPropsInput = {
-  media: MediaView;
+  media: MessageMediaView;
 };
 export type MediaProps = MediaPropsInput;
 export type MediaSlots = Record<string, never>;
 export const Media = defineRenderer<MediaProps, MediaPropsInput, MediaSlots>("Media", ["media"], [], (input, display) => {
   return () => {
     const { media } = input(true);
+    if ("kind" in media && media.kind === "video")
+      return <Video video={media} />;
     const { allowRemoteMedia, remoteMediaAllowlist } = display;
     const source = mediaUrl(media.url, allowRemoteMedia, remoteMediaAllowlist);
     const image = <MediaImage key={source ?? ""} media={media} source={source} />;

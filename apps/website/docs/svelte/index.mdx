@@ -71,5 +71,16 @@ the fallback.
 
 <SvelteExample id="themes-and-media" />
 
+## Video, audio and stickers
+
+`Message` renders video attachments, audio files, voice notes and stickers from
+the shared display model. Use `Video`, `Audio` and `Sticker` directly for composed
+layouts. V2 galleries also accept videos. This native example uses synthetic local
+audio/video and the supplied Arcscord logo as a sticker; copy
+`/examples/trail.webm`, `/examples/trail-poster.png`, `/examples/trail.wav` and
+`/examples/arcscord-sticker.png` or supply your own sources.
+
+<SvelteExample id="media" />
+
 See the [Svelte API reference](./api.mdx) for all components, callbacks and
 snippets, and [SSR and hydration](./ssr.md) for server setup.

@@ -1,5 +1,5 @@
 import type { ActionRowView, ComponentsV2Body, FileView } from "./components";
-import type { EmbedView, MarkdownMessageBody, MediaView } from "./content";
+import type { AudioView, EmbedView, MarkdownMessageBody, MessageMediaView, StickerView } from "./content";
 import type { ReactionView } from "./reaction";
 import type { ThreadSummaryView } from "./thread";
 
@@ -58,8 +58,8 @@ export type MessageMetadata = {
 };
 
 export type MessageContentView = (
-  | { body: TextMessageBody | MarkdownMessageBody; media?: readonly MediaView[]; attachments?: readonly FileView[]; embeds?: readonly EmbedView[]; components?: readonly ActionRowView[] }
-  | { body: ComponentsV2Body; media?: never; attachments?: never; embeds?: never; components?: never }
+  | { body: TextMessageBody | MarkdownMessageBody; media?: readonly MessageMediaView[]; attachments?: readonly (FileView | AudioView)[]; stickers?: readonly StickerView[]; embeds?: readonly EmbedView[]; components?: readonly ActionRowView[] }
+  | { body: ComponentsV2Body; media?: never; attachments?: never; stickers?: never; embeds?: never; components?: never }
 );
 
 export type MessageView = MessageMetadata & MessageContentView & { thread?: ThreadSummaryView };

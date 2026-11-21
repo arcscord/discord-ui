@@ -6,7 +6,9 @@ import { MessageComponents } from "../components-v2/message-components";
 import { File } from "../components-v2/primitives";
 import { Markdown } from "../content/markdown";
 import { Embed } from "../embed/embed";
+import { Audio } from "../media/audio";
 import { MediaGallery } from "../media/media-gallery";
+import { Sticker } from "../media/sticker";
 import { ThreadPreview } from "../thread/thread-preview";
 import { MessageContent } from "./message-content";
 import { MessageFrame } from "./message-frame";
@@ -96,7 +98,10 @@ export const Message = defineRenderer<MessageProps, MessagePropsInput, MessageSl
         {message.media?.length
           ? <MediaGallery items={message.media} />
           : null}
-        {message.attachments?.map(file => <File key={file.id} file={file} />)}
+        {message.attachments?.map(file => file.kind === "audio"
+          ? <Audio key={file.id} audio={file} />
+          : <File key={file.id} file={file} />)}
+        {message.stickers?.map(sticker => <Sticker key={sticker.id} sticker={sticker} />)}
         {message.embeds?.map(embed => <Embed key={embed.id} embed={embed} referenceTime={referenceTime} />)}
         {message.components?.length
           ? <MessageComponents messageId={message.id} selectValues={selectValues} components={message.components} onButtonClick={onButtonClick} onSelectChange={onSelectChange} onPremiumClick={onPremiumClick} />

@@ -1,7 +1,7 @@
 <script module lang="ts">
-  import type { MediaView } from "@arcscord/discord-ui-core";
+  import type { MessageMediaView } from "@arcscord/discord-ui-core";
 
-  export type MediaGalleryProps = { items: readonly MediaView[] };
+  export type MediaGalleryProps = { items: readonly MessageMediaView[] };
 </script>
 
 <script lang="ts">

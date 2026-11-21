@@ -1,7 +1,7 @@
 <script module lang="ts">
-  import type { MediaView } from "@arcscord/discord-ui-core";
+  import type { MessageMediaView } from "@arcscord/discord-ui-core";
 
-  export type MediaProps = { media: MediaView };
+  export type MediaProps = { media: MessageMediaView };
 </script>
 
 <script lang="ts">
@@ -9,6 +9,7 @@
   import ImageFallback from "../content/ImageFallback.svelte";
   import Spoiler from "../content/Spoiler.svelte";
   import { getDisplayOptions } from "../display-context.js";
+  import Video from "./Video.svelte";
 
   const { media }: MediaProps = $props();
   const display = getDisplayOptions();
@@ -27,7 +28,9 @@
   </figure>
 {/snippet}
 
-{#if media.spoiler}
+{#if "kind" in media && media.kind === "video"}
+  <Video video={media} />
+{:else if media.spoiler}
   <div class="dui-media-spoiler">
     {#key media.id}
       <Spoiler inline={false}>

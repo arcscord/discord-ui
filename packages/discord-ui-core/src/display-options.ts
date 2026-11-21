@@ -1,7 +1,22 @@
 import type { MessageEntities } from "./model/content";
 import type { ThemeInput, ThemeOverrides } from "./themes";
 
-export type UILabels = {
+export const defaultMediaLabels = {
+  mediaPlay: "Play",
+  mediaReplay: "Replay",
+  mediaPause: "Pause",
+  mediaSeek: "Playback position",
+  mediaVolume: "Volume",
+  mediaMute: "Mute",
+  mediaUnmute: "Unmute",
+  mediaFullscreen: "Fullscreen",
+  mediaExitFullscreen: "Exit fullscreen",
+  mediaPlaybackSpeed: "Playback speed",
+  mediaLoading: "Loading media",
+  mediaUnsupportedSticker: "Sticker format not supported",
+};
+
+export type UILabels = Partial<typeof defaultMediaLabels> & {
   selectPlaceholder?: string;
   channelSelectPlaceholder?: string;
   removeSelection?: string;
@@ -68,6 +83,7 @@ export const defaultDisplayOptions: BaseDisplayOptions = {
   allowRemoteMedia: true,
   unicodeEmoji: { mode: "native" },
   labels: {
+    ...defaultMediaLabels,
     selectPlaceholder: "Make a selection",
     channelSelectPlaceholder: "Select a channel",
     removeSelection: "Remove {name}",

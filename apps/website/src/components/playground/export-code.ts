@@ -4,6 +4,7 @@ import { exampleFixtures, previewEntities } from "../../data/example-fixtures";
 // Names only: generating source does not require loading the React components.
 const packageImports = {
   ActionRow: true,
+  Audio: true,
   Author: true,
   Avatar: true,
   Button: true,
@@ -33,10 +34,12 @@ const packageImports = {
   SelectMenu: true,
   Separator: true,
   Spoiler: true,
+  Sticker: true,
   TextDisplay: true,
   ThreadPanel: true,
   ThreadPreview: true,
   Thumbnail: true,
+  Video: true,
   defineTheme: true,
   themeTokenProperties: true,
   themes: true,

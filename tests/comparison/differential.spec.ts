@@ -268,8 +268,37 @@ async function media(runner: Runner): Promise<void> {
     await expect(document.getByRole("img", { name: "Media unavailable: Remote image", exact: true })).toBeVisible();
     await expect(document.getByText("route.txt", { exact: true })).toBeVisible();
     await expect(document.getByText("2 KB", { exact: true })).toBeVisible();
+    await expect(document.locator("video")).toHaveCount(1);
+    await expect(document.locator("audio")).toHaveCount(2);
+    await expect(document.locator("video")).toHaveAttribute("preload", "none");
+    await expect(document.locator("video")).toHaveAttribute("poster", "/examples/trail-poster.png");
+    await expect(document.locator(".dui-player-video")).toHaveAttribute("data-started", "false");
+    await expect(document.locator(".dui-player-video .dui-player-controls")).toBeHidden();
+    await expect(document.locator(".dui-player-voice .dui-player-download")).toHaveCount(0);
+    await expect(document.locator("audio").first()).toHaveAttribute("preload", "none");
+    await expect(document.locator(".dui-player-voice .dui-player-timeline .dui-waveform")).toBeVisible();
+    await expect(document.locator(".dui-player-voice .dui-player-title")).toHaveCount(0);
+    await expect(document.locator(".dui-player-file-icon")).toBeVisible();
+    await expect(document.locator(".dui-player-volume-control[data-open=true]")).toHaveCount(0);
+    await expect(document.getByRole("img", { name: "Arcscord sticker", exact: true })).toBeVisible();
+    await expect(document.getByRole("img", { name: "APNG marker", exact: true })).toBeVisible();
+    await expect(document.getByRole("img", { name: "GIF marker", exact: true })).toBeVisible();
+    await expect(document.getByText(/Sticker format not supported/)).toBeVisible();
+  });
+  await runner.checkpoint("media-audio", initial, [], async (document) => {
+    await document.locator(".dui-player-voice").evaluate(element => element.scrollIntoView({ block: "center", inline: "nearest" }));
+    await expect(document.locator(".dui-player-voice .dui-player-timeline .dui-waveform")).toBeVisible();
+    await expect(document.locator(".dui-player-voice .dui-player-title")).toHaveCount(0);
+    await expect(document.locator(".dui-player-file-icon")).toBeVisible();
+    await expect(document.locator(".dui-player-volume-control[data-open=true]")).toHaveCount(0);
+    await expect(document.locator(".dui-player-voice").getByRole("button", { name: "Playback speed", exact: true })).toHaveText("1X");
+  });
+  await runner.checkpoint("media-stickers", initial, [], async (document) => {
+    await document.locator(".dui-sticker").last().evaluate(element => element.scrollIntoView({ block: "center", inline: "nearest" }));
+    await expect(document.getByText(/Sticker format not supported/)).toBeVisible();
   });
 }
+
 async function spoilers(runner: Runner, french = false): Promise<void> {
   const reveal = french ? "Révéler le spoiler" : "Reveal spoiler";
   const hide = french ? "Masquer le spoiler" : "Hide spoiler";

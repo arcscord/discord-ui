@@ -3,7 +3,7 @@ import type { ActionRowView, ButtonView, ContainerChild, MessageButtonView, Mess
 import type { ChannelEntityView, RoleView, UserView } from "../model/entities";
 import { ButtonStyle, ComponentType, SeparatorSpacingSize } from "discord-api-types/v10";
 import { emojiView, hexColor, isDisplayChannelType } from "./entities";
-import { fileView, mediaView, resolveMedia } from "./media";
+import { fileView, galleryMediaView, mediaView, resolveMedia } from "./media";
 
 export type DiscordMessageConversionOptions = {
   /** Available choices for each entity select, keyed by its Discord custom_id. */
@@ -234,7 +234,7 @@ function convertChild(component: APIComponentInContainer, path: string, options:
     }
     case ComponentType.MediaGallery: {
       const items = component.items
-        .map((item, index) => mediaView(`${id}:item:${index}`, item.media, attachments, item.description, item.spoiler))
+        .map((item, index) => galleryMediaView(`${id}:item:${index}`, item.media, attachments, item.description, item.spoiler))
         .filter(item => item !== undefined);
       return items.length
         ? { id, kind: "media-gallery", items }

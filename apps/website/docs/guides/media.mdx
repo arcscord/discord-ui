@@ -1,5 +1,5 @@
 ---
-title: Media, galleries and files
+title: Images, video, audio and stickers
 description: Practical usage and behavior of media, galleries and files in Arcscord Discord UI.
 ---
 
@@ -8,10 +8,11 @@ import source from '!!../../plugins/documentation-source-loader.mjs!@site/src/co
 import CodeBlock from '@theme/CodeBlock';
 import ReferenceExample from '@site/src/components/docs/ReferenceExample';
 
-# Media, galleries and files
+# Images, video, audio and stickers
 
-Use `Media` for an image, `MediaGallery` for multiple image models and `File` for a
-file card. The component does not inspect MIME types or turn a file into a video player.
+Use `Media` for an image or video, `MediaGallery` for a mixed gallery, `Audio`
+for an audio attachment or voice note, `Sticker` for a sticker and `File` for a
+file card. Video and audio models select their player explicitly.
 
 ## API reference
 
@@ -29,9 +30,12 @@ shown above; copy it into a `.tsx` file after [installation](../installation.md)
 ## Supply assets and dimensions
 
 A `MediaView` requires `id`, `url` and `alt`; `width` and `height` are optional.
+`MessageMediaView` also accepts `VideoView`, identified by `kind: "video"`.
 Dimensions reserve space and describe aspect ratio. Give every gallery item a
 stable ID. For a classic message, use `media` and `attachments`; in a V2 body use
-media-gallery and file nodes inside the component tree.
+media-gallery and file nodes inside the component tree. V2 galleries accept
+images and videos. Message-level audio attachments and stickers belong to classic
+messages.
 
 The minimal example uses `/examples/landscape.svg`. Copy
 `apps/website/static/examples/landscape.svg` into your app's public `examples`
@@ -41,7 +45,7 @@ illustrative HTTP(S) URL, not a downloadable fixture provided by the library.
 
 ## Spoilers and failures
 
-Set `spoiler: true` on an image or file to hide it behind a reveal control.
+Set `spoiler: true` on an image, video, audio attachment or file to hide it behind a reveal control.
 Spoiled media is not mounted until revealed. Width and height help the concealed
 image preserve its aspect ratio. A text spoiler conceals already-rendered text.
 
@@ -52,7 +56,7 @@ fallbacks. Revealing content is local UI state, not authorization.
 ## Remote media policy
 
 `DiscordUI.allowRemoteMedia` defaults to `true`. Set it to `false` to block
-explicit HTTP(S) image sources across avatars, emoji, galleries, embed images
+explicit HTTP(S) media sources, including video, audio and stickers, across avatars, emoji, galleries, embed images
 and icons, reply and thread avatars, and select-menu avatars. Use
 `remoteMediaAllowlist` to make exceptions. For example, allow the Discord
 emoji directory while leaving Discord avatars and attachments blocked.
@@ -92,6 +96,49 @@ separate HTTP(S) link policy. The image policy checks the initial source URL.
 Redirects and other network requests are governed by the browser and the
 host application.
 
+## Video and audio players
+
+`Video` accepts a `video` model with `kind: "video"`, `id`, `url` and `alt`.
+Optional dimensions reserve space, `posterUrl` supplies a policy-checked poster
+and `durationSeconds` supplies the initial duration. `Audio` accepts an `audio`
+model with `kind: "audio"`, `id`, `url` and `name`; `size` is display text.
+The same models work in `message.media` and `message.attachments` respectively.
+
+Playback starts on user interaction. Audio players use `preload="none"`. Video
+with a supplied poster also uses `preload="none"`; without a poster it loads
+metadata to expose its first frame. The initial video preview shows a central
+play button. Its translucent playback bar appears after playback starts.
+Players expose
+keyboard-accessible play/pause, seeking, volume and mute controls. Hover or focus
+the speaker to open its vertical volume slider. Escape closes it and returns focus
+to the speaker. Audio files show a file icon, their name and a separate size label.
+Audio files and videos expose a top-right download link on hover or keyboard
+focus. Its URL must satisfy the HTTP(S) link policy. Root-relative media resolves
+to its same-origin HTTP(S) source for downloading. Voice notes omit this action. Video adds
+fullscreen where supported. Duration and progress follow the browser's media
+events. The browser determines which codecs it can decode.
+
+For a vocal, set `voice: true`. Supply optional `waveform` samples between 0 and 1
+and `durationSeconds`. The compact vocal layout places its waveform behind the
+seek control and shows one duration. Missing samples use a simple progress bar.
+Vocals also expose 1X, 1.5X and 2X playback speeds. Control names can be translated through
+`DiscordUI.labels`. Blocked or failed media show the localized unavailable state.
+
+## Stickers
+
+`Sticker` accepts a `sticker` model with `id`, `name`, `format` and `url`.
+Use `png`, `apng` or `gif` for browser-rendered stickers. The name provides its
+accessible alternative. `lottie` displays a localized unsupported-format state.
+Classic messages accept these models in `stickers`.
+
+`fromDiscordMessage` converts received image, video and audio attachments, voice
+metadata and sticker items. `fromDiscordMessageComponents` also converts videos
+in V2 galleries. These helpers use supplied API data and make no Discord requests.
+The local example uses synthetic `/examples/trail.webm` and `/examples/trail.wav`.
+The video uses `/examples/trail-poster.png`, extracted from its first frame.
+Its `/examples/arcscord-sticker.png` sticker uses the supplied Arcscord logo unchanged.
+Copy these assets or supply your own URLs.
+
 ## File links
 
 Files expose a name link and a download control only for allowed HTTP(S) URLs.
@@ -99,6 +146,15 @@ Unsafe file URLs leave the name as text. Relative file paths do not satisfy that
 link policy; resolve your file endpoint to an explicit HTTP(S) URL. The browser
 and remote server determine download behavior; a download attribute does not
 promise cross-origin downloading.
+
+## A conversation with every media type
+
+Open the [editable media conversation](/playground?example=media-conversation)
+to try a video preview, an audio file, a voice note with waveform, the Arcscord
+sticker and an image attachment together. The module includes all display data,
+uses explicit timestamps and imports the public `MessageList` component.
+
+<ReferenceExample id="media-conversation" />
 
 ## A realistic example
 

@@ -369,6 +369,7 @@ describe("discord API message conversion", () => {
               kind: "media-gallery",
               items: [
                 { url: "https://media.discordapp.net/example.png" },
+                { kind: "video", url: "https://example.com/example.mp4" },
               ],
             },
           ],

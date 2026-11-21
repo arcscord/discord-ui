@@ -16,6 +16,37 @@ export type MediaView = {
   width?: number;
   height?: number;
 };
+/** A directly playable video source, supplied by the host. */
+export type VideoView = {
+  kind: "video";
+  id: string;
+  url: string;
+  alt: string;
+  spoiler?: boolean;
+  width?: number;
+  height?: number;
+  posterUrl?: string;
+  durationSeconds?: number;
+};
+export type MessageMediaView = MediaView | VideoView;
+export type AudioView = {
+  kind: "audio";
+  id: string;
+  url: string;
+  name: string;
+  size?: string;
+  spoiler?: boolean;
+  durationSeconds?: number;
+  voice?: boolean;
+  /** Normalized amplitude samples between zero and one. */
+  waveform?: readonly number[];
+};
+export type StickerView = {
+  id: string;
+  name: string;
+  format: "png" | "apng" | "gif" | "lottie";
+  url: string;
+};
 export type EmbedView = {
   id: string;
   title?: string;

@@ -68,7 +68,7 @@ Both message helpers accept `selectEntities`, keyed by the menu's Discord
 models. Entity menus start with an empty list when those choices are absent.
 The host authorizes access, supplies mention lookups and handles interactions.
 The message helper uses available data and omits unsupported nodes, including
-media references it cannot resolve. The renderer supports images and file links.
+media references it cannot resolve. The adapters render image and video galleries, audio files, voice notes, PNG/APNG/GIF stickers and file links. Lottie stickers have an explicit unsupported-format state.
 
 ### With discord.js v14
 

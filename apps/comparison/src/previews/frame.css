@@ -44,3 +44,9 @@ body {
   overflow-wrap: anywhere;
   font-size: 12px;
 }
+
+/* Media collections scroll inside the same fixed comparison viewport. */
+html[data-scenario="media"] #capture {
+  height: 844px;
+  overflow: auto;
+}
