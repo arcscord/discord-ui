@@ -66,7 +66,7 @@ export type { ActionRowView, ButtonView, ChannelSelectMenuView, ChannelSelectOpt
 
 export type { AudioView, EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities, MessageMediaView, StickerView, VideoView } from "@arcscord/discord-ui-core";
 export type { ChannelEntityView, ChannelType, RoleView, UserView } from "@arcscord/discord-ui-core";
-export type { AvatarFallback, InteractionReplyView, MessageAuthor, MessageContentView, MessageMetadata, MessageReplyView, MessageView, ReplyView, TextMessageBody } from "@arcscord/discord-ui-core";
+export type { AuthorTag, AvatarFallback, InteractionReplyView, MessageAuthor, MessageContentView, MessageMetadata, MessageReplyView, MessageView, ReplyView, TextMessageBody } from "@arcscord/discord-ui-core";
 export type { ReactionToggleHandler, ReactionView } from "@arcscord/discord-ui-core";
 export type { SlashCommand, SlashCommandArgument, SlashCommandHandler, SlashCommandInvocation } from "@arcscord/discord-ui-core";
 export type { ThreadMessageView, ThreadSummaryView, ThreadView } from "@arcscord/discord-ui-core";

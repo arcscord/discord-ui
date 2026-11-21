@@ -29,6 +29,7 @@ export const classicExtras: MessageView[] = [
       displayName: "Route Bot",
       bot: true,
       verified: true,
+      tag: { text: "DEMO", badgeUrl: "/examples/tag-badge.png" },
     },
     timestamp: "2026-11-01T10:24:00Z",
     reply: { messageId: "missing", unavailable: true },

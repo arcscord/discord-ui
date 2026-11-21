@@ -72,6 +72,37 @@ describe("discord API entity conversion", () => {
     expect(fromDiscordUser({ ...user, discriminator: "1234" }).avatarUrl).toBe("https://cdn.discordapp.com/embed/avatars/4.png");
   });
 
+  it("converts a displayed server tag and its badge on message authors", () => {
+    const tagged = {
+      ...user,
+      primary_guild: {
+        identity_guild_id: "77",
+        identity_enabled: true,
+        tag: "DEV",
+        badge: "hash",
+      },
+    };
+    expect(fromDiscordMessage({ ...message, author: tagged }).author.tag).toEqual({
+      text: "DEV",
+      badgeUrl: "https://cdn.discordapp.com/guild-tag-badges/77/hash.png",
+    });
+    expect(fromDiscordMessage({
+      ...message,
+      author: {
+        ...tagged,
+        primary_guild: { ...tagged.primary_guild, badge: null },
+      },
+    }).author.tag).toEqual({ text: "DEV" });
+    expect(fromDiscordMessage({
+      ...message,
+      author: {
+        ...tagged,
+        primary_guild: { ...tagged.primary_guild, identity_enabled: false },
+      },
+    }).author).not.toHaveProperty("tag");
+    expect(fromDiscordMessage(message).author).not.toHaveProperty("tag");
+  });
+
   it("prefers a role's primary color and converts named channels", () => {
     const role = { id: "34", name: "Members", color: 0xFF0000 };
     expect(fromDiscordRole(role)).toEqual({ id: "34", name: "Members", color: "#ff0000" });

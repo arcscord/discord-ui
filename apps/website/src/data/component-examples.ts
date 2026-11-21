@@ -228,8 +228,11 @@ export const componentExamples: ComponentExample[] = ([
     id: "author",
     title: "Author",
     family: "Messages",
-    description: "Display an author name and app badge.",
-    code: "() => <Author author={welcome.author} />",
+    description: "Display an author name, server tag and app badge.",
+    code: `() => <div style={{ display: "grid", gap: 8 }}>
+      <Author author={welcome.author} />
+      <Author author={{ id: "chris", displayName: "Chris", color: "#57bfa0", tag: { text: "</>", badgeUrl: "/examples/tag-badge.png" } }} />
+    </div>`,
   },
   {
     id: "reply-preview",

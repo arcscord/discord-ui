@@ -88,6 +88,35 @@ display: inline-flex;
 	text-transform: uppercase;
 }
 
+.dui-author-tag {
+display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	height: 18px;
+	padding: 0 5px;
+	border-radius: 4px;
+	color: var(--discord-ui-strong);
+	background: var(--discord-ui-author-tag-background);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.dui-author-tag-badge {
+flex: 0 0 auto;
+	width: 13px;
+	height: 13px;
+	object-fit: contain;
+}
+
+/* The font box sits slightly above the glyphs; nudge the text without moving the badge. */
+.dui-author-tag-text {
+position: relative;
+	top: 0.5px;
+	line-height: 1;
+}
+
 .dui-timestamp {
 color: var(--discord-ui-muted);
 	font-size: 0.75rem;

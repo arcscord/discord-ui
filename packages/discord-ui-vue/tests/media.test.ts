@@ -2,7 +2,7 @@ import type { AudioView, MessageView, StickerView, VideoView } from "@arcscord/d
 import { renderToString } from "@vue/server-renderer";
 import { describe, expect, it } from "vitest";
 import { createSSRApp, h } from "vue";
-import { Audio, DiscordUI, MediaGallery, Message, Sticker, Video } from "../src/index";
+import { Audio, Author, DiscordUI, MediaGallery, Message, Sticker, Video } from "../src/index";
 
 const video: VideoView = {
   id: "video",
@@ -127,5 +127,22 @@ describe("native media SSR", () => {
     expect(html).toContain("<video");
     expect(html).toContain("<audio");
     expect(html).toContain("dui-sticker");
+  });
+});
+
+describe("native author tag SSR", () => {
+  it("renders the tag text and applies the media policy to its badge", async () => {
+    const author = {
+      id: "chris",
+      displayName: "Chris",
+      tag: { text: "DEV", badgeUrl: "https://example.com/tag.png" },
+    };
+    const html = await render(Author, { author });
+    expect(html).toContain("dui-author-tag-badge");
+    expect(html).toContain("https://example.com/tag.png");
+    expect(html).toMatch(/<span class="dui-author-tag">.*DEV<\/span>/u);
+    const blocked = await render(Author, { author }, { allowRemoteMedia: false });
+    expect(blocked).toContain("DEV");
+    expect(blocked).not.toContain("example.com");
   });
 });

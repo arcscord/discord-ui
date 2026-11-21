@@ -5,7 +5,7 @@ export type { ChannelViewModel } from "./model/channel";
 export type { ActionRowView, ButtonView, ChannelSelectMenuView, ChannelSelectOptionView, ComponentHandlers, ComponentInteractionContext, ComponentsV2Body, ContainerChild, ContainerView, FileView, GalleryView, LinkButtonView, MentionableSelectMenuView, MessageButtonView, MessageComponent, PremiumButtonView, RoleSelectMenuView, RoleSelectOptionView, SectionView, SelectChannelType, SelectDefaultValue, SelectMenuView, SelectOptionView, SelectValues, SelectValuesByMessage, SeparatorView, StringSelectMenuView, StringSelectOptionView, TextDisplayView, ThumbnailView, UserSelectMenuView, UserSelectOptionView } from "./model/components";
 export type { AudioView, EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities, MessageMediaView, StickerView, VideoView } from "./model/content";
 export type { ChannelEntityView, ChannelType, RoleView, UserView } from "./model/entities";
-export type { AvatarFallback, InteractionReplyView, MessageAuthor, MessageContentView, MessageMetadata, MessageReplyView, MessageView, ReplyView, TextMessageBody } from "./model/message";
+export type { AuthorTag, AvatarFallback, InteractionReplyView, MessageAuthor, MessageContentView, MessageMetadata, MessageReplyView, MessageView, ReplyView, TextMessageBody } from "./model/message";
 export type { ReactionToggleHandler, ReactionView } from "./model/reaction";
 export type { SlashCommand, SlashCommandArgument, SlashCommandHandler, SlashCommandInvocation } from "./model/slash-command";
 export type { ThreadMessageView, ThreadSummaryView, ThreadView } from "./model/thread";

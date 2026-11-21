@@ -130,4 +130,28 @@ describe("svelte media rendering", () => {
     expectTypeOf<ComponentProps<typeof svelte.Audio>>().toEqualTypeOf<svelte.AudioProps>();
     expectTypeOf<ComponentProps<typeof svelte.Sticker>>().toEqualTypeOf<svelte.StickerProps>();
   });
+  it("renders an author server tag with an optional badge", () => {
+    const { body } = render(svelte.Author, {
+      props: {
+        author: {
+          id: "chris",
+          displayName: "Chris",
+          tag: { text: "DEV", badgeUrl: "/tag.png" },
+        },
+      },
+    });
+    expect(body).toContain("<span class=\"dui-author-tag\">");
+    expect(body).toContain("<img class=\"dui-author-tag-badge\" src=\"/tag.png\" alt=\"\" width=\"13\" height=\"13\"/>");
+    expect(body).toContain("<span class=\"dui-author-tag-text\">DEV</span>");
+    expect(body.indexOf("dui-author-tag-badge")).toBeLessThan(body.indexOf("dui-author-tag-text"));
+    expect(render(svelte.Author, {
+      props: {
+        author: {
+          id: "chris",
+          displayName: "Chris",
+          tag: { text: "DEV" },
+        },
+      },
+    }).body).not.toContain("<img");
+  });
 });

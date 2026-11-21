@@ -28,9 +28,10 @@ shown above; copy it into a `.tsx` file after [installation](../installation.md)
 ## Authors and message metadata
 
 `author.id` and `id` are strings. `author.displayName` is visible text; optional
-fields include `avatarUrl`, fallback colors/initial, `bot`, `verified` and `color`.
-The library does not fetch a user profile. A blocked or failed avatar falls back
-to its generated appearance. Supply an ISO 8601 `timestamp` with a time zone.
+fields include `avatarUrl`, fallback colors/initial, `bot`, `verified`, `color` and
+a server `tag` (`{ text, badgeUrl? }`) shown after the name. The library does not
+fetch a user profile. A blocked or failed avatar falls back to its generated
+appearance; a blocked tag badge leaves the tag text only. Supply an ISO 8601 `timestamp` with a time zone.
 
 Set `edited: true` to show the translated marker. No edit timestamp is required;
 `false` and omission both hide it. A text body escapes content as text, while a

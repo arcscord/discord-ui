@@ -6,10 +6,13 @@
 </script>
 
 <script lang="ts">
+  import { mediaUrl } from "@arcscord/discord-ui-core";
   import { contextMenuKeyboard } from "../context-menu-keyboard.js";
-  import { hexColor } from "../display-context.js";
+  import { getDisplayOptions, hexColor } from "../display-context.js";
 
   const { onUserClick, onUserContextMenu, author }: AuthorProps = $props();
+  const display = getDisplayOptions();
+  const tagBadge = $derived(mediaUrl(author.tag?.badgeUrl, display().allowRemoteMedia, display().remoteMediaAllowlist));
 </script>
 
 <span class="dui-author">
@@ -35,5 +38,5 @@
       event.stopPropagation();
       onUserContextMenu?.(author, event);
     }
-    : undefined}>{author.displayName}</svelte:element>{#if author.bot}<span class="dui-bot-badge">{author.verified ? "✓ APP" : "APP"}</span>{/if}
+    : undefined}>{author.displayName}</svelte:element>{#if author.tag?.text}<span class="dui-author-tag">{#if tagBadge}<img class="dui-author-tag-badge" src={tagBadge} alt="" width="13" height="13" />{/if}<span class="dui-author-tag-text">{author.tag.text}</span></span>{/if}{#if author.bot}<span class="dui-bot-badge">{author.verified ? "✓ APP" : "APP"}</span>{/if}
 </span>

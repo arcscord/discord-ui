@@ -34,6 +34,8 @@ async function classic(runner: Runner): Promise<void> {
   await runner.checkpoint("initial", initial, [], async (document) => {
     await expect(document.getByText("Trail notes", { exact: true })).toBeVisible();
     await expect(document.getByText("Route Bot", { exact: true })).toBeVisible();
+    await expect(document.locator(".dui-author-tag", { hasText: "DEMO" })).toBeVisible();
+    await expect(document.locator(".dui-author-tag-badge[src=\"/examples/tag-badge.png\"]")).toBeVisible();
     await expect(document.getByText("The original message is unavailable.", { exact: true })).toBeVisible();
     await expect(document.getByText("Only you can see this message.", { exact: true })).toBeVisible();
     await expect(document.getByText("(edited)", { exact: true })).toBeVisible();
