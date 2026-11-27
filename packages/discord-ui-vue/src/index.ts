@@ -6,6 +6,8 @@ export { ChannelComposer } from "./components/channel/channel-composer";
 export type { ChannelComposerEmits, ChannelComposerProps, ChannelComposerSlots } from "./components/channel/channel-composer";
 export { ChannelHeader } from "./components/channel/channel-header";
 export type { ChannelHeaderEmits, ChannelHeaderProps, ChannelHeaderSlots } from "./components/channel/channel-header";
+export { ChannelList } from "./components/channel/channel-list";
+export type { ChannelListEmits, ChannelListProps, ChannelListSlots } from "./components/channel/channel-list";
 export { ChannelView } from "./components/channel/channel-view";
 export type { ChannelViewEmits, ChannelViewProps, ChannelViewSlots } from "./components/channel/channel-view";
 export { MessageList } from "./components/channel/message-list";

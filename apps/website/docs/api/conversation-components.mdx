@@ -88,6 +88,43 @@ Displays a channel name/topic and optional React action slot. It is independent 
 
 <CodeBlock language="ts">{"export type ChannelHeaderProps = { name: string; topic?: string | undefined; actions?: ReactNode };"}</CodeBlock>
 
+## ChannelList
+
+<CodeBlock language="ts">{"import { ChannelList } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders channels grouped by category from ordered snapshots. Rows become buttons only with onChannelClick; navigation and unread state stay in the application.
+
+[Usage guide](/docs/guides/channels) · [Props type](#channellistprops)
+
+<CodeBlock language="ts">{"export function ChannelList({ categories, label, activeChannelId, onChannelClick }: ChannelListProps): import(\"react\").JSX.Element;"}</CodeBlock>
+
+### Props
+
+Optional props without a listed default remain absent; the behavior note describes local-state and wrapper fallbacks. Callback arguments are included in their type.
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `categories` | Yes | `readonly ChannelCategoryView[]` | — | Ordered channel categories to list; array order is render order. |
+| `label` | No | `string \| undefined` | — | Visible control/choice text; supply a meaningful accessible name. |
+| `activeChannelId` | No | `string \| undefined` | — | ID of the row marked as the current page. |
+| `onChannelClick` | No | `((channelId: string) => void) \| undefined` | — | Called with (channelId); host owns navigation. |
+
+<ReferenceExample id="channel-list" />
+
+Related types: [ChannelCategoryView](/docs/api/models#channelcategoryview).
+
+## ChannelListProps
+
+<CodeBlock language="ts">{"import type { ChannelListProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Renders channels grouped by category from ordered snapshots. Rows become buttons only with onChannelClick; navigation and unread state stay in the application.
+
+[Usage guide](/docs/guides/channels) · [Component](#channellist)
+
+<CodeBlock language="ts">{"export type ChannelListProps = {\n  categories: readonly ChannelCategoryView[];\n  /** Accessible name of the navigation landmark. */\n  label?: string | undefined;\n  activeChannelId?: string | undefined;\n  /** Rows are buttons only when this is provided; the host owns navigation. */\n  onChannelClick?: ((channelId: string) => void) | undefined;\n};"}</CodeBlock>
+
+Related types: [ChannelCategoryView](/docs/api/models#channelcategoryview).
+
 ## ChannelView
 
 <CodeBlock language="ts">{"import { ChannelView } from \"@arcscord/discord-ui\";"}</CodeBlock>

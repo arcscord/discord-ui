@@ -6,6 +6,8 @@ export { ChannelComposer } from "./components/channel/channel-composer";
 export type { ChannelComposerProps } from "./components/channel/channel-composer";
 export { ChannelHeader } from "./components/channel/channel-header";
 export type { ChannelHeaderProps } from "./components/channel/channel-header";
+export { ChannelList } from "./components/channel/channel-list";
+export type { ChannelListProps } from "./components/channel/channel-list";
 export { ChannelView } from "./components/channel/channel-view";
 export type { ChannelViewProps } from "./components/channel/channel-view";
 export { MessageList } from "./components/channel/message-list";
@@ -61,7 +63,7 @@ export type { ThreadPreviewProps } from "./components/thread/thread-preview";
 export type { MentionInteractionHandlers, MentionTarget, MessageInteractionHandlers, UserInteractionHandlers } from "./interactions";
 export { defineTheme, themes, themeTokenProperties } from "./themes";
 export type { DiscordTheme, ThemeInput, ThemeName, ThemeOverrides, ThemeTokens } from "./themes";
-export type { ChannelViewModel } from "@arcscord/discord-ui-core";
+export type { ChannelCategoryView, ChannelKind, ChannelListItemView, ChannelViewModel } from "@arcscord/discord-ui-core";
 export type { ActionRowView, ButtonView, ChannelSelectMenuView, ChannelSelectOptionView, ComponentHandlers, ComponentInteractionContext, ComponentsV2Body, ContainerChild, ContainerView, FileView, GalleryView, LinkButtonView, MentionableSelectMenuView, MessageButtonView, MessageComponent, PremiumButtonView, RoleSelectMenuView, RoleSelectOptionView, SectionView, SelectChannelType, SelectDefaultValue, SelectMenuView, SelectOptionView, SelectValues, SelectValuesByMessage, SeparatorView, StringSelectMenuView, StringSelectOptionView, TextDisplayView, ThumbnailView, UserSelectMenuView, UserSelectOptionView } from "@arcscord/discord-ui-core";
 
 export type { AudioView, EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities, MessageMediaView, StickerView, VideoView } from "@arcscord/discord-ui-core";

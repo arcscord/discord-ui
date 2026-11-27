@@ -70,6 +70,15 @@ content props accept typed Svelte snippets.
 | **topic** | No | `string \| undefined` |
 | **actions** | No | `Snippet<[]> \| undefined` |
 
+## ChannelList
+
+| Prop | Required | Type |
+| --- | --- | --- |
+| **categories** | Yes | `readonly ChannelCategoryView[]` |
+| **label** | No | `string \| undefined` |
+| **activeChannelId** | No | `string \| undefined` |
+| **onChannelClick** | No | `((channelId: string) => void) \| undefined` |
+
 ## ChannelView
 
 | Prop | Required | Type |

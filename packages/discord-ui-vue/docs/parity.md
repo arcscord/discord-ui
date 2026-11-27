@@ -10,6 +10,7 @@ local simulation coverage; it is not Nuxt or live Discord certification.
 | Avatar | Avatar | AvatarProps, AvatarSlots, AvatarEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | ChannelComposer | ChannelComposer | ChannelComposerProps, ChannelComposerSlots, ChannelComposerEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | ChannelHeader | ChannelHeader | ChannelHeaderProps, ChannelHeaderSlots, ChannelHeaderEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
+| ChannelList | ChannelList | ChannelListProps, ChannelListSlots, ChannelListEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | ChannelView | ChannelView | ChannelViewProps, ChannelViewSlots, ChannelViewEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | MessageList | MessageList | MessageListProps, MessageListSlots, MessageListEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |
 | MessageComponents | MessageComponents | MessageComponentsProps, MessageComponentsSlots, MessageComponentsEmits | Shared SSR / docs component coverage; interaction scenarios in vue.spec.ts |

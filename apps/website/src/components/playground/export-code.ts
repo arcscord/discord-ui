@@ -10,6 +10,7 @@ const packageImports = {
   Button: true,
   ChannelComposer: true,
   ChannelHeader: true,
+  ChannelList: true,
   ChannelView: true,
   Container: true,
   DiscordUI: true,

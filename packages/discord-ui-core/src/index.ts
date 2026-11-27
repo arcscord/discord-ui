@@ -1,7 +1,7 @@
 export { defaultDisplayOptions, defaultMediaLabels } from "./display-options";
 export type { BaseDisplayOptions, UILabels, UnicodeEmojiOptions } from "./display-options";
 export type { MentionInteractionHandlers, MentionTarget, MessageInteractionHandlers, UserInteractionHandlers } from "./interactions";
-export type { ChannelViewModel } from "./model/channel";
+export type { ChannelCategoryView, ChannelKind, ChannelListItemView, ChannelViewModel } from "./model/channel";
 export type { ActionRowView, ButtonView, ChannelSelectMenuView, ChannelSelectOptionView, ComponentHandlers, ComponentInteractionContext, ComponentsV2Body, ContainerChild, ContainerView, FileView, GalleryView, LinkButtonView, MentionableSelectMenuView, MessageButtonView, MessageComponent, PremiumButtonView, RoleSelectMenuView, RoleSelectOptionView, SectionView, SelectChannelType, SelectDefaultValue, SelectMenuView, SelectOptionView, SelectValues, SelectValuesByMessage, SeparatorView, StringSelectMenuView, StringSelectOptionView, TextDisplayView, ThumbnailView, UserSelectMenuView, UserSelectOptionView } from "./model/components";
 export type { AudioView, EmbedView, EntityView, MarkdownMessageBody, MediaView, MessageEntities, MessageMediaView, StickerView, VideoView } from "./model/content";
 export type { ChannelEntityView, ChannelType, RoleView, UserView } from "./model/entities";

@@ -61,6 +61,68 @@ Display data for an identified user, role, channel or command mention. Unknown e
 
 [Usage guide and runnable example](/docs/guides/messages)
 
+## ChannelCategoryView
+
+<CodeBlock language="ts">{"import type { ChannelCategoryView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Ordered group of listed channels. Omit name for channels outside any category.
+
+<CodeBlock language="ts">{"type ChannelCategoryView = {\n  id: string;\n  name?: string;\n  channels: readonly ChannelListItemView[];\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | No | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `channels` | Yes | `readonly ChannelListItemView[]` | — | Channel mention lookup map keyed by string ID. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelCategoryView = { id: \"chat\", name: \"Chat\", channels: [{ id: \"general\", name: \"general\" }] };"}</CodeBlock>
+
+Related types: [ChannelListItemView](/docs/api/models#channellistitemview).
+
+[Usage guide and runnable example](/docs/guides/channels)
+
+## ChannelKind
+
+<CodeBlock language="ts">{"import type { ChannelKind } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Kind of a listed channel; it only picks the decorative leading symbol.
+
+<CodeBlock language="ts">{"type ChannelKind = \"text\" | \"voice\" | \"announcement\" | \"forum\";"}</CodeBlock>
+
+The declaration lists the permitted alternatives; no additional object fields apply.
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelKind = \"text\";\nconst example2: API.ChannelKind = \"voice\";"}</CodeBlock>
+
+[Usage guide and runnable example](/docs/guides/channels)
+
+## ChannelListItemView
+
+<CodeBlock language="ts">{"import type { ChannelListItemView } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+One sidebar row. Unread state and ordering are host-owned.
+
+<CodeBlock language="ts">{"type ChannelListItemView = {\n  id: string;\n  name: string;\n  /** Defaults to `text`. */\n  kind?: ChannelKind;\n  /** Dimmed, for channels the host wants to de-emphasise. */\n  muted?: boolean;\n  /** Short host-formatted marker shown after the name, such as an unread count. */\n  badge?: string;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | `string` | — | Stable string identity within this model's scope. |
+| `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
+| `kind` | No | `ChannelKind` | — | Discriminator selecting this model variant. |
+| `muted` | No | `boolean` | — | Dims the channel row. |
+| `badge` | No | `string` | — | Short host-formatted marker shown after the channel name. |
+
+### Valid examples
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelListItemView = { id: \"general\", name: \"general\" };\nconst example2: API.ChannelListItemView = { id: \"lounge\", name: \"Lounge\", kind: \"voice\", muted: true, badge: \"3\" };"}</CodeBlock>
+
+Related types: [ChannelKind](/docs/api/models#channelkind).
+
+[Usage guide and runnable example](/docs/guides/channels)
+
 ## ChannelViewModel
 
 <CodeBlock language="ts">{"import type { ChannelViewModel } from \"@arcscord/discord-ui\";"}</CodeBlock>

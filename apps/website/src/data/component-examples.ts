@@ -470,6 +470,13 @@ export const componentExamples: ComponentExample[] = ([
     code: "() => <ChannelHeader name=\"support\" topic=\"A little help goes a long way.\" />",
   },
   {
+    id: "channel-list",
+    title: "ChannelList",
+    family: "Conversations",
+    description: "List channels by category, with the current one marked.",
+    code: "() => <ChannelList label=\"Channels\" activeChannelId=\"general\" categories={[{ id: \"chat\", name: \"Chat\", channels: [{ id: \"general\", name: \"general\" }, { id: \"news\", name: \"news\", kind: \"announcement\", badge: \"2\" }] }, { id: \"voice\", name: \"Voice\", channels: [{ id: \"lounge\", name: \"Lounge\", kind: \"voice\" }] }]} />",
+  },
+  {
     id: "slash-commands",
     title: "Slash commands",
     component: "ChannelComposer",

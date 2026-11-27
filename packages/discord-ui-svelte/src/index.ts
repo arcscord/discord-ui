@@ -6,6 +6,8 @@ export type { ChannelComposerProps } from "./channel/ChannelComposer.svelte";
 export { default as ChannelComposer } from "./channel/ChannelComposer.svelte";
 export type { ChannelHeaderProps } from "./channel/ChannelHeader.svelte";
 export { default as ChannelHeader } from "./channel/ChannelHeader.svelte";
+export type { ChannelListProps } from "./channel/ChannelList.svelte";
+export { default as ChannelList } from "./channel/ChannelList.svelte";
 export type { ChannelViewProps } from "./channel/ChannelView.svelte";
 export { default as ChannelView } from "./channel/ChannelView.svelte";
 export type { MessageListProps } from "./channel/MessageList.svelte";

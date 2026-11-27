@@ -39,6 +39,15 @@ The minimal example deliberately uses fixed timestamps and deterministic IDs
 within its local list. For an actual application, assign persistent IDs and
 authoritative timestamps when an event is received or created, outside rendering.
 
+## Channel list
+
+`ChannelList` renders a sidebar from ordered `ChannelCategoryView` snapshots; a
+category without a `name` shows its channels without a heading. `kind` only picks
+the leading symbol (`text`, `voice`, `announcement`, `forum`), which is decorative
+and hidden from assistive technology. Pass `activeChannelId` to mark the current
+row and `onChannelClick` to make rows buttons: navigation and unread state stay in
+your application.
+
 ## Composer and layout
 
 `onSend(content)` reports the text; append a message yourself. The built-in channel

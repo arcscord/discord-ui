@@ -64,6 +64,19 @@ Slots: `actions`.
 
 Events: none.
 
+## ChannelList
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `categories` | Yes | `readonly ChannelCategoryView[]` |
+| `label` | No | `string \| undefined` |
+| `activeChannelId` | No | `string \| undefined` |
+| `onChannelClick` | No | `((channelId: string) => void) \| undefined` |
+
+Slots: none.
+
+Events: `channel-click`.
+
 ## ChannelView
 
 | Prop / event listener | Required | Type |
@@ -154,8 +167,8 @@ Events: none.
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
 | `disabled` | No | `boolean \| undefined` |
-| `onClick` | No | `(() => void) \| undefined` |
 | `label` | Yes | `string` |
+| `onClick` | No | `(() => void) \| undefined` |
 | `ariaLabel` | No | `string \| undefined` |
 | `variant` | No | `"primary" \| "secondary" \| "success" \| "danger" \| "premium" \| undefined` |
 

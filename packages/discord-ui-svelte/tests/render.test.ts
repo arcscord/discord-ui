@@ -14,7 +14,7 @@ describe("svelte public surface", () => {
     const components = Object.keys(react).filter(name => /^[A-Z]/u.test(name)).sort();
     const exports = Object.keys(svelte).filter(name => /^[A-Z]/u.test(name)).sort();
     expect(exports).toEqual(components);
-    expect(exports).toHaveLength(37);
+    expect(exports).toHaveLength(38);
     for (const name of exports)
       expect(svelte[name as keyof typeof svelte]).toBeTypeOf("function");
   });
