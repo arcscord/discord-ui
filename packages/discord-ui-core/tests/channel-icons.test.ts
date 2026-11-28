@@ -2,6 +2,13 @@ import type { ChannelEntityView, ChannelIcons, ChannelListItemView } from "../sr
 import { expect, it } from "vitest";
 import { channelIconPaths, defaultDisplayOptions, getChannelTypeLabel, resolveChannelIcon, selectOptions } from "../src/index";
 
+it("uses the direct-message icon for groups and a separate two-bubble forum icon", () => {
+  expect(channelIconPaths[3]).toBe(channelIconPaths[1]);
+  expect(channelIconPaths[15]).not.toBe(channelIconPaths[1]);
+  expect(resolveChannelIcon({ channelType: 3 }).path).toBe(channelIconPaths[1]);
+  expect(resolveChannelIcon({ channelType: 15 }).path).toBe(channelIconPaths[15]);
+});
+
 it("accepts native and custom channel types in lists, entities and selector filters", () => {
   const custom: ChannelListItemView = { id: "support", name: "support", channelType: "support" };
   const entity: ChannelEntityView = { ...custom, channelType: "support" };

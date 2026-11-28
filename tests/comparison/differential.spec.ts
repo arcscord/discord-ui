@@ -57,7 +57,9 @@ async function channelList(runner: Runner, french = false): Promise<void> {
       name: french ? "media (Média)" : "media (Media channel)",
       exact: true,
     }).locator("svg path")).toHaveAttribute("d", "M4 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4Zm1 14 5-6 4 4 3-3 3 5H5Zm11-8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z");
-    await expect(list.getByRole("button", { name: "forum (Forum channel)", exact: true }).locator("svg path")).toHaveAttribute("d", "M2 10h5v2H2v-2Zm7 0h6v2H9v-2Zm8 0h5v2h-5v-2Z");
+    await expect(list.getByRole("button", { name: "forum (Forum channel)", exact: true }).locator("svg path")).toHaveAttribute("d", "M9 1a8 8 0 0 0-6.8 12.2L1 18l4.8-1.2A8 8 0 0 0 9.5 17a7.5 7.5 0 0 1 7.5-7.5A8 8 0 0 0 9 1Zm8 10a6 6 0 0 1 5.2 9L23 23l-3-.8A6 6 0 1 1 17 11Z");
+    const directPath = await list.getByRole("button", { name: "direct (Direct message)", exact: true }).locator("svg path").getAttribute("d");
+    await expect(list.getByRole("button", { name: "group (Group direct message)", exact: true }).locator("svg path")).toHaveAttribute("d", directPath!);
     const stagePath = await list.getByRole("button", { name: stageName, exact: true }).locator("svg path").getAttribute("d");
     const voicePath = await list.locator("[data-muted] svg path").getAttribute("d");
     expect(stagePath).not.toBe(voicePath);
