@@ -9,7 +9,8 @@ export type UserView = Pick<MessageAuthor, "id" | "displayName" | "avatarUrl" | 
   username?: string;
   status?: "online" | "idle" | "dnd" | "offline";
 };
-export type ChannelType = 0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
+/** Discord's numeric channel types, or application-defined numeric/string types. */
+export type ChannelType = number | string;
 /** Channel identity with the metadata needed for Discord's channel icons. */
 export type ChannelEntityView = Pick<ChannelViewModel, "id" | "name"> & {
   channelType: ChannelType;

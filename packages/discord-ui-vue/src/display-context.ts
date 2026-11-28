@@ -1,9 +1,9 @@
-import type { BaseDisplayOptions, DiscordTheme, UILabels } from "@arcscord/discord-ui-core";
-import type { InjectionKey, VNodeChild } from "vue";
+import type { BaseDisplayOptions, ChannelIcons, DiscordTheme, UILabels } from "@arcscord/discord-ui-core";
+import type { Component, InjectionKey, VNodeChild } from "vue";
 import { defaultDisplayOptions, themes } from "@arcscord/discord-ui-core";
 import { inject } from "vue";
 
-export type DisplayOptions = BaseDisplayOptions & { renderCode?: ((content: string, language: string) => VNodeChild) | undefined };
+export type DisplayOptions = BaseDisplayOptions & { icons?: ChannelIcons<Component> | undefined; renderCode?: ((content: string, language: string) => VNodeChild) | undefined };
 export type DisplayContextValue = DisplayOptions & { scoped: boolean; resolvedTheme: DiscordTheme };
 export type DiscordUIProps = Partial<Omit<DisplayOptions, "labels">> & { labels?: Partial<UILabels> };
 export type DiscordUIEmits = Record<string, never>;

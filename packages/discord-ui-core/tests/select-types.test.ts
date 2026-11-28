@@ -9,7 +9,7 @@ it("restricts resolved entities, defaults and option metadata by select kind", (
   expectTypeOf<ChannelSelectMenuView["entities"][number]["emoji"]>().toEqualTypeOf<undefined>();
   expectTypeOf<NonNullable<UserSelectMenuView["defaultValues"]>[number]["type"]>().toEqualTypeOf<"user">();
   expectTypeOf<NonNullable<MentionableSelectMenuView["defaultValues"]>[number]["type"]>().toEqualTypeOf<"user" | "role">();
-  expectTypeOf<NonNullable<ChannelSelectMenuView["channelTypes"]>[number]>().exclude<0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16>().toBeNever();
+  expectTypeOf<NonNullable<ChannelSelectMenuView["channelTypes"]>[number]>().toEqualTypeOf<string | number>();
   const users: UserSelectMenuView = {
     id: "users",
     kind: "user-select",

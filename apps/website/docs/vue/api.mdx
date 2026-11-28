@@ -58,11 +58,27 @@ Events: `update:modelValue`, `send`, `slash-command`.
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
 | `name` | Yes | `string` |
+| `channelType` | No | `ChannelType \| undefined` |
+| `locked` | No | `boolean \| undefined` |
+| `rules` | No | `boolean \| undefined` |
 | `topic` | No | `string \| undefined` |
 
 Slots: `actions`.
 
 Events: none.
+
+## ChannelList
+
+| Prop / event listener | Required | Type |
+| --- | --- | --- |
+| `categories` | Yes | `readonly ChannelCategoryView[]` |
+| `label` | No | `string \| undefined` |
+| `activeChannelId` | No | `string \| undefined` |
+| `onChannelClick` | No | `((channelId: string) => void) \| undefined` |
+
+Slots: none.
+
+Events: `channel-click`.
 
 ## ChannelView
 
@@ -154,8 +170,8 @@ Events: none.
 | Prop / event listener | Required | Type |
 | --- | --- | --- |
 | `disabled` | No | `boolean \| undefined` |
-| `onClick` | No | `(() => void) \| undefined` |
 | `label` | Yes | `string` |
+| `onClick` | No | `(() => void) \| undefined` |
 | `ariaLabel` | No | `string \| undefined` |
 | `variant` | No | `"primary" \| "secondary" \| "success" \| "danger" \| "premium" \| undefined` |
 
@@ -313,6 +329,7 @@ Events: none.
 | `allowRemoteMedia` | No | `boolean` |
 | `remoteMediaAllowlist` | No | `readonly string[]` |
 | `unicodeEmoji` | No | `UnicodeEmojiOptions` |
+| `icons` | No | `ChannelIcons<Component> \| undefined` |
 | `renderCode` | No | `((content: string, language: string) => VNodeChild) \| undefined` |
 | `labels` | No | `Partial<UILabels>` |
 

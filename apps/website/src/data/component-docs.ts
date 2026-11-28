@@ -33,6 +33,7 @@ export const componentDocs = {
   Reactions: ["interactive-components", "reactions"],
   ChannelView: ["conversation-components", "channels"],
   ChannelHeader: ["conversation-components", "channels"],
+  ChannelList: ["conversation-components", "channels"],
   ChannelComposer: ["conversation-components", "composer"],
   MessageList: ["conversation-components", "channels"],
   ThreadPanel: ["conversation-components", "threads"],

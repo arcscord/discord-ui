@@ -1,18 +1,28 @@
 import type { ComponentInteractionContext } from "@arcscord/discord-ui";
-import type { ComparisonConfig } from "../../../../fixtures/comparison/scenarios";
-import type { Snapshot } from "./protocol";
-import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui";
+import type { ChannelListState, ComparisonConfig } from "../../../../fixtures/comparison/scenarios";
+import type { NativeEvent, Snapshot } from "./protocol";
+import { ChannelHeader, ChannelList, ChannelView, DiscordUI, Message, MessageList, SelectMenu } from "@arcscord/discord-ui";
 import { renderHighlightedCode } from "@arcscord/discord-ui/highlight";
 import { useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../fixtures/comparison/scenarios";
+import { appendMessage, channelListCategories, channelListMenu, classicExtras, classicMessage, commands, comparisonChannelIconPaths, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../fixtures/comparison/scenarios";
 import { snapshot, utilityEvent } from "./protocol";
 import { frameRuntime } from "./runtime";
 import "@arcscord/discord-ui/styles.css";
 
 const runtime = frameRuntime("react");
+const customChannelIcons = {
+  channelTypes: {
+    support: () => <svg viewBox="0 0 24 24" fill="none" data-comparison-icon="support"><path d={comparisonChannelIconPaths.support} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+    13: () => <svg viewBox="0 0 24 24" fill="none" data-comparison-icon="stage"><path d={comparisonChannelIconPaths.stage} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+    42: () => <svg viewBox="0 0 24 24" fill="none" data-comparison-icon="numeric"><path d={comparisonChannelIconPaths.numeric} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  },
+  rules: () => <svg viewBox="0 0 24 24" fill="none" data-comparison-icon="rules"><path d={comparisonChannelIconPaths.rules} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  locked: () => <svg viewBox="0 0 24 24" fill="none" data-comparison-icon="locked"><path d={comparisonChannelIconPaths.locked} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+};
+
 export function Preview({ config, report }: { config: ComparisonConfig; report: (state: Snapshot) => void }) {
-  const [state, setState] = useState(createLocalState);
+  const [state, setState] = useState(() => createLocalState(config.scenario));
   const [utilityMode, setUtilityMode] = useState(0);
   useLayoutEffect(() => report(snapshot(state)), [config, report, state]);
   function button(id: string, context: ComponentInteractionContext): void {
@@ -67,6 +77,17 @@ export function Preview({ config, report }: { config: ComparisonConfig; report: 
         : [content],
     }, snapshot(next));
   }
+  function updateChannelList(patch: Partial<ChannelListState>, event: NativeEvent): void {
+    const next = {
+      ...state,
+      channelList: {
+        ...state.channelList!,
+        ...patch,
+      },
+    };
+    setState(next);
+    runtime.event(event, snapshot(next));
+  }
   const message = {
     ...(config.scenario === "reactions"
       ? scenarioMessages.reactions
@@ -80,10 +101,50 @@ export function Preview({ config, report }: { config: ComparisonConfig; report: 
       },
     ],
   };
+  const channelListPreview = config.scenario === "channel-list"
+    ? (
+        <>
+          <div className="channel-list-controls">
+            <button
+              type="button"
+              onClick={() => updateChannelList({ interactive: !state.channelList!.interactive }, {
+                name: "host-update",
+                args: ["channel-navigation", !state.channelList!.interactive],
+              })}
+            >
+              Toggle navigation
+            </button>
+            <button
+              type="button"
+              onClick={() => updateChannelList({ customIcons: !state.channelList!.customIcons }, {
+                name: "host-update",
+                args: ["channel-icons", !state.channelList!.customIcons],
+              })}
+            >
+              Toggle custom icons
+            </button>
+          </div>
+          <ChannelHeader name="Icon preview" channelType="support" locked />
+          <ChannelList
+            label="Server channels"
+            categories={channelListCategories}
+            activeChannelId={state.channelList!.activeChannelId}
+            onChannelClick={state.channelList!.interactive
+              ? id => updateChannelList({ activeChannelId: id }, {
+                name: "channel-click",
+                args: [id],
+              })
+              : undefined}
+          />
+          <SelectMenu menu={channelListMenu} />
+        </>
+      )
+    : undefined;
   return (
     <>
       <DiscordUI
         {...displayOptions(config, window.location.origin)}
+        icons={state.channelList?.customIcons ? customChannelIcons : undefined}
         renderCode={config.scenario === "markdown"
           ? renderHighlightedCode
           : undefined}
@@ -215,16 +276,18 @@ export function Preview({ config, report }: { config: ComparisonConfig; report: 
                             Disable selects
                           </button>
                         )}
-                        <Message
-                          message={scenarioMessage(config.scenario, state, window.location.origin)}
-                          selectValues={state.selectValues}
-                          onSelectChange={select}
-                          onButtonClick={button}
-                          onPremiumClick={(sku, context) => runtime.event({
-                            name: "premium-click",
-                            args: [sku, context],
-                          }, snapshot(state))}
-                        />
+                        {channelListPreview ?? (
+                          <Message
+                            message={scenarioMessage(config.scenario, state, window.location.origin)}
+                            selectValues={state.selectValues}
+                            onSelectChange={select}
+                            onButtonClick={button}
+                            onPremiumClick={(sku, context) => runtime.event({
+                              name: "premium-click",
+                              args: [sku, context],
+                            }, snapshot(state))}
+                          />
+                        )}
                       </>
                     )}
       </DiscordUI>

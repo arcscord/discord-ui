@@ -1,7 +1,8 @@
-import type { ChannelSelectOptionView, ResolvedSelectOption, SelectMenuView } from "@arcscord/discord-ui-core";
+import type { ResolvedSelectOption, SelectMenuView } from "@arcscord/discord-ui-core";
 import type { CSSProperties, KeyboardEvent } from "react";
 import { defaultSelectValues, mediaUrl, selectOptions } from "@arcscord/discord-ui-core";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { ChannelIcon } from "../channel/channel-icon";
 import { Emoji } from "../content/emoji";
 import { defaults, useDisplayOptions } from "../display-context";
 
@@ -10,42 +11,6 @@ export type SelectMenuProps = {
   values?: readonly string[] | undefined;
   onChange?: ((values: string[]) => void) | undefined;
 };
-
-function ChannelIcon({ option }: { option: ChannelSelectOptionView }) {
-  let path = "M10 3 6 21M18 3l-4 18M3 9h18M1 15h18";
-  switch (option.channelType) {
-    case 1:
-    case 3: path = "M4 4h16v12H9l-5 4V4Z";
-      break;
-    case 2:
-    case 13: path = "m3 9 5 0 5-5v16l-5-5H3V9Zm13-1c3 2 3 6 0 8m3-11c5 4 5 10 0 14";
-      break;
-    case 5: path = "M3 9h4l12-5v16L7 15H3V9Zm4 6 2 6h4l-2-4";
-      break;
-    case 4: path = "m4 9 8 7 8-7";
-      break;
-    case 10:
-    case 11:
-    case 12: path = "M6 3 3 17M13 3l-3 14M1 7h16M0 13h11M13 13h9v6h-4l-3 3v-3h-2v-6Z";
-      break;
-    case 14:
-    case 15: path = "M3 4h18v13H10l-5 4v-4H3V4Zm4 5h10M7 13h7";
-      break;
-    case 16: path = "M3 4h18v16H3V4Zm0 13 6-6 4 4 3-3 5 5M15 8h2";
-      break;
-    default: break;
-  }
-  if (option.rules)
-    path = "M5 3h14v16H5V3Zm-3 4v15h17M8 10l3 3 5-6";
-  return (
-    <span className="dui-select-channel-icon">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d={path} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      {option.locked
-        ? <svg className="dui-select-channel-lock" aria-hidden="true" viewBox="0 0 12 14"><path d="M3 6V4a3 3 0 0 1 6 0v2M2 6h8v7H2Z" fill="var(--discord-ui-select-menu-background)" stroke="currentColor" strokeWidth="2" /></svg>
-        : null}
-    </span>
-  );
-}
 
 function SelectAvatar({ source, label }: { source: string | undefined; label: string }) {
   const [failed, setFailed] = useState(false);
@@ -74,7 +39,7 @@ function OptionIcon({ option, chip = false }: { option: ResolvedSelectOption; ch
     );
   }
   if (option.entityType === "channel")
-    return <ChannelIcon option={option} />;
+    return <ChannelIcon channelType={option.channelType} locked={option.locked} rules={option.rules} />;
   if (option.entityType === "role") {
     const color = /^#[a-f\d]{6}$/iu.test(option.color ?? "")
       ? option.color

@@ -30,6 +30,12 @@ body {
   min-height: 844px;
 }
 
+.channel-list-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 #app .arcscord-discord-ui {
   min-height: 844px;
 }

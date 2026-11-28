@@ -108,3 +108,17 @@ Events use native DOM `MouseEvent`.
 User and mention context handlers stop propagation to the message handler.
 The host can call `event.preventDefault()` to replace the browser menu, and owns
 profile information, menu actions, dismissal and focus restoration.
+
+
+## Channel icons
+
+`ChannelList` rows and `ChannelHeader` accept `channelType` (default `0`),
+`locked` and `rules`. Channel types accept Discord numeric IDs and custom strings
+or numbers. On `DiscordUI`, pass `icons` alongside `theme` to customize
+`channelTypes`, `rules` or `locked`. Partial overrides preserve the remaining SVG
+defaults and also apply to channel-select menus.
+
+Icon overrides are Svelte snippets receiving no arguments. Use `labels.channelTypes` to
+translate accessible type names and `labels.channel` for the generic fallback.
+See the [channel guide](https://ui.arcscord.dev/docs/guides/channels) for a complete
+custom-type example.

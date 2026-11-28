@@ -196,3 +196,13 @@ layouts. The host supplies the flag; Markdown mention tokens and API conversion
 leave it unset. The highlight uses its hover background on hover and keyboard focus. Ephemeral appearance takes precedence
 when both flags are true. Theme overrides accept `mentionedBackground`, `mentionedHover` and
 `mentionedBorder`.
+
+
+## Channel display types
+
+`ChannelType` accepts Discord numeric IDs and custom string or number types.
+`ChannelListItemView` has optional `channelType` (default `0`), `locked` and `rules`
+metadata. `ChannelIcons<Icon>` describes partial `channelTypes`, `rules` and
+`locked` overrides. Each adapter supplies its native icon rendering type through
+`DiscordUI.icons`. Accessible type labels use `UILabels.channelTypes` with the
+`channel` label as fallback.

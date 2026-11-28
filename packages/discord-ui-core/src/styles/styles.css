@@ -95,6 +95,18 @@
 .dui-channel-symbol { color: var(--discord-ui-muted); font-size: 26px; line-height: 1; }
 .dui-channel-name { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--discord-ui-strong); font: inherit; font-weight: 600; }
 .dui-channel-topic { min-width: 0; margin: 0; padding-left: 12px; border-left: 1px solid var(--discord-ui-channel-header-divider); color: var(--discord-ui-muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dui-channel-list { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 8px; background: var(--discord-ui-background); color: var(--discord-ui-muted); }
+.dui-channel-list-category { margin: 0 0 4px; padding: 0 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 600; }
+.dui-channel-list ul { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.dui-channel-list-item { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 32px; margin: 0; padding: 0 8px; border: 0; border-radius: 4px; background: transparent; color: inherit; font: inherit; text-align: left; }
+button.dui-channel-list-item { cursor: pointer; }
+button.dui-channel-list-item:hover { background: var(--discord-ui-secondary-hover); color: var(--discord-ui-text); }
+button.dui-channel-list-item:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: -2px; }
+.dui-channel-list-item[aria-current="page"] { background: var(--discord-ui-secondary-hover); color: var(--discord-ui-strong); }
+.dui-channel-list-item[data-muted] { opacity: .55; }
+.dui-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.dui-channel-list-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dui-channel-list-badge { flex: 0 0 auto; padding: 0 6px; border-radius: 8px; background: var(--discord-ui-accent); color: #fff; font-size: 11px; font-weight: 600; line-height: 16px; }
 .dui-channel-actions { display: flex; gap: 12px; align-items: center; margin-left: auto; flex: 0 0 auto; }
 .dui-channel-history { min-height: 0; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-gutter: stable; padding-bottom: 12px; }
 .dui-channel-history:focus-visible { outline: 2px solid var(--discord-ui-accent); outline-offset: -2px; }
@@ -193,6 +205,8 @@ button.dui-component-button:disabled { cursor: not-allowed; opacity: .5; }
 .dui-select-status-dnd { background: #ed4245; }
 .dui-select-status-dnd::after { content: ""; position: absolute; top: 2px; left: 1px; width: 4px; height: 2px; background: var(--discord-ui-select-menu-background); }
 .dui-select-status-offline { background: var(--discord-ui-select-menu-background); box-shadow: inset 0 0 0 2px var(--discord-ui-muted); }
+.dui-select { --discord-ui-channel-icon-background: var(--discord-ui-select-menu-background); }
+.dui-select-channel-lock > svg { width: 100%; height: 100%; }
 .dui-select-channel-icon { position: relative; display: inline-flex; width: 24px; height: 24px; flex: 0 0 24px; color: var(--discord-ui-select-muted); }
 .dui-select-channel-icon > svg { width: 24px; height: 24px; }
 .dui-select-channel-icon > .dui-select-channel-lock { position: absolute; right: -2px; top: -3px; width: 12px; height: 14px; }
