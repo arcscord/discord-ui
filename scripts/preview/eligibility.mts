@@ -68,9 +68,13 @@ export async function eligibility(settings: Settings, fetcher: typeof fetch = fe
     if (matches.length !== 1 || matches[0].status !== "completed" || matches[0].conclusion !== "success")
       throw new Error(`Required CI job failed or missing: ${name}`);
   }
-  const associations = run.pull_requests?.length
+  let associations = run.pull_requests?.length
     ? run.pull_requests
     : await pages<Pull>(`/commits/${run.head_sha}/pulls`);
+  // GitHub can omit both associations for fork runs. Discover open PRs, then
+  // apply the same exact source identity checks and re-fetch the selected PR.
+  if (!associations.length)
+    associations = await pages<Pull>("/pulls?state=open");
   const candidates = associations.filter(pr => pr.head?.sha === run.head_sha && pr.head.repo?.id === run.head_repository?.id);
   if (candidates.length !== 1 || !Number.isSafeInteger(candidates[0].number) || candidates[0].number < 1)
     throw new Error("Cannot uniquely associate the run with a pull request head.");
