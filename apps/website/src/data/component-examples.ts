@@ -474,7 +474,7 @@ export const componentExamples: ComponentExample[] = ([
     title: "ChannelList",
     family: "Conversations",
     description: "List channels by category, with the current one marked.",
-    code: "() => <ChannelList label=\"Channels\" activeChannelId=\"general\" categories={[{ id: \"chat\", name: \"Chat\", channels: [{ id: \"general\", name: \"general\" }, { id: \"news\", name: \"news\", kind: \"announcement\", badge: \"2\" }] }, { id: \"voice\", name: \"Voice\", channels: [{ id: \"lounge\", name: \"Lounge\", kind: \"voice\" }] }]} />",
+    code: "() => <ChannelList label=\"Channels\" activeChannelId=\"general\" categories={[{ id: \"chat\", name: \"Chat\", channels: [{ id: \"general\", name: \"general\" }, { id: \"news\", name: \"news\", channelType: 5, badge: \"2\" }] }, { id: \"voice\", name: \"Voice\", channels: [{ id: \"lounge\", name: \"Lounge\", channelType: 2 }] }]} />",
   },
   {
     id: "slash-commands",

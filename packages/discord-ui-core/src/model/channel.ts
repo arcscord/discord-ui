@@ -1,3 +1,4 @@
+import type { ChannelEntityView } from "./entities";
 import type { MessageView } from "./message";
 import type { ThreadView } from "./thread";
 
@@ -10,15 +11,10 @@ export type ChannelViewModel = {
   threads?: readonly ThreadView[];
 };
 
-/** The kind of a listed channel: it only picks the leading symbol. */
-export type ChannelKind = "text" | "voice" | "announcement" | "forum";
-
 /** One sidebar row. */
-export type ChannelListItemView = {
-  id: string;
-  name: string;
-  /** Defaults to `text`. */
-  kind?: ChannelKind;
+export type ChannelListItemView = Pick<ChannelEntityView, "id" | "name" | "locked" | "rules"> & {
+  /** Discord channel type or a custom type. Defaults to `0` (text). */
+  channelType?: ChannelEntityView["channelType"];
   /** Dimmed, for channels the host wants to de-emphasise. */
   muted?: boolean;
   /** Short host-formatted marker shown after the name, such as an unread count. */

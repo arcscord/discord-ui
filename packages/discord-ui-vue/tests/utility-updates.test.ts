@@ -3,7 +3,7 @@ import { defaultDisplayOptions, themes } from "@arcscord/discord-ui-core";
 import { expect, it, vi } from "vitest";
 import { createRenderer, h, nextTick, shallowRef } from "vue";
 import { displayKey } from "../src/display-context";
-import { Author, ChannelView, Mention, Message, ThreadPanel } from "../src/index";
+import { Author, ChannelList, ChannelView, Mention, Message, ThreadPanel } from "../src/index";
 
 type HostNode = { tag: string; props: Record<string, unknown>; children: HostNode[]; parent?: HostNode | undefined; focus: () => void };
 function node(tag: string): HostNode {
@@ -176,5 +176,60 @@ it.each([
     expect(find(root, "dui-author-name")!.tag).toBe("span");
   expect(once).toHaveBeenCalledOnce();
   expect(regular).toHaveBeenCalledTimes(hasRegular ? 2 : 0);
+  app.unmount();
+});
+
+it("updates channel navigation when listeners are added and removed", async () => {
+  const handler = shallowRef<((id: string) => void) | undefined>();
+  const root = node("root");
+  const categories = [
+    {
+      id: "category",
+      channels: [
+        { id: "general", name: "general" },
+      ],
+    },
+  ];
+  const app = renderer.createApp({
+    render: () => h(ChannelList, { categories, onChannelClick: handler.value }),
+  });
+  app.mount(root);
+  expect(find(root, "dui-channel-list-item")?.tag).toBe("span");
+  const click = vi.fn();
+  handler.value = click;
+  await nextTick();
+  const button = find(root, "dui-channel-list-item")!;
+  expect(button.tag).toBe("button");
+  (button.props.onClick as () => void)();
+  expect(click).toHaveBeenCalledWith("general");
+  handler.value = undefined;
+  await nextTick();
+  expect(find(root, "dui-channel-list-item")?.tag).toBe("span");
+  app.unmount();
+});
+
+it("consumes once-only channel navigation listeners", async () => {
+  const once = vi.fn();
+  const root = node("root");
+  const app = renderer.createApp({
+    render: () => h(ChannelList, {
+      categories: [
+        {
+          id: "category",
+          channels: [
+            { id: "general", name: "general" },
+          ],
+        },
+      ],
+      onChannelClickOnce: once,
+    }),
+  });
+  app.mount(root);
+  const button = find(root, "dui-channel-list-item")!;
+  (button.props.onClick as () => void)();
+  (button.props.onClick as () => void)();
+  expect(once).toHaveBeenCalledOnce();
+  await nextTick();
+  expect(find(root, "dui-channel-list-item")?.tag).toBe("span");
   app.unmount();
 });

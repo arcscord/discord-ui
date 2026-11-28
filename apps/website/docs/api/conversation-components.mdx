@@ -64,7 +64,7 @@ Displays a channel name/topic and optional React action slot. It is independent 
 
 [Usage guide](/docs/guides/channels) · [Props type](#channelheaderprops)
 
-<CodeBlock language="ts">{"export function ChannelHeader({ name, topic, actions }: ChannelHeaderProps): import(\"react\").JSX.Element;"}</CodeBlock>
+<CodeBlock language="ts">{"export function ChannelHeader({ name, topic, actions, channelType, locked, rules }: ChannelHeaderProps): import(\"react\").JSX.Element;"}</CodeBlock>
 
 ### Props
 
@@ -75,8 +75,13 @@ Optional props without a listed default remain absent; the behavior note describ
 | `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
 | `topic` | No | `string \| undefined` | — | Optional channel topic text. |
 | `actions` | No | `ReactNode` | — | Optional React action slot in the channel header. |
+| `channelType` | No | `ChannelType \| undefined` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
+| `locked` | No | `boolean \| undefined` | — | Supplied lock indicator. |
+| `rules` | No | `boolean \| undefined` | — | Supplied rules-channel indicator. |
 
 <ReferenceExample id="channel-header" />
+
+Related types: [ChannelType](/docs/api/models#channeltype).
 
 ## ChannelHeaderProps
 
@@ -86,13 +91,15 @@ Displays a channel name/topic and optional React action slot. It is independent 
 
 [Usage guide](/docs/guides/channels) · [Component](#channelheader)
 
-<CodeBlock language="ts">{"export type ChannelHeaderProps = { name: string; topic?: string | undefined; actions?: ReactNode };"}</CodeBlock>
+<CodeBlock language="ts">{"export type ChannelHeaderProps = {\n  name: string;\n  topic?: string | undefined;\n  actions?: ReactNode;\n  channelType?: ChannelType | undefined;\n  locked?: boolean | undefined;\n  rules?: boolean | undefined;\n};"}</CodeBlock>
+
+Related types: [ChannelType](/docs/api/models#channeltype).
 
 ## ChannelList
 
 <CodeBlock language="ts">{"import { ChannelList } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Renders channels grouped by category from ordered snapshots. Rows become buttons only with onChannelClick; navigation and unread state stay in the application.
+Renders channels grouped by category from ordered snapshots. Rows become buttons only with onChannelClick; navigation and badge text stay in the application.
 
 [Usage guide](/docs/guides/channels) · [Props type](#channellistprops)
 
@@ -117,7 +124,7 @@ Related types: [ChannelCategoryView](/docs/api/models#channelcategoryview).
 
 <CodeBlock language="ts">{"import type { ChannelListProps } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Renders channels grouped by category from ordered snapshots. Rows become buttons only with onChannelClick; navigation and unread state stay in the application.
+Renders channels grouped by category from ordered snapshots. Rows become buttons only with onChannelClick; navigation and badge text stay in the application.
 
 [Usage guide](/docs/guides/channels) · [Component](#channellist)
 

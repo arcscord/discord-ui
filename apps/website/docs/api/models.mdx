@@ -83,43 +83,29 @@ Related types: [ChannelListItemView](/docs/api/models#channellistitemview).
 
 [Usage guide and runnable example](/docs/guides/channels)
 
-## ChannelKind
-
-<CodeBlock language="ts">{"import type { ChannelKind } from \"@arcscord/discord-ui\";"}</CodeBlock>
-
-Kind of a listed channel; it only picks the decorative leading symbol.
-
-<CodeBlock language="ts">{"type ChannelKind = \"text\" | \"voice\" | \"announcement\" | \"forum\";"}</CodeBlock>
-
-The declaration lists the permitted alternatives; no additional object fields apply.
-
-### Valid examples
-
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelKind = \"text\";\nconst example2: API.ChannelKind = \"voice\";"}</CodeBlock>
-
-[Usage guide and runnable example](/docs/guides/channels)
-
 ## ChannelListItemView
 
 <CodeBlock language="ts">{"import type { ChannelListItemView } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-One sidebar row. Unread state and ordering are host-owned.
+One sidebar row with optional channelType (default 0), locked and rules metadata. Ordering, muted appearance and badge text are host-owned.
 
-<CodeBlock language="ts">{"type ChannelListItemView = {\n  id: string;\n  name: string;\n  /** Defaults to `text`. */\n  kind?: ChannelKind;\n  /** Dimmed, for channels the host wants to de-emphasise. */\n  muted?: boolean;\n  /** Short host-formatted marker shown after the name, such as an unread count. */\n  badge?: string;\n};"}</CodeBlock>
+<CodeBlock language="ts">{"type ChannelListItemView = Pick<ChannelEntityView, \"id\" | \"name\" | \"locked\" | \"rules\"> & {\n  /** Discord channel type or a custom type. Defaults to `0` (text). */\n  channelType?: ChannelEntityView[\"channelType\"];\n  /** Dimmed, for channels the host wants to de-emphasise. */\n  muted?: boolean;\n  /** Short host-formatted marker shown after the name, such as an unread count. */\n  badge?: string;\n};"}</CodeBlock>
 
 | Field | Required | Type | Default / fallback | Meaning |
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
-| `kind` | No | `ChannelKind` | — | Discriminator selecting this model variant. |
+| `locked` | No | `boolean` | — | Supplied lock indicator. |
+| `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
+| `channelType` | No | `ChannelType` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `muted` | No | `boolean` | — | Dims the channel row. |
 | `badge` | No | `string` | — | Short host-formatted marker shown after the channel name. |
 
 ### Valid examples
 
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelListItemView = { id: \"general\", name: \"general\" };\nconst example2: API.ChannelListItemView = { id: \"lounge\", name: \"Lounge\", kind: \"voice\", muted: true, badge: \"3\" };"}</CodeBlock>
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelListItemView = { id: \"general\", name: \"general\" };\nconst example2: API.ChannelListItemView = { id: \"lounge\", name: \"Lounge\", channelType: 2, muted: true, badge: \"3\" };"}</CodeBlock>
 
-Related types: [ChannelKind](/docs/api/models#channelkind).
+Related types: [ChannelEntityView](/docs/api/models#channelentityview).
 
 [Usage guide and runnable example](/docs/guides/channels)
 
@@ -144,6 +130,26 @@ Ordered loaded message/thread snapshot. No fetch cursor or transport state. Link
 <CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelViewModel = { id: \"support\", name: \"support\", messages: [message] };"}</CodeBlock>
 
 Related types: [MessageView](/docs/api/models#messageview), [ThreadView](/docs/api/models#threadview).
+
+[Usage guide and runnable example](/docs/guides/channels)
+
+## ChannelIcons
+
+<CodeBlock language="ts">{"import type { ChannelIcons } from \"@arcscord/discord-ui\";"}</CodeBlock>
+
+Partial channel icon overrides keyed by channel type, with optional rules and locked overrides. Icon is the adapter-native renderable type. This example instantiates a no-argument function returning null.
+
+<CodeBlock language="ts">{"type ChannelIcons<Icon> = {\n  /** Keys are Discord channel type numbers or application-defined type names. */\n  channelTypes?: Readonly<Record<string, Icon>>;\n  rules?: Icon;\n  locked?: Icon;\n};"}</CodeBlock>
+
+| Field | Required | Type | Default / fallback | Meaning |
+| --- | --- | --- | --- | --- |
+| `channelTypes` | No | `Readonly<Record<string, Icon>>` | — | Filters supplied channel entities by their supplied channel type. |
+| `rules` | No | `Icon` | — | Supplied rules-channel indicator. |
+| `locked` | No | `Icon` | — | Supplied lock indicator. |
+
+### Valid example
+
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelIcons<() => null> = { channelTypes: { support: () => null }, locked: () => null };"}</CodeBlock>
 
 [Usage guide and runnable example](/docs/guides/channels)
 
@@ -209,7 +215,7 @@ Normal action button. Allowed styles exclude premium, which is a separate model 
 
 <CodeBlock language="ts">{"import type { ChannelSelectMenuView } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Uses resolved channels and channel defaults. channelTypes filters their numeric types; excluded IDs are unavailable selections.
+Uses resolved channels and channel defaults. channelTypes filters their supplied types; excluded IDs are unavailable selections.
 
 <CodeBlock language="ts">{"type SelectMenuBase = {\n  id: string;\n  placeholder?: string;\n  minValues?: number;\n  maxValues?: number;\n  disabled?: boolean;\n};\n\ntype ChannelSelectMenuView = SelectMenuBase & {\n  kind: \"channel-select\";\n  entities: readonly ChannelSelectOptionView[];\n  defaultValues?: readonly SelectDefaultValue<\"channel\">[];\n  channelTypes?: readonly SelectChannelType[];\n  options?: never;\n};"}</CodeBlock>
 
@@ -223,7 +229,7 @@ Uses resolved channels and channel defaults. channelTypes filters their numeric 
 | `kind` | Yes | `"channel-select"` | — | Discriminator selecting this model variant. |
 | `entities` | Yes | `readonly ChannelSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"channel">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
-| `channelTypes` | No | `readonly ChannelType[]` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | No | `readonly ChannelType[]` | — | Filters supplied channel entities by their supplied channel type. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
 
 ### Valid example
@@ -246,7 +252,7 @@ Resolved channel identity/type plus entityType=channel. No string-option or user
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
-| `channelType` | Yes | `ChannelType` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Yes | `ChannelType` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | No | `boolean` | — | Supplied lock indicator. |
 | `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
 | `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
@@ -480,7 +486,7 @@ Combines resolved users and roles with corresponding defaults; channel entities 
 | `entities` | Yes | `readonly (UserSelectOptionView \| RoleSelectOptionView)[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"user" \| "role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 ### Valid example
 
@@ -672,7 +678,7 @@ Uses resolved role entities and role defaults. String options and channelTypes a
 | `entities` | Yes | `readonly RoleSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 ### Valid example
 
@@ -703,7 +709,7 @@ Resolved role identity plus entityType=role, with optional color. No string-opti
 | `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
 | `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
 | `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
-| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Forbidden | `never` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | Forbidden | `never` | — | Supplied lock indicator. |
 | `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
 | `entityType` | Yes | `"role"` | — | Resolved entity discriminator; must match the menu family. |
@@ -743,7 +749,7 @@ Related types: [TextDisplayView](/docs/api/models#textdisplayview), [ThumbnailVi
 
 <CodeBlock language="ts">{"import type { SelectChannelType } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Alias of the numeric ChannelType contract, used for channel-menu filtering.
+Alias of the ChannelType contract, used for channel-menu filtering.
 
 <CodeBlock language="ts">{"type SelectChannelType = ChannelType;"}</CodeBlock>
 
@@ -751,7 +757,7 @@ The declaration lists the permitted alternatives; no additional object fields ap
 
 ### Valid examples
 
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectChannelType = 0;\nconst example2: API.SelectChannelType = 15;"}</CodeBlock>
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.SelectChannelType = 0;\nconst example2: API.SelectChannelType = 15;\nconst example3: API.SelectChannelType = \"support\";"}</CodeBlock>
 
 Related types: [ChannelType](/docs/api/models#channeltype).
 
@@ -797,7 +803,7 @@ Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; m
 | `options` | Yes | `readonly StringSelectOptionView[]` | — | String-menu choices with value/label; not accepted by entity menus. |
 | `entities` | Forbidden | `never` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | Forbidden | `never` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 #### Variant 2
 
@@ -812,7 +818,7 @@ Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; m
 | `entities` | Yes | `readonly UserSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"user">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 #### Variant 3
 
@@ -827,7 +833,7 @@ Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; m
 | `entities` | Yes | `readonly RoleSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 #### Variant 4
 
@@ -842,7 +848,7 @@ Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; m
 | `entities` | Yes | `readonly (UserSelectOptionView \| RoleSelectOptionView)[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"user" \| "role">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 #### Variant 5
 
@@ -856,7 +862,7 @@ Five discriminated variants. maxValues defaults to 1 and is bounded to 1–25; m
 | `kind` | Yes | `"channel-select"` | — | Discriminator selecting this model variant. |
 | `entities` | Yes | `readonly ChannelSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"channel">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
-| `channelTypes` | No | `readonly ChannelType[]` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | No | `readonly ChannelType[]` | — | Filters supplied channel entities by their supplied channel type. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
 
 ### Valid examples
@@ -881,7 +887,7 @@ Union of fixed string options and resolved user/role/channel options. A specific
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
-| `channelType` | Yes | `ChannelType` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Yes | `ChannelType` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | No | `boolean` | — | Supplied lock indicator. |
 | `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
 | `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
@@ -909,7 +915,7 @@ Union of fixed string options and resolved user/role/channel options. A specific
 | `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
 | `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
 | `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
-| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Forbidden | `never` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | Forbidden | `never` | — | Supplied lock indicator. |
 | `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
 | `entityType` | Yes | `"user"` | — | Resolved entity discriminator; must match the menu family. |
@@ -930,7 +936,7 @@ Union of fixed string options and resolved user/role/channel options. A specific
 | `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
 | `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
 | `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
-| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Forbidden | `never` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | Forbidden | `never` | — | Supplied lock indicator. |
 | `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
 | `entityType` | Yes | `"role"` | — | Resolved entity discriminator; must match the menu family. |
@@ -946,7 +952,7 @@ Union of fixed string options and resolved user/role/channel options. A specific
 | `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
 | `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
 | `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
-| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Forbidden | `never` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | Forbidden | `never` | — | Supplied lock indicator. |
 | `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
 | `description` | No | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
@@ -1003,7 +1009,7 @@ Uses fixed options and option.default; entities, defaultValues and channelTypes 
 | `options` | Yes | `readonly StringSelectOptionView[]` | — | String-menu choices with value/label; not accepted by entity menus. |
 | `entities` | Forbidden | `never` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | Forbidden | `never` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 ### Valid example
 
@@ -1030,7 +1036,7 @@ Fixed value/label with optional description, emoji and initial default flag. Ent
 | `status` | Forbidden | `never` | — | Supplied user presence indicator, not live presence. |
 | `bot` | Forbidden | `never` | — | Shows the supplied application/bot identity marker. |
 | `verified` | Forbidden | `never` | — | Shows supplied verification metadata; no verification lookup is performed. |
-| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Forbidden | `never` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | Forbidden | `never` | — | Supplied lock indicator. |
 | `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
 | `description` | No | `string` | — | Command/option descriptive text, or Markdown in EmbedView. |
@@ -1106,7 +1112,7 @@ Uses resolved user entities and user defaults. String options and channelTypes a
 | `entities` | Yes | `readonly UserSelectOptionView[]` | — | Resolved lookup maps or resolved menu entities, as specified by the owning model. No network lookup. |
 | `defaultValues` | No | `readonly SelectDefaultValue<"user">[]` | — | Initial local entity IDs with matching user/role/channel type; not accepted by string menus. |
 | `options` | Forbidden | `never` | — | String-menu choices with value/label; not accepted by entity menus. |
-| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their numeric Discord type. |
+| `channelTypes` | Forbidden | `never` | — | Filters supplied channel entities by their supplied channel type. |
 
 ### Valid example
 
@@ -1136,7 +1142,7 @@ Resolved user identity plus entityType=user. No string-option description/defaul
 | `description` | Forbidden | `never` | — | Command/option descriptive text, or Markdown in EmbedView. |
 | `emoji` | Forbidden | `never` | — | Resolved emoji name/image metadata (or a React slot in primitive button props). |
 | `default` | Forbidden | `never` | — | Initial local selection for a string option; later changes do not replace user state. |
-| `channelType` | Forbidden | `never` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Forbidden | `never` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | Forbidden | `never` | — | Supplied lock indicator. |
 | `rules` | Forbidden | `never` | — | Supplied rules-channel indicator. |
 | `entityType` | Yes | `"user"` | — | Resolved entity discriminator; must match the menu family. |
@@ -1391,7 +1397,7 @@ Resolved channel identity/type, with optional rules and lock indicators. Used by
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Stable string identity within this model's scope. |
 | `name` | Yes | `string` | — | Resolved display name, command/argument name or file name as indicated by the owning type. |
-| `channelType` | Yes | `ChannelType` | — | Numeric channel kind used for icons/filtering; no channel is fetched. |
+| `channelType` | Yes | `ChannelType` | — | Discord numeric type or custom string/number used for icons and filtering. ChannelList and ChannelHeader default to 0. |
 | `locked` | No | `boolean` | — | Supplied lock indicator. |
 | `rules` | No | `boolean` | — | Supplied rules-channel indicator. |
 
@@ -1407,15 +1413,15 @@ Related types: [ChannelViewModel](/docs/api/models#channelviewmodel), [ChannelTy
 
 <CodeBlock language="ts">{"import type { ChannelType } from \"@arcscord/discord-ui\";"}</CodeBlock>
 
-Accepted numeric channel type IDs for display/icons/filtering. The type does not fetch a channel or validate server permissions.
+Discord numeric channel type IDs and custom string or number types for display, icons and filtering. The type does not fetch a channel or validate server permissions.
 
-<CodeBlock language="ts">{"type ChannelType = 0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16;"}</CodeBlock>
+<CodeBlock language="ts">{"type ChannelType = number | string;"}</CodeBlock>
 
 The declaration lists the permitted alternatives; no additional object fields apply.
 
 ### Valid examples
 
-<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelType = 0;\nconst example2: API.ChannelType = 15;"}</CodeBlock>
+<CodeBlock language="ts">{"import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };\n\nconst example1: API.ChannelType = 0;\nconst example2: API.ChannelType = 15;\nconst example3: API.ChannelType = \"support\";"}</CodeBlock>
 
 [Usage guide and runnable example](/docs/guides/channels)
 

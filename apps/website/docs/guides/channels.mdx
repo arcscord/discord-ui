@@ -42,11 +42,49 @@ authoritative timestamps when an event is received or created, outside rendering
 ## Channel list
 
 `ChannelList` renders a sidebar from ordered `ChannelCategoryView` snapshots; a
-category without a `name` shows its channels without a heading. `kind` only picks
-the leading symbol (`text`, `voice`, `announcement`, `forum`), which is decorative
-and hidden from assistive technology. Pass `activeChannelId` to mark the current
-row and `onChannelClick` to make rows buttons: navigation and unread state stay in
-your application.
+category without a `name` shows its channels without a heading. Supply
+`channelType` using Discord's numeric types or a custom string or number. An omitted
+type defaults to `0` (text). Optional `rules` and `locked` metadata select the
+corresponding icon variant. `ChannelHeader` accepts the same three properties.
+Pass `activeChannelId` to mark the current row and `onChannelClick` to make rows
+buttons. Your application owns navigation, muted appearance and badge text.
+
+### Customize channel icons
+
+Pass `icons` alongside `theme` on `DiscordUI`. Partial overrides keep the remaining
+default SVG icons. Channel lists, headers and channel-select menus share this
+configuration. React icons are components receiving no props, Vue icons are
+components, and Svelte icons are snippets receiving no arguments.
+
+```tsx
+import { ChannelList, DiscordUI } from "@arcscord/discord-ui";
+import "@arcscord/discord-ui/styles.css";
+
+function SupportIcon() {
+  return <span aria-hidden="true">✦</span>;
+}
+
+export default function SupportChannels() {
+  return (
+    <DiscordUI
+      theme="dark"
+      icons={{ channelTypes: { support: SupportIcon } }}
+      labels={{ channelTypes: { support: "Support" }, channel: "Channel" }}
+    >
+      <ChannelList categories={[{
+        id: "help",
+        channels: [{ id: "support", name: "support", channelType: "support" }],
+      }]} />
+    </DiscordUI>
+  );
+}
+```
+
+Use `icons.channelTypes` to replace individual types, including numeric keys such
+as `13` for stage channels. `icons.rules` and `icons.locked` replace their respective
+variants. Supply translated accessible type names through `labels.channelTypes`.
+Unknown custom types use the generic channel fallback and `labels.channel` when
+no matching icon or label is supplied.
 
 ## Composer and layout
 

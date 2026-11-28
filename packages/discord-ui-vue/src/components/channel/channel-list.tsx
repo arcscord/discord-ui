@@ -1,13 +1,8 @@
 // Vue rendering adapted from the React adapter; see THIRD_PARTY_NOTICES.
-import type { ChannelCategoryView, ChannelKind } from "@arcscord/discord-ui-core";
+import type { ChannelCategoryView } from "@arcscord/discord-ui-core";
+import { getChannelTypeLabel } from "@arcscord/discord-ui-core";
 import { defineRenderer } from "../../rendering";
-
-const symbols: Record<ChannelKind, string> = {
-  text: "#",
-  voice: "🔊",
-  announcement: "📢",
-  forum: "💬",
-};
+import { ChannelIcon } from "./channel-icon";
 
 export type ChannelListProps = {
   categories: readonly ChannelCategoryView[];
@@ -24,7 +19,7 @@ export const ChannelList = defineRenderer<ChannelListProps, ChannelListProps, Ch
   "label",
   "activeChannelId",
   "onChannelClick",
-], [], (input, _display) => {
+], [], (input, display) => {
   return () => {
     const { categories, label, activeChannelId, onChannelClick } = input();
 
@@ -38,8 +33,9 @@ export const ChannelList = defineRenderer<ChannelListProps, ChannelListProps, Ch
             <ul>
               {category.channels.map((channel) => {
                 const content = [
-                  <span class="dui-channel-list-symbol" aria-hidden="true">{symbols[channel.kind ?? "text"]}</span>,
+                  <ChannelIcon channel={channel} />,
                   <span class="dui-channel-list-name">{channel.name}</span>,
+                  <span class="dui-sr-only">{` (${getChannelTypeLabel(channel.channelType, display.labels)})`}</span>,
                   channel.badge
                     ? <span class="dui-channel-list-badge">{channel.badge}</span>
                     : null,

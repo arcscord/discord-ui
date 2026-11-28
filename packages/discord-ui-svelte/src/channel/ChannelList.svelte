@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import type { ChannelCategoryView, ChannelKind } from "@arcscord/discord-ui-core";
+  import type { ChannelCategoryView } from "@arcscord/discord-ui-core";
 
   export type ChannelListProps = {
     categories: readonly ChannelCategoryView[];
@@ -10,15 +10,14 @@
     onChannelClick?: ((channelId: string) => void) | undefined;
   };
 
-  const symbols: Record<ChannelKind, string> = {
-    text: "#",
-    voice: "🔊",
-    announcement: "📢",
-    forum: "💬",
-  };
 </script>
 
 <script lang="ts">
+  import { getChannelTypeLabel } from "@arcscord/discord-ui-core";
+  import { getDisplayOptions } from "../display-context.js";
+  import ChannelIcon from "./ChannelIcon.svelte";
+
+  const display = getDisplayOptions();
   const { categories, label, activeChannelId, onChannelClick }: ChannelListProps = $props();
 </script>
 
@@ -42,8 +41,9 @@
                 ? () => onChannelClick(channel.id)
                 : undefined}
             >
-              <span class="dui-channel-list-symbol" aria-hidden="true">{symbols[channel.kind ?? "text"]}</span>
+              <ChannelIcon channelType={channel.channelType} rules={channel.rules} locked={channel.locked} />
               <span class="dui-channel-list-name">{channel.name}</span>
+              <span class="dui-sr-only">{` (${getChannelTypeLabel(channel.channelType, display().labels)})`}</span>
               {#if channel.badge}<span class="dui-channel-list-badge">{channel.badge}</span>{/if}
             </svelte:element>
           </li>

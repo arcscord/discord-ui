@@ -67,6 +67,9 @@ content props accept typed Svelte snippets.
 | Prop | Required | Type |
 | --- | --- | --- |
 | **name** | Yes | `string` |
+| **channelType** | No | `ChannelType \| undefined` |
+| **locked** | No | `boolean \| undefined` |
+| **rules** | No | `boolean \| undefined` |
 | **topic** | No | `string \| undefined` |
 | **actions** | No | `Snippet<[]> \| undefined` |
 
@@ -130,6 +133,7 @@ content props accept typed Svelte snippets.
 | **allowRemoteMedia** | No | `boolean` |
 | **remoteMediaAllowlist** | No | `readonly string[]` |
 | **unicodeEmoji** | No | `UnicodeEmojiOptions` |
+| **icons** | No | `ChannelIcons<Snippet<[]>> \| undefined` |
 | **renderCode** | No | `Snippet<[content: string, language: string]> \| undefined` |
 | **labels** | No | `Partial<UILabels>` |
 | **class** | No | `string` |

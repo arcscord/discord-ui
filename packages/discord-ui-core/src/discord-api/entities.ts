@@ -89,7 +89,7 @@ const supportedChannelTypes = new Set<number>([
   16,
 ] satisfies ChannelType[]);
 
-export function isDisplayChannelType(type: number): type is ChannelType {
+export function isDisplayChannelType(type: number): type is Extract<ChannelType, number> {
   return supportedChannelTypes.has(type);
 }
 

@@ -17,6 +17,10 @@ export const defaultMediaLabels = {
 };
 
 export type UILabels = Partial<typeof defaultMediaLabels> & {
+  /** Accessible fallback for application-defined channel types. */
+  channel?: string;
+  /** Accessible channel type names, keyed by numeric type or custom type name. */
+  channelTypes?: Readonly<Record<string, string>>;
   selectPlaceholder?: string;
   channelSelectPlaceholder?: string;
   removeSelection?: string;
@@ -84,6 +88,22 @@ export const defaultDisplayOptions: BaseDisplayOptions = {
   allowRemoteMedia: true,
   unicodeEmoji: { mode: "native" },
   labels: {
+    channel: "Channel",
+    channelTypes: {
+      0: "Text channel",
+      1: "Direct message",
+      2: "Voice channel",
+      3: "Group direct message",
+      4: "Category",
+      5: "Announcement channel",
+      10: "Announcement thread",
+      11: "Public thread",
+      12: "Private thread",
+      13: "Stage channel",
+      14: "Directory channel",
+      15: "Forum channel",
+      16: "Media channel",
+    },
     ...defaultMediaLabels,
     selectPlaceholder: "Make a selection",
     channelSelectPlaceholder: "Select a channel",

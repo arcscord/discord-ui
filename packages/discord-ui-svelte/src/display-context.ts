@@ -1,9 +1,9 @@
-import type { BaseDisplayOptions, DiscordTheme, ThemeOverrides, UILabels } from "@arcscord/discord-ui-core";
+import type { BaseDisplayOptions, ChannelIcons, DiscordTheme, ThemeOverrides, UILabels } from "@arcscord/discord-ui-core";
 import type { Snippet } from "svelte";
 import { defaultDisplayOptions, themes, themeStyle } from "@arcscord/discord-ui-core";
 import { getContext } from "svelte";
 
-export type DisplayOptions = BaseDisplayOptions & { renderCode?: Snippet<[content: string, language: string]> | undefined };
+export type DisplayOptions = BaseDisplayOptions & { icons?: ChannelIcons<Snippet> | undefined; renderCode?: Snippet<[content: string, language: string]> | undefined };
 export type DiscordUIProps = Partial<Omit<DisplayOptions, "labels">> & {
   labels?: Partial<UILabels>;
   class?: string;

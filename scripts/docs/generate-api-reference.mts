@@ -380,7 +380,9 @@ export async function buildReference() {
       text += `\n${modelNotes[name]}\n\n${code(signature(name, symbol))}\n${table(symbolType(symbol), declaration)}`;
       const typeName = name === "SelectDefaultValue"
         ? `${name}<"user">`
-        : name;
+        : name === "ChannelIcons"
+          ? `${name}<() => null>`
+          : name;
       const prefix = "import type * as API from \"@arcscord/discord-ui\";\n\nconst author: API.MessageAuthor = { id: \"sam\", displayName: \"Sam\" };\nconst timestamp = \"2026-11-01T10:24:00Z\";\nconst message: API.MessageView = { id: \"message\", author, timestamp, body: { kind: \"text\", content: \"Hello\" } };";
       const declarations = modelExamples[name]!.map((value, index) => `const example${index + 1}: API.${typeName} = ${value};`);
       text += `\n### Valid example${declarations.length > 1

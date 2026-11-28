@@ -17,6 +17,7 @@ export function defineRenderer<P extends object, Input extends object = P, S ext
   // These listeners affect rendered semantics, so Vue must track them as props.
   // Declared emits listeners are skipped by Vue's component update comparison.
   const utilityListeners = new Set([
+    "onChannelClick",
     "onUserClick",
     "onUserContextMenu",
     "onMentionClick",

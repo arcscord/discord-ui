@@ -1,11 +1,7 @@
-import type { ChannelCategoryView, ChannelKind } from "@arcscord/discord-ui-core";
-
-const symbols: Record<ChannelKind, string> = {
-  text: "#",
-  voice: "🔊",
-  announcement: "📢",
-  forum: "💬",
-};
+import type { ChannelCategoryView } from "@arcscord/discord-ui-core";
+import { getChannelTypeLabel } from "@arcscord/discord-ui-core";
+import { useDisplayOptions } from "../display-context";
+import { ChannelIcon } from "./channel-icon";
 
 export type ChannelListProps = {
   categories: readonly ChannelCategoryView[];
@@ -17,6 +13,7 @@ export type ChannelListProps = {
 };
 
 export function ChannelList({ categories, label, activeChannelId, onChannelClick }: ChannelListProps) {
+  const { labels } = useDisplayOptions();
   return (
     <nav className="dui-channel-list" aria-label={label}>
       {categories.map(category => (
@@ -28,8 +25,9 @@ export function ChannelList({ categories, label, activeChannelId, onChannelClick
             {category.channels.map((channel) => {
               const content = (
                 <>
-                  <span className="dui-channel-list-symbol" aria-hidden="true">{symbols[channel.kind ?? "text"]}</span>
+                  <ChannelIcon channelType={channel.channelType} rules={channel.rules} locked={channel.locked} />
                   <span className="dui-channel-list-name">{channel.name}</span>
+                  <span className="dui-sr-only">{` (${getChannelTypeLabel(channel.channelType, labels)})`}</span>
                   {channel.badge
                     ? <span className="dui-channel-list-badge">{channel.badge}</span>
                     : null}
