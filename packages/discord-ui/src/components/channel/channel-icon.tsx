@@ -16,10 +16,10 @@ export function ChannelIcon({ channelType = 0, rules, locked }: {
     <span className="dui-select-channel-icon" aria-hidden="true">
       {Icon
         ? createElement(Icon)
-        : <svg viewBox="0 0 24 24" fill="none"><path d={path} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+        : <svg viewBox="0 0 24 24" fill="currentColor"><path d={path} fillRule="evenodd" /></svg>}
       {locked && (Lock
         ? <span className="dui-select-channel-lock"><Lock /></span>
-        : <svg className="dui-select-channel-lock" viewBox="0 0 12 14"><path d={channelIconPaths.locked} fill="var(--discord-ui-channel-icon-background, var(--discord-ui-background))" stroke="currentColor" strokeWidth="2" /></svg>)}
+        : <svg className="dui-select-channel-lock" viewBox="0 0 12 14"><path d={channelIconPaths.locked} fill="currentColor" fillRule="evenodd" stroke="var(--discord-ui-channel-icon-background, var(--discord-ui-background))" strokeWidth="1.5" strokeLinejoin="round" paintOrder="stroke" /></svg>)}
     </span>
   );
 }

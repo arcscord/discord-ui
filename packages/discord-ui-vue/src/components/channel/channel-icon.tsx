@@ -14,11 +14,11 @@ export const ChannelIcon = defineRenderer<ChannelIconProps, ChannelIconProps, Re
     <span class="dui-select-channel-icon" aria-hidden="true">
       {icon
         ? h(toRaw(icon))
-        : <svg viewBox="0 0 24 24" fill="none"><path d={path} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>}
+        : <svg viewBox="0 0 24 24" fill="currentColor"><path d={path} fill-rule="evenodd" /></svg>}
       {channel.locked
         ? display.icons?.locked
           ? <span class="dui-select-channel-lock">{h(toRaw(display.icons.locked))}</span>
-          : <svg class="dui-select-channel-lock" viewBox="0 0 12 14"><path d={channelIconPaths.locked} fill="var(--discord-ui-channel-icon-background, var(--discord-ui-background))" stroke="currentColor" stroke-width="2" /></svg>
+          : <svg class="dui-select-channel-lock" viewBox="0 0 12 14"><path d={channelIconPaths.locked} fill="currentColor" fill-rule="evenodd" stroke="var(--discord-ui-channel-icon-background, var(--discord-ui-background))" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke" /></svg>
         : null}
     </span>
   );

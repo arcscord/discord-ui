@@ -3,11 +3,11 @@ import { appendMessage, classicExtras, classicMessage, createLocalState, default
 import { isConfigureMessage, isFrameMessage, protocol, snapshot } from "../src/previews/protocol";
 
 describe("comparison fixtures and transport", () => {
-  it("covers thirteen distinct scenario families across theme and width settings", () => {
-    expect(scenarios).toHaveLength(13);
-    expect(new Set(scenarios.map(scenario => scenario.id)).size).toBe(13);
-    expect(scenarios.length * 3 * 2).toBe(78);
-    expect(scenarios.length * 3 * 2 * 3).toBe(234);
+  it("covers fourteen distinct scenario families across theme and width settings", () => {
+    expect(scenarios).toHaveLength(14);
+    expect(new Set(scenarios.map(scenario => scenario.id)).size).toBe(14);
+    expect(scenarios.length * 3 * 2).toBe(84);
+    expect(scenarios.length * 3 * 2 * 3).toBe(252);
   });
 
   it("round-trips custom theme configuration and rejects invalid flags", () => {
@@ -63,6 +63,45 @@ describe("comparison fixtures and transport", () => {
       revision: 1,
       type: "applied",
       state: observed,
+    })).toBe(true);
+  });
+
+  it("isolates channel-list state and validates its transport fields", () => {
+    const first = createLocalState("channel-list");
+    const second = createLocalState("channel-list");
+    const observed = snapshot(first);
+    expect(observed.channelList).toEqual({ activeChannelId: "general", interactive: true, customIcons: false });
+    first.channelList!.activeChannelId = "support";
+    first.channelList!.customIcons = true;
+    expect(second.channelList).toEqual({ activeChannelId: "general", interactive: true, customIcons: false });
+    expect(observed.channelList).toEqual(second.channelList);
+    const frame = {
+      protocol,
+      framework: "react",
+      revision: 1,
+      type: "applied",
+      state: snapshot(first),
+    };
+    expect(isFrameMessage(frame)).toBe(true);
+    for (const channelList of [
+      null,
+      {},
+      { activeChannelId: 42, interactive: true, customIcons: false },
+      { activeChannelId: "support", interactive: "true", customIcons: false },
+      { activeChannelId: "support", interactive: true, customIcons: "true" },
+    ]) {
+      expect(isFrameMessage({
+        ...frame,
+        state: { ...frame.state, channelList },
+      })).toBe(false);
+    }
+    expect(isFrameMessage({
+      ...frame,
+      type: "event",
+      event: {
+        name: "channel-click",
+        args: ["support"],
+      },
     })).toBe(true);
   });
 

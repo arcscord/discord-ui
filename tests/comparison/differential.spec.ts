@@ -30,6 +30,149 @@ const wave: NativeEvent = {
 };
 
 type Runner = ReturnType<typeof createRunner>;
+async function channelList(runner: Runner, french = false): Promise<void> {
+  let state: Snapshot = {
+    ...initial,
+    channelList: { activeChannelId: "general", interactive: true, customIcons: false },
+  };
+  const events: NativeEvent[] = [];
+  const stageName = french ? "stage (Scène)" : "stage (Stage channel)";
+  const supportName = french ? "support (Support personnalisé)" : "support (Support channel)";
+  const numericName = french ? "numeric (Salon numérique)" : "numeric (Custom numeric channel)";
+  await runner.checkpoint("built-in-icons", state, [...events], async (document) => {
+    const list = document.getByRole("navigation", { name: "Server channels", exact: true });
+    await expect(list.getByRole("button")).toHaveCount(18);
+    await expect(list.getByRole("heading", { level: 3 })).toHaveCount(1);
+    await expect(list.locator("[aria-current='page']")).toContainText("general");
+    await expect(list.locator(".dui-channel-list-badge")).toHaveText("2");
+    await expect(list.locator("[data-muted]")).toContainText("voice");
+    await expect(list.getByRole("button", { name: stageName, exact: true })).toBeVisible();
+    await expect(list.getByRole("button", { name: supportName, exact: true })).toBeVisible();
+    await expect(list.getByRole("button", {
+      name: french ? "unknown (Salon)" : "unknown (Channel)",
+      exact: true,
+    })).toBeVisible();
+    await expect(list.getByRole("button", { name: "category (Category)", exact: true }).locator("svg path")).toHaveAttribute("d", "m3.3 8.5 7.6 7.6a1.6 1.6 0 0 0 2.2 0l7.6-7.6-2.2-2.2L12 12.8 5.5 6.3l-2.2 2.2Z");
+    await expect(list.getByRole("button", {
+      name: french ? "media (Média)" : "media (Media channel)",
+      exact: true,
+    }).locator("svg path")).toHaveAttribute("d", "M4 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4Zm1 14 5-6 4 4 3-3 3 5H5Zm11-8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z");
+    await expect(list.getByRole("button", { name: "forum (Forum channel)", exact: true }).locator("svg path")).toHaveAttribute("d", "M2 10h5v2H2v-2Zm7 0h6v2H9v-2Zm8 0h5v2h-5v-2Z");
+    const stagePath = await list.getByRole("button", { name: stageName, exact: true }).locator("svg path").getAttribute("d");
+    const voicePath = await list.locator("[data-muted] svg path").getAttribute("d");
+    expect(stagePath).not.toBe(voicePath);
+    await expect(list.getByRole("button", { name: stageName, exact: true }).locator("svg")).toHaveAttribute("fill", "currentColor");
+    await expect(list.getByRole("button", { name: stageName, exact: true }).locator("svg path")).toHaveAttribute("fill-rule", "evenodd");
+    await expect(document.locator(".dui-select-channel-lock")).toHaveCount(4);
+    await expect(document.locator("[data-comparison-icon]")).toHaveCount(0);
+    expect(await list.evaluate(element => element.scrollWidth > element.clientWidth)).toBe(false);
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, activeChannelId: "stage" },
+  };
+  events.push({
+    name: "channel-click",
+    args: ["stage"],
+  });
+  await runner.checkpoint("keyboard-selection", state, [...events], async (document) => {
+    const stage = document.getByRole("button", { name: stageName, exact: true });
+    await stage.focus();
+    await stage.press("Enter");
+    await expect(stage).toHaveAttribute("aria-current", "page");
+    await expect(stage).toBeFocused();
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, customIcons: true },
+  };
+  events.push({
+    name: "host-update",
+    args: ["channel-icons", true],
+  });
+  await runner.checkpoint("custom-icons", state, [...events], async (document) => {
+    await document.getByRole("button", { name: "Toggle custom icons", exact: true }).click();
+    for (const [icon, count] of [
+      ["support", 3],
+      ["stage", 1],
+      ["numeric", 1],
+      ["rules", 1],
+      ["locked", 4],
+    ] as const)
+      await expect(document.locator(`[data-comparison-icon="${icon}"]`)).toHaveCount(count);
+    await expect(document.getByRole("button", { name: supportName, exact: true })).toBeVisible();
+    await expect(document.locator(".dui-select-chip [data-comparison-icon='support']")).toBeVisible();
+    await expect(document.locator(".dui-channel-header [data-comparison-icon='support']")).toBeVisible();
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, activeChannelId: "support" },
+  };
+  events.push({
+    name: "channel-click",
+    args: ["support"],
+  });
+  await runner.checkpoint("pointer-selection", state, [...events], async (document) => {
+    const support = document.getByRole("button", { name: supportName, exact: true });
+    await support.click();
+    await expect(support).toHaveAttribute("aria-current", "page");
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, interactive: false },
+  };
+  events.push({
+    name: "host-update",
+    args: ["channel-navigation", false],
+  });
+  await runner.checkpoint("navigation-disabled", state, [...events], async (document) => {
+    await document.getByRole("button", { name: "Toggle navigation", exact: true }).click();
+    const list = document.getByRole("navigation", { name: "Server channels", exact: true });
+    await expect(list.getByRole("button")).toHaveCount(0);
+    await expect(list.locator("span.dui-channel-list-item")).toHaveCount(18);
+    await expect(list.locator("[aria-current='page']")).toContainText("support");
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, interactive: true },
+  };
+  events.push({
+    name: "host-update",
+    args: ["channel-navigation", true],
+  });
+  await runner.checkpoint("navigation-restored", state, [...events], async (document) => {
+    await document.getByRole("button", { name: "Toggle navigation", exact: true }).click();
+    await expect(document.getByRole("navigation", { name: "Server channels", exact: true }).getByRole("button")).toHaveCount(18);
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, activeChannelId: "numeric" },
+  };
+  events.push({
+    name: "channel-click",
+    args: ["numeric"],
+  });
+  await runner.checkpoint("space-selection", state, [...events], async (document) => {
+    const numeric = document.getByRole("button", { name: numericName, exact: true });
+    await numeric.focus();
+    await numeric.press("Space");
+    await expect(numeric).toHaveAttribute("aria-current", "page");
+    await expect(numeric).toBeFocused();
+  });
+  state = {
+    ...state,
+    channelList: { ...state.channelList!, customIcons: false },
+  };
+  events.push({
+    name: "host-update",
+    args: ["channel-icons", false],
+  });
+  await runner.checkpoint("default-icons-restored", state, [...events], async (document) => {
+    await document.getByRole("button", { name: "Toggle custom icons", exact: true }).click();
+    await expect(document.locator("[data-comparison-icon]")).toHaveCount(0);
+    await expect(document.getByRole("button", { name: numericName, exact: true })).toHaveAttribute("aria-current", "page");
+  });
+}
 async function classic(runner: Runner): Promise<void> {
   await runner.checkpoint("initial", initial, [], async (document) => {
     await expect(document.getByText("Trail notes", { exact: true })).toBeVisible();
@@ -639,6 +782,7 @@ async function threadsCommands(runner: Runner, width = 390): Promise<void> {
 }
 
 const journeys = {
+  "channel-list": channelList,
   classic,
   interactions,
   channel,
@@ -664,6 +808,8 @@ function registerCase(matrix: Parameters<typeof createRunner>[2] & { scenario: k
         await runner.runFramework(framework, () => {
           if (matrix.scenario === "threads-commands")
             return threadsCommands(runner, matrix.width);
+          if (matrix.scenario === "channel-list")
+            return channelList(runner, matrix.locale === "fr-FR");
           if (matrix.scenario === "embeds")
             return embeds(runner, matrix.width);
           if (matrix.scenario === "spoilers")
@@ -688,6 +834,12 @@ for (const width of [640, 641])
 registerCase({
   scenario: "spoilers",
   theme: "light",
+  width: 390,
+  locale: "fr-FR",
+});
+registerCase({
+  scenario: "channel-list",
+  theme: "ash",
   width: 390,
   locale: "fr-FR",
 });

@@ -2,14 +2,15 @@
   import type { ComponentInteractionContext } from "@arcscord/discord-ui-svelte";
   import type { ComparisonConfig } from "../../../../../fixtures/comparison/scenarios";
   import type { NativeEvent, Snapshot } from "../protocol";
-  import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui-svelte";
+  import { ChannelHeader, ChannelList, ChannelView, DiscordUI, Message, MessageList, SelectMenu } from "@arcscord/discord-ui-svelte";
   import { HighlightedCode } from "@arcscord/discord-ui-svelte/highlight";
-  import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
+  import { appendMessage, channelListCategories, channelListMenu, classicExtras, classicMessage, commands, comparisonChannelIconPaths, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
   import { snapshot, utilityEvent } from "../protocol";
   import "@arcscord/discord-ui-svelte/styles.css";
 
   const { config, report, event }: { config: ComparisonConfig; report: (localState: Snapshot) => void; event: (event: NativeEvent, localState: Snapshot) => void } = $props();
-  const localState = $state(createLocalState());
+  // svelte-ignore state_referenced_locally
+  const localState = $state(createLocalState(config.scenario));
   let utilityMode = $state(0);
   $effect(() => report(snapshot(localState)));
   const message = $derived({
@@ -78,6 +79,33 @@
         : [mode],
     }, snapshot(localState));
   }
+  function channelClick(id: string): void {
+    if (!localState.channelList)
+      return;
+    localState.channelList.activeChannelId = id;
+    event({
+      name: "channel-click",
+      args: [id],
+    }, snapshot(localState));
+  }
+  function toggleChannelNavigation(): void {
+    if (!localState.channelList)
+      return;
+    localState.channelList.interactive = !localState.channelList.interactive;
+    event({
+      name: "host-update",
+      args: ["channel-navigation", localState.channelList.interactive],
+    }, snapshot(localState));
+  }
+  function toggleChannelIcons(): void {
+    if (!localState.channelList)
+      return;
+    localState.channelList.customIcons = !localState.channelList.customIcons;
+    event({
+      name: "host-update",
+      args: ["channel-icons", localState.channelList.customIcons],
+    }, snapshot(localState));
+  }
   function dismiss(id: string): void {
     localState.dismissed = true;
     event({
@@ -108,10 +136,29 @@
 </script>
 
 {#snippet highlighted(content: string, language: string)}<HighlightedCode {content} {language} />{/snippet}
-<DiscordUI {...displayOptions(config, window.location.origin)} renderCode={config.scenario === "markdown"
+{#snippet SupportSnippet()}<svg viewBox="0 0 24 24" fill="none" data-comparison-icon="support"><path d={comparisonChannelIconPaths.support} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{/snippet}
+{#snippet StageSnippet()}<svg viewBox="0 0 24 24" fill="none" data-comparison-icon="stage"><path d={comparisonChannelIconPaths.stage} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{/snippet}
+{#snippet NumericSnippet()}<svg viewBox="0 0 24 24" fill="none" data-comparison-icon="numeric"><path d={comparisonChannelIconPaths.numeric} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{/snippet}
+{#snippet RulesSnippet()}<svg viewBox="0 0 24 24" fill="none" data-comparison-icon="rules"><path d={comparisonChannelIconPaths.rules} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{/snippet}
+{#snippet LockSnippet()}<svg viewBox="0 0 24 24" fill="none" data-comparison-icon="locked"><path d={comparisonChannelIconPaths.locked} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>{/snippet}
+<DiscordUI {...displayOptions(config, window.location.origin)} icons={config.scenario === "channel-list" && localState.channelList?.customIcons
+  ? {
+    channelTypes: { support: SupportSnippet, 13: StageSnippet, 42: NumericSnippet },
+    rules: RulesSnippet,
+    locked: LockSnippet,
+  }
+  : undefined} renderCode={config.scenario === "markdown"
   ? highlighted
   : undefined}>
-  {#if config.scenario === "utility-interactions"}
+  {#if config.scenario === "channel-list"}
+    <div class="channel-list-controls">
+      <button type="button" onclick={toggleChannelNavigation}>Toggle navigation</button>
+      <button type="button" onclick={toggleChannelIcons}>Toggle custom icons</button>
+    </div>
+    <ChannelHeader name="Icon preview" channelType="support" locked={true} />
+    <ChannelList categories={channelListCategories} label="Server channels" activeChannelId={localState.channelList?.activeChannelId} onChannelClick={localState.channelList?.interactive ? channelClick : undefined} />
+    <SelectMenu menu={channelListMenu} />
+  {:else if config.scenario === "utility-interactions"}
     <button type="button" onclick={() => localState.reacted = !localState.reacted}>Update utility targets</button>
     <button type="button" onclick={() => utilityMode = (utilityMode + 1) % 3}>Cycle utility handlers</button>
     <MessageList messages={utilityMessages(localState.reacted)} onThreadOpen={thread}

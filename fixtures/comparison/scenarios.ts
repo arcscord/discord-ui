@@ -1,8 +1,82 @@
-import type { ChannelViewModel, MessageEntities, MessageView, SelectValues, ThemeName, ThreadMessageView, UILabels } from "@arcscord/discord-ui-core";
+import type { ChannelCategoryView, ChannelSelectMenuView, ChannelViewModel, MessageEntities, MessageView, SelectValues, ThemeName, ThreadMessageView, UILabels } from "@arcscord/discord-ui-core";
 import { defineTheme } from "@arcscord/discord-ui-core";
 
 export const referenceTime = "2026-11-01T10:25:00Z";
 export const timeZone = "UTC";
+
+export const channelListCategories: readonly ChannelCategoryView[] = [
+  {
+    id: "uncategorized",
+    channels: [
+      {
+        id: "general",
+        name: "general",
+        channelType: 0,
+        badge: "2",
+      },
+      { id: "direct", name: "direct", channelType: 1 },
+      { id: "group", name: "group", channelType: 3 },
+      { id: "category", name: "category", channelType: 4 },
+    ],
+  },
+  {
+    id: "server",
+    name: "Server channels with a long category name that truncates in narrow layouts",
+    channels: [
+      {
+        id: "voice",
+        name: "voice",
+        channelType: 2,
+        muted: true,
+      },
+      { id: "announcements", name: "announcements", channelType: 5 },
+      { id: "announcement-thread", name: "announcement-thread", channelType: 10 },
+      { id: "public-thread", name: "public-thread", channelType: 11 },
+      { id: "private-thread", name: "private-thread", channelType: 12 },
+      { id: "stage", name: "stage", channelType: 13 },
+      { id: "directory", name: "directory", channelType: 14 },
+      { id: "forum", name: "forum", channelType: 15 },
+      { id: "media", name: "media", channelType: 16 },
+      { id: "rules", name: "rules", rules: true },
+      { id: "locked", name: "locked", locked: true },
+      { id: "numeric", name: "numeric", channelType: 42 },
+      {
+        id: "support",
+        name: "support",
+        channelType: "support",
+        locked: true,
+      },
+      { id: "unknown", name: "unknown", channelType: "unknown" },
+    ],
+  },
+];
+
+export const channelListMenu: ChannelSelectMenuView = {
+  id: "icon-channels",
+  kind: "channel-select",
+  placeholder: "Choose an icon channel",
+  entities: [
+    {
+      id: "support",
+      name: "support",
+      entityType: "channel",
+      channelType: "support",
+      locked: true,
+    },
+  ],
+  defaultValues: [
+    { id: "support", type: "channel" },
+  ],
+};
+
+/** Identical path data, rendered through each adapter's native component/snippet. */
+export const comparisonChannelIconPaths = {
+  support: "M4 5h16v10H9l-5 4V5Z",
+  stage: "M9 3h6v10H9V3Zm-3 7v3a6 6 0 0 0 12 0v-3M12 19v3M8 22h8",
+  numeric: "M4 4h16v16H4V4Zm4 4h8v8H8V8Z",
+  rules: "M4 3h16v18H4V3Zm4 6 3 3 5-6M8 17h8",
+  locked: "M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5V11Z",
+};
 const author = { id: "guide", displayName: "Field Guide", avatarUrl: "/generated/avatars/ines.svg" };
 
 export const classicMessage: MessageView = {
@@ -541,6 +615,12 @@ export function utilityMessages(updated = false): MessageView[] {
 
 export const scenarios = [
   {
+    id: "channel-list",
+    title: "Channel list and icons",
+    description: "All channel types, custom native icons and controlled sidebar navigation.",
+    checkpoints: ["Inspect built-in channel icons, category headings and the current row.", "Select channels with the keyboard, then toggle navigation off and on.", "Toggle custom icons to compare overrides in the list, header and selector."],
+  },
+  {
     id: "utility-interactions",
     title: "Utility callbacks",
     description: "Author, mention and message callbacks with native context-menu decisions.",
@@ -630,8 +710,9 @@ export const defaultConfig: ComparisonConfig = {
   locale: "en-US",
   allowRemoteMedia: false,
 };
-export type LocalState = { waves: number; reacted: boolean; selectValues: SelectValues; channel: ChannelViewModel; activeThreadId: string | null; ownershipMode: number; selectsDisabled: boolean; dismissed: boolean };
-export function createLocalState(): LocalState {
+export type ChannelListState = { activeChannelId: string; interactive: boolean; customIcons: boolean };
+export type LocalState = { waves: number; reacted: boolean; selectValues: SelectValues; channel: ChannelViewModel; activeThreadId: string | null; ownershipMode: number; selectsDisabled: boolean; dismissed: boolean; channelList?: ChannelListState };
+export function createLocalState(scenario?: ScenarioId): LocalState {
   return {
     waves: 0,
     reacted: false,
@@ -641,6 +722,11 @@ export function createLocalState(): LocalState {
     ownershipMode: 0,
     selectsDisabled: false,
     dismissed: false,
+    ...(scenario === "channel-list"
+      ? {
+          channelList: { activeChannelId: "general", interactive: true, customIcons: false },
+        }
+      : {}),
   };
 }
 
@@ -704,6 +790,19 @@ export function displayOptions(config: ComparisonConfig, origin: string): {
         messagePlaceholder: "Message #{channel}",
       }
     : {};
+  if (config.scenario === "channel-list") {
+    labels.channel = config.locale === "fr-FR"
+      ? "Salon"
+      : "Channel";
+    labels.channelTypes = config.locale === "fr-FR"
+      ? {
+          support: "Support personnalisé",
+          42: "Salon numérique",
+          13: "Scène",
+          16: "Média",
+        }
+      : { support: "Support channel", 42: "Custom numeric channel" };
+  }
   return {
     theme: config.customTheme
       ? defineTheme({

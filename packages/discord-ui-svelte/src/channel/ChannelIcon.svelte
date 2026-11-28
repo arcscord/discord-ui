@@ -13,13 +13,13 @@
   {#if resolved.icon}
     {@render resolved.icon()}
   {:else}
-    <svg viewBox="0 0 24 24" fill="none"><path d={resolved.path} stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d={resolved.path} fill-rule="evenodd" /></svg>
   {/if}
   {#if locked}
     {#if lockIcon}
       <span class="dui-select-channel-lock">{@render lockIcon()}</span>
     {:else}
-      <svg class="dui-select-channel-lock" viewBox="0 0 12 14"><path d={channelIconPaths.locked} fill="var(--discord-ui-channel-icon-background, var(--discord-ui-background))" stroke="currentColor" stroke-width="2" /></svg>
+      <svg class="dui-select-channel-lock" viewBox="0 0 12 14"><path d={channelIconPaths.locked} fill="currentColor" fill-rule="evenodd" stroke="var(--discord-ui-channel-icon-background, var(--discord-ui-background))" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke" /></svg>
     {/if}
   {/if}
 </span>

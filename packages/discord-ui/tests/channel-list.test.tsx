@@ -112,7 +112,7 @@ it("falls back to a text SVG and localized label for unknown custom types", () =
       />
     </DiscordUI>,
   );
-  expect(html).toContain("M10 3 6 21M18 3l-4 18M3 9h18M1 15h18");
+  expect(html).toContain("M8.1 2 7.2 7H3v3h3.7l-.8 4H2v3h3.3l-.9 5h3.1l.9-5h5l-.9 5h3.1l.9-5H21v-3h-3.7l.8-4H22V7h-3.3l.9-5h-3.1l-.9 5h-5l.9-5H8.1Zm2 8h5l-.8 4h-5l.8-4Z");
   expect(html).toContain("Salon personnalisé");
 });
 

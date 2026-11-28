@@ -19,9 +19,10 @@ export const eventNames = [
   "mention-click",
   "mention-context-menu",
   "message-context-menu",
+  "channel-click",
 ] as const;
 export type NativeEvent = { name: typeof eventNames[number]; args: unknown[] };
-export type Snapshot = Pick<LocalState, "waves" | "reacted" | "selectValues" | "activeThreadId"> & { messageCount: number; replyCount: number };
+export type Snapshot = Pick<LocalState, "waves" | "reacted" | "selectValues" | "activeThreadId" | "channelList"> & { messageCount: number; replyCount: number };
 export function snapshot(state: LocalState): Snapshot {
   return {
     waves: state.waves,
@@ -30,6 +31,11 @@ export function snapshot(state: LocalState): Snapshot {
     activeThreadId: state.activeThreadId,
     messageCount: state.channel.messages.length,
     replyCount: state.channel.threads?.[0]?.messages.length ?? 0,
+    ...(state.channelList
+      ? {
+          channelList: { ...state.channelList },
+        }
+      : {}),
   };
 }
 type Envelope = { protocol: typeof protocol; framework: Framework; revision: number };
@@ -73,6 +79,10 @@ function isSnapshot(value: unknown): value is Snapshot {
     && (value.activeThreadId === null || typeof value.activeThreadId === "string")
     && Number.isSafeInteger(value.messageCount)
     && Number.isSafeInteger(value.replyCount)
+    && (value.channelList === undefined || (record(value.channelList)
+      && typeof value.channelList.activeChannelId === "string"
+      && typeof value.channelList.interactive === "boolean"
+      && typeof value.channelList.customIcons === "boolean"))
     && record(value.selectValues)
     && Object.values(value.selectValues).every(values => Array.isArray(values)
       && values.every(entry => typeof entry === "string"));

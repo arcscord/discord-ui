@@ -2,15 +2,72 @@
 import type { ComponentInteractionContext, MessageInteractionHandlers } from "@arcscord/discord-ui-vue";
 import type { ComparisonConfig } from "../../../../../fixtures/comparison/scenarios";
 import type { NativeEvent, Snapshot } from "../protocol";
-import { ChannelView, DiscordUI, Message, MessageList } from "@arcscord/discord-ui-vue";
+import { ChannelHeader, ChannelList, ChannelView, DiscordUI, Message, MessageList, SelectMenu } from "@arcscord/discord-ui-vue";
 import { renderHighlightedCode } from "@arcscord/discord-ui-vue/highlight";
-import { computed, ref, watchEffect } from "vue";
-import { appendMessage, classicExtras, classicMessage, commands, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
+import { computed, defineComponent, h, ref, watchEffect } from "vue";
+import { appendMessage, channelListCategories, channelListMenu, classicExtras, classicMessage, commands, comparisonChannelIconPaths, createLocalState, displayOptions, interactionMessage, scenarioMessage, scenarioMessages, standaloneUtilityMessage, utilityMessages } from "../../../../../fixtures/comparison/scenarios";
 import { snapshot, utilityEvent } from "../protocol";
 import "@arcscord/discord-ui-vue/styles.css";
 
 const props = defineProps<{ config: ComparisonConfig; report: (state: Snapshot) => void; event: (event: NativeEvent, state: Snapshot) => void }>();
-const state = ref(createLocalState());
+const state = ref(createLocalState(props.config.scenario));
+function comparisonIcon(key: keyof typeof comparisonChannelIconPaths) {
+  return defineComponent({
+    name: `Comparison${key}Icon`,
+    setup: () => () => h("svg", {
+      "viewBox": "0 0 24 24",
+      "fill": "none",
+      "data-comparison-icon": key,
+    }, [
+      h("path", {
+        "d": comparisonChannelIconPaths[key],
+        "stroke": "currentColor",
+        "stroke-width": 2,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      }),
+    ]),
+  });
+}
+const channelIcons = {
+  channelTypes: {
+    support: comparisonIcon("support"),
+    13: comparisonIcon("stage"),
+    42: comparisonIcon("numeric"),
+  },
+  rules: comparisonIcon("rules"),
+  locked: comparisonIcon("locked"),
+};
+const channelListHandlers = computed(() => ({
+  onChannelClick: state.value.channelList?.interactive ? channelClick : undefined,
+}));
+function channelClick(id: string): void {
+  if (!state.value.channelList)
+    return;
+  state.value.channelList.activeChannelId = id;
+  props.event({
+    name: "channel-click",
+    args: [id],
+  }, snapshot(state.value));
+}
+function toggleChannelNavigation(): void {
+  if (!state.value.channelList)
+    return;
+  state.value.channelList.interactive = !state.value.channelList.interactive;
+  props.event({
+    name: "host-update",
+    args: ["channel-navigation", state.value.channelList.interactive],
+  }, snapshot(state.value));
+}
+function toggleChannelIcons(): void {
+  if (!state.value.channelList)
+    return;
+  state.value.channelList.customIcons = !state.value.channelList.customIcons;
+  props.event({
+    name: "host-update",
+    args: ["channel-icons", state.value.channelList.customIcons],
+  }, snapshot(state.value));
+}
 const utilityMode = ref(0);
 const utilityRecords = computed(() => utilityMessages(state.value.reacted));
 const utilityHandlers = computed<MessageInteractionHandlers>(() => ({
@@ -126,8 +183,21 @@ function send(content: string, threadId?: string): void {
 </script>
 
 <template>
-  <DiscordUI v-bind="displayOptions(config, origin)" :render-code="config.scenario === 'markdown' ? renderHighlightedCode : undefined">
-    <template v-if="config.scenario === 'utility-interactions'">
+  <DiscordUI v-bind="displayOptions(config, origin)" :icons="config.scenario === 'channel-list' && state.channelList?.customIcons ? channelIcons : undefined" :render-code="config.scenario === 'markdown' ? renderHighlightedCode : undefined">
+    <template v-if="config.scenario === 'channel-list'">
+      <div class="channel-list-controls">
+        <button type="button" @click="toggleChannelNavigation">
+          Toggle navigation
+        </button>
+        <button type="button" @click="toggleChannelIcons">
+          Toggle custom icons
+        </button>
+      </div>
+      <ChannelHeader name="Icon preview" channel-type="support" :locked="true" />
+      <ChannelList :categories="channelListCategories" label="Server channels" :active-channel-id="state.channelList?.activeChannelId" v-bind="channelListHandlers" />
+      <SelectMenu :menu="channelListMenu" />
+    </template>
+    <template v-else-if="config.scenario === 'utility-interactions'">
       <button type="button" @click="state.reacted = !state.reacted">
         Update utility targets
       </button>
