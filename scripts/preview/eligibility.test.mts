@@ -51,26 +51,42 @@ function fixture() {
     digest,
     workflow_run: { id: 10, repository_id: 1, head_sha: sha },
   }));
+  const commitPulls = [pull];
+  const openPulls = [pull];
   const fetcher: typeof fetch = async (input) => {
     const path = new URL(String(input)).pathname.replace("/repos/owner/repo", "");
     let body: unknown;
-    if (path === "/actions/runs/10/attempts/1")
+    if (path === "/actions/runs/10/attempts/1") {
       body = run;
-    else if (path === "/actions/runs/10")
+    }
+    else if (path === "/actions/runs/10") {
       body = current;
-    else if (path === "/actions/workflows/ci.yml")
+    }
+    else if (path === "/actions/workflows/ci.yml") {
       body = { id: 5 };
-    else if (path.endsWith("/jobs"))
+    }
+    else if (path.endsWith("/jobs")) {
       body = { jobs };
-    else if (path === `/commits/${sha}/pulls`)
-      body = [pull];
-    else if (path === "/pulls/7")
+    }
+    else if (path === `/commits/${sha}/pulls`) {
+      body = commitPulls;
+    }
+    else if (path === "/pulls") {
+      expect(new URL(String(input)).searchParams.get("state")).toBe("open");
+      body = openPulls;
+    }
+    else if (path === "/pulls/7") {
       body = pull;
-    else if (path.endsWith("/artifacts"))
+    }
+    else if (path.endsWith("/artifacts")) {
       body = { artifacts };
-    else if (path === "/deployments")
+    }
+    else if (path === "/deployments") {
       body = [];
-    else throw new Error(`Unexpected request ${path}`);
+    }
+    else {
+      throw new Error(`Unexpected request ${path}`);
+    }
     return new Response(JSON.stringify(body), { status: 200 });
   };
   return {
@@ -79,6 +95,8 @@ function fixture() {
     pull,
     jobs,
     artifacts,
+    commitPulls,
+    openPulls,
     fetcher,
   };
 }
@@ -100,6 +118,31 @@ describe("preview eligibility", () => {
     const f = fixture();
     f.pull.head.sha = "c".repeat(40);
     await expect(eligibility(settings, f.fetcher)).rejects.toThrow();
+  });
+  it("accepts a verified fork when GitHub returns no PR associations", async () => {
+    const f = fixture();
+    f.commitPulls.length = 0;
+    const result = await eligibility(settings, f.fetcher);
+    expect(result.eligible).toBe(true);
+    expect(result.identity).toMatchObject({ prNumber: 7, headSha: sha, headRepository: fork.full_name });
+  });
+  it("rejects ambiguous open pull requests", async () => {
+    const f = fixture();
+    f.commitPulls.length = 0;
+    f.openPulls.push({ ...f.pull, number: 8 });
+    await expect(eligibility(settings, f.fetcher)).rejects.toThrow("Cannot uniquely associate");
+  });
+  it("rejects an open pull request from another fork with the same SHA", async () => {
+    const f = fixture();
+    f.commitPulls.length = 0;
+    f.pull.head.repo = { id: 3, full_name: "other/repo" };
+    await expect(eligibility(settings, f.fetcher)).rejects.toThrow("Cannot uniquely associate");
+  });
+  it("rejects a stale open pull request when associations are empty", async () => {
+    const f = fixture();
+    f.commitPulls.length = 0;
+    f.pull.head.sha = "c".repeat(40);
+    await expect(eligibility(settings, f.fetcher)).rejects.toThrow("Cannot uniquely associate");
   });
   it("rejects failed required checks and a different workflow", async () => {
     const f = fixture();
